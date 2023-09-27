@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "run-p dev:*",
-    "dev:next": "next dev --turbo",
+    "dev:next": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint src --ext .tsx,.ts",
