@@ -1,14 +1,26 @@
 {
+  // デフォルトのフォーマッタ設定
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // セーブ時に自動でフォーマットとLintを実行
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true,
     "source.fixAll.stylelint": true
   },
+
+  // workspaceのTypeScriptを利用するように
   "typescript.tsdk": "node_modules/typescript/lib",
+
+  // Prettierの設定
   "prettier.configPath": ".prettierrc.json",
+
+  // Stylelintの設定
   "stylelint.configFile": ".stylelintrc.js",
   "stylelint.packageManager": "pnpm",
+  "stylelint.validate": ["css", "scss"],
+
+  // ファイルの末尾に空行を挿入するように
   "files.insertFinalNewline": true,
-  "stylelint.validate": ["css", "scss"]
+  "stylelint.stylelintPath": ""
 }

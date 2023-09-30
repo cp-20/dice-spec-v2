@@ -2,6 +2,11 @@
   "recommendations": [
     "stylelint.vscode-stylelint",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "seatonjiang.gitmoji-vscode",
+    "wix.vscode-import-cost",
+    "yoavbls.pretty-ts-errors",
+    "formulahendry.auto-rename-tag"
   ]
 }
