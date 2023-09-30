@@ -6,7 +6,10 @@ export const Footer: FC<ComponentProps<'footer'>> = ({
   ...props
 }) => (
   <footer
-    className={twMerge('grid place-content-center bg-slate-100 p-2', className)}
+    className={twMerge(
+      'grid place-content-center bg-slate-100 p-2 text-sm text-slate-600',
+      className,
+    )}
     {...props}
   >
     © 2022-2023 cp20
