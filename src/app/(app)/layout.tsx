@@ -1,16 +1,25 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
 import type { FC, ReactNode } from 'react';
 import { BottomNavigation } from '@/shared/components/Layout/BottomNavigation';
 import { Footer } from '@/shared/components/Layout/Footer';
 import { Header } from '@/shared/components/Layout/Header';
 import { SideNavigation } from '@/shared/components/Layout/SideNavigation';
-import type { NavPaths } from '@/shared/lib/navigation';
+import { isNavPath } from '@/shared/lib/navigation';
 
-export type MainContentsWrapperProps = {
+type AppLayout = {
   children?: ReactNode;
 };
 
-export const generateAppLayout = (pathname: NavPaths) => {
-  const AppLayout: FC<MainContentsWrapperProps> = ({ children }) => (
+const AppLayout: FC<AppLayout> = ({ children }) => {
+  const pathname = usePathname();
+
+  if (!isNavPath(pathname)) {
+    return <>{children}</>;
+  }
+
+  return (
     <div className="flex h-screen flex-col">
       <Header />
       <div className="flex min-h-0 flex-1">
@@ -27,6 +36,6 @@ export const generateAppLayout = (pathname: NavPaths) => {
       <BottomNavigation className="sm:hidden" active={pathname} />
     </div>
   );
-
-  return AppLayout;
 };
+
+export default AppLayout;
