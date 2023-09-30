@@ -1,0 +1,26 @@
+.pretty-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background-color: inherit;
+}
+
+.pretty-scrollbar::-webkit-scrollbar-track {
+  /* slate-50 */
+  background-color: #f8fafc;
+}
+
+.pretty-scrollbar::-webkit-scrollbar-thumb {
+  /* slate-200 */
+  background-color: #e2e8f0;
+  border-radius: calc(var(--radius) - 2px);
+}
+
+.pretty-scrollbar::-webkit-scrollbar-thumb:hover {
+  /* slate-300 */
+  background-color: #cbd5e1;
+}
+
+.pretty-scrollbar::-webkit-scrollbar-thumb:active {
+  /* slate-400 */
+  background-color: #94a3b8;
+}

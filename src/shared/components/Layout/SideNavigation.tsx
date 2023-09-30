@@ -1,0 +1,51 @@
+import clsx from 'clsx';
+import type { LinkProps } from 'next/link';
+import Link from 'next/link';
+import type { FC, ComponentProps } from 'react';
+import { twMerge } from 'tailwind-merge';
+import { navLinks } from '@/shared/lib/navigation';
+
+export type SideNavigationProps = {
+  active: (typeof navLinks)[number]['href'];
+  textProps?: ComponentProps<'span'>;
+};
+
+export const SideNavigation: FC<
+  ComponentProps<'nav'> & SideNavigationProps
+> = ({ className, active, textProps, ...props }) => (
+  <nav className={twMerge('flex w-60 flex-col border-r', className)} {...props}>
+    {navLinks.map(({ href, icon, name }) => (
+      <SideNavigationLink
+        key={href}
+        icon={icon}
+        href={href}
+        isActive={href === active}
+      >
+        <span {...textProps}>{name}</span>
+      </SideNavigationLink>
+    ))}
+  </nav>
+);
+
+type SideNavigationLinkProps = {
+  icon?: FC;
+  isActive?: boolean;
+};
+
+const SideNavigationLink: FC<
+  ComponentProps<'a'> & LinkProps<never> & SideNavigationLinkProps
+> = ({ className, icon: Icon, isActive, children, ...props }) => (
+  <Link
+    className={twMerge(
+      clsx(
+        'flex w-full items-center gap-1 rounded-none px-4 py-2 transition-colors duration-100 hover:bg-slate-50 active:bg-slate-100',
+        isActive && 'bg-slate-100 hover:bg-slate-100',
+      ),
+      className,
+    )}
+    {...props}
+  >
+    {Icon && <Icon />}
+    {children}
+  </Link>
+);
