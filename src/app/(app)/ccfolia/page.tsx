@@ -15,7 +15,7 @@ const CcfoliaPage: NextPage = () => (
       <PageTitle icon={IconFileExport}>ココフォリア出力</PageTitle>
       <PageDescriptionContainer>
         <PageDescriptionText>
-          キャラの各項目を記入すると、CCFOLIAに出力できる形式にフォーマットしてくれるツールです。逆にCCFOLIA出力形式から読み込むこともできるので、「ここの値を少しだけ変えたい！」といった場合に便利です。
+          キャラの各項目を記入すると、ココフォリアに出力できる形式にフォーマットしてくれるツールです。逆にココフォリア出力形式から読み込むこともできるので、「ここの値を少しだけ変えたい！」といった場合に便利です。
         </PageDescriptionText>
       </PageDescriptionContainer>
     </div>
