@@ -1,10 +1,9 @@
 import { IconBrandDiscord, IconBrandX, IconSunHigh } from '@tabler/icons-react';
-import clsx from 'clsx';
 import Link from 'next/link';
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { Button } from '@/shared/components/ui/button';
-import { fontZenKakuGothicAntique } from '@/shared/fonts/ZenKakuGothicAntique';
 
 export const Header: FC<ComponentProps<'header'>> = ({
   className,
@@ -19,13 +18,10 @@ export const Header: FC<ComponentProps<'header'>> = ({
   >
     <div className="flex items-center gap-2">
       <Link
-        className={clsx(
-          'font-bold sm:text-lg',
-          fontZenKakuGothicAntique.className,
-        )}
         href="/"
+        className="transition-opacity duration-100 hover:opacity-70 active:opacity-50"
       >
-        ダイススペック
+        <TitleLogo size={18} />
       </Link>
       <div className="max-sm:text-sm">v2.0.1</div>
     </div>

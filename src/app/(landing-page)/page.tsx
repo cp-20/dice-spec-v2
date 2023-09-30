@@ -6,7 +6,6 @@ import {
   IconTimeline,
 } from '@tabler/icons-react';
 import { IconBrandGithub } from '@tabler/icons-react';
-import clsx from 'clsx';
 import type { NextPage } from 'next';
 import Link from 'next/link';
 import { ExternalLinkWithIcon } from '@/app/(landing-page)/_components/ExternalLinkWithIcon';
@@ -14,11 +13,10 @@ import { LinkableIconPanel } from '@/app/(landing-page)/_components/LinkableIcon
 import { Panel } from '@/app/(landing-page)/_components/Panel';
 import { Footer } from '@/shared/components/Layout/Footer';
 import { Header } from '@/shared/components/Layout/Header';
-import { H1 } from '@/shared/components/Typography/H1';
 import { H2 } from '@/shared/components/Typography/H2';
 import { Text } from '@/shared/components/Typography/Text';
+import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { Button } from '@/shared/components/ui/button';
-import { fontZenKakuGothicAntique } from '@/shared/fonts/ZenKakuGothicAntique';
 
 const LandingPage: NextPage = () => {
   return (
@@ -27,9 +25,10 @@ const LandingPage: NextPage = () => {
         <Header />
         <main className="mx-auto flex max-w-screen-lg flex-1 flex-col items-center gap-16 px-8 py-8 max-sm:px-4">
           <div className="flex flex-col items-center">
-            <H1 className={clsx('', fontZenKakuGothicAntique.className)}>
-              ダイススペック
-            </H1>
+            <h1>
+              <TitleLogo size={60} />
+            </h1>
+
             <Text>
               ダイススペックはTRPGのちょっとしたツールを集めたサービスです。
             </Text>
