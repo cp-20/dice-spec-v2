@@ -1,0 +1,28 @@
+import type { TablerIconsProps } from '@tabler/icons-react';
+import type { LinkProps } from 'next/link';
+import Link from 'next/link';
+import type { ComponentProps, FC } from 'react';
+import { twMerge } from 'tailwind-merge';
+
+export type IconLinkProps = {
+  icon: FC<TablerIconsProps>;
+};
+
+export const ExternalLinkWithIcon: FC<
+  ComponentProps<'a'> & LinkProps<never> & IconLinkProps
+> = ({ children, className, icon: Icon, ...props }) => {
+  return (
+    <Link
+      className={twMerge(
+        'inline-flex items-center gap-1 hover:text-slate-600 hover:underline',
+        className,
+      )}
+      target="_blank"
+      rel="noopener noreferrer"
+      {...props}
+    >
+      <Icon />
+      <span>{children}</span>
+    </Link>
+  );
+};
