@@ -59,6 +59,7 @@ export const ColorInput: FC<ColorInputProps> = ({ value, onChange }) => {
           </div>
           <Input
             value={value}
+            placeholder="#888888"
             onChange={(e) => onChange(e.target.value)}
             className="h-8 w-40 pl-10 pr-2"
           />
@@ -77,7 +78,7 @@ const ColorTip: FC<ColorTipProps> = ({ color, onChange }) => {
   return (
     <Button
       variant="ghost"
-      className="h-8 w-8 transition-opacity duration-100 hover:opacity-80 active:opacity-60"
+      className="h-8 w-8 p-0 transition-all duration-75 hover:opacity-80 active:scale-90"
       style={{ backgroundColor: color }}
       onClick={() => onChange(color)}
     />
