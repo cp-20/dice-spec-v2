@@ -5,6 +5,7 @@ import {
   PageDescriptionText,
 } from '@/app/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/(app)/_components/PageTitle';
+import { InlineCommand } from '@/app/(app)/expect/_components/InlineCommand';
 import { Stats } from '@/shared/components/elements/Stats';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';
@@ -15,13 +16,15 @@ const ExpectPage: NextPage = () => (
       <PageTitle icon={IconSearch}>ダイス予測</PageTitle>
       <PageDescriptionContainer>
         <PageDescriptionText>
-          1d6 や 1D100
+          <InlineCommand>1d6</InlineCommand>や
+          <InlineCommand>1D100</InlineCommand>
           といったダイスの期待値などを計算することで、ダイスを振るときにどういう結果が出るのかを予測できます。
         </PageDescriptionText>
         <PageDescriptionText>
-          さらに 1d100<span className="tracking-tight">{'<'}</span>
-          =10 や 2D6<span className="tracking-tight">{'>'}</span>
-          =10 と入力することで、その確率も知ることができます。
+          さらに
+          <InlineCommand>{'1d100<=10'}</InlineCommand>や
+          <InlineCommand>{'2D6>=10'}</InlineCommand>
+          と入力することで、その確率も知ることができます。
         </PageDescriptionText>
       </PageDescriptionContainer>
     </div>
