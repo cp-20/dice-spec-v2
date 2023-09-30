@@ -19,7 +19,7 @@ export const Header: FC<ComponentProps<'header'>> = ({
     <div className="flex items-center gap-2">
       <Link
         href="/"
-        className="transition-opacity duration-100 hover:opacity-70 active:opacity-50"
+        className="transition-opacity duration-100 hover:opacity-70"
       >
         <TitleLogo size={18} />
       </Link>
