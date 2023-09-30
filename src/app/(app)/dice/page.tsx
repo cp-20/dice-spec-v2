@@ -1,5 +1,6 @@
 import { IconDice5 } from '@tabler/icons-react';
 import type { NextPage } from 'next';
+import { ContainerSection } from '@/app/(app)/_components/ContainerSection';
 import {
   PageDescriptionContainer,
   PageDescriptionText,
@@ -60,8 +61,7 @@ const DicePage: NextPage = async () => {
         </div>
       </div>
 
-      <div className="rounded-md border p-4">
-        <div className="mb-3 font-bold">「DiceBot」の使い方</div>
+      <ContainerSection label="「DiceBot」の使い方">
         <RichText
           className="text-sm"
           text={`3D6+1>=9 ：3d6+1で目標値9以上かの判定
@@ -80,7 +80,7 @@ D66 ： D66ダイス。順序はゲームに依存。D66N：そのまま、D66A�
 詳細は下記URLのコマンドガイドを参照
 https://docs.bcdice.org/`}
         />
-      </div>
+      </ContainerSection>
 
       <div>
         <AdvancedSettings />
