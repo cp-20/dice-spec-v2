@@ -43,6 +43,7 @@ export const analyzeDiceExpression = (ast: DiceAST): ExpectResult => {
 
   if (!withTarget) {
     return {
+      withTarget: false,
       mean,
       variance,
       range,
@@ -59,6 +60,7 @@ export const analyzeDiceExpression = (ast: DiceAST): ExpectResult => {
     .reduce((acc, cur) => acc + distribution[cur], 0);
 
   return {
+    withTarget: true,
     mean,
     variance,
     range,

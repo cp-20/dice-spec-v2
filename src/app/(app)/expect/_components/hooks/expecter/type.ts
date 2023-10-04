@@ -53,6 +53,7 @@ export type RawExpectResult = Omit<
 export type ExpectResult = ExpectResultWithTarget | ExpectResultWithoutTarget;
 
 export type ExpectResultWithoutTarget = {
+  withTarget: false;
   // 期待値 (expected value)
   mean: number;
   // 標準偏差 (standard deviation)
@@ -74,6 +75,7 @@ export type ExpectResultWithoutTarget = {
 };
 
 export type ExpectResultWithTarget = {
+  withTarget: true;
   target: {
     sign: InequalitySign;
     // 目標の数字
@@ -81,4 +83,4 @@ export type ExpectResultWithTarget = {
   };
   // 確率 (possibility)
   chance: number;
-} & ExpectResultWithoutTarget;
+} & Omit<ExpectResultWithoutTarget, 'withTarget'>;
