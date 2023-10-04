@@ -28,6 +28,7 @@
   },
   "include": [
     "next-env.d.ts",
+    "src/test/vitest.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "**/*.mdx",

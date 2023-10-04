@@ -17,7 +17,8 @@
     "format": "pnpm prettier --write",
     "prepare": "husky install",
     "preinstall": "npx only-allow pnpm",
-    "test": "vitest --passWithNoTests"
+    "test": "vitest --passWithNoTests",
+    "bench": "vitest bench --passWithNoTests"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.1",
