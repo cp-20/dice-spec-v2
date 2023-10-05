@@ -1,8 +1,8 @@
-import type { DiceAST, DiceExpression, OperationExpression } from '../type';
+import type { DiceExpression, Expression, OperationExpression } from '../type';
 import { applyOperatorMap, generate2DArray } from './utils';
 
 export const calculateDistribution = (
-  expression: DiceAST,
+  expression: Expression,
 ): Record<string, number> => {
   if (expression.type === 'operation') {
     return calculateOperationDistribution(expression);
