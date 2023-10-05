@@ -1,4 +1,4 @@
-import type { Operator } from '@/app/(app)/expect/_composable/type';
+import type { Operator } from '@/app/(app)/expect/_components/hooks/expecter/type';
 
 export const generate2DArray = (m: number, n: number, val = 0): number[][] => {
   return [...Array(m)].map((_) => Array(n).fill(val));
