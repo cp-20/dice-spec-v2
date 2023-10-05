@@ -6,6 +6,8 @@ const singleD6Mean = 3.5;
 describe('diceExpecter', () => {
   test('1d6', () => {
     expect(diceExpecter('1d6')).toEqual({
+      success: true,
+      withTarget: false,
       mean: singleD6Mean,
       variance: expect.closeTo(singleD6Variance, 1),
       SD: expect.closeTo(Math.sqrt(singleD6Variance), 1),
@@ -29,6 +31,8 @@ describe('diceExpecter', () => {
   });
   test('1d6 + 1d6 + 3', () => {
     expect(diceExpecter('1d6 + 1d6 - 3')).toEqual({
+      success: true,
+      withTarget: false,
       mean: 4,
       variance: expect.closeTo(singleD6Variance * 2, 1),
       SD: expect.closeTo(Math.sqrt(singleD6Variance * 2), 1),
@@ -57,6 +61,8 @@ describe('diceExpecter', () => {
   });
   test('1d6 * 1d6 * 2 + 5', () => {
     expect(diceExpecter('1d6 * 1d6 * 2 + 5')).toEqual({
+      success: true,
+      withTarget: false,
       mean: singleD6Mean ** 2 * 2 + 5,
       variance: expect.closeTo(
         (((singleD6Mean ** 2 * 2 + singleD6Variance) * 35) / 12) * 4,
@@ -98,6 +104,8 @@ describe('diceExpecter', () => {
   });
   test('3d6 + 1d100 + 1', () => {
     expect(diceExpecter('3d6 + 1d100 + 1')).toEqual({
+      success: true,
+      withTarget: false,
       mean: singleD6Mean * 3 + 50.5 + 1,
       variance: expect.closeTo(singleD6Variance * 3 + (100 ** 2 - 1) / 12, 1),
       SD: expect.closeTo(
@@ -117,6 +125,8 @@ describe('diceExpecter', () => {
   });
   test('6 - 1d6', () => {
     expect(diceExpecter('6-1d6')).toEqual({
+      success: true,
+      withTarget: false,
       mean: 6 - singleD6Mean,
       variance: expect.closeTo(singleD6Variance, 1),
       SD: expect.closeTo(Math.sqrt(singleD6Variance), 1),
@@ -140,6 +150,8 @@ describe('diceExpecter', () => {
   });
   test('3 + 5d >= 15', () => {
     expect(diceExpecter('3 + 5d >= 15')).toEqual({
+      success: true,
+      withTarget: true,
       mean: 3 + singleD6Mean * 5,
       variance: expect.closeTo(singleD6Variance * 5, 1),
       SD: expect.closeTo(Math.sqrt(singleD6Variance * 5), 1),
@@ -161,6 +173,8 @@ describe('diceExpecter', () => {
   });
   test('3 + 5d <= 14', () => {
     expect(diceExpecter('3 + 5d <= 14')).toEqual({
+      success: true,
+      withTarget: true,
       mean: 3 + singleD6Mean * 5,
       variance: expect.closeTo(singleD6Variance * 5, 1),
       SD: expect.closeTo(Math.sqrt(singleD6Variance * 5), 1),
@@ -182,6 +196,8 @@ describe('diceExpecter', () => {
   });
   test('1d6 >= 8', () => {
     expect(diceExpecter('1d6 >= 8')).toEqual({
+      success: true,
+      withTarget: true,
       mean: singleD6Mean,
       variance: expect.closeTo(singleD6Variance, 1),
       SD: expect.closeTo(Math.sqrt(singleD6Variance), 1),
@@ -206,6 +222,41 @@ describe('diceExpecter', () => {
         sign: '>=',
         value: 8,
       },
+    });
+  });
+
+  test('d6 + 8', () => {
+    expect(diceExpecter('d6 + 8')).toEqual({
+      success: false,
+      message: expect.any(String),
+    });
+  });
+
+  test('(1d6 + 8', () => {
+    expect(diceExpecter('(1d6 + 8')).toEqual({
+      success: false,
+      message: expect.any(String),
+    });
+  });
+
+  test('1d6 + 8)', () => {
+    expect(diceExpecter('1d6 + 8)')).toEqual({
+      success: false,
+      message: expect.any(String),
+    });
+  });
+
+  test('1d6 * 8 + ', () => {
+    expect(diceExpecter('1d6 * 8 + ')).toEqual({
+      success: false,
+      message: expect.any(String),
+    });
+  });
+
+  test('1000d1000', () => {
+    expect(diceExpecter('1000d1000')).toEqual({
+      success: false,
+      message: expect.any(String),
     });
   });
 });
