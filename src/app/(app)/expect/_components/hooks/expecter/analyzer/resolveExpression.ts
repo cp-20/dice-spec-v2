@@ -7,6 +7,12 @@ import type {
 } from '../type';
 import { applyOperatorMap } from './utils';
 
+export class ResolverError extends Error {
+  constructor(message?: string) {
+    super(message);
+  }
+}
+
 export const resolveExpression = (
   expression: Expression,
 ): ResolvedExpression => {
@@ -93,7 +99,11 @@ const resolveDiceExpression = (
   const { num, faces } = expression;
 
   if (num <= 0 || faces <= 0) {
-    throw new Error('invalid dice roll');
+    throw new ResolverError('invalid dice roll');
+  }
+
+  if (num * num * faces > 1e5) {
+    throw new ResolverError('too many dice');
   }
 
   // ref: https://qiita.com/cp20/items/b475b6f6757be814846f#dice-integer%E3%81%AE%E6%89%B1%E3%81%84

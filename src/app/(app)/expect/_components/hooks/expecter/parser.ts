@@ -26,13 +26,19 @@ const precedenceMap = new Map<Operator, number>([
   ['/', 2],
 ]);
 
+export class ParserError extends Error {
+  public constructor(message?: string) {
+    super(message);
+  }
+}
+
 const precedence = (operator: string): number =>
   precedenceMap.get(operator as Operator) ?? 0;
 
 const parseDiceExpression = (expressionStr: string): Expression => {
   const tokens = expressionStr.match(tokenRegexp);
   if (tokens === null) {
-    throw new Error('Invalid expression');
+    throw new ParserError('Invalid expression');
   }
 
   const stack: Expression[] = [];
@@ -43,7 +49,7 @@ const parseDiceExpression = (expressionStr: string): Expression => {
       operators.push(token);
     } else if (token === ')') {
       if (!operators.length || !operators.includes('(')) {
-        throw new Error('Invalid expression');
+        throw new ParserError('Invalid expression');
       }
       while (operators.length && operators[operators.length - 1] !== '(') {
         applyOperator();
@@ -87,11 +93,11 @@ const parseDiceExpression = (expressionStr: string): Expression => {
     if (!operator || !left || !right) return;
 
     if (!isOperator(operator)) {
-      throw new Error('Invalid expression');
+      throw new ParserError('Invalid expression');
     }
 
     if (operator === '/' && right.type === 'number' && right.value === 0) {
-      throw new Error('Division by zero');
+      throw new ParserError('Division by zero');
     }
 
     const expr: OperationExpression = {
@@ -105,7 +111,7 @@ const parseDiceExpression = (expressionStr: string): Expression => {
   }
 
   if (operators.length > 0 || stack.length !== 1) {
-    throw new Error('Invalid expression');
+    throw new ParserError('Invalid expression');
   }
 
   return stack[0];

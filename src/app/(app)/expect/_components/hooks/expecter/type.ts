@@ -47,7 +47,7 @@ export type Token = Parenthesis | Operator | DiceStr;
 
 export type RawExpectResult = Omit<
   ExpectResult,
-  'CI' | 'SD' | 'chance' | 'distribution' | 'target'
+  'CI' | 'SD' | 'chance' | 'distribution' | 'withTarget'
 >;
 
 export type ExpectResult = ExpectResultWithTarget | ExpectResultWithoutTarget;
