@@ -41,7 +41,11 @@ export type Parenthesis = '(' | ')';
 
 export type InequalitySign = '>=' | '<=';
 
-export type DiceStr = `${number}d${number}` | `${number}D${number}`;
+export type DiceStr =
+  | `${number}d${number}`
+  | `${number}D${number}`
+  | `${number}d`
+  | `${number}D`;
 
 export type Token = Parenthesis | Operator | DiceStr;
 

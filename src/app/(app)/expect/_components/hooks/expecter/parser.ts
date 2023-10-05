@@ -9,8 +9,7 @@ import type {
   OperationExpression,
   Expression,
 } from './type';
-
-const tokenRegexp = /(\d+d\d*)|([()*+\-/])|(\d+)/gi;
+import { tokenize } from '@/app/(app)/expect/_components/hooks/expecter/tokenizer';
 
 const operatorsSet = new Set<Operator>(['+', '-', '*', '/']);
 const isOperator = (token: string): token is Operator =>
@@ -36,10 +35,7 @@ const precedence = (operator: string): number =>
   precedenceMap.get(operator as Operator) ?? 0;
 
 const parseDiceExpression = (expressionStr: string): Expression => {
-  const tokens = expressionStr.match(tokenRegexp);
-  if (tokens === null) {
-    throw new ParserError('Invalid expression');
-  }
+  const tokens = tokenize(expressionStr);
 
   const stack: Expression[] = [];
   const operators: (Token | Parenthesis)[] = [];

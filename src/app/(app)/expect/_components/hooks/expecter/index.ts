@@ -3,6 +3,7 @@ import { formatInput } from './analyzer/utils';
 import { ParserError, parseDiceCommand } from './parser';
 import type { ExpectResult } from './type';
 import { ResolverError } from '@/app/(app)/expect/_components/hooks/expecter/analyzer/resolveExpression';
+import { TokenizerError } from '@/app/(app)/expect/_components/hooks/expecter/tokenizer';
 
 export type SuccessExpectResult = {
   success: true;
@@ -23,14 +24,11 @@ export const diceExpecter = (input: string): DiceExpecterResult => {
     const result = analyzeDiceExpression(ast);
     return { success: true, ...result };
   } catch (err) {
-    if (err instanceof ParserError) {
-      return {
-        success: false,
-        message: err.message,
-      };
-    }
-
-    if (err instanceof ResolverError) {
+    if (
+      err instanceof ParserError ||
+      err instanceof ResolverError ||
+      err instanceof TokenizerError
+    ) {
       return {
         success: false,
         message: err.message,
