@@ -1,16 +1,20 @@
 import { IconDice5 } from '@tabler/icons-react';
 import type { NextPage } from 'next';
 import { AdvancedSettings } from './_components/AdvancedSettings';
+import { DiceBotHelp } from './_components/DiceBotDescription';
 import { DiceCommandInput } from './_components/DiceCommandInput';
 import { DiceOutput } from './_components/DiceOutput';
+import { DiceRollModeTabs } from './_components/DiceRollModeTabs';
 import { GameSystemSelect } from './_components/GameSystemSelect';
 import { QuickInput } from './_components/QuickInput';
+import { SimpleDiceInput } from './_components/SimpleDiceInput';
+import { SimpleDiceOutput } from './_components/SimpleDiceOutput';
 import {
   PageDescriptionContainer,
   PageDescriptionText,
 } from '@/app/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/(app)/_components/PageTitle';
-import { DiceBotHelp } from '@/app/(app)/dice/_components/DiceBotDescription';
+import { SimpleDiceQuickInput } from '@/app/(app)/dice/_components/SimpleDiceQuickInput';
 import { Toaster } from '@/shared/components/ui/toaster';
 
 const DicePage: NextPage = async () => {
@@ -26,22 +30,33 @@ const DicePage: NextPage = async () => {
           </PageDescriptionContainer>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <div className="mb-2 text-sm font-bold">ゲームシステム</div>
-            <GameSystemSelect />
-          </div>
+        <DiceRollModeTabs
+          simpleTabContent={
+            <div className="space-y-12">
+              <SimpleDiceOutput />
+              <SimpleDiceQuickInput />
+              <SimpleDiceInput />
+            </div>
+          }
+          advancedTabContent={
+            <div className="space-y-12">
+              <div className="space-y-4">
+                <div>
+                  <div className="mb-2 text-sm font-bold">ゲームシステム</div>
+                  <GameSystemSelect />
+                </div>
 
-          <DiceOutput />
+                <DiceOutput />
 
-          <QuickInput />
+                <QuickInput />
 
-          <DiceCommandInput />
-        </div>
-
-        <DiceBotHelp />
-
-        <AdvancedSettings />
+                <DiceCommandInput />
+              </div>
+              <DiceBotHelp />
+              <AdvancedSettings />
+            </div>
+          }
+        />
       </div>
       <Toaster />
     </>
