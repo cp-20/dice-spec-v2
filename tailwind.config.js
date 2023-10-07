@@ -78,6 +78,14 @@ module.exports = {
           from: { transform: 'translateX(10%)', opacity: 0 },
           to: { transform: 'translateX(0)', opacity: 1 },
         },
+        'slide-in-top': {
+          from: { transform: 'translateY(-10%)', opacity: 0 },
+          to: { transform: 'translateY(0)', opacity: 1 },
+        },
+        'slide-out-bottom': {
+          from: { transform: 'translateY(0)', opacity: 1 },
+          to: { transform: 'translateY(10%)', opacity: 0 },
+        },
         popup: {
           from: { transform: 'scale(0.8)', opacity: 0 },
           to: { transform: 'scale(1)', opacity: 1 },
@@ -88,6 +96,8 @@ module.exports = {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'slide-in-left': 'slide-in-left 0.2s ease forwards',
         'slide-in-right': 'slide-in-right 0.2s ease forwards',
+        'slide-in-top': 'slide-in-top 0.2s ease forwards',
+        'slide-out-bottom': 'slide-out-bottom 0.2s ease forwards',
         popup: 'popup 0.2s ease forwards',
       },
     },

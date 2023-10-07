@@ -1,12 +1,12 @@
 import { IconCheck, IconHash, IconUserCircle } from '@tabler/icons-react';
 import clsx from 'clsx';
 import type { FC } from 'react';
-import type { FormSchemaType } from '@/app/(app)/ccfolia/_components/InputForm';
+import type { InputFormSchemaType } from './hooks/useInputForm';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { checkIsDarkColor } from '@/shared/lib/isDarkColor';
 
-type HexColorString = FormSchemaType['color'];
+type HexColorString = InputFormSchemaType['color'];
 
 type ColorInputProps = {
   value: HexColorString;

@@ -1,11 +1,11 @@
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import type { FC } from 'react';
-import type { FormSchemaType } from '@/app/(app)/ccfolia/_components/InputForm';
-import { variableFieldChangeHandlerGenerator } from '@/app/(app)/ccfolia/_components/composable/variableFieldChangeHandler';
+import { variableFieldChangeHandlerGenerator } from './composable/variableFieldChangeHandler';
+import type { InputFormSchemaType } from './hooks/useInputForm';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 
-type Parameter = FormSchemaType['params'][number];
+type Parameter = InputFormSchemaType['params'][number];
 
 export type ParameterInputProps = {
   value: Parameter[];

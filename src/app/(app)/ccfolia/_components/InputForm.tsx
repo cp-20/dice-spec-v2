@@ -1,13 +1,10 @@
 'use client';
 
-import { valibotResolver } from '@hookform/resolvers/valibot';
-import type { FC } from 'react';
-import { useForm } from 'react-hook-form';
-import type { Output } from 'valibot';
-import { object, number, string, url, array, regex, optional } from 'valibot';
-import { ColorInput } from '@/app/(app)/ccfolia/_components/ColorInput';
-import { ParameterInput } from '@/app/(app)/ccfolia/_components/ParameterInput';
-import { StatusInput } from '@/app/(app)/ccfolia/_components/StatusInput';
+import { type FC } from 'react';
+import { ColorInput } from './ColorInput';
+import { ParameterInput } from './ParameterInput';
+import { StatusInput } from './StatusInput';
+import { useInputForm } from './hooks/useInputForm';
 import {
   Form,
   FormControl,
@@ -19,72 +16,12 @@ import {
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
 
-const FormSchema = object({
-  name: string(),
-  memo: string(),
-  initiative: optional(number()),
-  externalUrl: optional(string([url()])),
-  status: array(
-    object({
-      key: string(),
-      label: string(),
-      value: optional(number()),
-      max: optional(number()),
-    }),
-  ),
-  params: array(
-    object({
-      key: string(),
-      label: string(),
-      value: string(),
-    }),
-  ),
-  color: string([regex(/^#[0-9a-f]{6}$/i)]),
-  commands: string(),
-});
-
-export type FormSchemaType = Output<typeof FormSchema>;
-
 export const InputForm: FC = () => {
-  const form = useForm<FormSchemaType>({
-    resolver: valibotResolver(FormSchema),
-    defaultValues: {
-      name: '',
-      memo: '',
-      externalUrl: '',
-      status: [
-        {
-          key: '0',
-          label: 'HP',
-          value: 0,
-          max: 0,
-        },
-        {
-          key: '1',
-          label: 'MP',
-          value: 0,
-          max: 0,
-        },
-        {
-          key: '2',
-          label: 'SAN',
-          value: 0,
-          max: 0,
-        },
-      ],
-      params: [],
-      color: '#888888',
-      commands: '',
-    },
-  });
-
-  const onSubmit = (data: FormSchemaType) => {
-    console.log(data);
-  };
+  const { form, handleSubmit } = useInputForm();
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit}>
         <div className="space-y-8">
           <FormField
             control={form.control}
