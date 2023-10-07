@@ -1,0 +1,29 @@
+/* 横幅を合わせるときのちらつきをなくすために元々のアニメーションに遅延を持たせる */
+.popover-content[data-state='open'] {
+  visibility: hidden;
+  animation: enter 0.15s 0.05s forwards ease-out;
+}
+
+@keyframes enter {
+  0% {
+    visibility: hidden;
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(
+        var(--tw-enter-translate-x, 0),
+        var(--tw-enter-translate-y, 0),
+        0
+      )
+      scale3d(
+        var(--tw-enter-scale, 1),
+        var(--tw-enter-scale, 1),
+        var(--tw-enter-scale, 1)
+      )
+      rotate(var(--tw-enter-rotate, 0));
+  }
+
+  100% {
+    visibility: visible;
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1) rotate(0);
+  }
+}

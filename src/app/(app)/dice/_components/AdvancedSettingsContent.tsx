@@ -2,7 +2,7 @@
 
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import { IconRestore } from '@tabler/icons-react';
-import type { FC } from 'react';
+import { useEffect, type FC } from 'react';
 import { useForm } from 'react-hook-form';
 
 import type { Output } from 'valibot';
@@ -15,6 +15,7 @@ import {
   string,
   url,
 } from 'valibot';
+import { useAdvancedSettings } from '@/app/(app)/dice/_components/hooks/useAdvancedSettings';
 import { Button } from '@/shared/components/ui/button';
 import {
   Form,
@@ -28,18 +29,19 @@ import { Slider } from '@/shared/components/ui/slider';
 import { Switch } from '@/shared/components/ui/switch';
 import { bcdiceApiEndpoint } from '@/shared/lib/const';
 
-const FormSchema = object({
+const AdvancedSettingsFormSchema = object({
   showHelp: boolean(),
   playSound: boolean(),
   volume: number([minValue(0), maxValue(100)]),
   bcdiceApiEndpoint: string([url()]),
 });
 
-type FormSchemaType = Output<typeof FormSchema>;
+export type AdvancedSettings = Output<typeof AdvancedSettingsFormSchema>;
 
 export const AdvancedSettingsContent: FC = () => {
-  const form = useForm<FormSchemaType>({
-    resolver: valibotResolver(FormSchema),
+  const { setAdvancedSettings } = useAdvancedSettings();
+  const form = useForm<AdvancedSettings>({
+    resolver: valibotResolver(AdvancedSettingsFormSchema),
     defaultValues: {
       showHelp: true,
       playSound: false,
@@ -48,13 +50,23 @@ export const AdvancedSettingsContent: FC = () => {
     },
   });
 
-  const onSubmit = (data: FormSchemaType) => {
-    console.log(data);
-  };
+  const watch = form.watch([
+    'showHelp',
+    'playSound',
+    'volume',
+    'bcdiceApiEndpoint',
+  ]);
+  useEffect(() => {
+    const [showHelp, playSound, volume, bcdiceApiEndpoint] = watch;
+    setAdvancedSettings({ showHelp, playSound, volume, bcdiceApiEndpoint });
+  }, [setAdvancedSettings, watch]);
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-4">
+      <form
+        onSubmit={form.handleSubmit(() => void 0)}
+        className="space-y-8 p-4"
+      >
         <div className="grid grid-cols-2">
           <FormField
             control={form.control}

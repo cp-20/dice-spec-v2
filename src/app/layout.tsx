@@ -9,7 +9,12 @@ const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <>
       <html lang="ja">
-        <body className={clsx('text-slate-700', fontNotoSansJP.className)}>
+        <body
+          className={clsx(
+            'overflow-y-hidden text-slate-700',
+            fontNotoSansJP.className,
+          )}
+        >
           <GoogleTagManager />
 
           {children}
