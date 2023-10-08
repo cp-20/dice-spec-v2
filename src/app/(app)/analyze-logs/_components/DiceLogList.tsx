@@ -1,23 +1,28 @@
+'use client';
+
 import type { ComponentProps, FC } from 'react';
+import { DiceLog } from './DiceLog';
+import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { ContainerSection } from '@/app/(app)/_components/ContainerSection';
-import {
-  DiceLog,
-  type DiceLogType,
-} from '@/app/(app)/analyze-logs/_components/DiceLog';
+import { useCharacterSelect } from '@/app/(app)/analyze-logs/_components/hooks/useCharacterSelect';
 
-export type DiceLogListProps = {
-  logs: DiceLogType[];
-};
+export const DiceLogList: FC<ComponentProps<'div'>> = ({ ...props }) => {
+  const { character } = useCharacterSelect();
+  const result = useCharacterLogAnalysis(character);
 
-export const DiceLogList: FC<ComponentProps<'div'> & DiceLogListProps> = ({
-  logs,
-  ...props
-}) => {
   return (
     <ContainerSection label="ダイスログ" {...props}>
-      {logs.map((log, index) => (
-        <DiceLog key={index} log={log} />
-      ))}
+      {result !== undefined &&
+        result.diceResults.map((log, index) => (
+          <DiceLog
+            key={index}
+            log={{
+              success: log.success,
+              failure: log.failure,
+              value: log.diceFullStr,
+            }}
+          />
+        ))}
     </ContainerSection>
   );
 };

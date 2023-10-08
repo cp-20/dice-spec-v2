@@ -2,7 +2,8 @@ import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 export type DiceLogType = {
-  variant: 'success' | 'failed' | 'default';
+  success: boolean;
+  failure: boolean;
   value: string;
 };
 
@@ -18,8 +19,8 @@ export const DiceLog: FC<DiceLogProps & ComponentProps<'div'>> = ({
   <div
     className={twMerge(
       'text-sm',
-      log.variant === 'success' && 'text-blue-500',
-      log.variant === 'failed' && 'text-red-600',
+      log.success && 'text-blue-500',
+      log.failure && 'text-red-600',
       className,
     )}
     {...props}
