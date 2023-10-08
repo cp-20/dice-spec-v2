@@ -1,61 +1,47 @@
 'use client';
-
 import type { ChartOptions } from 'chart.js';
+import merge from 'deepmerge';
 import type { FC } from 'react';
 import { useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useChartElement } from './hooks/useDiceExpectResultDistribution';
 import { useDiceExpecterResult } from './hooks/useDiceExpecter';
-import { fontNotoSansJP } from '@/shared/fonts/NotoSansJP';
+import { commonChartOption } from '@/shared/lib/commonChartOption';
 
 export const ExpectResultDistributionChart: FC = () => {
   const { result } = useDiceExpecterResult();
   const { chartElement } = useChartElement();
 
   useEffect(() => {
-    import('chart.js').then(({ Chart, registerables }) => {
-      Chart.register(...registerables);
-    });
+    import('chart.js').then(
+      ({
+        Chart,
+        LineController,
+        LineElement,
+        CategoryScale,
+        LinearScale,
+        PointElement,
+        Filler,
+      }) => {
+        Chart.register(
+          LineController,
+          LineElement,
+          CategoryScale,
+          LinearScale,
+          PointElement,
+          Filler,
+        );
+      },
+    );
   }, []);
 
   if (!result || !result?.success || !chartElement) {
     return null;
   }
 
-  const options: ChartOptions<'line'> = {
-    maintainAspectRatio: false,
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: false,
-      },
-    },
-    scales: {
-      x: {
-        ticks: {
-          color: '#747474',
-        },
-        grid: {
-          color: '#e5e5e5',
-        },
-      },
-      y: {
-        min: 0,
-        ticks: {
-          color: '#747474',
-        },
-        grid: {
-          color: '#e5e5e5',
-        },
-      },
-    },
-    font: {
-      family: fontNotoSansJP.style.fontFamily,
-    },
-  };
+  const options: ChartOptions<'line'> = merge(commonChartOption, {
+    scales: { y: { min: 0 } },
+  });
 
   return (
     <div>
