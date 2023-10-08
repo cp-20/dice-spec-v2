@@ -4,6 +4,7 @@ import type { FC, ReactNode } from 'react';
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
 import { Stats } from '@/shared/components/elements/Stats';
+import { round } from '@/shared/lib/round';
 
 export const LogAnalysisStats: FC = () => {
   const { character } = useCharacterSelect();
@@ -17,18 +18,20 @@ export const LogAnalysisStats: FC = () => {
       <div className="grid grid-cols-2 gap-4 @lg:grid-cols-4">
         <Stats
           label="平均"
-          number={numberWrapper(result?.diceResultSummary.average.toFixed(2))}
+          number={numberWrapper(
+            result && round(result.diceResultSummary.average, 2),
+          )}
         />
         <Stats
           label="ダイス偏差値"
           number={numberWrapper(
-            result?.diceResultSummary.deviationScore.toFixed(2),
+            result && round(result.diceResultSummary.deviationScore, 2),
           )}
         />
         <Stats
           label="成功率"
           number={numberWrapper(
-            result?.diceResultSummary.successRate.toFixed(2),
+            result && round(result.diceResultSummary.successRate, 2),
           )}
           unit={result ? '%' : null}
         />

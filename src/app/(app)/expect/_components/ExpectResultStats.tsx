@@ -4,6 +4,7 @@ import type { FC, ReactNode } from 'react';
 import type { DiceExpecterResult, SuccessExpectResult } from './hooks/expecter';
 import { useDiceExpecterResult } from './hooks/useDiceExpecter';
 import { Stats } from '@/shared/components/elements/Stats';
+import { round } from '@/shared/lib/round';
 
 const getResultFormatBase =
   (formatter: (result: SuccessExpectResult) => ReactNode) =>
@@ -17,30 +18,30 @@ const getChanceFormat = getResultFormatBase((result) => {
   if (!result.withTarget) return '-';
 
   const percent = result.chance * 100;
-  return percent.toFixed(3);
+  return round(percent, 3);
 });
 
 const getMeanFormat = getResultFormatBase((result) => {
-  return result.mean.toFixed(3);
+  return round(result.mean, 3);
 });
 
 const getCIFormat = getResultFormatBase((result) => {
-  const min = result.CI.min.toFixed(1);
-  const max = result.CI.max.toFixed(1);
+  const min = round(result.CI.min, 1);
+  const max = round(result.CI.max, 1);
   return `${min} - ${max}`;
 });
 
 const getSDFormat = getResultFormatBase((result) => {
-  return result.SD.toFixed(3);
+  return round(result.SD, 3);
 });
 
 const getVarianceFormat = getResultFormatBase((result) => {
-  return result.variance.toFixed(3);
+  return round(result.variance, 3);
 });
 
 const getRangeFormat = getResultFormatBase((result) => {
-  const min = result.range.min.toFixed(1);
-  const max = result.range.max.toFixed(1);
+  const min = round(result.range.min, 1);
+  const max = round(result.range.max, 1);
   return `${min} - ${max}`;
 });
 
