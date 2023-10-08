@@ -34,7 +34,9 @@ const LandingPage: NextPage = () => {
             </Text>
           </div>
 
-          <Button className="font-bold">今すぐ使ってみる！</Button>
+          <Button className="font-bold" asChild>
+            <Link href="/expect">今すぐ使ってみる！</Link>
+          </Button>
 
           <div>
             <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">
