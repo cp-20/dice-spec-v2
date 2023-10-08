@@ -9,7 +9,7 @@ export type DiceExpecterOption = {
 };
 
 const commandAtom = atom<string>('');
-const resultAtom = atom<DiceExpecterResult | null>(null);
+export const resultAtom = atom<DiceExpecterResult | null>(null);
 const optionAtom = atom<DiceExpecterOption>({
   autoRecalculation: true,
 });

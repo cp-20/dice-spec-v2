@@ -1,7 +1,7 @@
 import { IconSearch } from '@tabler/icons-react';
 import type { NextPage } from 'next';
 import { DiceCommandInput } from './_components/DiceCommandInput';
-import { ExpectResultChart } from './_components/ExpectResultChart';
+import { ExpectResultDistributionChart } from './_components/ExpectResultDistributionChart';
 import { ExpectResultStats } from './_components/ExpectResultStats';
 import { InlineCommand } from './_components/InlineCommand';
 import {
@@ -33,7 +33,7 @@ const ExpectPage: NextPage = () => (
 
     <ExpectResultStats />
 
-    <ExpectResultChart />
+    <ExpectResultDistributionChart />
   </div>
 );
 
