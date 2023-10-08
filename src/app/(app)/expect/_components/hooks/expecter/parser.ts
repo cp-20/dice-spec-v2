@@ -1,3 +1,4 @@
+import { tokenize } from './tokenizer';
 import type {
   Operator,
   DiceStr,
@@ -9,7 +10,6 @@ import type {
   OperationExpression,
   Expression,
 } from './type';
-import { tokenize } from '@/app/(app)/expect/_components/hooks/expecter/tokenizer';
 
 const operatorsSet = new Set<Operator>(['+', '-', '*', '/']);
 const isOperator = (token: string): token is Operator =>

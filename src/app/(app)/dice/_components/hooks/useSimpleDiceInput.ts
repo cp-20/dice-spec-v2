@@ -1,6 +1,6 @@
 import { atom, useAtom } from 'jotai';
 import { useCallback } from 'react';
-import { useSimpleDiceRoll } from '@/app/(app)/dice/_components/hooks/useSimpleDiceRoll';
+import { useSimpleDiceRoll } from './useSimpleDiceRoll';
 
 export const availableDice = [
   '3',

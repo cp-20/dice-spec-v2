@@ -13,8 +13,8 @@ import D20 from '/public/assets/images/D20.svg';
 import { twMerge } from 'tailwind-merge';
 
 import styles from './SimpleDiceOutput.module.css';
-import type { AvailableDice } from '@/app/(app)/dice/_components/hooks/useSimpleDiceInput';
-import { useSimpleDiceOutput } from '@/app/(app)/dice/_components/hooks/useSimpleDiceOutput';
+import type { AvailableDice } from './hooks/useSimpleDiceInput';
+import { useSimpleDiceOutput } from './hooks/useSimpleDiceOutput';
 
 export const SimpleDiceOutput: FC = () => {
   const { simpleDiceOutput } = useSimpleDiceOutput();

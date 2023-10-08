@@ -3,8 +3,8 @@
 import type { ComponentProps, FC } from 'react';
 import { DiceLog } from './DiceLog';
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
+import { useCharacterSelect } from './hooks/useCharacterSelect';
 import { ContainerSection } from '@/app/(app)/_components/ContainerSection';
-import { useCharacterSelect } from '@/app/(app)/analyze-logs/_components/hooks/useCharacterSelect';
 
 export const DiceLogList: FC<ComponentProps<'div'>> = ({ ...props }) => {
   const { character } = useCharacterSelect();

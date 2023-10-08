@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import type { FC, FormEventHandler } from 'react';
-import { useDiceRoll } from '@/app/(app)/dice/_components/hooks/useDiceRoll';
-import { useDiceRollValidation } from '@/app/(app)/dice/_components/hooks/useDiceRollOption';
+import { useDiceRoll } from './hooks/useDiceRoll';
+import { useDiceRollValidation } from './hooks/useDiceRollOption';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 

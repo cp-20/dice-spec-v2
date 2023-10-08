@@ -6,7 +6,7 @@ import {
   useDiceExpecterOption,
   useDiceExpecterResult,
   useRecalculation,
-} from '@/app/(app)/expect/_components/hooks/useDiceExpecter';
+} from './hooks/useDiceExpecter';
 import { Button } from '@/shared/components/ui/button';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';

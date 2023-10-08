@@ -6,8 +6,8 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 import type { FC } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './GameSystemSelect.module.css';
-import { useDiceRollOption } from '@/app/(app)/dice/_components/hooks/useDiceRollOption';
-import { useGameSystemList } from '@/app/(app)/dice/_components/hooks/useGameSystemList';
+import { useDiceRollOption } from './hooks/useDiceRollOption';
+import { useGameSystemList } from './hooks/useGameSystemList';
 import { Button } from '@/shared/components/ui/button';
 import {
   Command,

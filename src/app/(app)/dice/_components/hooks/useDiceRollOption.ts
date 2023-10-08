@@ -1,6 +1,6 @@
 import { atom, useAtom } from 'jotai';
 import { useCallback } from 'react';
-import { useBcdiceApi } from '@/app/(app)/dice/_components/hooks/useBcdiceApi';
+import { useBcdiceApi } from './useBcdiceApi';
 import { defaultOption } from '@/shared/lib/bcdice/defaultOption';
 import type { GameSystemInfo } from '@/shared/lib/bcdice/getGameSystemInfo';
 

@@ -9,12 +9,12 @@ import { GameSystemSelect } from './_components/GameSystemSelect';
 import { QuickInput } from './_components/QuickInput';
 import { SimpleDiceInput } from './_components/SimpleDiceInput';
 import { SimpleDiceOutput } from './_components/SimpleDiceOutput';
+import { SimpleDiceQuickInput } from './_components/SimpleDiceQuickInput';
 import {
   PageDescriptionContainer,
   PageDescriptionText,
 } from '@/app/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/(app)/_components/PageTitle';
-import { SimpleDiceQuickInput } from '@/app/(app)/dice/_components/SimpleDiceQuickInput';
 import { Toaster } from '@/shared/components/ui/toaster';
 
 const DicePage: NextPage = async () => {

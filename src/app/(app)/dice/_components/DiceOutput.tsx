@@ -2,11 +2,8 @@
 
 import clsx from 'clsx';
 import { type FC } from 'react';
+import { useDiceLogs, type DiceLog } from './hooks/useDiceLogs';
 import { ContainerSection } from '@/app/(app)/_components/ContainerSection';
-import {
-  useDiceLogs,
-  type DiceLog,
-} from '@/app/(app)/dice/_components/hooks/useDiceLogs';
 
 export type DiceOutputProps = {
   logs: DiceLog[];

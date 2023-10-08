@@ -8,9 +8,9 @@ import {
 import { IconBrandGithub } from '@tabler/icons-react';
 import type { NextPage } from 'next';
 import Link from 'next/link';
-import { ExternalLinkWithIcon } from '@/app/(landing-page)/_components/ExternalLinkWithIcon';
-import { LinkableIconPanel } from '@/app/(landing-page)/_components/LinkableIconPanel';
-import { Panel } from '@/app/(landing-page)/_components/Panel';
+import { ExternalLinkWithIcon } from './_components/ExternalLinkWithIcon';
+import { LinkableIconPanel } from './_components/LinkableIconPanel';
+import { Panel } from './_components/Panel';
 import { Footer } from '@/shared/components/Layout/Footer';
 import { Header } from '@/shared/components/Layout/Header';
 import { H2 } from '@/shared/components/Typography/H2';

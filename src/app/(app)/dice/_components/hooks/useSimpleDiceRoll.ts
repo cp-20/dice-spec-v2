@@ -1,9 +1,6 @@
 import { useCallback } from 'react';
-import type {
-  AvailableDice,
-  SimpleDices,
-} from '@/app/(app)/dice/_components/hooks/useSimpleDiceInput';
-import { useSimpleDiceOutput } from '@/app/(app)/dice/_components/hooks/useSimpleDiceOutput';
+import type { AvailableDice, SimpleDices } from './useSimpleDiceInput';
+import { useSimpleDiceOutput } from './useSimpleDiceOutput';
 
 export const useSimpleDiceRollCore = () => {
   const simpleDiceRoll = useCallback((dices: Partial<SimpleDices>) => {

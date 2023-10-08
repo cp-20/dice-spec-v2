@@ -15,7 +15,7 @@ import {
   string,
   url,
 } from 'valibot';
-import { useAdvancedSettings } from '@/app/(app)/dice/_components/hooks/useAdvancedSettings';
+import { useAdvancedSettings } from './hooks/useAdvancedSettings';
 import { Button } from '@/shared/components/ui/button';
 import {
   Form,

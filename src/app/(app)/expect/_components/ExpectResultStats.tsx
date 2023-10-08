@@ -1,11 +1,8 @@
 'use client';
 
 import type { FC, ReactNode } from 'react';
-import type {
-  DiceExpecterResult,
-  SuccessExpectResult,
-} from '@/app/(app)/expect/_components/hooks/expecter';
-import { useDiceExpecterResult } from '@/app/(app)/expect/_components/hooks/useDiceExpecter';
+import type { DiceExpecterResult, SuccessExpectResult } from './hooks/expecter';
+import { useDiceExpecterResult } from './hooks/useDiceExpecter';
 import { Stats } from '@/shared/components/elements/Stats';
 
 const getResultFormatBase =

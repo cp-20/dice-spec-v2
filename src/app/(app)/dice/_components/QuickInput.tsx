@@ -2,8 +2,8 @@
 
 import { IconStar, IconStarFilled } from '@tabler/icons-react';
 import type { FC } from 'react';
+import { useDiceRoll } from './hooks/useDiceRoll';
 import { useQuickInput } from './hooks/useQuickInput';
-import { useDiceRoll } from '@/app/(app)/dice/_components/hooks/useDiceRoll';
 import { Button } from '@/shared/components/ui/button';
 
 export const QuickInput: FC = () => {

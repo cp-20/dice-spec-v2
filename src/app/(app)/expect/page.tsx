@@ -1,14 +1,14 @@
 import { IconSearch } from '@tabler/icons-react';
 import type { NextPage } from 'next';
+import { DiceCommandInput } from './_components/DiceCommandInput';
+import { ExpectResultChart } from './_components/ExpectResultChart';
+import { ExpectResultStats } from './_components/ExpectResultStats';
+import { InlineCommand } from './_components/InlineCommand';
 import {
   PageDescriptionContainer,
   PageDescriptionText,
 } from '@/app/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/(app)/_components/PageTitle';
-import { DiceCommandInput } from '@/app/(app)/expect/_components/DiceCommandInput';
-import { ExpectResultChart } from '@/app/(app)/expect/_components/ExpectResultChart';
-import { ExpectResultStats } from '@/app/(app)/expect/_components/ExpectResultStats';
-import { InlineCommand } from '@/app/(app)/expect/_components/InlineCommand';
 
 const ExpectPage: NextPage = () => (
   <div className="space-y-12">

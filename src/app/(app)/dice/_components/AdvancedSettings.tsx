@@ -2,7 +2,7 @@
 
 import { IconAdjustments } from '@tabler/icons-react';
 import type { FC } from 'react';
-import { AdvancedSettingsContent } from '@/app/(app)/dice/_components/AdvancedSettingsContent';
+import { AdvancedSettingsContent } from './AdvancedSettingsContent';
 import {
   Accordion,
   AccordionContent,

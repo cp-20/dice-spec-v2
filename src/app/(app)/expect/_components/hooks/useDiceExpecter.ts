@@ -1,7 +1,7 @@
 import { atom, useAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';
-import type { DiceExpecterResult } from '@/app/(app)/expect/_components/hooks/expecter';
-import { diceExpecter } from '@/app/(app)/expect/_components/hooks/expecter';
+import type { DiceExpecterResult } from './expecter';
+import { diceExpecter } from './expecter';
 import { useDebounce } from '@/shared/lib/useDebounce';
 
 export type DiceExpecterOption = {
