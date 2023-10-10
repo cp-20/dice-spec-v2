@@ -75,7 +75,7 @@ export const LogAnalysisCharts: FC = () => {
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 @container">
       <Button
         variant="secondary"
         className="w-full"
@@ -93,8 +93,8 @@ export const LogAnalysisCharts: FC = () => {
           </div>
         )}
       </Button>
-      <div className="flex gap-8">
-        <div className="fixed -left-full -top-full">
+      <div className="flex flex-col gap-8 @xl:flex-row">
+        <div className="fixed left-full">
           <Bar
             data={{
               labels: diceResultNumberLabels,
