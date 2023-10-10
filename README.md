@@ -1,48 +1,106 @@
-# Next.js App Router with shadcn/ui Template
+# ダイススペック
 
-shadcn/ui を使った Next.js App Router 用のテンプレートリポジトリです。
+![](/public/ogp.png)
 
-## 技術スタック
+## 概要
 
-- [Next.js v13](https://nextjs.org/)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [Tabler Icons](https://tabler-icons.io/)
-- [Jotai](https://jotai.org/)
-- [Tailwind CSS v3](https://tailwindcss.com/)
+### どういうアプリ？
 
-- ESlint
-- Prettier
-- Stylelint
+TRPGのちょっとしたツールをまとめたようなアプリです。現在は以下のような機能を備えています。
 
-## 使い方
+- ダイス予測
+  - ダイスの期待値や確率を計算します
+- ダイスロール
+  - シンプルなダイスロールおよびBCDiceを使ったダイスロールができます
+- ログ解析
+  - ココフォリアのルームログからダイスの出目を解析します (クトゥルフ神話TRPG 6版・7版 二のみ対応)
+- ココフォリア出力
+  - ココフォリアのキャラ出力形式をビジュアルで編集できます
 
-### 1. GitHub で`Use this template`をクリックしてこのテンプレートを使ったリポジトリを作る
+機能追加のリクエストは[サポート用のDiscordサーバー](https://discord.gg/YQ7negGTUK)までお願いします。
 
-![GitHub上でUse this templateのボタンはディレクトリ一覧の右上あたりにあります](readme/readme-github-image.png)
+### 技術スタック
 
-### 2. いろんなところの名前とかを調整する
+#### アプリケーション用
 
-- **`package.json`** → `name`・`version`・`author` (+`license`)
-- **`LICENSE`** → 必要であればライセンスそのもの・年と権利者名
+- [Next.js v13 (App Router)](https://nextjs.org/)
+- [shadcn/ui](https://ui.shadcn.com/) (UIコンポーネント)
+  - [Radix UI](https://radix-ui.com/)
+- [Tabler Icons](https://tabler-icons.io/) (アイコン)
+- [Jotai](https://jotai.org/) (状態管理)
+- [Tailwind CSS](https://tailwindcss.com/) (スタイリング)
+- [Valibot](https://valibot.dev/) (型バリデーション)
 
-### 3. 開発する
+#### 開発者用
 
-良い感じに開発してください
+- [Vitest](https://vitest.dev/)
+- [ESlint](https://eslint.org/)
+- [Stylelint](https://stylelint.io/)
+- [Prettier](https://prettier.io/)
 
-### 4. (リリースする前に) ファビコンとか OG 画像とかを差し替える
+## 環境セットアップ
 
-別に差し替えなくても大丈夫ですが、差し替えた方が良いと思います。
+### 事前準備
 
-ファビコンの設定は [「2023 年版、HTML によるファビコン設定方法、さまざまなブラウザやデバイスに対応させる最小限のセットは 6 種類のファイルが必要」](https://coliss.com/articles/build-websites/operation/work/how-to-favicon.html) を参考にして以下の 5 ファイルを差し替えてください
+[nodenv](https://github.com/nodenv/nodenv) なり [asdf](https://asdf-vm.com/) なり [n](https://github.com/tj/n) なりを使って `.node-version` にあるNode.jsのバージョンをインストールしてください。 (たぶんv18とかでも動くけどね)
 
-- `public/apple-touch-icon.png`
-- `public/favicon.ico`
-- `public/icon-192.png`
-- `public/icon-512.png`
-- `public/icon.svg`
+`npm i -g corepack` で [Corepack](https://github.com/nodejs/corepack) をインストールしてください
 
-OG 画像は静的なもので良ければ`public/ogp.png`を良い感じに差し替えてください
+### セットアップ
 
-### 5. いらないものを消す
+まず、下のコマンドのどちらかでリポジトリをクローンしてください。
 
-`readme/readme-github-image.png`とかその他いらないものを消してください
+```sh
+git clone https://github.com/cp-20/dice-spec-v2
+git clone git@github.com:cp-20/dice-spec-v2.git
+```
+
+次に下のコマンドで依存関係をインストールしてください。
+
+```sh
+pnpm i
+```
+
+正しくインストールができれば、次のコマンドで開発サーバーが起動します。
+
+```sh
+pnpm dev
+```
+
+デフォルトで `localhost:3000` にサーバーが立ちます。ブラウザで正しく表示されれば成功です。
+
+他のコマンドは `package.json` を参照してください。
+
+## リポジトリの設計
+
+### ディレクトリ構成
+
+```
+.
+├── public -> 静的ファイル
+└── src
+    ├── app
+    │   ├── (app)
+    │   │   ├── _components -> アプリで使われる共通コンポーネント
+    │   │   ├── analyze-logs -> ログ解析のページ
+    │   │   ├── ccfolia -> ココフォリア出力のページ
+    │   │   ├── dice -> ダイスロールのページ
+    │   │   └── expect -> ダイス予測のページ
+    │   └── (landing-page) -> ランディングページ
+    ├── shared -> アプリケーション全体で使われる共通コード
+    │   ├── components -> 共通コンポーネント
+    │   │   ├── Layout -> レイアウトコンポーネント (e.g. Header, Footer)
+    │   │   ├── Typography -> テキストコンポーネント (e.g. H1, Text)
+    │   │   ├── elements -> 自作の共通コンポーネント
+    │   │   └── ui -> shadcn/uiのコンポーネント
+    │   ├── fonts -> フォント
+    │   ├── lib -> ロジック系のコード
+    │   └── styles -> 共通スタイル
+    └── test -> テストで使われるコード
+```
+
+基本的には `./_components` 以下のコンポーネントを使いながらページを作っていきます。長いロジックは`./_components/hooks`以下に切り出すと良いです。
+
+### ブランチ命名規則
+
+`issue-<issue番号>` という名前のブランチを切ってください。例えば、issue番号が `1` の場合は `issue-1` という名前のブランチを切ってください。
