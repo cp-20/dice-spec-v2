@@ -9,6 +9,15 @@ export type DiceResult = {
   diceTarget: number;
 };
 
+export type withNumberDiceResult = {
+  success: boolean;
+  failure: boolean;
+  diceFullStr: string;
+  diceResultNumber: number;
+  diceResult: string;
+  diceTarget: number;
+};
+
 const successPattern = [
   '成功',
   '決定的成功/スペシャル',

@@ -4,7 +4,6 @@ import { CharacterSelect } from './_components/CharacterSelect';
 import { DiceLogList } from './_components/DiceLogList';
 import { LogAnalysisCharts } from './_components/LogAnalysisCharts';
 import { LogAnalysisStats } from './_components/LogAnalysisStats';
-import { ShareResultButton } from './_components/ShareResultButton';
 import { UploadLogFileButton } from './_components/UploadLogFileButton';
 import {
   PageDescriptionContainer,
@@ -64,7 +63,6 @@ const AnalyzeLogsPage: NextPage = () => (
 
     <div className="space-y-4">
       <LogAnalysisStats />
-      <ShareResultButton />
       <LogAnalysisCharts />
     </div>
 
