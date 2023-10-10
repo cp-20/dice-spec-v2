@@ -1,9 +1,10 @@
-import { IconBrandDiscord, IconBrandX, IconSunHigh } from '@tabler/icons-react';
+import { IconBrandDiscord, IconBrandX } from '@tabler/icons-react';
 import Link from 'next/link';
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { Button } from '@/shared/components/ui/button';
+import { appVersion } from '@/shared/lib/const';
 
 export const Header: FC<ComponentProps<'header'>> = ({
   className,
@@ -23,17 +24,36 @@ export const Header: FC<ComponentProps<'header'>> = ({
       >
         <TitleLogo size={18} />
       </Link>
-      <div className="max-sm:text-sm">v2.0.1</div>
+      <div className="max-sm:text-sm">v{appVersion}</div>
     </div>
     <div className="flex gap-2">
-      <Button variant="outline" size="icon" className="h-6 w-6 sm:h-8 sm:w-8">
-        <IconBrandDiscord className="h-4 w-5 sm:h-5 sm:w-5" />
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-6 w-6 sm:h-8 sm:w-8"
+        asChild
+      >
+        <a
+          href="https://discord.gg/YQ7negGTUK"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <IconBrandDiscord className="h-4 w-5 sm:h-5 sm:w-5" />
+        </a>
       </Button>
-      <Button variant="outline" size="icon" className="h-6 w-6 sm:h-8 sm:w-8">
-        <IconBrandX className="h-4 w-5 sm:h-5 sm:w-5" />
-      </Button>
-      <Button variant="outline" size="icon" className="h-6 w-6 sm:h-8 sm:w-8">
-        <IconSunHigh className="h-4 w-5 sm:h-5 sm:w-5" />
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-6 w-6 sm:h-8 sm:w-8"
+        asChild
+      >
+        <a
+          href="https://twitter.com/__cp20__"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <IconBrandX className="h-4 w-5 sm:h-5 sm:w-5" />
+        </a>
       </Button>
     </div>
   </header>
