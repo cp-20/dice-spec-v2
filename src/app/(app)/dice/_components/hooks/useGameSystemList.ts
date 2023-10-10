@@ -1,22 +1,39 @@
-import { atom, useAtom } from 'jotai';
+import { atom } from 'jotai';
 import { useCallback, useEffect } from 'react';
 import useImmutableSWR from 'swr/immutable';
+import { array } from 'valibot';
 import { useBcdiceApi } from './useBcdiceApi';
-import type { GameSystem } from '@/shared/lib/bcdice/getGameSystemList';
+import {
+  gameSystemSchema,
+  type GameSystem,
+} from '@/shared/lib/bcdice/getGameSystemList';
+import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
+
+const gameSystemListSchema = array(gameSystemSchema);
 
 const gameSystemListAtom = atom<GameSystem[]>([
   { id: 'DiceBot', name: 'DiceBot', sort_key: '*たいすほつと' },
 ]);
 
 export const useGameSystemList = () => {
-  const [gameSystemList, setGameSystemList] = useAtom(gameSystemListAtom);
+  const [gameSystemList, setGameSystemList] = useLocalStorageAtom(
+    'game-system-list',
+    gameSystemListAtom,
+    gameSystemListSchema,
+  );
 
   const { getGameSystemList } = useBcdiceApi();
   const { data } = useImmutableSWR('bcdice/systems', getGameSystemList);
 
   useEffect(() => {
     if (data !== undefined) {
-      setGameSystemList(data);
+      const newSystemIds = data.map((system) => system.id);
+      setGameSystemList((prev) => {
+        const prevSystemIds = prev.map((system) => system.id);
+        return prev
+          .filter((system) => newSystemIds.includes(system.id))
+          .concat(data.filter((system) => !prevSystemIds.includes(system.id)));
+      });
     }
   }, [data, setGameSystemList]);
 

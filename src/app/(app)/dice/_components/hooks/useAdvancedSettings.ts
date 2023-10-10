@@ -1,6 +1,10 @@
-import { atom, useAtom } from 'jotai';
-import type { AdvancedSettings } from '@/app/(app)/dice/_components/AdvancedSettingsContent';
+import { atom } from 'jotai';
+import {
+  AdvancedSettingsFormSchema,
+  type AdvancedSettings,
+} from '@/app/(app)/dice/_components/AdvancedSettingsContent';
 import { bcdiceApiEndpoint } from '@/shared/lib/const';
+import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
 
 const advancedSettingsAtom = atom<AdvancedSettings>({
   showHelp: true,
@@ -10,7 +14,11 @@ const advancedSettingsAtom = atom<AdvancedSettings>({
 });
 
 export const useAdvancedSettings = () => {
-  const [advancedSettings, setAdvancedSettings] = useAtom(advancedSettingsAtom);
+  const [advancedSettings, setAdvancedSettings] = useLocalStorageAtom(
+    'dice-advanced-settings',
+    advancedSettingsAtom,
+    AdvancedSettingsFormSchema,
+  );
 
   return {
     advancedSettings,

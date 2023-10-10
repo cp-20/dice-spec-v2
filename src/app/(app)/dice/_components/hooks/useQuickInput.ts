@@ -1,10 +1,17 @@
-import { atom, useAtom } from 'jotai';
+import { atom } from 'jotai';
 import { useCallback } from 'react';
+import type { Input } from 'valibot';
+import { array, boolean, object, string } from 'valibot';
+import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
 
-export type QuickInputItem = {
-  command: string;
-  isFavorite: boolean;
-};
+export const quickInputItemsSchema = array(
+  object({
+    command: string(),
+    isFavorite: boolean(),
+  }),
+);
+
+export type QuickInputItem = Input<typeof quickInputItemsSchema>[number];
 
 const quickInputAtom = atom<QuickInputItem[]>([
   { command: '1d6', isFavorite: true },
@@ -12,7 +19,11 @@ const quickInputAtom = atom<QuickInputItem[]>([
 ]);
 
 export const useQuickInput = () => {
-  const [items, setItems] = useAtom(quickInputAtom);
+  const [items, setItems] = useLocalStorageAtom(
+    'quick-input-items',
+    quickInputAtom,
+    quickInputItemsSchema,
+  );
 
   const updateItems = useCallback(
     (updateFunc: (prev: QuickInputItem[]) => QuickInputItem[]) => {
