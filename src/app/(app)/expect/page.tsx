@@ -9,6 +9,13 @@ import {
   PageDescriptionText,
 } from '@/app/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/(app)/_components/PageTitle';
+import { metadataGenerator } from '@/shared/lib/metadataGenerator';
+
+export const metadata = metadataGenerator({
+  title: 'ダイス予測',
+  description:
+    '1d6や1D100といったダイスの期待値を計算することで、ダイスを振るときにどういう結果が出るのかを予測できます。さらに1d100<=10や2D6>=10と入力することで、その確率も知ることができます。',
+});
 
 const ExpectPage: NextPage = () => (
   <div className="space-y-12">

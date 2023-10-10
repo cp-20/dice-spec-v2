@@ -16,6 +16,13 @@ import {
 } from '@/app/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/(app)/_components/PageTitle';
 import { Toaster } from '@/shared/components/ui/toaster';
+import { metadataGenerator } from '@/shared/lib/metadataGenerator';
+
+export const metadata = metadataGenerator({
+  title: 'ダイスロール',
+  description:
+    '1d6、1d100、2d6、3d6、1d10といった好きなダイスを簡単に振ることができます。BCDiceを使うこともでき、ココフォリアなどのセッションツールと変わらない使い心地で使えます。',
+});
 
 const DicePage: NextPage = async () => {
   return (
@@ -25,7 +32,7 @@ const DicePage: NextPage = async () => {
           <PageTitle icon={IconDice5}>ダイスロール</PageTitle>
           <PageDescriptionContainer>
             <PageDescriptionText>
-              好きなダイスを振ることができます。BCDiceを使っているため、ココフォリアなどのセッションツールと変わらない使い心地で使えます。
+              1d6、1d100、2d6、3d6、1d10といった好きなダイスを簡単に振ることができます。BCDiceを使うこともでき、ココフォリアなどのセッションツールと変わらない使い心地で使えます。
             </PageDescriptionText>
           </PageDescriptionContainer>
         </div>

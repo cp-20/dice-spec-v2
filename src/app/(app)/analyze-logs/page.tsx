@@ -1,11 +1,8 @@
-import {
-  IconChartBar,
-  IconChevronsRight,
-  IconTimeline,
-} from '@tabler/icons-react';
-import type { NextPage } from 'next';
+import { IconChevronsRight, IconTimeline } from '@tabler/icons-react';
+import type { Metadata, NextPage } from 'next';
 import { CharacterSelect } from './_components/CharacterSelect';
 import { DiceLogList } from './_components/DiceLogList';
+import { LogAnalysisCharts } from './_components/LogAnalysisCharts';
 import { LogAnalysisStats } from './_components/LogAnalysisStats';
 import { ShareResultButton } from './_components/ShareResultButton';
 import { UploadLogFileButton } from './_components/UploadLogFileButton';
@@ -14,6 +11,33 @@ import {
   PageDescriptionText,
 } from '@/app/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/(app)/_components/PageTitle';
+import { metadataGenerator } from '@/shared/lib/metadataGenerator';
+
+type props = {
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+const ogpImageRegex = new RegExp(
+  `^https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/.+.png`,
+);
+
+export const generateMetadata = ({ searchParams }: props): Metadata => {
+  const title = 'ログ解析';
+  const description =
+    'ココフォリアから出力されたログを解析して、ダイスの出目を抽出・分析します。 (クトゥルフ神話TRPG・新クトゥルフ神話TRPGのみ対応)';
+  const ogp =
+    typeof searchParams.ogp === 'string' && ogpImageRegex.test(searchParams.ogp)
+      ? searchParams.ogp
+      : undefined;
+
+  const metadata = metadataGenerator({
+    title,
+    description,
+    ogp,
+  });
+
+  return metadata;
+};
 
 const AnalyzeLogsPage: NextPage = () => (
   <div className="space-y-12">
@@ -41,17 +65,7 @@ const AnalyzeLogsPage: NextPage = () => (
     <div className="space-y-4">
       <LogAnalysisStats />
       <ShareResultButton />
-
-      <div className="flex gap-4">
-        <div className="flex flex-1 items-center justify-center gap-2 rounded-md border p-8">
-          <IconChartBar />
-          <span>ここにグラフ</span>
-        </div>
-        <div className="flex flex-1 items-center justify-center gap-2 rounded-md border p-8">
-          <IconChartBar />
-          <span>ここにグラフ</span>
-        </div>
-      </div>
+      <LogAnalysisCharts />
     </div>
 
     <DiceLogList />
