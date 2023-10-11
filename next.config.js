@@ -15,6 +15,11 @@ const nextConfig = {
       basePath: false,
       permanent: true,
     },
+    {
+      source: '/analyze-logs/og',
+      destination: `/analyze-logs`,
+      permanent: true,
+    },
   ],
   webpack: (config) => {
     config.module.rules.push({
