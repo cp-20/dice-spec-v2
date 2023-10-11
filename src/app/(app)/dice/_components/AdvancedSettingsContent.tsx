@@ -29,7 +29,7 @@ import { Slider } from '@/shared/components/ui/slider';
 import { Switch } from '@/shared/components/ui/switch';
 import { bcdiceApiEndpoint } from '@/shared/lib/const';
 
-const AdvancedSettingsFormSchema = object({
+export const AdvancedSettingsFormSchema = object({
   showHelp: boolean(),
   playSound: boolean(),
   volume: number([minValue(0), maxValue(100)]),
@@ -39,15 +39,10 @@ const AdvancedSettingsFormSchema = object({
 export type AdvancedSettings = Output<typeof AdvancedSettingsFormSchema>;
 
 export const AdvancedSettingsContent: FC = () => {
-  const { setAdvancedSettings } = useAdvancedSettings();
+  const { advancedSettings, setAdvancedSettings } = useAdvancedSettings();
   const form = useForm<AdvancedSettings>({
     resolver: valibotResolver(AdvancedSettingsFormSchema),
-    defaultValues: {
-      showHelp: true,
-      playSound: false,
-      volume: 50,
-      bcdiceApiEndpoint,
-    },
+    values: advancedSettings,
   });
 
   const watch = form.watch([
@@ -58,8 +53,22 @@ export const AdvancedSettingsContent: FC = () => {
   ]);
   useEffect(() => {
     const [showHelp, playSound, volume, bcdiceApiEndpoint] = watch;
-    setAdvancedSettings({ showHelp, playSound, volume, bcdiceApiEndpoint });
-  }, [setAdvancedSettings, watch]);
+    if (
+      showHelp !== advancedSettings.showHelp ||
+      playSound !== advancedSettings.playSound ||
+      volume !== advancedSettings.volume ||
+      bcdiceApiEndpoint !== advancedSettings.bcdiceApiEndpoint
+    ) {
+      setAdvancedSettings({ showHelp, playSound, volume, bcdiceApiEndpoint });
+    }
+  }, [
+    advancedSettings.bcdiceApiEndpoint,
+    advancedSettings.playSound,
+    advancedSettings.showHelp,
+    advancedSettings.volume,
+    setAdvancedSettings,
+    watch,
+  ]);
 
   return (
     <Form {...form}>
@@ -102,24 +111,27 @@ export const AdvancedSettingsContent: FC = () => {
         <FormField
           control={form.control}
           name="volume"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>音量</FormLabel>
-              <FormControl>
-                <Slider
-                  value={[field.value]}
-                  min={0}
-                  max={100}
-                  onValueChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormLabel>音量</FormLabel>
+                <FormControl>
+                  <Slider
+                    defaultValue={[field.value]}
+                    min={0}
+                    max={100}
+                    step={1}
+                    onValueCommit={([value]) => field.onChange(value)}
+                  />
+                </FormControl>
+              </FormItem>
+            );
+          }}
         />
         <FormField
           control={form.control}
           name="bcdiceApiEndpoint"
-          render={({ field, formState }) => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>使用するBCDiceAPIサーバー</FormLabel>
               <div className="relative">
@@ -135,9 +147,7 @@ export const AdvancedSettingsContent: FC = () => {
                   variant="outline"
                   size="icon"
                   className="hover:slate-100 absolute right-0 top-0 bg-slate-50"
-                  onClick={() =>
-                    field.onChange(formState.defaultValues?.bcdiceApiEndpoint)
-                  }
+                  onClick={() => field.onChange(bcdiceApiEndpoint)}
                 >
                   <IconRestore />
                 </Button>

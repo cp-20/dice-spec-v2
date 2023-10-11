@@ -1,7 +1,7 @@
 import type { Input } from 'valibot';
 import { array, object, parse, string } from 'valibot';
 
-const gameSystemSchema = object({
+export const gameSystemSchema = object({
   id: string(),
   name: string(),
   sort_key: string(),
