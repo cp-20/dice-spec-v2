@@ -2,6 +2,7 @@ import { atom } from 'jotai';
 import { useCallback } from 'react';
 import type { Input } from 'valibot';
 import { array, boolean, object, string } from 'valibot';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
 
 export const quickInputItemsSchema = array(
@@ -19,6 +20,7 @@ const quickInputAtom = atom<QuickInputItem[]>([
 ]);
 
 export const useQuickInput = () => {
+  const { sendEvent } = useGoogleAnalytics();
   const [items, setItems] = useLocalStorageAtom(
     'quick-input-items',
     quickInputAtom,
@@ -57,12 +59,16 @@ export const useQuickInput = () => {
 
   const updateItem = useCallback(
     (item: QuickInputItem) => {
+      const eventName = item.isFavorite
+        ? 'FavoriteCommand'
+        : 'UnfavoriteCommand';
+      sendEvent(eventName, item.command);
       updateItems((prev) => [
         item,
         ...prev.filter((i) => i.command !== item.command),
       ]);
     },
-    [updateItems],
+    [sendEvent, updateItems],
   );
 
   const resetItems = useCallback(() => {
