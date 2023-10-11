@@ -22,7 +22,7 @@ export const Header: FC<ComponentProps<'header'>> = ({
         href="/"
         className="transition-opacity duration-100 hover:opacity-70"
       >
-        <TitleLogo className="h-8 w-40 text-slate-800 max-sm:h-7 max-sm:w-[8.75rem]" />
+        <TitleLogo className="h-7 w-[8.75rem] text-slate-800 max-sm:h-6 max-sm:w-[7.5ren]" />
       </Link>
       <div className="max-sm:text-sm">v{appVersion}</div>
     </div>
