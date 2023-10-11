@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useBcdiceApi } from './useBcdiceApi';
 import { defaultOption } from '@/shared/lib/bcdice/defaultOption';
 import type { GameSystemInfo } from '@/shared/lib/bcdice/getGameSystemInfo';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 export type DiceRollOptions = {
   system: string;
@@ -17,17 +18,20 @@ const diceRegexpAtom = atom(
 export const useDiceRollOption = () => {
   const { getGameSystemInfo } = useBcdiceApi();
   const [option, setOptions] = useAtom(diceRollOptionAtom);
+  const { sendEvent } = useGoogleAnalytics();
 
   const setSystem = useCallback(
     async (system: string) => {
+      sendEvent('setSystem', system);
       try {
         const systemInfo = await getGameSystemInfo(system);
         setOptions((prev) => ({ ...prev, system, systemInfo }));
       } catch (err) {
+        sendEvent('getGameSystemInfoFailed', system);
         console.error(err);
       }
     },
-    [getGameSystemInfo, setOptions],
+    [getGameSystemInfo, sendEvent, setOptions],
   );
 
   return { option, setSystem };

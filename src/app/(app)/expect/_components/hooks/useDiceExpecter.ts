@@ -3,6 +3,7 @@ import { useCallback, useEffect } from 'react';
 import type { DiceExpecterResult } from './expecter';
 import { diceExpecter } from './expecter';
 import { useDebounce } from '@/shared/lib/useDebounce';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 export type DiceExpecterOption = {
   autoRecalculation: boolean;
@@ -26,14 +27,16 @@ export const useDiceCommandInput = () => {
 export const useRecalculation = () => {
   const [command] = useAtom(commandAtom);
   const [_, setResult] = useAtom(resultAtom);
+  const { sendEvent } = useGoogleAnalytics();
 
   const recalculate = useCallback(() => {
     if (command === '') {
       return setResult(null);
     }
 
+    sendEvent('diceExpecter', command);
     setResult(diceExpecter(command));
-  }, [command, setResult]);
+  }, [command, sendEvent, setResult]);
 
   return {
     recalculate,
@@ -44,6 +47,7 @@ const useAutoRecalculation = (enabled: boolean) => {
   const [command] = useAtom(commandAtom);
   const debouncedCommand = useDebounce(command, 500);
   const [_, setResult] = useAtom(resultAtom);
+  const { sendEvent } = useGoogleAnalytics();
 
   useEffect(() => {
     if (!enabled) return;
@@ -52,8 +56,9 @@ const useAutoRecalculation = (enabled: boolean) => {
       return setResult(null);
     }
 
+    sendEvent('diceExpecter', command);
     setResult(diceExpecter(debouncedCommand));
-  }, [debouncedCommand, enabled, setResult]);
+  }, [command, debouncedCommand, enabled, sendEvent, setResult]);
 };
 
 export const useDiceExpecterOption = () => {

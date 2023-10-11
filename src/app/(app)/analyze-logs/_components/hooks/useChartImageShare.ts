@@ -4,6 +4,7 @@ import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
 import { useCharacterSelect } from './useCharacterSelect';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { round } from '@/shared/lib/round';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 export const useChartImageShare = () => {
   const chartRef = useRef<ChartJSOrUndefined<'bar', number[], string>>(null);
@@ -11,6 +12,7 @@ export const useChartImageShare = () => {
   const { uploadImage } = useFirebase();
   const { character } = useCharacterSelect();
   const result = useCharacterLogAnalysis(character);
+  const { sendEvent } = useGoogleAnalytics();
 
   const shareImage = useCallback(() => {
     if (!result) return;
@@ -28,6 +30,7 @@ export const useChartImageShare = () => {
     );
 
     if (!chartRef.current) {
+      sendEvent('shareImage', 'no chart');
       const url = encodeURIComponent(
         `https://dicespec.vercel.app/analyze-logs`,
       );
@@ -37,18 +40,27 @@ export const useChartImageShare = () => {
     }
 
     setIsSharingInProgress(true);
+    sendEvent('shareImage', 'with chart');
 
     const base64ImageUrl = chartRef.current.toBase64Image();
-    uploadImage(base64ImageUrl).then((imageUrl) => {
-      const ogp = encodeURIComponent(imageUrl);
-      const url = encodeURIComponent(
-        `https://dicespec.vercel.app/analyze-logs?ogp=${ogp}`,
-      );
-      const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
-      window.open(href, '_blank');
-      setIsSharingInProgress(false);
-    });
-  }, [result, uploadImage]);
+    uploadImage(base64ImageUrl)
+      .then((imageUrl) => {
+        const ogp = encodeURIComponent(imageUrl);
+        const url = encodeURIComponent(
+          `https://dicespec.vercel.app/analyze-logs?ogp=${ogp}`,
+        );
+        const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+        sendEvent('shareImage', 'success');
+        window.open(href, '_blank');
+      })
+      .catch((err) => {
+        sendEvent('shareImage', 'failed');
+        console.error(err);
+      })
+      .finally(() => {
+        setIsSharingInProgress(false);
+      });
+  }, [result, sendEvent, uploadImage]);
 
   return { chartRef, isSharingInProgress, shareImage };
 };

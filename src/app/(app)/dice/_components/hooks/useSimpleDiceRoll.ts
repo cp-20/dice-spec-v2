@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import type { AvailableDice, SimpleDices } from './useSimpleDiceInput';
 import { useSimpleDiceOutput } from './useSimpleDiceOutput';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 export const useSimpleDiceRollCore = () => {
   const simpleDiceRoll = useCallback((dices: Partial<SimpleDices>) => {
@@ -39,18 +40,27 @@ const sum = (arr: number[]) => arr.reduce((acc, curr) => acc + curr, 0);
 export const useSimpleDiceRoll = () => {
   const { simpleDiceRoll: simpleDiceRollCore } = useSimpleDiceRollCore();
   const { setSimpleDiceOutput } = useSimpleDiceOutput();
+  const { sendEvent } = useGoogleAnalytics();
 
   const simpleDiceRoll = useCallback(
     (dices: Partial<SimpleDices>) => {
       const result = simpleDiceRollCore(dices);
       if (result === null) return;
 
+      sendEvent(
+        'simpleDiceRoll',
+        Object.entries(dices)
+          .filter(([, count]) => count > 0)
+          .map(([dice, count]) => `${count}D${dice}`)
+          .join('+'),
+      );
+
       setSimpleDiceOutput({
         key: Date.now().toString(36) + Math.random().toString(36).slice(2),
         ...result,
       });
     },
-    [setSimpleDiceOutput, simpleDiceRollCore],
+    [sendEvent, setSimpleDiceOutput, simpleDiceRollCore],
   );
 
   return { simpleDiceRoll };
