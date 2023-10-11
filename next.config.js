@@ -1,7 +1,6 @@
-/** @type {import('next').NextConfig} */
-
 const v1AppUrl = 'https://v1.dicespec.vercel.app';
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
@@ -45,10 +44,20 @@ const nextConfig = {
   images: {
     disableStaticImages: true,
   },
+  pwa: {
+    dest: 'public',
+    register: true,
+    skipWaiting: true,
+    disable: process.env.NODE_ENV === 'development',
+  },
 };
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 
-module.exports = withBundleAnalyzer(nextConfig);
+const withPWA = require('next-pwa')({
+  dest: 'public',
+});
+
+module.exports = withBundleAnalyzer(withPWA(nextConfig));
