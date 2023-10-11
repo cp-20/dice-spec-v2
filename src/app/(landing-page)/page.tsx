@@ -14,6 +14,7 @@ import { Panel } from './_components/Panel';
 import { Footer } from '@/shared/components/Layout/Footer';
 import { H2 } from '@/shared/components/Typography/H2';
 import { Text } from '@/shared/components/Typography/Text';
+import { UpdateAnnouncement } from '@/shared/components/elements/UpdateAnnouncement';
 import { Button } from '@/shared/components/ui/button';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';
 import LogoIcon from '/public/icon.svg';
@@ -29,6 +30,7 @@ const LandingPage: NextPage = () => {
   return (
     <>
       <div className="flex min-h-screen w-full flex-col">
+        <UpdateAnnouncement />
         <main className="mx-auto flex w-full max-w-screen-lg flex-1 flex-col items-center gap-16 px-8 py-8 max-sm:px-4">
           <div className="mt-16 flex max-w-full items-center justify-center gap-8 max-md:mt-8 max-md:flex-col max-md:gap-2 max-sm:mt-4">
             <div>
