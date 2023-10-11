@@ -2,7 +2,6 @@
 
 import { IconChevronsRight } from '@tabler/icons-react';
 import clsx from 'clsx';
-import Image from 'next/image';
 import type { ComponentProps, FC, ReactNode } from 'react';
 import D3 from '/public/assets/images/D3.svg';
 import D4 from '/public/assets/images/D4.svg';
@@ -80,19 +79,12 @@ type DiceProps = {
 export const DiceD3: FC<DiceProps> = ({ count, className, ...props }) => (
   <div
     className={twMerge(
-      'relative inline-block h-12 w-12 select-none',
+      'relative inline-grid h-12 w-12 select-none place-content-center',
       className,
     )}
     {...props}
   >
-    <Image
-      src={D3}
-      alt=""
-      width={48}
-      height={48}
-      loading="eager"
-      className={clsx('mt-[0.1rem]', styles['dice-image'])}
-    />
+    <D3 className={clsx('mt-[0.1rem] h-12 w-12', styles['dice-image'])} />
     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-semibold">
       {count}
     </div>
@@ -102,19 +94,12 @@ export const DiceD3: FC<DiceProps> = ({ count, className, ...props }) => (
 export const DiceD4: FC<DiceProps> = ({ count, className, ...props }) => (
   <div
     className={twMerge(
-      'relative inline-block h-12 w-12 select-none',
+      'relative inline-grid h-12 w-12 select-none place-content-center',
       className,
     )}
     {...props}
   >
-    <Image
-      src={D4}
-      alt=""
-      width={48}
-      height={48}
-      loading="eager"
-      className={clsx('mt-[0.1rem]', styles['dice-image'])}
-    />
+    <D4 className={clsx('mt-[0.1rem] h-12 w-12', styles['dice-image'])} />
     <div className="absolute left-1/2 top-1/2 inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
       {count}
     </div>
@@ -124,20 +109,13 @@ export const DiceD4: FC<DiceProps> = ({ count, className, ...props }) => (
 export const DiceD6: FC<DiceProps> = ({ count, className, ...props }) => (
   <div
     className={twMerge(
-      'relative -mt-1 inline-flex h-12 w-12 select-none items-center justify-center',
+      'relative -mt-1 inline-grid h-12 w-12 select-none place-content-center',
       className,
     )}
     {...props}
   >
-    <Image
-      src={D6}
-      alt=""
-      width={32}
-      height={32}
-      loading="eager"
-      className={styles['dice-image']}
-    />
-    <div className="absolute left-1/2 top-1/2 inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center text-lg font-semibold">
+    <D6 className={clsx('mb-[0.15rem] h-9 w-9', styles['dice-image'])} />
+    <div className="absolute left-1/2 top-[calc(50%-0.1rem)] inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center text-lg font-semibold">
       {count}
     </div>
   </div>
@@ -146,20 +124,13 @@ export const DiceD6: FC<DiceProps> = ({ count, className, ...props }) => (
 export const DiceD8: FC<DiceProps> = ({ count, className, ...props }) => (
   <div
     className={twMerge(
-      'relative inline-block h-12 w-12 select-none',
+      'relative inline-grid h-12 w-12 select-none place-content-center',
       className,
     )}
     {...props}
   >
-    <Image
-      src={D8}
-      alt=""
-      width={40}
-      height={40}
-      loading="eager"
-      className={clsx('ml-1 mt-1', styles['dice-image'])}
-    />
-    <div className="absolute left-1/2 top-1/2 inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
+    <D8 className={clsx('mb-1 h-10 w-10', styles['dice-image'])} />
+    <div className="absolute left-1/2 top-[calc(50%-0.15rem)] inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
       {count}
     </div>
   </div>
@@ -172,20 +143,13 @@ export const DiceD10Base: FC<{ count: ReactNode } & ComponentProps<'div'>> = ({
 }) => (
   <div
     className={twMerge(
-      'relative inline-block h-12 w-12 select-none',
+      'relative inline-grid h-12 w-12 select-none place-content-center',
       className,
     )}
     {...props}
   >
-    <Image
-      src={D20}
-      alt=""
-      width={40}
-      height={40}
-      loading="eager"
-      className={clsx('ml-1 mt-1', styles['dice-image'])}
-    />
-    <div className="absolute left-1/2 top-1/2 inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
+    <D20 className={clsx('mb-1 h-10 w-10', styles['dice-image'])} />
+    <div className="absolute left-1/2 top-[calc(50%-0.15rem)] inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
       {count}
     </div>
   </div>
@@ -198,20 +162,13 @@ export const DiceD10: FC<DiceProps> = ({ count, ...props }) => (
 export const DiceD12: FC<DiceProps> = ({ count, className, ...props }) => (
   <div
     className={twMerge(
-      'relative inline-block h-12 w-12 select-none',
+      'relative inline-grid h-12 w-12 select-none place-content-center',
       className,
     )}
     {...props}
   >
-    <Image
-      src={D12}
-      alt=""
-      width={40}
-      height={40}
-      loading="eager"
-      className={clsx('ml-1 mt-1', styles['dice-image'])}
-    />
-    <div className="absolute left-1/2 top-1/2 inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
+    <D12 className={clsx('mb-1 h-10 w-10', styles['dice-image'])} />
+    <div className="absolute left-1/2 top-[calc(50%-0.15rem)] inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
       {count}
     </div>
   </div>
