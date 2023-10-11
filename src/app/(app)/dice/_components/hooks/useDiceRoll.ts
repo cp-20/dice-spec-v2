@@ -7,6 +7,8 @@ import { useDiceSound } from './useDiceSound';
 import { useQuickInput } from './useQuickInput';
 import { useToast } from '@/shared/components/ui/use-toast';
 import type { DiceRollResult } from '@/shared/lib/bcdice/getDiceRoll';
+import { formatDiceCommand } from '@/shared/lib/formatDiceCommand';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 const useValidateAndRoll = () => {
   const { getDiceRoll } = useBcdiceApi();
@@ -93,13 +95,19 @@ export const useDiceRoll = () => {
   const { toast } = useToast();
   const { play } = useDiceSound();
   const { diceRoll: diceRollCore } = useDiceRollCore();
+  const {
+    option: { system },
+  } = useDiceRollOption();
+  const { sendEvent } = useGoogleAnalytics();
 
   const diceRoll = useCallback(
     async (command: string) => {
+      sendEvent('diceRoll', [system, formatDiceCommand(command)]);
       const result = await diceRollCore(command);
       play();
 
       if (!result.ok) {
+        sendEvent('diceRollFailed', [system, command]);
         toast({
           title: 'エラー',
           description: 'ダイスロールに失敗しました',
@@ -109,7 +117,7 @@ export const useDiceRoll = () => {
 
       return result;
     },
-    [diceRollCore, play, toast],
+    [diceRollCore, play, sendEvent, system, toast],
   );
 
   return {
