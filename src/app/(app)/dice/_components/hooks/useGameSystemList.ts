@@ -35,7 +35,9 @@ export const useGameSystemList = () => {
           .concat(data.filter((system) => !prevSystemIds.includes(system.id)));
       });
     }
-  }, [data, setGameSystemList]);
+    // setGameSystemListをdependency arrayに入れると無限ループする (setGameSystemListがgameSystemListに依存しているため)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   const selectSystem = useCallback(
     (systemId: string) => {
