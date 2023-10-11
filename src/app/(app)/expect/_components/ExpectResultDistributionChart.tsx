@@ -1,16 +1,16 @@
 'use client';
-import type { ChartOptions } from 'chart.js';
+
+import type { ChartOptions, ScriptableLineSegmentContext } from 'chart.js';
 import merge from 'deepmerge';
 import type { FC } from 'react';
 import { useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
-import { useChartElement } from './hooks/useDiceExpectResultDistribution';
 import { useDiceExpecterResult } from './hooks/useDiceExpecter';
 import { commonChartOption } from '@/shared/lib/commonChartOption';
 
 export const ExpectResultDistributionChart: FC = () => {
   const { result } = useDiceExpecterResult();
-  const { chartElement } = useChartElement();
+  // const { chartElement } = useChartElement();
 
   useEffect(() => {
     import('chart.js').then(
@@ -35,7 +35,7 @@ export const ExpectResultDistributionChart: FC = () => {
     );
   }, []);
 
-  if (!result || !result?.success || !chartElement) {
+  if (!result || !result?.success) {
     return null;
   }
 
@@ -43,26 +43,43 @@ export const ExpectResultDistributionChart: FC = () => {
     scales: { y: { min: 0 } },
   });
 
+  const inCI = (ctx: ScriptableLineSegmentContext) => {
+    return (
+      result.CI.min < result.range.min + ctx.p0.parsed.x + 1 &&
+      result.range.min + ctx.p1.parsed.x - 1 < result.CI.max
+    );
+  };
+
+  const inTarget = (ctx: ScriptableLineSegmentContext) => {
+    if (!result.withTarget) return false;
+
+    return (
+      (result.target.sign === '<=' &&
+        result.range.min + ctx.p1.parsed.x <= result.target.value) ||
+      (result.target.sign === '>=' &&
+        result.range.min + ctx.p0.parsed.x >= result.target.value)
+    );
+  };
+
+  const colorFunc = (ctx: ScriptableLineSegmentContext) => {
+    if (inTarget(ctx)) return 'rgba(51, 65, 85, 0.5)';
+    if (inCI(ctx)) return 'rgba(100, 116, 139, 0.5)';
+    return 'rgba(100, 116, 139, 0.2)';
+  };
+
   return (
     <div>
       <Line
         data={{
-          labels: chartElement.values,
+          labels: Object.keys(result.distribution),
           datasets: [
             {
-              data: chartElement.chances,
-              backgroundColor: 'rgba(100, 116, 139, 0.2)',
+              data: Object.values(result.distribution),
               fill: true,
-            },
-            {
-              data: chartElement.chancesCI,
-              backgroundColor: 'rgba(100, 116, 139, 0.5)',
-              fill: true,
-            },
-            {
-              data: chartElement.chancesTarget,
-              backgroundColor: 'rgba(51, 65, 85, 0.5)',
-              fill: true,
+              segment: {
+                backgroundColor: colorFunc,
+                borderColor: colorFunc,
+              },
             },
           ],
         }}
