@@ -7,6 +7,7 @@ import { useDiceSound } from './useDiceSound';
 import { useQuickInput } from './useQuickInput';
 import { useToast } from '@/shared/components/ui/use-toast';
 import type { DiceRollResult } from '@/shared/lib/bcdice/getDiceRoll';
+import { formatDiceCommand } from '@/shared/lib/formatDiceCommand';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 const useValidateAndRoll = () => {
@@ -101,7 +102,7 @@ export const useDiceRoll = () => {
 
   const diceRoll = useCallback(
     async (command: string) => {
-      sendEvent('diceRoll', [system, command]);
+      sendEvent('diceRoll', [system, formatDiceCommand(command)]);
       const result = await diceRollCore(command);
       play();
 

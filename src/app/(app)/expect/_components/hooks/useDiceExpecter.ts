@@ -2,6 +2,7 @@ import { atom, useAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';
 import type { DiceExpecterResult } from './expecter';
 import { diceExpecter } from './expecter';
+import { formatDiceCommand } from '@/shared/lib/formatDiceCommand';
 import { useDebounce } from '@/shared/lib/useDebounce';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
@@ -56,7 +57,7 @@ const useAutoRecalculation = (enabled: boolean) => {
       return setResult(null);
     }
 
-    sendEvent('diceExpecter', command);
+    sendEvent('diceExpecter', formatDiceCommand(command));
     setResult(diceExpecter(debouncedCommand));
   }, [command, debouncedCommand, enabled, sendEvent, setResult]);
 };

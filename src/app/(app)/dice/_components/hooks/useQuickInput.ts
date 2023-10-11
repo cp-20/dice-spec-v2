@@ -2,6 +2,7 @@ import { atom } from 'jotai';
 import { useCallback } from 'react';
 import type { Input } from 'valibot';
 import { array, boolean, object, string } from 'valibot';
+import { formatDiceCommand } from '@/shared/lib/formatDiceCommand';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
 
@@ -62,7 +63,7 @@ export const useQuickInput = () => {
       const eventName = item.isFavorite
         ? 'favoriteCommand'
         : 'unfavoriteCommand';
-      sendEvent(eventName, item.command);
+      sendEvent(eventName, formatDiceCommand(item.command));
       updateItems((prev) => [
         item,
         ...prev.filter((i) => i.command !== item.command),
