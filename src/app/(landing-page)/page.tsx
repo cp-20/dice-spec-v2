@@ -104,7 +104,7 @@ const LandingPage: NextPage = () => {
               関連リンク
             </H2>
 
-            <div className="flex gap-4 max-sm:flex-col">
+            <div className="flex gap-4 max-md:flex-col">
               <ExternalLinkWithIcon
                 icon={IconBrandDiscord}
                 href="https://discord.gg/YQ7negGTUK"
