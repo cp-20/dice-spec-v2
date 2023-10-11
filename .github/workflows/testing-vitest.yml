@@ -2,10 +2,9 @@ name: Testing with Vitest
 
 on:
   pull_request:
+  push:
     branches:
       - main
-      - develop
-  push:
 
 jobs:
   build:
