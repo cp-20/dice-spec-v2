@@ -12,12 +12,12 @@ import { ExternalLinkWithIcon } from './_components/ExternalLinkWithIcon';
 import { LinkableIconPanel } from './_components/LinkableIconPanel';
 import { Panel } from './_components/Panel';
 import { Footer } from '@/shared/components/Layout/Footer';
-import { Header } from '@/shared/components/Layout/Header';
 import { H2 } from '@/shared/components/Typography/H2';
 import { Text } from '@/shared/components/Typography/Text';
-import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { Button } from '@/shared/components/ui/button';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';
+import LogoIcon from '/public/icon.svg';
+import TitleLogo from '/public/title-logo.svg';
 
 export const metadata = metadataGenerator({
   title: '',
@@ -28,17 +28,30 @@ export const metadata = metadataGenerator({
 const LandingPage: NextPage = () => {
   return (
     <>
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main className="mx-auto flex max-w-screen-lg flex-1 flex-col items-center gap-16 px-8 py-8 max-sm:px-4">
-          <div className="flex flex-col items-center">
-            <h1>
-              <TitleLogo size={60} />
-            </h1>
+      <div className="flex min-h-screen w-full flex-col">
+        <main className="mx-auto flex w-full max-w-screen-lg flex-1 flex-col items-center gap-16 px-8 py-8 max-sm:px-4">
+          <div className="mt-16 flex max-w-full items-center justify-center gap-8 max-md:mt-8 max-md:flex-col max-md:gap-2 max-sm:mt-4">
+            <div>
+              <LogoIcon className="h-32 w-32 max-sm:h-24 max-sm:w-24" />
+            </div>
 
-            <Text>
-              ダイススペックはTRPGのちょっとしたツールを集めたサービスです。
-            </Text>
+            <div className="flex max-w-full flex-col">
+              <h1 className="max-w-full max-md:mx-auto max-md:px-4">
+                <TitleLogo className="max-w-full text-slate-800 md:h-16" />
+              </h1>
+
+              <Text className="max-md:text-center">
+                <span className="inline-block whitespace-nowrap">
+                  ダイススペックは
+                </span>
+                <span className="inline-block whitespace-nowrap">
+                  TRPGのちょっとしたツールを
+                </span>
+                <span className="inline-block whitespace-nowrap">
+                  集めたサービスです。
+                </span>
+              </Text>
+            </div>
           </div>
 
           <Button className="font-bold" asChild>

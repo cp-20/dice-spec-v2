@@ -2,9 +2,9 @@ import { IconBrandDiscord, IconBrandX } from '@tabler/icons-react';
 import Link from 'next/link';
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { Button } from '@/shared/components/ui/button';
 import { appVersion } from '@/shared/lib/const';
+import TitleLogo from '/public/title-logo.svg';
 
 export const Header: FC<ComponentProps<'header'>> = ({
   className,
@@ -22,7 +22,7 @@ export const Header: FC<ComponentProps<'header'>> = ({
         href="/"
         className="transition-opacity duration-100 hover:opacity-70"
       >
-        <TitleLogo size={18} />
+        <TitleLogo className="h-8 w-40 text-slate-800 max-sm:h-7 max-sm:w-[8.75rem]" />
       </Link>
       <div className="max-sm:text-sm">v{appVersion}</div>
     </div>
