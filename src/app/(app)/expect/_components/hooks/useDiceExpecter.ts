@@ -57,7 +57,7 @@ const useAutoRecalculation = (enabled: boolean) => {
       return setResult(null);
     }
 
-    sendEvent('diceExpecter', formatDiceCommand(command));
+    sendEvent('diceExpecter', formatDiceCommand(debouncedCommand));
     setResult(diceExpecter(debouncedCommand));
   }, [command, debouncedCommand, enabled, sendEvent, setResult]);
 };
