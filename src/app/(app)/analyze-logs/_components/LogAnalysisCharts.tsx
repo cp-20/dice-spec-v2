@@ -3,8 +3,8 @@
 import { IconBrandX, IconLoader } from '@tabler/icons-react';
 import type { Plugin } from 'chart.js';
 import merge from 'deepmerge';
+import dynamic from 'next/dynamic';
 import { type FC, useEffect } from 'react';
-import { Bar } from 'react-chartjs-2';
 import type { withNumberDiceResult } from './hooks/ccfoliaLogAnalysis/diceResultAnalyzer';
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
@@ -24,6 +24,15 @@ const customCanvasBackgroundColorPlugin: Plugin = {
     ctx.restore();
   },
 };
+
+const Bar = dynamic(
+  async () =>
+    (await import('@/shared/components/elements/RefForwardedBarChart'))
+      .RefForwardedBarChart,
+  {
+    ssr: false,
+  },
+);
 
 export const LogAnalysisCharts: FC = () => {
   const { chartRef, isSharingInProgress, shareImage } = useChartImageShare();
@@ -117,7 +126,7 @@ export const LogAnalysisCharts: FC = () => {
                 padding: 32,
               },
             } as const)}
-            ref={chartRef}
+            forwardedRef={chartRef}
           />
         </div>
         <div className="min-w-0 flex-1">
