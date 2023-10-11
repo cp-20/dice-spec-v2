@@ -1,6 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
+import { useAtom } from 'jotai';
 import * as useImmutableSWR from 'swr/immutable';
 import { useGameSystemList } from './useGameSystemList';
+import * as useLocalStorage from '@/shared/lib/useLocalStorage';
 
 describe('useGameSystemList', () => {
   beforeEach(() => {
@@ -19,6 +21,11 @@ describe('useGameSystemList', () => {
       mutate: vi.fn(),
       error: undefined,
       isValidating: false,
+    });
+
+    const spy2 = vi.spyOn(useLocalStorage, 'useLocalStorageAtom');
+    spy2.mockImplementation((_key, atom, _schema) => {
+      return useAtom(atom);
     });
   });
 
