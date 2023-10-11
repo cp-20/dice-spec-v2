@@ -1,6 +1,7 @@
 import { atom, useAtom } from 'jotai';
 import { useCallback } from 'react';
 import { analyzeCcfoliaLog, type CharacterResult } from './ccfoliaLogAnalysis';
+import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 const resultAtom = atom<CharacterResult[]>([]);
@@ -13,24 +14,18 @@ export const useLogAnalysis = () => {
     (html: string) => {
       const result = analyzeCcfoliaLog(html);
       setResult(result);
-      sendEvent(
-        'analyzeLogs: average',
-        `${result.find((p) => p.id === 'all')?.diceResultSummary.average}`,
-      );
-      sendEvent(
-        'analyzeLogs: deviationScore',
-        `${result.find((p) => p.id === 'all')?.diceResultSummary
-          .deviationScore}`,
-      );
-      sendEvent(
-        'analyzeLogs: successRate',
-        `${result.find((p) => p.id === 'all')?.diceResultSummary.successRate}`,
-      );
-      sendEvent(
-        'analyzeLogs: diceRollCount',
-        `${result.find((p) => p.id === 'all')?.diceResultSummary
-          .diceRollCount}`,
-      );
+
+      const allResult = result.find((p) => p.id === 'all');
+      if (allResult === undefined) return;
+
+      const { average, deviationScore, successRate, diceRollCount } =
+        allResult.diceResultSummary;
+      sendEvent('analyzeLogs', [
+        `${round(average, 3)}`,
+        `${round(deviationScore, 3)}`,
+        `${round(successRate, 3)}`,
+        `${diceRollCount}`,
+      ]);
     },
     [sendEvent, setResult],
   );

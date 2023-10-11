@@ -30,7 +30,7 @@ export const useChartImageShare = () => {
     );
 
     if (!chartRef.current) {
-      sendEvent('shareImage', 'no chart');
+      sendEvent('shareImage', '');
       const url = encodeURIComponent(
         `https://dicespec.vercel.app/analyze-logs`,
       );
@@ -40,21 +40,20 @@ export const useChartImageShare = () => {
     }
 
     setIsSharingInProgress(true);
-    sendEvent('shareImage', 'with chart');
 
     const base64ImageUrl = chartRef.current.toBase64Image();
     uploadImage(base64ImageUrl)
       .then((imageUrl) => {
+        sendEvent('shareImage', imageUrl);
         const ogp = encodeURIComponent(imageUrl);
         const url = encodeURIComponent(
           `https://dicespec.vercel.app/analyze-logs?ogp=${ogp}`,
         );
         const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
-        sendEvent('shareImage', 'success');
         window.open(href, '_blank');
       })
       .catch((err) => {
-        sendEvent('shareImage', 'failed');
+        sendEvent('shareImageFailed');
         console.error(err);
       })
       .finally(() => {

@@ -60,8 +60,8 @@ export const useQuickInput = () => {
   const updateItem = useCallback(
     (item: QuickInputItem) => {
       const eventName = item.isFavorite
-        ? 'FavoriteCommand'
-        : 'UnfavoriteCommand';
+        ? 'favoriteCommand'
+        : 'unfavoriteCommand';
       sendEvent(eventName, item.command);
       updateItems((prev) => [
         item,
