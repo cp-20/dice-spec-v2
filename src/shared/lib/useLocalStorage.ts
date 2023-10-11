@@ -51,14 +51,15 @@ export const useLocalStorageAtom = <T>(
   key: string,
   atom: PrimitiveAtom<T>,
   schema: BaseSchema<T>,
+  rawInitValue?: T,
 ) => {
   const [value, setValue] = useAtom(atom);
 
   useEffect(() => {
-    const initValue = getLocalStorageValue(key, null, schema);
+    const initValue = getLocalStorageValue(key, rawInitValue ?? null, schema);
     if (initValue === null) return;
     setValue(initValue);
-  }, [key, schema, setValue]);
+  }, [key, rawInitValue, schema, setValue]);
 
   const setLocalStorageValue = useCallback(
     (setStateAction: T | ((prevState: T) => T)) => {
