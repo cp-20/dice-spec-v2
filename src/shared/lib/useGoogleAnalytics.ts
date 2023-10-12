@@ -24,5 +24,9 @@ export const useGoogleAnalytics = () => {
     });
   }, []);
 
-  return { sendEvent };
+  const sendRawEvent = useCallback((event: Record<string, unknown>) => {
+    window.dataLayer.push(event);
+  }, []);
+
+  return { sendEvent, sendRawEvent };
 };
