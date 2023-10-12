@@ -2,7 +2,6 @@
 
 import { IconX } from '@tabler/icons-react';
 import { atom } from 'jotai';
-import Link from 'next/link';
 import { useCallback, type FC } from 'react';
 import { boolean } from 'valibot';
 import { Button } from '@/shared/components/ui/button';
@@ -30,12 +29,14 @@ export const UpdateAnnouncement: FC = () => {
     <div className="space-between flex items-center bg-slate-200 p-4 py-2 max-sm:p-2">
       <div className="max-sm: flex flex-1 flex-wrap justify-center max-sm:text-sm">
         <span>ダイススペックはv2にアップデートされました。</span>
-        <Link
+        <a
           href="https://v1.dicespec.vercel.app"
+          target="_blank"
+          rel="noopener noreferrer"
           className="underline hover:opacity-80"
         >
           もとのv1はここからアクセスできます。
-        </Link>
+        </a>
       </div>
       <Button
         variant="ghost"
