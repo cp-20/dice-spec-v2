@@ -7,13 +7,13 @@ import {
 } from '@tabler/icons-react';
 import { IconBrandGithub } from '@tabler/icons-react';
 import type { NextPage } from 'next';
-import Link from 'next/link';
 import { ExternalLinkWithIcon } from './_components/ExternalLinkWithIcon';
 import { LinkableIconPanel } from './_components/LinkableIconPanel';
 import { Panel } from './_components/Panel';
 import { Footer } from '@/shared/components/Layout/Footer';
 import { H2 } from '@/shared/components/Typography/H2';
 import { Text } from '@/shared/components/Typography/Text';
+import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { UpdateAnnouncement } from '@/shared/components/elements/UpdateAnnouncement';
 import { Button } from '@/shared/components/ui/button';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';
@@ -57,7 +57,7 @@ const LandingPage: NextPage = () => {
           </div>
 
           <Button className="font-bold" asChild>
-            <Link href="/expect">今すぐ使ってみる！</Link>
+            <CustomLink href="/expect">今すぐ使ってみる！</CustomLink>
           </Button>
 
           <div>
@@ -146,14 +146,14 @@ const LandingPage: NextPage = () => {
               クレジット
             </H2>
 
-            <Link
+            <a
               className="underline hover:text-slate-500"
               href="https://www.flaticon.com/free-icons/dice"
               target="_blank"
               rel="noopener noreferrer"
             >
               Dice icons created by Tanah Basah - Flaticon
-            </Link>
+            </a>
           </div>
         </main>
         <Footer />

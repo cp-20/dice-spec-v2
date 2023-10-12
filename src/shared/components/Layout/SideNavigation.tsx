@@ -1,8 +1,8 @@
 import clsx from 'clsx';
-import type { LinkProps } from 'next/link';
-import Link from 'next/link';
 import type { FC, ComponentProps } from 'react';
 import { twMerge } from 'tailwind-merge';
+import type { CustomLinkProps } from '@/shared/components/elements/CustomLink';
+import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { navLinks } from '@/shared/lib/navigation';
 
 export type SideNavigationProps = {
@@ -32,10 +32,14 @@ type SideNavigationLinkProps = {
   isActive?: boolean;
 };
 
-const SideNavigationLink: FC<
-  ComponentProps<'a'> & LinkProps<never> & SideNavigationLinkProps
-> = ({ className, icon: Icon, isActive, children, ...props }) => (
-  <Link
+const SideNavigationLink: FC<CustomLinkProps & SideNavigationLinkProps> = ({
+  className,
+  icon: Icon,
+  isActive,
+  children,
+  ...props
+}) => (
+  <CustomLink
     className={twMerge(
       clsx(
         'flex w-full items-center gap-1 rounded-none px-4 py-2 transition-colors duration-100 hover:bg-slate-50 active:bg-slate-100',
@@ -47,5 +51,5 @@ const SideNavigationLink: FC<
   >
     {Icon && <Icon />}
     {children}
-  </Link>
+  </CustomLink>
 );

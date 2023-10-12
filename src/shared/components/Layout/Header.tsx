@@ -1,7 +1,7 @@
 import { IconBrandDiscord, IconBrandX } from '@tabler/icons-react';
-import Link from 'next/link';
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
 import { appVersion } from '@/shared/lib/const';
 import TitleLogo from '/public/title-logo.svg';
@@ -18,12 +18,12 @@ export const Header: FC<ComponentProps<'header'>> = ({
     {...props}
   >
     <div className="flex items-center gap-2">
-      <Link
+      <CustomLink
         href="/"
         className="transition-opacity duration-100 hover:opacity-70"
       >
         <TitleLogo className="h-7 w-[8.75rem] text-slate-800 max-sm:h-6 max-sm:w-[7.5ren]" />
-      </Link>
+      </CustomLink>
       <div className="max-sm:text-sm">v{appVersion}</div>
     </div>
     <div className="flex gap-2">
