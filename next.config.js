@@ -1,4 +1,4 @@
-const v1AppUrl = 'https://v1.dicespec.vercel.app';
+const v1AppUrl = 'https://v1-dicespec.vercel.app';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

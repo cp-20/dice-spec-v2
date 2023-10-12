@@ -30,7 +30,7 @@ export const UpdateAnnouncement: FC = () => {
       <div className="max-sm: flex flex-1 flex-wrap justify-center max-sm:text-sm">
         <span>ダイススペックはv2にアップデートされました。</span>
         <a
-          href="https://v1.dicespec.vercel.app"
+          href="https://v1-dicespec.vercel.app"
           target="_blank"
           rel="noopener noreferrer"
           className="underline hover:opacity-80"
