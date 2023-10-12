@@ -29,6 +29,7 @@ export const metadataGenerator = ({
       siteName: title,
       images: ogp ?? defaultOgImage,
     },
+    themeColor: '#334155',
     manifest: '/manifest.webmanifest',
     icons: [
       {
