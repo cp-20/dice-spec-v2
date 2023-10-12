@@ -2,11 +2,15 @@
 
 import type { ChartOptions, ScriptableLineSegmentContext } from 'chart.js';
 import merge from 'deepmerge';
+import dynamic from 'next/dynamic';
 import type { FC } from 'react';
 import { useEffect } from 'react';
-import { Line } from 'react-chartjs-2';
 import { useDiceExpecterResult } from './hooks/useDiceExpecter';
 import { commonChartOption } from '@/shared/lib/commonChartOption';
+
+const Line = dynamic(async () => (await import('react-chartjs-2')).Line, {
+  ssr: false,
+});
 
 export const ExpectResultDistributionChart: FC = () => {
   const { result } = useDiceExpecterResult();
