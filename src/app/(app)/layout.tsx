@@ -21,7 +21,7 @@ const AppLayout: FC<AppLayout> = ({ children }) => {
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-full flex-col">
       <UpdateAnnouncement />
       <Header />
       <div className="flex min-h-0 flex-1">

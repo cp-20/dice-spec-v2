@@ -10,8 +10,10 @@ import { fontNotoSansJP } from '@/shared/fonts/NotoSansJP';
 const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <>
-      <html lang="ja">
-        <body className={clsx('text-slate-700', fontNotoSansJP.className)}>
+      <html lang="ja" className="h-full">
+        <body
+          className={clsx('h-full text-slate-700', fontNotoSansJP.className)}
+        >
           <GoogleTagManager />
           <WebVitals />
           <Next13NProgress color="#334155" options={{ showSpinner: false }} />
