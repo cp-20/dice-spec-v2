@@ -14,7 +14,7 @@ const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
         <body className={clsx('text-slate-700', fontNotoSansJP.className)}>
           <GoogleTagManager />
           <WebVitals />
-          <Next13NProgress color="#334155" />
+          <Next13NProgress color="#334155" options={{ showSpinner: false }} />
 
           {children}
         </body>
