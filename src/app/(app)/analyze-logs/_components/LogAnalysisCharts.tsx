@@ -39,6 +39,8 @@ export const LogAnalysisCharts: FC = () => {
   const { character } = useCharacterSelect();
   const result = useCharacterLogAnalysis(character);
 
+  console.log(result);
+
   useEffect(() => {
     import('chart.js').then(
       ({ Chart, BarController, CategoryScale, LinearScale, BarElement }) => {
@@ -63,9 +65,22 @@ export const LogAnalysisCharts: FC = () => {
   const diceResultNumber = withNumberDiceResults.map(
     ({ diceResultNumber }) => diceResultNumber,
   );
-  const aggregatedDiceResultNumber = Object.values(
-    groupBy(diceResultNumber, (result) => Math.floor((result - 1) / 10)),
-  ).map((results) => (results ? results.length : 0));
+  const defaultDiceResultNumber: Record<number, number[]> = {
+    0: [],
+    1: [],
+    2: [],
+    3: [],
+    4: [],
+    5: [],
+    6: [],
+    7: [],
+    8: [],
+    9: [],
+  };
+  const aggregatedDiceResultNumber = Object.values({
+    ...defaultDiceResultNumber,
+    ...groupBy(diceResultNumber, (result) => Math.floor((result - 1) / 10)),
+  }).map((results) => (results ? results.length : 0));
   const diceResultNumberLabels = [...Array(10)].map(
     (_, i) => `${i * 10 + 1}-${i * 10 + 10}`,
   );
