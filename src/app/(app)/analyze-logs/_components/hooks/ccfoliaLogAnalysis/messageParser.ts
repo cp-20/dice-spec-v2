@@ -33,13 +33,39 @@ const CoC6thMatcher: Matcher = (message) => {
 
 const matchers: Matcher[] = [Coc7thMatcher, CoC6thMatcher];
 
-export type MessageParser = (
+export type SingleMessageParser = (
   message: string,
-) => (MatcherResult & { message: string }) | undefined;
+) => MatcherResult | undefined;
 
-export const parseMessage: MessageParser = (message) => {
+const parseSingleMessage: SingleMessageParser = (message: string) => {
   for (const matcher of matchers) {
     const result = matcher(message);
-    if (result) return { message, ...result };
+    if (result !== undefined) return { message, ...result };
   }
+};
+
+const repeatDiceRollPrefixRegex = /^x(\d+)\s/;
+const convertRepeatDiceRollMessage = (message: string) => {
+  const match = message.match(repeatDiceRollPrefixRegex);
+  if (match === null) return [message];
+
+  const repeatCount = parseInt(match[1], 10);
+  const normalizedMessage = message.replace(/(x\d+.*)\s#1\n/, '$1\n\n#1\n');
+
+  const diceRollStr = normalizedMessage
+    .split('\n')[0]
+    .replace(repeatDiceRollPrefixRegex, '');
+
+  return normalizedMessage
+    .replace(/\n#(\d+)\n/g, `($1/${repeatCount}) ${diceRollStr} `)
+    .split('\n')
+    .slice(1);
+};
+
+export type MessageParser = (
+  message: string,
+) => ReturnType<SingleMessageParser>[];
+
+export const parseMessage: MessageParser = (message) => {
+  return convertRepeatDiceRollMessage(message).map(parseSingleMessage);
 };

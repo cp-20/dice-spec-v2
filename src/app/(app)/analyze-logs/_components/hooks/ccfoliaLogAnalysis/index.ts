@@ -30,10 +30,12 @@ export const analyzeCcfoliaLog = (html: string) => {
 
   const extractedLogs = logElements.map(extractLogFromElement);
   const parsedLogs = extractedLogs
-    .map(({ message, ...log }) => ({
-      ...log,
-      result: parseMessage(message),
-    }))
+    .flatMap(({ message, ...log }) =>
+      parseMessage(message).map((result) => ({
+        ...log,
+        result,
+      })),
+    )
     .filter(({ result }) => result !== undefined) as ParsedLog[];
 
   const analyzedLogs = parsedLogs.map((log) => ({
