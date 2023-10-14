@@ -12,8 +12,8 @@ const Coc7thMatcher: Matcher = (message) => {
   const match = message.match(CoC7thDiceRollRegex);
   if (match === null) return;
 
-  const diceTarget = parseInt(match[2], 10);
-  const diceResultNumber = match[2].includes(',')
+  const diceTarget = parseInt(match[1], 10);
+  const diceResultNumber = match[3].includes(',')
     ? undefined
     : parseInt(match[4], 10);
   const diceResult = match[5];
