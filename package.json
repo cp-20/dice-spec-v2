@@ -42,7 +42,7 @@
     "cmdk": "^0.2.0",
     "deepmerge": "^4.3.1",
     "firebase": "^10.6.0",
-    "jotai": "^2.5.0",
+    "jotai": "^2.5.1",
     "lucide-react": "^0.288.0",
     "nanoid": "^5.0.3",
     "next": "^13.5.6",
