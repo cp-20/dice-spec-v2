@@ -125,8 +125,8 @@ dependencies:
 
 devDependencies:
   '@next/bundle-analyzer':
-    specifier: ^14.0.2
-    version: 14.0.2
+    specifier: ^14.0.4
+    version: 14.0.4
   '@svgr/webpack':
     specifier: ^8.1.0
     version: 8.1.0(typescript@5.2.2)
@@ -2287,8 +2287,8 @@ packages:
     resolution: {integrity: sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==}
     dev: false
 
-  /@next/bundle-analyzer@14.0.2:
-    resolution: {integrity: sha512-EsFpYsXUq0oj3LnTCCWQ6bH8D2M1MWVJJCQ7hn4g+rP4/ksfOMjfsHpsOUscaAadLwdXoupmRqsQ23Y/7NlpDg==}
+  /@next/bundle-analyzer@14.0.4:
+    resolution: {integrity: sha512-Nn2PiCkFBJBlVmpSGVNItpISws0fuc9E8AkCafBz/moRv1cfASOpFBBVzSRfWLP9BPdAhfDkb6TafN0rvs2IJQ==}
     dependencies:
       webpack-bundle-analyzer: 4.7.0
     transitivePeerDependencies:
