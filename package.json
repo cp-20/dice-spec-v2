@@ -59,7 +59,7 @@
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
     "use-sound": "^4.0.1",
-    "valibot": "^0.19.0"
+    "valibot": "^0.25.0"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^14.0.4",
