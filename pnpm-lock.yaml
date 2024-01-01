@@ -120,8 +120,8 @@ dependencies:
     specifier: ^4.0.1
     version: 4.0.1(react@18.2.0)
   valibot:
-    specifier: ^0.19.0
-    version: 0.19.0
+    specifier: ^0.25.0
+    version: 0.25.0
 
 devDependencies:
   '@next/bundle-analyzer':
@@ -10317,8 +10317,8 @@ packages:
       convert-source-map: 2.0.0
     dev: true
 
-  /valibot@0.19.0:
-    resolution: {integrity: sha512-vzeuctzVirzoiDN9BTc4GludHaSgFYoy6AnbHOjfBUbX0DibqKuNCr2Ti4ox8eLdBdDSEZSZ3LwXZgjL6aE4RQ==}
+  /valibot@0.25.0:
+    resolution: {integrity: sha512-cmD0ca15oyAbT75iYLNW6uU6doAeIwYfOshpXka/E1Bx4frzbkrgb7gvkI7K0YK/DVOksei4FfxWfRoBP3NFTg==}
     dev: false
 
   /validate-npm-package-license@3.0.4:
