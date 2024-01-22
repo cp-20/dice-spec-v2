@@ -84,8 +84,8 @@ dependencies:
     specifier: ^5.6.0
     version: 5.6.0(@babel/core@7.23.0)(next@13.5.6)(webpack@5.88.2)
   nextjs13-progress:
-    specifier: ^1.1.45
-    version: 1.1.45(next@13.5.6)(react@18.2.0)
+    specifier: ^1.2.5
+    version: 1.2.5(next@13.5.6)(react@18.2.0)
   nprogress:
     specifier: ^0.2.0
     version: 0.2.0
@@ -4140,8 +4140,8 @@ packages:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
     dev: true
 
-  /@types/nprogress@0.2.1:
-    resolution: {integrity: sha512-TYuyVnp+nOnimgdOydDIDYIxv2kSeuJZw4tF0p/KG7hpzcMF1WkHaREwM8O4blqfT1F7rq0nht6Ko2KVUfWzBA==}
+  /@types/nprogress@0.2.3:
+    resolution: {integrity: sha512-k7kRA033QNtC+gLc4VPlfnue58CM1iQLgn1IMAU8VPHGOj7oIHPp9UlhedEnD/Gl8evoCjwkZjlBORtZ3JByUA==}
     dev: false
 
   /@types/prop-types@15.7.5:
@@ -7854,13 +7854,13 @@ packages:
       - babel-plugin-macros
     dev: false
 
-  /nextjs13-progress@1.1.45(next@13.5.6)(react@18.2.0):
-    resolution: {integrity: sha512-cgXTS7g5pt5hyR61ShA9arV5J07qhD7wkoBn8YRADbYF6ced3w7x6d8kZqCykyUVFL0qG7mBQA6xY2s7+pqucA==}
+  /nextjs13-progress@1.2.5(next@13.5.6)(react@18.2.0):
+    resolution: {integrity: sha512-tgDpIy1mYSLzqnZ84GqMBrftHvgaIVURNza/HuFxVgKBoXD+4do2tOtg/ksNR/GfmTRuNTvyyeZrhJyt1DCAzQ==}
     peerDependencies:
       next: '>=13.4'
       react: '>=17.0.0'
     dependencies:
-      '@types/nprogress': 0.2.1
+      '@types/nprogress': 0.2.3
       next: 13.5.6(@babel/core@7.23.0)(react-dom@18.2.0)(react@18.2.0)
       nprogress: 0.2.0
       prop-types: 15.8.1
