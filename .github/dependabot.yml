@@ -11,10 +11,7 @@ updates:
     schedule:
       interval: 'weekly'
     groups:
-      patch-update:
+      non-majors:
         update-types:
+          - 'minor'
           - 'patch'
-      production-dependencies:
-        dependency-type: 'production'
-      development-dependencies:
-        dependency-type: 'development'
