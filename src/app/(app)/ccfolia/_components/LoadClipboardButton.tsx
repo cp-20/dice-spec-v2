@@ -17,7 +17,7 @@ import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
 
 export const InputFormValueSchema = object({
-  ...InputFormSchema.object,
+  ...InputFormSchema.entries,
   status: array(
     transform(
       object({
