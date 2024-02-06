@@ -3,7 +3,7 @@
 import type { FC } from 'react';
 import { useAdvancedSettings } from './hooks/useAdvancedSettings';
 import { useDiceRollOption } from './hooks/useDiceRollOption';
-import { ContainerSection } from '@/app/(app)/_components/ContainerSection';
+import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { RichText } from '@/shared/components/elements/RichText';
 
 export const DiceBotHelp: FC = () => {

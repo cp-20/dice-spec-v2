@@ -3,7 +3,7 @@
 import clsx from 'clsx';
 import { type FC } from 'react';
 import { useDiceLogs, type DiceLog } from './hooks/useDiceLogs';
-import { ContainerSection } from '@/app/(app)/_components/ContainerSection';
+import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 
 export type DiceOutputProps = {
   logs: DiceLog[];

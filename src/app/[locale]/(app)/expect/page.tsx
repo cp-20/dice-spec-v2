@@ -7,8 +7,8 @@ import { InlineCommand } from './_components/InlineCommand';
 import {
   PageDescriptionContainer,
   PageDescriptionText,
-} from '@/app/(app)/_components/PageDescription';
-import { PageTitle } from '@/app/(app)/_components/PageTitle';
+} from '@/app/[locale]/(app)/_components/PageDescription';
+import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';
 
 export const metadata = metadataGenerator({

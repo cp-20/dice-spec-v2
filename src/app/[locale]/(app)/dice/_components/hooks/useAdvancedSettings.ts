@@ -2,7 +2,7 @@ import { atom } from 'jotai';
 import {
   AdvancedSettingsFormSchema,
   type AdvancedSettings,
-} from '@/app/(app)/dice/_components/AdvancedSettingsContent';
+} from '@/app/[locale]/(app)/dice/_components/AdvancedSettingsContent';
 import { bcdiceApiEndpoint } from '@/shared/lib/const';
 import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
 

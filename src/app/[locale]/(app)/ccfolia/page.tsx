@@ -6,8 +6,8 @@ import { ResultView } from './_components/ResultView';
 import {
   PageDescriptionContainer,
   PageDescriptionText,
-} from '@/app/(app)/_components/PageDescription';
-import { PageTitle } from '@/app/(app)/_components/PageTitle';
+} from '@/app/[locale]/(app)/_components/PageDescription';
+import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { Toaster } from '@/shared/components/ui/toaster';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';
 
