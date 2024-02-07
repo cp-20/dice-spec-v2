@@ -8,13 +8,15 @@ i18n.init(i18nextInitOptions, (err) => {
   }
 });
 
-export const wrapRootLayout = (RootLayout: FC<{ children: ReactNode }>) => {
+export const wrapRootLayout = (
+  RootLayout: FC<{ children: ReactNode; locale: string }>,
+) => {
   const WrappedRootLayout: FC<{
     children: ReactNode;
     params: { locale: string };
   }> = ({ children, params: { locale } }) => {
     i18n.changeLanguage(locale);
-    return <RootLayout>{children}</RootLayout>;
+    return <RootLayout locale={locale}>{children}</RootLayout>;
   };
 
   return WrappedRootLayout;

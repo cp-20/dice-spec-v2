@@ -1,3 +1,4 @@
+import type { TablerIconsProps } from '@tabler/icons-react';
 import {
   IconBrandDiscord,
   IconBrandX,
@@ -6,7 +7,9 @@ import {
   IconTimeline,
 } from '@tabler/icons-react';
 import { IconBrandGithub } from '@tabler/icons-react';
+import { t } from 'i18next';
 import type { NextPage } from 'next';
+import type { FC } from 'react';
 import { ExternalLinkWithIcon } from './_components/ExternalLinkWithIcon';
 import { LinkableIconPanel } from './_components/LinkableIconPanel';
 import { Panel } from './_components/Panel';
@@ -18,7 +21,8 @@ import { UpdateAnnouncement } from '@/shared/components/elements/UpdateAnnouncem
 import { Button } from '@/shared/components/ui/button';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';
 import LogoIcon from '/public/icon.svg';
-import TitleLogo from '/public/title-logo.svg';
+import TitleLogoJP from '/public/title-logo.svg';
+import TitleLogoEN from '/public/title-logo-en.svg';
 
 export const metadata = metadataGenerator({
   title: '',
@@ -27,6 +31,14 @@ export const metadata = metadataGenerator({
 });
 
 const LandingPage: NextPage = () => {
+  const featureIcons: Record<string, FC<TablerIconsProps>> = {
+    expect: IconSearch,
+    dice: IconDice5,
+    'analyze-logs': IconTimeline,
+  };
+
+  const TitleLogo = t('lang') === 'en' ? TitleLogoEN : TitleLogoJP;
+
   return (
     <>
       <div className="flex min-h-screen w-full flex-col">
@@ -42,81 +54,57 @@ const LandingPage: NextPage = () => {
                 <TitleLogo className="max-w-full text-slate-800 md:h-16" />
               </h1>
 
-              <Text className="max-md:text-center">
-                <span className="inline-block whitespace-nowrap">
-                  ダイススペックは
-                </span>
-                <span className="inline-block whitespace-nowrap">
-                  TRPGのちょっとしたツールを
-                </span>
-                <span className="inline-block whitespace-nowrap">
-                  集めたサービスです。
-                </span>
+              <Text className="text-balance max-md:text-center">
+                {t('landing-page:catchphrase')}
               </Text>
             </div>
           </div>
 
           <Button className="font-bold" asChild>
-            <CustomLink href="/expect">今すぐ使ってみる！</CustomLink>
+            <CustomLink href={t('link', { href: '/expect' })}>
+              {t('landing-page:try-it-out')}
+            </CustomLink>
           </Button>
 
           <div>
             <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">
-              ダイススペックの機能
+              {t('landing-page:features.label')}
             </H2>
 
             <div className="flex gap-4 max-md:flex-col">
-              <LinkableIconPanel
-                href="/expect"
-                icon={IconSearch}
-                label="ダイス予測"
-                contents="ダイスの期待値などを計算します。ダイスを振るときに、どういう結果が出るのかを予測できます。"
-                className="md:flex-1"
-              />
-              <LinkableIconPanel
-                href="/dice"
-                icon={IconDice5}
-                label="ダイスロール"
-                contents="好きなダイスを振ることができます。BCDiceを使っているため、CCFOLIAなどのセッションツールと変わらない使い心地で使えます。"
-                className="md:flex-1"
-              />
-              <LinkableIconPanel
-                href="/analyze-logs"
-                icon={IconTimeline}
-                label="ログ解析"
-                contents="ココフォリアのログを分析してダイスの平均値などを計算します。「このセッションはダイス運悪かった気がするけど実際どうなんだろう？」と思っているあなた、ぜひ一度使ってみてください！"
-                className="md:flex-1"
-              />
+              {['expect', 'dice', 'analyze-logs'].map((key) => (
+                <LinkableIconPanel
+                  key={key}
+                  href={t('link', { href: `/${key}` })}
+                  icon={featureIcons[key]}
+                  label={t(`common:${key}.title`)}
+                  contents={t(`common:${key}.description`)}
+                  className="md:flex-1"
+                />
+              ))}
             </div>
           </div>
 
           <div>
             <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">
-              ダイススペックの特長
+              {t('landing-page:characteristics.label')}
             </H2>
 
             <div className="flex gap-4 max-md:flex-col">
-              <Panel
-                label="完全無料"
-                contents="ダイススペックの利用に料金は一切かかりません。"
-                className="md:flex-1"
-              />
-              <Panel
-                label="軽快な動作"
-                contents="ダイススペックはパフォーマンスを意識した設計になっており、処理を待つ時間はほとんどありません。"
-                className="md:flex-1"
-              />
-              <Panel
-                label="オープンソース"
-                contents="ダイススペックは全てオープンソースで開発されており、誰でも自由に閲覧・修正提案を行うことができます。なのでユーザーも安心して使うことができます"
-                className="md:flex-1"
-              />
+              {[0, 1, 2].map((key) => (
+                <Panel
+                  key={key}
+                  label={t(`landing-page:characteristics.${key}.label`)}
+                  contents={t(`landing-page:characteristics.${key}.contents`)}
+                  className="md:flex-1"
+                />
+              ))}
             </div>
           </div>
 
           <div>
             <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">
-              関連リンク
+              {t('landing-page:links.label')}
             </H2>
 
             <div className="flex gap-4 max-md:flex-col">
@@ -124,26 +112,26 @@ const LandingPage: NextPage = () => {
                 icon={IconBrandDiscord}
                 href="https://discord.gg/YQ7negGTUK"
               >
-                サポートコミュニティ
+                {t('landing-page:links.discord')}
               </ExternalLinkWithIcon>
               <ExternalLinkWithIcon
                 icon={IconBrandX}
                 href="https://twitter.com/__cp20__"
               >
-                開発者のつぶやき
+                {t('landing-page:links.twitter')}
               </ExternalLinkWithIcon>
               <ExternalLinkWithIcon
                 icon={IconBrandGithub}
                 href="https://github.com/cp-20/dice-spec-v2"
               >
-                GitHubのリポジトリ
+                {t('landing-page:links.github')}
               </ExternalLinkWithIcon>
             </div>
           </div>
 
           <div>
             <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">
-              クレジット
+              {t('landing-page:credit')}
             </H2>
 
             <a

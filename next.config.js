@@ -2,9 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    typedRoutes: true,
-  },
   redirects: async () => [
     {
       source: '/analyze-logs/og',

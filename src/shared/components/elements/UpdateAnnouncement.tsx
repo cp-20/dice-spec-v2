@@ -1,6 +1,7 @@
 'use client';
 
 import { IconX } from '@tabler/icons-react';
+import { t } from 'i18next';
 import { atom } from 'jotai';
 import { useCallback, type FC } from 'react';
 import { boolean } from 'valibot';
@@ -28,14 +29,14 @@ export const UpdateAnnouncement: FC = () => {
   return (
     <div className="space-between flex items-center bg-slate-200 p-4 py-2 max-sm:p-2">
       <div className="max-sm: flex flex-1 flex-wrap justify-center max-sm:text-sm">
-        <span>ダイススペックはv2にアップデートされました。</span>
+        <span>{t('common:update-announcement.label')}</span>
         <a
           href="https://v1-dicespec.vercel.app"
           target="_blank"
           rel="noopener noreferrer"
           className="underline hover:opacity-80"
         >
-          もとのv1はここからアクセスできます。
+          {t('common:update-announcement.v1')}
         </a>
       </div>
       <Button
