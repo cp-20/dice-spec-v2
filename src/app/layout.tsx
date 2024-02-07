@@ -6,6 +6,7 @@ import type { FC, ReactNode } from 'react';
 import { GoogleTagManager } from '@/shared/components/GoogleTagManager';
 import { WebVitals } from '@/shared/components/elements/WebVitals';
 import { fontNotoSansJP } from '@/shared/fonts/NotoSansJP';
+import { wrapRootLayout } from '@/shared/i18n/layout';
 
 const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
@@ -25,4 +26,4 @@ const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
   );
 };
 
-export default RootLayout;
+export default wrapRootLayout(RootLayout);

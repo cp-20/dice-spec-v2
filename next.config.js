@@ -1,5 +1,3 @@
-const v1AppUrl = 'https://v1-dicespec.vercel.app';
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -8,12 +6,6 @@ const nextConfig = {
     typedRoutes: true,
   },
   redirects: async () => [
-    {
-      source: '/en/:path*',
-      destination: `${v1AppUrl}/en/:path*`,
-      basePath: false,
-      permanent: true,
-    },
     {
       source: '/analyze-logs/og',
       destination: `/analyze-logs`,
