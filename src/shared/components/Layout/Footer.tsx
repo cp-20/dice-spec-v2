@@ -12,6 +12,6 @@ export const Footer: FC<ComponentProps<'footer'>> = ({
     )}
     {...props}
   >
-    © 2022-2023 cp20
+    © 2022-2024 cp20
   </footer>
 );

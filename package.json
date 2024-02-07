@@ -1,6 +1,6 @@
 {
   "name": "dice-spec-v2",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "private": true,
   "author": "cp20",
   "license": "MIT",
@@ -42,10 +42,12 @@
     "cmdk": "^0.2.1",
     "deepmerge": "^4.3.1",
     "firebase": "^10.8.0",
+    "i18next": "^23.8.2",
     "jotai": "^2.6.4",
     "lucide-react": "^0.323.0",
     "nanoid": "^5.0.5",
     "next": "^14.1.0",
+    "next-i18n-router": "^5.2.1",
     "next-pwa": "^5.6.0",
     "nextjs13-progress": "^1.2.5",
     "nprogress": "^0.2.0",
@@ -53,6 +55,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.50.1",
+    "react-i18next": "^14.0.5",
     "ress": "^5.0.2",
     "sharp": "^0.33.2",
     "swr": "^2.2.4",
@@ -109,5 +112,6 @@
     "budgetPercentIncreaseRed": 20,
     "minimumChangeThreshold": 0,
     "showDetails": true
-  }
+  },
+  "packageManager": "pnpm@8.15.1+sha256.245fe901f8e7fa8782d7f17d32b6a83995e2ae03984cb5b62b8949bfdc27c7b5"
 }
