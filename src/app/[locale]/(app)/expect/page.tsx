@@ -27,7 +27,6 @@ const insertInlineCommand = (value: string) => {
   let index = 0;
   while ((match = inlineCommandRegex.exec(value)) !== null) {
     const [inlineCommand] = match;
-    console.log(inlineCommand, match);
     result.push(value.slice(index, match.index));
     result.push(<InlineCommand>{inlineCommand.slice(1, -1)}</InlineCommand>);
     index = match.index + inlineCommand.length;

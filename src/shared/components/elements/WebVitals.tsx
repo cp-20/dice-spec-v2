@@ -8,8 +8,6 @@ export const WebVitals: FC = () => {
   const { sendRawEvent } = useGoogleAnalytics();
 
   useReportWebVitals((metric) => {
-    console.log(metric);
-
     const { id, name, value, rating } = metric;
 
     sendRawEvent({

@@ -40,8 +40,6 @@ export const LogAnalysisCharts: FC = () => {
   const { character } = useCharacterSelect();
   const result = useCharacterLogAnalysis(character);
 
-  console.log(result);
-
   useEffect(() => {
     import('chart.js').then(
       ({ Chart, BarController, CategoryScale, LinearScale, BarElement }) => {
