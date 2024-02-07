@@ -1,4 +1,5 @@
 import { IconPlus, IconTrash } from '@tabler/icons-react';
+import { t } from 'i18next';
 import type { FC } from 'react';
 import {
   numberFormatterGenerator,
@@ -28,13 +29,13 @@ export const StatusInput: FC<StatusInputProps> = ({ value, onChange }) => {
           <div key={status.key} className="flex items-center gap-2">
             <Input
               value={status.label}
-              placeholder="ラベル"
+              placeholder={t('ccfolia:input.status.status-label')}
               className="h-8 flex-1 @xs:h-10"
               onChange={handleStatusChange(status, 'label')}
             />
             <Input
               value={status.value}
-              placeholder="現在値"
+              placeholder={t('ccfolia:input.status.status-value')}
               className="h-8 w-1/5 @xs:h-10"
               onChange={handleStatusChange(
                 status,
@@ -44,7 +45,7 @@ export const StatusInput: FC<StatusInputProps> = ({ value, onChange }) => {
             />
             <Input
               value={status.max}
-              placeholder="最大値"
+              placeholder={t('ccfolia:input.status.status-max')}
               className="h-8 w-1/5 @xs:h-10"
               onChange={handleStatusChange(
                 status,
@@ -81,7 +82,7 @@ export const StatusInput: FC<StatusInputProps> = ({ value, onChange }) => {
         }}
       >
         <IconPlus />
-        <span>新しいステータスを追加</span>
+        <span>{t('ccfolia:input.status.add')}</span>
       </Button>
     </div>
   );

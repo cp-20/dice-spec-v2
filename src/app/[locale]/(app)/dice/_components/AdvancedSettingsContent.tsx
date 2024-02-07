@@ -2,6 +2,7 @@
 
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import { IconRestore } from '@tabler/icons-react';
+import { t } from 'i18next';
 import { useEffect, type FC } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -88,7 +89,9 @@ export const AdvancedSettingsContent: FC = () => {
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-                <FormLabel>ヘルプを表示する</FormLabel>
+                <FormLabel>
+                  {t('dice:advanced.advanced-settings.show-help')}
+                </FormLabel>
               </FormItem>
             )}
           />
@@ -103,7 +106,9 @@ export const AdvancedSettingsContent: FC = () => {
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-                <FormLabel>サウンドを再生する</FormLabel>
+                <FormLabel>
+                  {t('dice:advanced.advanced-settings.enable-sound')}
+                </FormLabel>
               </FormItem>
             )}
           />
@@ -114,7 +119,9 @@ export const AdvancedSettingsContent: FC = () => {
           render={({ field }) => {
             return (
               <FormItem>
-                <FormLabel>音量</FormLabel>
+                <FormLabel>
+                  {t('dice:advanced.advanced-settings.volume')}
+                </FormLabel>
                 <FormControl>
                   <Slider
                     defaultValue={[field.value]}
@@ -133,7 +140,9 @@ export const AdvancedSettingsContent: FC = () => {
           name="bcdiceApiEndpoint"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>使用するBCDiceAPIサーバー</FormLabel>
+              <FormLabel>
+                {t('dice:advanced.advanced-settings.bcdice-server')}
+              </FormLabel>
               <div className="relative">
                 <FormControl>
                   <Input

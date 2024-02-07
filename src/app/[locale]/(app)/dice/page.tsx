@@ -1,4 +1,5 @@
 import { IconDice5 } from '@tabler/icons-react';
+import { t } from 'i18next';
 import type { NextPage } from 'next';
 import { AdvancedSettings } from './_components/AdvancedSettings';
 import { DiceBotHelp } from './_components/DiceBotDescription';
@@ -29,10 +30,10 @@ const DicePage: NextPage = async () => {
     <>
       <div className="space-y-12">
         <div>
-          <PageTitle icon={IconDice5}>ダイスロール</PageTitle>
+          <PageTitle icon={IconDice5}>{t('common:dice.title')}</PageTitle>
           <PageDescriptionContainer>
             <PageDescriptionText>
-              1d6、1d100、2d6、3d6、1d10といった好きなダイスを簡単に振ることができます。BCDiceを使うこともでき、ココフォリアなどのセッションツールと変わらない使い心地で使えます。
+              {t('common:dice.description')}
             </PageDescriptionText>
           </PageDescriptionContainer>
         </div>
@@ -49,7 +50,9 @@ const DicePage: NextPage = async () => {
             <div className="space-y-12">
               <div className="space-y-4">
                 <div>
-                  <div className="mb-2 text-sm font-bold">ゲームシステム</div>
+                  <div className="mb-2 text-sm font-bold">
+                    {t('dice:advanced.game-system.label')}
+                  </div>
                   <GameSystemSelect />
                 </div>
 

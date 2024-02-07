@@ -3,6 +3,7 @@
 import { IconBrandX, IconLoader } from '@tabler/icons-react';
 import type { Plugin } from 'chart.js';
 import merge from 'deepmerge';
+import { t } from 'i18next';
 import dynamic from 'next/dynamic';
 import { type FC, useEffect } from 'react';
 import type { withNumberDiceResult } from './hooks/ccfoliaLogAnalysis/diceResultAnalyzer';
@@ -113,7 +114,7 @@ export const LogAnalysisCharts: FC = () => {
         ) : (
           <div className="flex animate-slide-in-top gap-2" key="share-button">
             <IconBrandX />
-            <span>解析結果をシェア</span>
+            <span>{t('analyze-logs:stats.share')}</span>
           </div>
         )}
       </Button>

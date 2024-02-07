@@ -1,5 +1,6 @@
 'use client';
 
+import { t } from 'i18next';
 import type { ComponentProps, FC } from 'react';
 import { DiceLog } from './DiceLog';
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
@@ -11,7 +12,7 @@ export const DiceLogList: FC<ComponentProps<'div'>> = ({ ...props }) => {
   const result = useCharacterLogAnalysis(character);
 
   return (
-    <ContainerSection label="ダイスログ" {...props}>
+    <ContainerSection label={t('analyze-logs:log')} {...props}>
       {result !== undefined &&
         result.diceResults.map((log, index) => (
           <DiceLog

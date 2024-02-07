@@ -1,6 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
+import { t } from 'i18next';
 import { useState, type FC, type ReactNode } from 'react';
 import {
   Tabs,
@@ -33,13 +34,13 @@ export const DiceRollModeTabs: FC<DiceRollModeTabsProps> = ({
           className="z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
           value="simple"
         >
-          シンプル
+          {t('dice:simple.label')}
         </TabsTrigger>
         <TabsTrigger
           className="z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
           value="advanced"
         >
-          アドバンスド
+          {t('dice:advanced.label')}
         </TabsTrigger>
       </TabsList>
       <TabsContent

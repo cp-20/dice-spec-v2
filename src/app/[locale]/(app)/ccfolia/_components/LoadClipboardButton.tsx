@@ -2,6 +2,7 @@
 
 import { IconCheck, IconClipboard } from '@tabler/icons-react';
 import clsx from 'clsx';
+import { t } from 'i18next';
 import { useCallback, type FC, useState } from 'react';
 import {
   array,
@@ -64,9 +65,8 @@ export const LoadClipboardButton: FC = () => {
       };
     } catch (err) {
       toast({
-        title: 'クリップボードから読み込みに失敗しました',
-        description:
-          '形式が正しくないか、クリップボードからの読み込みが許可されていません',
+        title: t('ccfolia:load-clipboard.error'),
+        description: t('ccfolia:load-clipboard.error-description'),
         variant: 'destructive',
       });
     }
@@ -89,7 +89,7 @@ export const LoadClipboardButton: FC = () => {
         )}
       >
         <IconClipboard />
-        <span>クリップボードから読み込み</span>
+        <span>{t('ccfolia:load-clipboard.button')}</span>
       </div>
     </Button>
   );

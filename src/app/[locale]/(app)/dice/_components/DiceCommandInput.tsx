@@ -1,5 +1,6 @@
 'use client';
 
+import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import type { FC, FormEventHandler } from 'react';
 import { useDiceRoll } from './hooks/useDiceRoll';
@@ -24,7 +25,7 @@ export const DiceCommandInput: FC = () => {
     if (result.ok) {
       setErrorMessage('');
     } else {
-      setErrorMessage('ロールに失敗しました。コマンドを見直してみてください');
+      setErrorMessage(t('error-failed'));
     }
   };
 
@@ -32,7 +33,7 @@ export const DiceCommandInput: FC = () => {
     if (isValid) {
       setErrorMessage('');
     } else {
-      setErrorMessage('コマンドの形式が不正です');
+      setErrorMessage(t('error-invalid'));
     }
   }, [isValid]);
 
@@ -40,13 +41,13 @@ export const DiceCommandInput: FC = () => {
     <form className="space-y-2" onSubmit={handleSubmit}>
       <div className="flex gap-4">
         <Input
-          placeholder="コマンドを入力してください"
+          placeholder={t('dice:advanced.input.placeholder')}
           className="flex-1"
           value={command}
           onChange={(e) => setCommand(e.target.value)}
         />
         <Button type="submit" className="font-bold" disabled={!isValid}>
-          ロール
+          {t('dice:advanced.input.roll-dice')}
         </Button>
       </div>
       {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}

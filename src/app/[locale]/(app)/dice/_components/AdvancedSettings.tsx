@@ -1,6 +1,7 @@
 'use client';
 
 import { IconAdjustments } from '@tabler/icons-react';
+import { t } from 'i18next';
 import type { FC } from 'react';
 import { AdvancedSettingsContent } from './AdvancedSettingsContent';
 import {
@@ -16,7 +17,7 @@ export const AdvancedSettings: FC = () => (
       <AccordionTrigger className="p-0">
         <div className="inline-flex gap-2 p-2 font-bold">
           <IconAdjustments />
-          <span>高度な設定</span>
+          <span>{t('dice:advanced.advanced-settings.label')}</span>
         </div>
       </AccordionTrigger>
       <AccordionContent>

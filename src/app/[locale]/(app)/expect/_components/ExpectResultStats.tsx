@@ -1,5 +1,6 @@
 'use client';
 
+import { t } from 'i18next';
 import type { FC, ReactNode } from 'react';
 import type { DiceExpecterResult, SuccessExpectResult } from './hooks/expecter';
 import { useDiceExpecterResult } from './hooks/useDiceExpecter';
@@ -54,15 +55,21 @@ export const ExpectResultStats: FC = () => {
     <div className="@container">
       <div className="grid gap-2 @[300px]:grid-cols-2 @[400px]:grid-cols-3 @[800px]:grid-cols-6">
         <Stats
-          label="確率"
+          label={t('expect:stats.chance')}
           number={chance}
           unit={chance !== '-' ? '%' : null}
         />
-        <Stats label="平均" number={getMeanFormat(result)} />
-        <Stats label="信頼区間 (P95)" number={getCIFormat(result)} />
-        <Stats label="標準偏差" number={getSDFormat(result)} />
-        <Stats label="分散" number={getVarianceFormat(result)} />
-        <Stats label="範囲" number={getRangeFormat(result)} />
+        <Stats label={t('expect:stats.mean')} number={getMeanFormat(result)} />
+        <Stats label={t('expect:stats.ci')} number={getCIFormat(result)} />
+        <Stats label={t('expect:stats.sd')} number={getSDFormat(result)} />
+        <Stats
+          label={t('expect:stats.variance')}
+          number={getVarianceFormat(result)}
+        />
+        <Stats
+          label={t('expect:stats.range')}
+          number={getRangeFormat(result)}
+        />
       </div>
     </div>
   );

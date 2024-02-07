@@ -2,6 +2,7 @@
 
 import { IconCheck, IconClipboard } from '@tabler/icons-react';
 import clsx from 'clsx';
+import { t } from 'i18next';
 import { useCallback, type FC, useState } from 'react';
 import { useFormResult } from './hooks/useFormResult';
 import { Button } from '@/shared/components/ui/button';
@@ -24,7 +25,7 @@ export const ResultView: FC = () => {
 
   return (
     <div className="space-y-2">
-      <div className="text-sm font-bold">出力結果</div>
+      <div className="text-sm font-bold">{t('ccfolia:result')}</div>
       <Textarea value={formResult} readOnly />
       <Button
         variant="secondary"
@@ -42,7 +43,7 @@ export const ResultView: FC = () => {
           )}
         >
           <IconClipboard />
-          <span>クリップボードにコピー</span>
+          <span>{t('ccfolia:copy-to-clipboard')}</span>
         </div>
       </Button>
     </div>

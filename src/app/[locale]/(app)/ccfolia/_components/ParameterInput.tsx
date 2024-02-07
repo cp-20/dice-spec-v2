@@ -1,4 +1,5 @@
 import { IconPlus, IconTrash } from '@tabler/icons-react';
+import { t } from 'i18next';
 import type { FC } from 'react';
 import { variableFieldChangeHandlerGenerator } from './composable/variableFieldChangeHandler';
 import type { InputFormSchemaType } from './hooks/useInputForm';
@@ -28,13 +29,13 @@ export const ParameterInput: FC<ParameterInputProps> = ({
           <div key={status.key} className="flex items-center gap-2">
             <Input
               value={status.label}
-              placeholder="ラベル"
+              placeholder={t('ccfolia:input.params.param-label')}
               className="h-8 flex-1 @xs:h-10"
               onChange={handleParameterChange(status, 'label')}
             />
             <Input
               value={status.value}
-              placeholder="値"
+              placeholder={t('ccfolia:input.params.param-value')}
               className="h-8 w-1/4 @xs:h-10"
               onChange={handleParameterChange(status, 'value')}
             />
@@ -66,7 +67,7 @@ export const ParameterInput: FC<ParameterInputProps> = ({
         }}
       >
         <IconPlus />
-        <span>新しいパラメータを追加</span>
+        <span>{t('ccfolia:input.params.add')}</span>
       </Button>
     </div>
   );

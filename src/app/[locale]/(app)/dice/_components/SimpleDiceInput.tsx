@@ -1,6 +1,7 @@
 'use client';
 
 import { IconMinus, IconPlus } from '@tabler/icons-react';
+import { t } from 'i18next';
 import { useCallback, type FC } from 'react';
 import type { AvailableDice } from './hooks/useSimpleDiceInput';
 import { useSimpleDiceInput } from './hooks/useSimpleDiceInput';
@@ -35,10 +36,10 @@ export const SimpleDiceInput: FC = () => {
           variant="secondary"
           onClick={handleResetDice}
         >
-          リセット
+          {t('dice:simple.reset-dice')}
         </Button>
         <Button className="flex-1" variant="default" onClick={handleRollDice}>
-          ダイスロール
+          {t('dice:simple.roll-dice')}
         </Button>
       </div>
     </div>

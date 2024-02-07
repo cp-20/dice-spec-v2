@@ -1,5 +1,6 @@
 'use client';
 
+import { t } from 'i18next';
 import type { FC } from 'react';
 import {
   useDiceCommandInput,
@@ -27,17 +28,17 @@ export const DiceCommandInput: FC = () => {
       <div className="flex gap-2">
         <Input
           className="flex-1"
-          placeholder="計算式を入力してください"
+          placeholder={t('expect:input.placeholder')}
           value={command}
           onChange={(e) => setCommand(e.target.value)}
         />
         <Button className="font-bold" onClick={recalculate}>
-          計算
+          {t('expect:input.calculation')}
         </Button>
       </div>
       {expectFailed && (
         <div className="text-sm text-red-500">
-          計算に失敗しました。計算式を確認してください。
+          {t('expect:input.calculation-error')}
         </div>
       )}
       <div className="items-top flex space-x-2">
@@ -52,7 +53,7 @@ export const DiceCommandInput: FC = () => {
           htmlFor="autoRecalculation"
           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
-          変更時に自動で再計算
+          {t('expect:input.auto-recalculation-option')}
         </label>
       </div>
     </div>

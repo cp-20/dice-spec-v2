@@ -1,6 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
+import { t } from 'i18next';
 import { type FC } from 'react';
 import { useDiceLogs, type DiceLog } from './hooks/useDiceLogs';
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
@@ -16,7 +17,11 @@ export const DiceOutput: FC = () => {
 };
 
 export const PresentialDiceOutput: FC<DiceOutputProps> = ({ logs }) => (
-  <ContainerSection label="出力" scrollable className="h-40">
+  <ContainerSection
+    label={t('dice:advanced.output')}
+    scrollable
+    className="h-40"
+  >
     <div>
       {logs.map((log) => (
         <div key={log.key} className="flex text-sm">

@@ -1,4 +1,5 @@
 import { IconChevronsRight, IconFileExport } from '@tabler/icons-react';
+import { t } from 'i18next';
 import type { NextPage } from 'next';
 import { InputForm } from './_components/InputForm';
 import { LoadClipboardButton } from './_components/LoadClipboardButton';
@@ -21,11 +22,9 @@ const CcfoliaPage: NextPage = () => (
   <>
     <div className="space-y-12">
       <div>
-        <PageTitle icon={IconFileExport}>ココフォリア出力</PageTitle>
+        <PageTitle icon={IconFileExport}>{t('common:ccfolia.title')}</PageTitle>
         <PageDescriptionContainer>
-          <PageDescriptionText>
-            キャラの各項目を記入すると、ココフォリアに出力できる形式にフォーマットしてくれるツールです。逆にココフォリア出力形式から読み込むこともできるので、「ここの値を少しだけ変えたい！」といった場合に便利です。
-          </PageDescriptionText>
+          <PageDescriptionText>{t('ccfolia:usage')}</PageDescriptionText>
         </PageDescriptionContainer>
       </div>
 

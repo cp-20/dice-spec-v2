@@ -1,6 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
+import { t } from 'i18next';
 import { Check, ChevronsUpDown } from 'lucide-react';
 
 import type { FC } from 'react';
@@ -68,7 +69,9 @@ export const GameSystemSelect: FC = () => {
           {systems && system ? (
             systems.find((s) => s.id === system)?.name
           ) : (
-            <span className="text-slate-600">ゲームシステムを選択</span>
+            <span className="text-slate-600">
+              {t('dice:advanced.game-system.button')}
+            </span>
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -79,9 +82,9 @@ export const GameSystemSelect: FC = () => {
       >
         {/* フィルタリングアルゴリズムをいい感じに上書きして最近使ったのを上に出す */}
         <Command className="h-full">
-          <CommandInput placeholder="ゲームシステムを検索" />
+          <CommandInput placeholder={t('dice:advanced.game-system.search')} />
           <CommandEmpty>
-            利用可能なゲームシステムは存在しませんでした
+            {t('dice:advanced.game-system.no-result')}
           </CommandEmpty>
           <CommandGroup
             className={clsx(

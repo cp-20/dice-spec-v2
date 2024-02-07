@@ -1,5 +1,6 @@
 'use client';
 
+import { t } from 'i18next';
 import { type FC } from 'react';
 import { ColorInput } from './ColorInput';
 import { ParameterInput } from './ParameterInput';
@@ -28,10 +29,10 @@ export const InputForm: FC = () => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>名前</FormLabel>
+                <FormLabel>{t('ccfolia:input.name.label')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="キャラクター名"
+                    placeholder={t('ccfolia:input.name.placeholder')}
                     value={field.value}
                     onChange={field.onChange}
                   />
@@ -44,10 +45,10 @@ export const InputForm: FC = () => {
             name="memo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>メモ</FormLabel>
+                <FormLabel>{t('ccfolia:input.memo.label')}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="メモ"
+                    placeholder={t('ccfolia:input.memo.placeholder')}
                     value={field.value}
                     onChange={field.onChange}
                   />
@@ -60,16 +61,16 @@ export const InputForm: FC = () => {
             name="initiative"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>イニシアチブ</FormLabel>
+                <FormLabel>{t('ccfolia:input.initiative.label')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="10"
+                    placeholder={t('ccfolia:input.initiative.placeholder')}
                     value={field.value}
                     onChange={field.onChange}
                   />
                 </FormControl>
                 <FormDescription>
-                  キャラの行動力を示す値です。キャラの表示順序に影響します。
+                  {t('ccfolia:input.initiative.description')}
                 </FormDescription>
               </FormItem>
             )}
@@ -79,16 +80,16 @@ export const InputForm: FC = () => {
             name="externalUrl"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>参照URL</FormLabel>
+                <FormLabel>{t('ccfolia:input.external-url.label')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="https://example.com/some_character"
+                    placeholder={t('ccfolia:input.external-url.placeholder')}
                     value={field.value}
                     onChange={field.onChange}
                   />
                 </FormControl>
                 <FormDescription>
-                  キャラの参照先のURLです。通常はキャラシのURlが入ります。
+                  {t('ccfolia:input.external-url.description')}
                 </FormDescription>
               </FormItem>
             )}
@@ -98,11 +99,9 @@ export const InputForm: FC = () => {
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>ステータス</FormLabel>
+                <FormLabel>{t('ccfolia:input.status.label')}</FormLabel>
                 <FormDescription>
-                  HPやMPなど、キャラに連動して変動するステータスを設定します。
-                  <span className="mx-1 font-bold">{'{ラベル名}'}</span>
-                  のように発言するとチャットから現在値を参照することができます。
+                  {t('ccfolia:input.status.description')}
                 </FormDescription>
                 <FormControl>
                   <StatusInput value={field.value} onChange={field.onChange} />
@@ -115,11 +114,9 @@ export const InputForm: FC = () => {
             name="params"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>パラメータ</FormLabel>
+                <FormLabel>{t('ccfolia:input.params.label')}</FormLabel>
                 <FormDescription>
-                  キャラの能力値など、めったに変動しないパラメータを設定します。
-                  <span className="mx-1 font-bold">{'{ラベル名}'}</span>
-                  のように発言するとチャットから値を参照することができます。
+                  {t('ccfolia:input.params.description')}
                 </FormDescription>
                 <FormControl>
                   <ParameterInput
@@ -135,7 +132,7 @@ export const InputForm: FC = () => {
             name="color"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>チャットカラー</FormLabel>
+                <FormLabel>{t('ccfolia:input.color.label')}</FormLabel>
                 <FormControl>
                   <ColorInput value={field.value} onChange={field.onChange} />
                 </FormControl>
@@ -147,18 +144,16 @@ export const InputForm: FC = () => {
             name="commands"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>チャットパレット</FormLabel>
+                <FormLabel>{t('ccfolia:input.commands.label')}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="CC<=70 【目星】"
+                    placeholder={t('ccfolia:input.commands.description')}
                     value={field.value}
                     onChange={field.onChange}
                   />
                 </FormControl>
                 <FormDescription>
-                  キャラを選択したときにチャットから素早く入力できるコマンドです。
-                  <span className="mx-1 font-bold">{'{攻撃力}'}</span>
-                  のようにすることでステータス・パラメータの値を参照できます。
+                  {t('ccfolia:input.commands.description')}
                 </FormDescription>
               </FormItem>
             )}

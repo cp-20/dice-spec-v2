@@ -1,4 +1,5 @@
 import { IconChevronsRight, IconTimeline } from '@tabler/icons-react';
+import { t } from 'i18next';
 import type { Metadata, NextPage } from 'next';
 import { CharacterSelect } from './_components/CharacterSelect';
 import { DiceLogList } from './_components/DiceLogList';
@@ -41,14 +42,12 @@ export const generateMetadata = ({ searchParams }: props): Metadata => {
 const AnalyzeLogsPage: NextPage = () => (
   <div className="space-y-12">
     <div>
-      <PageTitle icon={IconTimeline}>ログ解析</PageTitle>
+      <PageTitle icon={IconTimeline}>
+        {t('common:analyze-logs.title')}
+      </PageTitle>
       <PageDescriptionContainer>
-        <PageDescriptionText>
-          ココフォリアから出力されたログを解析して、ダイスの出目を抽出・分析します。
-        </PageDescriptionText>
-        <PageDescriptionText>
-          (クトゥルフ神話TRPG・新クトゥルフ神話TRPGのみ対応)
-        </PageDescriptionText>
+        <PageDescriptionText>{t('analyze-logs:usage1')}</PageDescriptionText>
+        <PageDescriptionText>{t('analyze-logs:usage2')}</PageDescriptionText>
       </PageDescriptionContainer>
     </div>
 

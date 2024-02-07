@@ -1,6 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
+import { t } from 'i18next';
 import { type FC } from 'react';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
 import { useLogAnalysis } from './hooks/useLogAnalysis';
@@ -24,10 +25,14 @@ export const CharacterSelect: FC = () => {
     >
       <SelectTrigger
         className="w-full font-bold"
-        aria-label="キャラクターを選択"
+        aria-label={t('analyze-logs:character-select.label')}
       >
         <SelectValue
-          placeholder={<span className="text-slate-500">キャラを選択</span>}
+          placeholder={
+            <span className="text-slate-500">
+              {t('analyze-logs:character-select.label')}
+            </span>
+          }
         />
       </SelectTrigger>
       <SelectContent>

@@ -2,6 +2,7 @@
 
 import { IconUpload } from '@tabler/icons-react';
 import { IconX } from '@tabler/icons-react';
+import { t } from 'i18next';
 import { useCallback, type FC, useState, useRef } from 'react';
 import { useDropzone } from './hooks/useDropzone';
 import { useLogAnalysis } from './hooks/useLogAnalysis';
@@ -39,7 +40,7 @@ export const UploadLogFileButton: FC = () => {
         >
           {isDraggedOver ? (
             <div className="animate-slide-in-top" key="drag-over">
-              離してアップロード
+              {t('analyze-logs:upload.button-mouseover')}
             </div>
           ) : (
             <div
@@ -47,9 +48,7 @@ export const UploadLogFileButton: FC = () => {
               key="content"
             >
               <IconUpload />
-              <span>
-                クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード
-              </span>
+              <span>{t('analyze-logs:upload.button')}</span>
             </div>
           )}
           <input
@@ -65,7 +64,7 @@ export const UploadLogFileButton: FC = () => {
         <div className="h-20 w-full p-4">
           <div className="inline-flex animate-slide-in-top items-center justify-center gap-4">
             <div className="inline-flex flex-wrap">
-              <span>現在選択されているファイル: </span>
+              <span>{t('analyze-logs:upload.current-file')}: </span>
               <span className="font-bold">{currentFile}</span>
             </div>
             <Button variant="ghost" size="icon" onClick={handleRemove}>

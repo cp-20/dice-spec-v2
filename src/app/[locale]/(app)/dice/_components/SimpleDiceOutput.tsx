@@ -2,6 +2,7 @@
 
 import { IconChevronsRight } from '@tabler/icons-react';
 import clsx from 'clsx';
+import { t } from 'i18next';
 import type { ComponentProps, FC, ReactNode } from 'react';
 import D3 from '/public/assets/images/D3.svg';
 import D4 from '/public/assets/images/D4.svg';
@@ -21,7 +22,7 @@ export const SimpleDiceOutput: FC = () => {
   if (simpleDiceOutput === null) {
     return (
       <div className="grid min-h-[5rem] place-content-center text-slate-400">
-        ここに結果が表示されます
+        {t('dice:simple.output')}
       </div>
     );
   }

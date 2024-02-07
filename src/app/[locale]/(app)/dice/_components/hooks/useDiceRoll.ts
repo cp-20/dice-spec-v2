@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import { useCallback } from 'react';
 import { useBcdiceApi } from './useBcdiceApi';
 import type { DiceLog } from './useDiceLogs';
@@ -109,8 +110,7 @@ export const useDiceRoll = () => {
       if (!result.ok) {
         sendEvent('diceRollFailed', [system, command]);
         toast({
-          title: 'エラー',
-          description: 'ダイスロールに失敗しました',
+          title: t('dice:advanced.error'),
           variant: 'destructive',
         });
       }

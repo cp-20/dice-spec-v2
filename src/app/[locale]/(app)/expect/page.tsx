@@ -1,14 +1,15 @@
 import { IconSearch } from '@tabler/icons-react';
+import { t } from 'i18next';
 import type { NextPage } from 'next';
 import { DiceCommandInput } from './_components/DiceCommandInput';
 import { ExpectResultDistributionChart } from './_components/ExpectResultDistributionChart';
 import { ExpectResultStats } from './_components/ExpectResultStats';
-import { InlineCommand } from './_components/InlineCommand';
 import {
   PageDescriptionContainer,
   PageDescriptionText,
 } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
+import { InlineCommand } from '@/app/[locale]/(app)/expect/_components/InlineCommand';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';
 
 export const metadata = metadataGenerator({
@@ -17,21 +18,36 @@ export const metadata = metadataGenerator({
     '1d6や1D100といったダイスの期待値を計算することで、ダイスを振るときにどういう結果が出るのかを予測できます。さらに1d100<=10や2D6>=10と入力することで、その確率も知ることができます。',
 });
 
+const inlineCommandRegex = /`([^`]|\\`)+`/g;
+
+const insertInlineCommand = (value: string) => {
+  const result = [];
+
+  let match = null;
+  let index = 0;
+  while ((match = inlineCommandRegex.exec(value)) !== null) {
+    const [inlineCommand] = match;
+    console.log(inlineCommand, match);
+    result.push(value.slice(index, match.index));
+    result.push(<InlineCommand>{inlineCommand.slice(1, -1)}</InlineCommand>);
+    index = match.index + inlineCommand.length;
+  }
+
+  result.push(value.slice(index));
+
+  return result;
+};
+
 const ExpectPage: NextPage = () => (
   <div className="space-y-12">
     <div>
-      <PageTitle icon={IconSearch}>ダイス予測</PageTitle>
+      <PageTitle icon={IconSearch}>{t('common:expect.title')}</PageTitle>
       <PageDescriptionContainer>
         <PageDescriptionText>
-          <InlineCommand>1d6</InlineCommand>や
-          <InlineCommand>1D100</InlineCommand>
-          といったダイスの期待値などを計算することで、ダイスを振るときにどういう結果が出るのかを予測できます。
+          {insertInlineCommand(t('expect:usage1'))}
         </PageDescriptionText>
         <PageDescriptionText>
-          さらに
-          <InlineCommand>{'1d100<=10'}</InlineCommand>や
-          <InlineCommand>{'2D6>=10'}</InlineCommand>
-          と入力することで、その確率も知ることができます。
+          {insertInlineCommand(t('expect:usage2'))}
         </PageDescriptionText>
       </PageDescriptionContainer>
     </div>

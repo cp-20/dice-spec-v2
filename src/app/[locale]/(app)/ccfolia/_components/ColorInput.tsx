@@ -1,5 +1,6 @@
 import { IconCheck, IconHash, IconUserCircle } from '@tabler/icons-react';
 import clsx from 'clsx';
+import { t } from 'i18next';
 import type { FC } from 'react';
 import type { InputFormSchemaType } from './hooks/useInputForm';
 import { Button } from '@/shared/components/ui/button';
@@ -21,13 +22,14 @@ export const ColorInput: FC<ColorInputProps> = ({ value, onChange }) => {
         <div className="space-y-1">
           <div>
             <span className="font-bold" style={{ color: value }}>
-              キャラ1
+              {t('ccfolia:input.color.character')}
             </span>
-            <span className="text-[#757575]"> - 今日 13:04</span>
+            <span className="text-[#757575]">
+              {' '}
+              - {t('ccfolia:input.color.time')}
+            </span>
           </div>
-          <div className="text-white">
-            これはテストメッセージです。キャラの名前に色が反映されます。
-          </div>
+          <div className="text-white">{t('ccfolia:input.color.message')}</div>
         </div>
       </div>
 
