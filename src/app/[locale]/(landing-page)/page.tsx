@@ -143,6 +143,16 @@ const LandingPage: NextPage = () => {
               Dice icons created by Tanah Basah - Flaticon
             </a>
           </div>
+
+          <div>
+            <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">
+              {t('landing-page:privacy-policy.label')}
+            </H2>
+
+            <p className="max-w-[43rem] text-xs">
+              {t('landing-page:privacy-policy.description')}
+            </p>
+          </div>
         </main>
         <Footer />
       </div>
