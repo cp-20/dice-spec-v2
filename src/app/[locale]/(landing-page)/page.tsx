@@ -13,7 +13,7 @@ import { Text } from '@/shared/components/Typography/Text';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { UpdateAnnouncement } from '@/shared/components/elements/UpdateAnnouncement';
 import { Button } from '@/shared/components/ui/button';
-import { metadataGenerator } from '@/shared/lib/metadataGenerator';
+import { metadataGenerator, viewportGenerator } from '@/shared/lib/metadataGenerator';
 import LogoIcon from '/public/icon.svg';
 import TitleLogoJP from '/public/title-logo.svg';
 import TitleLogoEN from '/public/title-logo-en.svg';
@@ -23,6 +23,8 @@ export const metadata = metadataGenerator({
   description:
     'ダイススペックはTRPGのちょっとしたツールを集めたサービスです。ダイス予測、ダイスロール、ログ解析といったツールが用意されており、それらを全て無料で使うことができます。',
 });
+
+export const viewport = viewportGenerator();
 
 const LandingPage: NextPage = () => {
   const featureIcons: Record<string, FC<IconProps>> = {

@@ -14,13 +14,15 @@ import { SimpleDiceQuickInput } from './_components/SimpleDiceQuickInput';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { Toaster } from '@/shared/components/ui/toaster';
-import { metadataGenerator } from '@/shared/lib/metadataGenerator';
+import { metadataGenerator, viewportGenerator } from '@/shared/lib/metadataGenerator';
 
 export const metadata = metadataGenerator({
   title: 'ダイスロール',
   description:
     '1d6、1d100、2d6、3d6、1d10といった好きなダイスを簡単に振ることができます。BCDiceを使うこともでき、ココフォリアなどのセッションツールと変わらない使い心地で使えます。',
 });
+
+export const viewport = viewportGenerator();
 
 const DicePage: NextPage = async () => {
   return (

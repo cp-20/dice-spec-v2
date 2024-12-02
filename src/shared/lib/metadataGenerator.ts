@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 export type Option = {
   title: string;
@@ -25,7 +25,6 @@ export const metadataGenerator = ({ title: rawTitle, description, ogp }: Option)
       siteName: title,
       images: ogp ?? defaultOgImage,
     },
-    themeColor: '#334155',
     manifest: '/manifest.webmanifest',
     icons: [
       {
@@ -52,3 +51,9 @@ export const metadataGenerator = ({ title: rawTitle, description, ogp }: Option)
     },
   };
 };
+
+export const viewportGenerator = (): Viewport => ({
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#334155',
+});

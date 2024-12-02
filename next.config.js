@@ -1,12 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  redirects: async () => [
+  rewrites: async () => [
     {
       source: '/analyze-logs/og',
       destination: '/analyze-logs',
-      permanent: true,
     },
   ],
   webpack: (config) => {

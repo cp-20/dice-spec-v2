@@ -8,7 +8,7 @@ import { LogAnalysisStats } from './_components/LogAnalysisStats';
 import { UploadLogFileButton } from './_components/UploadLogFileButton';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
-import { metadataGenerator } from '@/shared/lib/metadataGenerator';
+import { metadataGenerator, viewportGenerator } from '@/shared/lib/metadataGenerator';
 
 type props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -34,6 +34,8 @@ export const generateMetadata = async (props0: props): Promise<Metadata> => {
 
   return metadata;
 };
+
+export const viewport = viewportGenerator();
 
 const AnalyzeLogsPage: NextPage = () => (
   <div className="space-y-12">
