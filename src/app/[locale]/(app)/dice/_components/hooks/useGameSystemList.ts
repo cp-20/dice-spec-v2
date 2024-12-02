@@ -20,6 +20,7 @@ export const useGameSystemList = () => {
   const { getGameSystemList } = useBcdiceApi();
   const { data } = useImmutableSWR('bcdice/systems', getGameSystemList);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: setGameSystemListをdependency arrayに入れると無限ループする (setGameSystemListがgameSystemListに依存しているため)
   useEffect(() => {
     if (data !== undefined) {
       const newSystemIds = data.map((system) => system.id);
@@ -30,9 +31,7 @@ export const useGameSystemList = () => {
           .concat(data.filter((system) => !prevSystemIds.includes(system.id)));
       });
     }
-    // setGameSystemListをdependency arrayに入れると無限ループする (setGameSystemListがgameSystemListに依存しているため)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, setGameSystemList]);
+  }, [data]);
 
   const selectSystem = useCallback(
     (systemId: string) => {
