@@ -18,8 +18,7 @@ export const useLogAnalysis = () => {
       const allResult = result.find((p) => p.id === 'all');
       if (allResult === undefined) return;
 
-      const { average, deviationScore, successRate, diceRollCount } =
-        allResult.diceResultSummary;
+      const { average, deviationScore, successRate, diceRollCount } = allResult.diceResultSummary;
       sendEvent('analyzeLogs', [
         `${round(average, 3)}`,
         `${round(deviationScore, 3)}`,

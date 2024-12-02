@@ -21,8 +21,7 @@ export const UploadLogFileButton: FC = () => {
     [analyze],
   );
 
-  const { containerProps, inputProps, isDraggedOver } =
-    useDropzone(dropHandler);
+  const { containerProps, inputProps, isDraggedOver } = useDropzone(dropHandler);
 
   const handleRemove = useCallback(() => {
     setCurrentFile(null);
@@ -43,10 +42,7 @@ export const UploadLogFileButton: FC = () => {
               {t('analyze-logs:upload.button-mouseover')}
             </div>
           ) : (
-            <div
-              className="inline-flex animate-slide-in-top items-center gap-2"
-              key="content"
-            >
+            <div className="inline-flex animate-slide-in-top items-center gap-2" key="content">
               <IconUpload className="shrink-0" />
               <span>{t('analyze-logs:upload.button')}</span>
             </div>

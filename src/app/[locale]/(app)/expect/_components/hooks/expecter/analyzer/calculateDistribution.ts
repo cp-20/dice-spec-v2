@@ -1,9 +1,7 @@
 import type { DiceExpression, Expression, OperationExpression } from '../type';
 import { applyOperatorMap, generate2DArray } from './utils';
 
-export const calculateDistribution = (
-  expression: Expression,
-): Record<string, number> => {
+export const calculateDistribution = (expression: Expression): Record<string, number> => {
   if (expression.type === 'operation') {
     return calculateOperationDistribution(expression);
   }
@@ -20,9 +18,7 @@ export const calculateDistribution = (
   throw new Error('unknown AST type');
 };
 
-const calculateOperationDistribution = (
-  expression: OperationExpression,
-): Record<string, number> => {
+const calculateOperationDistribution = (expression: OperationExpression): Record<string, number> => {
   const leftDistribution = calculateDistribution(expression.left);
   const rightDistribution = calculateDistribution(expression.right);
 
@@ -39,8 +35,7 @@ const calculateOperationDistribution = (
       const valR = rightValues[j];
 
       const value = applyOperator(Number(valL), Number(valR));
-      const chance =
-        Number(leftDistribution[valL]) * Number(rightDistribution[valR]);
+      const chance = Number(leftDistribution[valL]) * Number(rightDistribution[valR]);
 
       distribution[`${value}`] = (distribution[`${value}`] ?? 0) + chance;
     }
@@ -49,9 +44,7 @@ const calculateOperationDistribution = (
   return distribution;
 };
 
-const calculateDiceDistribution = (
-  expression: DiceExpression,
-): Record<string, number> => {
+const calculateDiceDistribution = (expression: DiceExpression): Record<string, number> => {
   const { num, faces } = expression;
 
   // O(num^2 * faces)

@@ -7,9 +7,13 @@ export type ContainerSectionProps = {
   scrollable?: boolean;
 };
 
-export const ContainerSection: FC<
-  ComponentProps<'div'> & ContainerSectionProps
-> = ({ scrollable = false, label, className, children, ...props }) => (
+export const ContainerSection: FC<ComponentProps<'div'> & ContainerSectionProps> = ({
+  scrollable = false,
+  label,
+  className,
+  children,
+  ...props
+}) => (
   <div
     className={clsx(
       'rounded-md border p-4',

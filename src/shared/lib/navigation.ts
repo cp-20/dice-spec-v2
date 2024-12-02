@@ -1,9 +1,4 @@
-import {
-  IconSearch,
-  IconDice5,
-  IconTimeline,
-  IconFileExport,
-} from '@tabler/icons-react';
+import { IconSearch, IconDice5, IconTimeline, IconFileExport } from '@tabler/icons-react';
 
 export const navLinks = [
   { href: '/expect', icon: IconSearch },
@@ -14,9 +9,6 @@ export const navLinks = [
 
 export type NavPaths = (typeof navLinks)[number]['href'];
 
-const navLinksRegex = new RegExp(
-  `(/en)?${navLinks.map((link) => link.href).join('|')}`,
-);
+const navLinksRegex = new RegExp(`(/en)?${navLinks.map((link) => link.href).join('|')}`);
 
-export const isNavPath = (path: string): path is NavPaths =>
-  navLinksRegex.test(path);
+export const isNavPath = (path: string): path is NavPaths => navLinksRegex.test(path);

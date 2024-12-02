@@ -5,13 +5,8 @@ export type PlainTextProps = {
   text: string;
 };
 
-export const RichText: FC<ComponentProps<'p'> & PlainTextProps> = ({
-  text,
-  ...props
-}) => {
-  const children = replaceBr(text).flatMap((child) =>
-    typeof child === 'string' ? replaceLink(child) : child,
-  );
+export const RichText: FC<ComponentProps<'p'> & PlainTextProps> = ({ text, ...props }) => {
+  const children = replaceBr(text).flatMap((child) => (typeof child === 'string' ? replaceLink(child) : child));
 
   return <Text {...props}>{children}</Text>;
 };
@@ -34,13 +29,7 @@ const replaceLink = (text: string) => {
   }
 
   const links = matches.map((match) => (
-    <a
-      key={match}
-      href={match}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="underline hover:text-slate-500"
-    >
+    <a key={match} href={match} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-500">
       {match}
     </a>
   ));

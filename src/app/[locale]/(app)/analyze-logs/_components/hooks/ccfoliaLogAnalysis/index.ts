@@ -55,9 +55,7 @@ export const analyzeCcfoliaLog = (html: string) => {
   const characters = takeUnique(analyzedLogs.map(({ character }) => character));
 
   const characterResults: CharacterResult[] = characters.map((character) => {
-    const diceResults = analyzedLogs
-      .filter(({ character: c }) => c === character)
-      .map(({ result }) => result);
+    const diceResults = analyzedLogs.filter(({ character: c }) => c === character).map(({ result }) => result);
 
     const diceResultSummary = calculateDiceResultSummary(diceResults);
 

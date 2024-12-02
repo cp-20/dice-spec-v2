@@ -17,10 +17,7 @@ export const formatInput = (input: string): string => {
   return input.split('').map(convertChar).join('');
 };
 
-export const applyOperatorMap: Record<
-  Operator,
-  (left: number, right: number) => number
-> = {
+export const applyOperatorMap: Record<Operator, (left: number, right: number) => number> = {
   '+': (left, right) => left + right,
   '-': (left, right) => left - right,
   '*': (left, right) => left * right,

@@ -6,10 +6,7 @@ import { DiceLogList } from './_components/DiceLogList';
 import { LogAnalysisCharts } from './_components/LogAnalysisCharts';
 import { LogAnalysisStats } from './_components/LogAnalysisStats';
 import { UploadLogFileButton } from './_components/UploadLogFileButton';
-import {
-  PageDescriptionContainer,
-  PageDescriptionText,
-} from '@/app/[locale]/(app)/_components/PageDescription';
+import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';
 
@@ -27,9 +24,7 @@ export const generateMetadata = async (props0: props): Promise<Metadata> => {
   const description =
     'ココフォリアから出力されたログを解析して、ダイスの出目を抽出・分析します。 (クトゥルフ神話TRPG・新クトゥルフ神話TRPGのみ対応)';
   const ogp =
-    typeof searchParams.ogp === 'string' && ogpImageRegex.test(searchParams.ogp)
-      ? searchParams.ogp
-      : undefined;
+    typeof searchParams.ogp === 'string' && ogpImageRegex.test(searchParams.ogp) ? searchParams.ogp : undefined;
 
   const metadata = metadataGenerator({
     title,
@@ -43,9 +38,7 @@ export const generateMetadata = async (props0: props): Promise<Metadata> => {
 const AnalyzeLogsPage: NextPage = () => (
   <div className="space-y-12">
     <div>
-      <PageTitle icon={IconTimeline}>
-        {t('common:analyze-logs.title')}
-      </PageTitle>
+      <PageTitle icon={IconTimeline}>{t('common:analyze-logs.title')}</PageTitle>
       <PageDescriptionContainer>
         <PageDescriptionText>{t('analyze-logs:usage1')}</PageDescriptionText>
         <PageDescriptionText>{t('analyze-logs:usage2')}</PageDescriptionText>

@@ -64,14 +64,8 @@ describe('diceExpecter', () => {
       success: true,
       withTarget: false,
       mean: singleD6Mean ** 2 * 2 + 5,
-      variance: expect.closeTo(
-        (((singleD6Mean ** 2 * 2 + singleD6Variance) * 35) / 12) * 4,
-        1,
-      ),
-      SD: expect.closeTo(
-        Math.sqrt((((singleD6Mean ** 2 * 2 + singleD6Variance) * 35) / 12) * 4),
-        1,
-      ),
+      variance: expect.closeTo((((singleD6Mean ** 2 * 2 + singleD6Variance) * 35) / 12) * 4, 1),
+      SD: expect.closeTo(Math.sqrt((((singleD6Mean ** 2 * 2 + singleD6Variance) * 35) / 12) * 4), 1),
       range: {
         min: 7,
         max: 77,
@@ -108,10 +102,7 @@ describe('diceExpecter', () => {
       withTarget: false,
       mean: singleD6Mean * 3 + 50.5 + 1,
       variance: expect.closeTo(singleD6Variance * 3 + (100 ** 2 - 1) / 12, 1),
-      SD: expect.closeTo(
-        Math.sqrt(singleD6Variance * 3 + (100 ** 2 - 1) / 12),
-        1,
-      ),
+      SD: expect.closeTo(Math.sqrt(singleD6Variance * 3 + (100 ** 2 - 1) / 12), 1),
       range: {
         min: 5,
         max: 119,

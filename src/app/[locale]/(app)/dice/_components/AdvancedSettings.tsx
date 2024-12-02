@@ -4,12 +4,7 @@ import { IconAdjustments } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { FC } from 'react';
 import { AdvancedSettingsContent } from './AdvancedSettingsContent';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/shared/components/ui/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/components/ui/accordion';
 
 export const AdvancedSettings: FC = () => (
   <Accordion type="single" collapsible className="border-t">

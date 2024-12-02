@@ -44,8 +44,7 @@ const useConvertResultToLog = () => {
     (result: DiceRollResult) => {
       if (!result.ok) return;
 
-      const randomKey =
-        Date.now().toString(36) + Math.random().toString().slice(2);
+      const randomKey = Date.now().toString(36) + Math.random().toString().slice(2);
 
       const variant = (() => {
         if (result.critical || result.success) return 'success';

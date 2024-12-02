@@ -1,19 +1,12 @@
 'use client';
 
 import { t } from 'i18next';
-import { type FC } from 'react';
+import type { FC } from 'react';
 import { ColorInput } from './ColorInput';
 import { ParameterInput } from './ParameterInput';
 import { StatusInput } from './StatusInput';
 import { useInputForm } from './hooks/useInputForm';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormLabel,
-  FormItem,
-  FormDescription,
-} from '@/shared/components/ui/form';
+import { Form, FormControl, FormField, FormLabel, FormItem, FormDescription } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
 
@@ -69,9 +62,7 @@ export const InputForm: FC = () => {
                     onChange={field.onChange}
                   />
                 </FormControl>
-                <FormDescription>
-                  {t('ccfolia:input.initiative.description')}
-                </FormDescription>
+                <FormDescription>{t('ccfolia:input.initiative.description')}</FormDescription>
               </FormItem>
             )}
           />
@@ -88,9 +79,7 @@ export const InputForm: FC = () => {
                     onChange={field.onChange}
                   />
                 </FormControl>
-                <FormDescription>
-                  {t('ccfolia:input.external-url.description')}
-                </FormDescription>
+                <FormDescription>{t('ccfolia:input.external-url.description')}</FormDescription>
               </FormItem>
             )}
           />
@@ -100,9 +89,7 @@ export const InputForm: FC = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('ccfolia:input.status.label')}</FormLabel>
-                <FormDescription>
-                  {t('ccfolia:input.status.description')}
-                </FormDescription>
+                <FormDescription>{t('ccfolia:input.status.description')}</FormDescription>
                 <FormControl>
                   <StatusInput value={field.value} onChange={field.onChange} />
                 </FormControl>
@@ -115,14 +102,9 @@ export const InputForm: FC = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('ccfolia:input.params.label')}</FormLabel>
-                <FormDescription>
-                  {t('ccfolia:input.params.description')}
-                </FormDescription>
+                <FormDescription>{t('ccfolia:input.params.description')}</FormDescription>
                 <FormControl>
-                  <ParameterInput
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
+                  <ParameterInput value={field.value} onChange={field.onChange} />
                 </FormControl>
               </FormItem>
             )}
@@ -152,9 +134,7 @@ export const InputForm: FC = () => {
                     onChange={field.onChange}
                   />
                 </FormControl>
-                <FormDescription>
-                  {t('ccfolia:input.commands.description')}
-                </FormDescription>
+                <FormDescription>{t('ccfolia:input.commands.description')}</FormDescription>
               </FormItem>
             )}
           />

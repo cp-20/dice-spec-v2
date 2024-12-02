@@ -12,8 +12,7 @@ import type {
 } from './type';
 
 const operatorsSet = new Set<Operator>(['+', '-', '*', '/']);
-const isOperator = (token: string): token is Operator =>
-  operatorsSet.has(token as Operator);
+const isOperator = (token: string): token is Operator => operatorsSet.has(token as Operator);
 
 const diceRegexp = /(\d+)d(\d*)/i;
 const isDiceStr = (token: string): token is DiceStr => diceRegexp.test(token);
@@ -31,8 +30,7 @@ export class ParserError extends Error {
   }
 }
 
-const precedence = (operator: string): number =>
-  precedenceMap.get(operator as Operator) ?? 0;
+const precedence = (operator: string): number => precedenceMap.get(operator as Operator) ?? 0;
 
 const parseDiceExpression = (expressionStr: string): Expression => {
   const tokens = tokenize(expressionStr);
@@ -52,10 +50,7 @@ const parseDiceExpression = (expressionStr: string): Expression => {
       }
       operators.pop(); // Remove the "("
     } else if (isOperator(token)) {
-      while (
-        operators.length &&
-        precedence(operators.slice(-1)[0]) >= precedence(token)
-      ) {
+      while (operators.length && precedence(operators.slice(-1)[0]) >= precedence(token)) {
         applyOperator();
       }
       operators.push(token);

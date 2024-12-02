@@ -11,17 +11,14 @@ export type BottomNavigationProps = {
   active?: NavPaths;
 };
 
-export const BottomNavigation: FC<
-  ComponentProps<'nav'> & BottomNavigationProps
-> = ({ active, className, ...props }) => (
+export const BottomNavigation: FC<ComponentProps<'nav'> & BottomNavigationProps> = ({
+  active,
+  className,
+  ...props
+}) => (
   <nav className={twMerge('flex border-t', className)} {...props}>
     {navLinks.map(({ href, icon }) => (
-      <BottomNavigationLink
-        key={href}
-        href={href}
-        icon={icon}
-        isActive={href === active}
-      />
+      <BottomNavigationLink key={href} href={href} icon={icon} isActive={href === active} />
     ))}
   </nav>
 );

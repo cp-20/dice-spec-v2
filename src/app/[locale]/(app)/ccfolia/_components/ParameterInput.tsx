@@ -13,14 +13,8 @@ export type ParameterInputProps = {
   onChange: (value: Parameter[]) => void;
 };
 
-export const ParameterInput: FC<ParameterInputProps> = ({
-  value,
-  onChange,
-}) => {
-  const handleParameterChange = variableFieldChangeHandlerGenerator<Parameter>(
-    value,
-    onChange,
-  );
+export const ParameterInput: FC<ParameterInputProps> = ({ value, onChange }) => {
+  const handleParameterChange = variableFieldChangeHandlerGenerator<Parameter>(value, onChange);
 
   return (
     <div className="mt-4">

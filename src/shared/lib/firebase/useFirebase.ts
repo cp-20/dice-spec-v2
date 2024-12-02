@@ -1,11 +1,6 @@
 import type { FirebaseOptions } from 'firebase/app';
 import { initializeApp } from 'firebase/app';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadString,
-} from 'firebase/storage';
+import { getDownloadURL, getStorage, ref, uploadString } from 'firebase/storage';
 import { nanoid } from 'nanoid';
 
 const firebaseConfig: FirebaseOptions = {

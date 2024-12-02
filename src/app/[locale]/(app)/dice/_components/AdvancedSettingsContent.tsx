@@ -10,13 +10,7 @@ import type { InferOutput } from 'valibot';
 import * as v from 'valibot';
 import { useAdvancedSettings } from './hooks/useAdvancedSettings';
 import { Button } from '@/shared/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@/shared/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Slider } from '@/shared/components/ui/slider';
 import { Switch } from '@/shared/components/ui/switch';
@@ -38,12 +32,7 @@ export const AdvancedSettingsContent: FC = () => {
     values: advancedSettings,
   });
 
-  const watch = form.watch([
-    'showHelp',
-    'playSound',
-    'volume',
-    'bcdiceApiEndpoint',
-  ]);
+  const watch = form.watch(['showHelp', 'playSound', 'volume', 'bcdiceApiEndpoint']);
   useEffect(() => {
     const [showHelp, playSound, volume, bcdiceApiEndpoint] = watch;
     if (
@@ -65,10 +54,7 @@ export const AdvancedSettingsContent: FC = () => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(() => void 0)}
-        className="space-y-8 p-4"
-      >
+      <form onSubmit={form.handleSubmit(() => void 0)} className="space-y-8 p-4">
         <div className="grid grid-cols-2">
           <FormField
             control={form.control}
@@ -76,14 +62,9 @@ export const AdvancedSettingsContent: FC = () => {
             render={({ field }) => (
               <FormItem className="flex items-center gap-2 space-y-0">
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
-                <FormLabel>
-                  {t('dice:advanced.advanced-settings.show-help')}
-                </FormLabel>
+                <FormLabel>{t('dice:advanced.advanced-settings.show-help')}</FormLabel>
               </FormItem>
             )}
           />
@@ -93,14 +74,9 @@ export const AdvancedSettingsContent: FC = () => {
             render={({ field }) => (
               <FormItem className="flex items-center gap-2 space-y-0">
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
-                <FormLabel>
-                  {t('dice:advanced.advanced-settings.enable-sound')}
-                </FormLabel>
+                <FormLabel>{t('dice:advanced.advanced-settings.enable-sound')}</FormLabel>
               </FormItem>
             )}
           />
@@ -111,9 +87,7 @@ export const AdvancedSettingsContent: FC = () => {
           render={({ field }) => {
             return (
               <FormItem>
-                <FormLabel>
-                  {t('dice:advanced.advanced-settings.volume')}
-                </FormLabel>
+                <FormLabel>{t('dice:advanced.advanced-settings.volume')}</FormLabel>
                 <FormControl>
                   <Slider
                     defaultValue={[field.value]}
@@ -132,9 +106,7 @@ export const AdvancedSettingsContent: FC = () => {
           name="bcdiceApiEndpoint"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                {t('dice:advanced.advanced-settings.bcdice-server')}
-              </FormLabel>
+              <FormLabel>{t('dice:advanced.advanced-settings.bcdice-server')}</FormLabel>
               <div className="relative">
                 <FormControl>
                   <Input

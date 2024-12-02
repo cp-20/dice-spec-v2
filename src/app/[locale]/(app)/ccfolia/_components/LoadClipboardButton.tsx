@@ -70,15 +70,9 @@ export const LoadClipboardButton: FC = () => {
       className="inline-fle relative w-full flex-col gap-2 overflow-y-clip"
       onClick={handleCopyFromClipboard}
     >
-      {done && (
-        <IconCheck className="absolute animate-popup opacity-0 delay-150" />
-      )}
+      {done && <IconCheck className="absolute animate-popup opacity-0 delay-150" />}
       <div
-        className={clsx(
-          'flex items-center gap-2',
-          !done && 'animate-slide-in-top',
-          done && 'animate-slide-out-bottom',
-        )}
+        className={clsx('flex items-center gap-2', !done && 'animate-slide-in-top', done && 'animate-slide-out-bottom')}
       >
         <IconClipboard />
         <span>{t('ccfolia:load-clipboard.button')}</span>

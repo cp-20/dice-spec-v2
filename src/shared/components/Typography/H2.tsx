@@ -1,16 +1,12 @@
 import { forwardRef } from 'react';
-import type {
-  ComponentPropsWithoutRef,
-  FC,
-  ForwardRefRenderFunction,
-} from 'react';
+import type { ComponentPropsWithoutRef, FC, ForwardRefRenderFunction } from 'react';
 
 import { twMerge } from 'tailwind-merge';
 
-const unrefH2: ForwardRefRenderFunction<
-  HTMLHeadingElement,
-  ComponentPropsWithoutRef<'h2'>
-> = ({ children, className, ...props }, ref) => {
+const unrefH2: ForwardRefRenderFunction<HTMLHeadingElement, ComponentPropsWithoutRef<'h2'>> = (
+  { children, className, ...props },
+  ref,
+) => {
   return (
     <h2
       className={twMerge(
@@ -25,7 +21,6 @@ const unrefH2: ForwardRefRenderFunction<
   );
 };
 
-export const H2: FC<ComponentPropsWithoutRef<'h2'>> = forwardRef<
-  HTMLHeadingElement,
-  ComponentPropsWithoutRef<'h2'>
->(unrefH2);
+export const H2: FC<ComponentPropsWithoutRef<'h2'>> = forwardRef<HTMLHeadingElement, ComponentPropsWithoutRef<'h2'>>(
+  unrefH2,
+);

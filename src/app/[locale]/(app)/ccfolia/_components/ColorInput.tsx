@@ -24,10 +24,7 @@ export const ColorInput: FC<ColorInputProps> = ({ value, onChange }) => {
             <span className="font-bold" style={{ color: value }}>
               {t('ccfolia:input.color.character')}
             </span>
-            <span className="text-[#757575]">
-              {' '}
-              - {t('ccfolia:input.color.time')}
-            </span>
+            <span className="text-[#757575]"> - {t('ccfolia:input.color.time')}</span>
           </div>
           <div className="text-white">{t('ccfolia:input.color.message')}</div>
         </div>
@@ -88,9 +85,7 @@ const ColorTip: FC<ColorTipProps> = ({ color, value, onChange }) => {
       style={{ backgroundColor: color }}
       onClick={() => onChange(color)}
     >
-      {value === color && (
-        <IconCheck size="16" className={clsx(isDarkColor && 'text-white')} />
-      )}
+      {value === color && <IconCheck size="16" className={clsx(isDarkColor && 'text-white')} />}
     </Button>
   );
 };

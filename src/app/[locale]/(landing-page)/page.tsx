@@ -1,11 +1,5 @@
 import type { IconProps } from '@tabler/icons-react';
-import {
-  IconBrandDiscord,
-  IconBrandX,
-  IconDice5,
-  IconSearch,
-  IconTimeline,
-} from '@tabler/icons-react';
+import { IconBrandDiscord, IconBrandX, IconDice5, IconSearch, IconTimeline } from '@tabler/icons-react';
 import { IconBrandGithub } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
@@ -54,22 +48,16 @@ const LandingPage: NextPage = () => {
                 <TitleLogo className="max-w-full text-slate-800 md:h-16" />
               </h1>
 
-              <Text className="text-balance max-md:text-center">
-                {t('landing-page:catchphrase')}
-              </Text>
+              <Text className="text-balance max-md:text-center">{t('landing-page:catchphrase')}</Text>
             </div>
           </div>
 
           <Button className="font-bold" asChild>
-            <CustomLink href={t('link', { href: '/expect' })}>
-              {t('landing-page:try-it-out')}
-            </CustomLink>
+            <CustomLink href={t('link', { href: '/expect' })}>{t('landing-page:try-it-out')}</CustomLink>
           </Button>
 
           <div>
-            <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">
-              {t('landing-page:features.label')}
-            </H2>
+            <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">{t('landing-page:features.label')}</H2>
 
             <div className="flex gap-4 max-md:flex-col">
               {['expect', 'dice', 'analyze-logs'].map((key) => (
@@ -86,9 +74,7 @@ const LandingPage: NextPage = () => {
           </div>
 
           <div>
-            <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">
-              {t('landing-page:characteristics.label')}
-            </H2>
+            <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">{t('landing-page:characteristics.label')}</H2>
 
             <div className="flex gap-4 max-md:flex-col">
               {[0, 1, 2].map((key) => (
@@ -103,36 +89,23 @@ const LandingPage: NextPage = () => {
           </div>
 
           <div>
-            <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">
-              {t('landing-page:links.label')}
-            </H2>
+            <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">{t('landing-page:links.label')}</H2>
 
             <div className="flex gap-4 max-md:flex-col">
-              <ExternalLinkWithIcon
-                icon={IconBrandDiscord}
-                href="https://discord.gg/YQ7negGTUK"
-              >
+              <ExternalLinkWithIcon icon={IconBrandDiscord} href="https://discord.gg/YQ7negGTUK">
                 {t('landing-page:links.discord')}
               </ExternalLinkWithIcon>
-              <ExternalLinkWithIcon
-                icon={IconBrandX}
-                href="https://twitter.com/__cp20__"
-              >
+              <ExternalLinkWithIcon icon={IconBrandX} href="https://twitter.com/__cp20__">
                 {t('landing-page:links.twitter')}
               </ExternalLinkWithIcon>
-              <ExternalLinkWithIcon
-                icon={IconBrandGithub}
-                href="https://github.com/cp-20/dice-spec-v2"
-              >
+              <ExternalLinkWithIcon icon={IconBrandGithub} href="https://github.com/cp-20/dice-spec-v2">
                 {t('landing-page:links.github')}
               </ExternalLinkWithIcon>
             </div>
           </div>
 
           <div>
-            <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">
-              {t('landing-page:credit')}
-            </H2>
+            <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">{t('landing-page:credit')}</H2>
 
             <a
               className="underline hover:text-slate-500"
@@ -145,13 +118,9 @@ const LandingPage: NextPage = () => {
           </div>
 
           <div>
-            <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">
-              {t('landing-page:privacy-policy.label')}
-            </H2>
+            <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">{t('landing-page:privacy-policy.label')}</H2>
 
-            <p className="max-w-[43rem] text-xs">
-              {t('landing-page:privacy-policy.description')}
-            </p>
+            <p className="max-w-[43rem] text-xs">{t('landing-page:privacy-policy.description')}</p>
           </div>
         </main>
         <Footer />

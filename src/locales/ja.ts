@@ -4,8 +4,7 @@ export const ja = {
     link: '{{- href}}',
   },
   'landing-page': {
-    catchphrase:
-      'ダイススペックはTRPGのちょっとしたツールを集めたサービスです。',
+    catchphrase: 'ダイススペックはTRPGのちょっとしたツールを集めたサービスです。',
     'try-it-out': '今すぐ使ってみる！',
     features: {
       label: 'ダイススペックの機能',
@@ -18,8 +17,7 @@ export const ja = {
       },
       1: {
         label: '軽快な動作',
-        contents:
-          'ダイススペックはパフォーマンスを意識した設計になっており、処理を待つ時間はほとんどありません。',
+        contents: 'ダイススペックはパフォーマンスを意識した設計になっており、処理を待つ時間はほとんどありません。',
       },
       2: {
         label: 'オープンソース',
@@ -43,8 +41,7 @@ export const ja = {
   expect: {
     usage1:
       '`1d6`や`1D100`といったダイスの期待値を計算することで、ダイスを振るときにどういう結果が出るのかを予測できます。',
-    usage2:
-      'さらに`1d100<=10`や`2D6>=10`と入力することで、その確率も知ることができます。',
+    usage2: 'さらに`1d100<=10`や`2D6>=10`と入力することで、その確率も知ることができます。',
     input: {
       placeholder: '計算式を入力してください',
       calculation: '計算',
@@ -97,8 +94,7 @@ export const ja = {
     usage1: 'ココフォリアのログを解析してダイスの期待値などを計算します。',
     usage2: '(クトゥルフ神話TRPG・新クトゥルフ神話TRPGのみ対応)',
     upload: {
-      button:
-        'クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード',
+      button: 'クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード',
       'button-mouseover': '離してアップロード',
       'current-file': '現在選択されているファイル',
     },
@@ -121,8 +117,7 @@ export const ja = {
     'load-clipboard': {
       button: 'クリップボードから読み込む',
       error: 'クリップボードから読み込みに失敗しました',
-      'error-description':
-        '形式が正しくないか、クリップボードからの読み込みが許可されていません',
+      'error-description': '形式が正しくないか、クリップボードからの読み込みが許可されていません',
     },
     input: {
       name: {
@@ -136,8 +131,7 @@ export const ja = {
       initiative: {
         label: 'イニシアティブ',
         placeholder: 'イニシアティブ',
-        description:
-          'キャラの行動力を示す値です。キャラの表示順序に影響します。',
+        description: 'キャラの行動力を示す値です。キャラの表示順序に影響します。',
       },
       'external-url': {
         label: '参照URL',
@@ -194,8 +188,7 @@ export const ja = {
     },
     'analyze-logs': {
       title: 'ログ解析',
-      description:
-        'ダイスの期待値などを計算します。ダイスを振るときに、どういう結果が出るのかを予測できます。',
+      description: 'ダイスの期待値などを計算します。ダイスを振るときに、どういう結果が出るのかを予測できます。',
     },
     ccfolia: { title: 'ココフォリア出力' },
   },

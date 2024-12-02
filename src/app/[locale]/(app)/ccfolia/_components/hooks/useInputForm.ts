@@ -1,9 +1,9 @@
-import { valibotResolver } from "@hookform/resolvers/valibot";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import type { InferInput } from "valibot";
-import * as v from "valibot";
-import { useInputFormUpdate } from "./useInputFormUpdate";
+import { valibotResolver } from '@hookform/resolvers/valibot';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import type { InferInput } from 'valibot';
+import * as v from 'valibot';
+import { useInputFormUpdate } from './useInputFormUpdate';
 
 export const InputFormSchema = v.object({
   name: v.string(),
@@ -35,32 +35,32 @@ export const useInputForm = () => {
   const form = useForm<InputFormSchemaType>({
     resolver: valibotResolver(InputFormSchema),
     defaultValues: {
-      name: "",
-      memo: "",
-      externalUrl: "",
+      name: '',
+      memo: '',
+      externalUrl: '',
       status: [
         {
-          key: "0",
-          label: "HP",
+          key: '0',
+          label: 'HP',
           value: 0,
           max: 0,
         },
         {
-          key: "1",
-          label: "MP",
+          key: '1',
+          label: 'MP',
           value: 0,
           max: 0,
         },
         {
-          key: "2",
-          label: "SAN",
+          key: '2',
+          label: 'SAN',
           value: 0,
           max: 0,
         },
       ],
       params: [],
-      color: "#888888",
-      commands: "",
+      color: '#888888',
+      commands: '',
     },
   });
 

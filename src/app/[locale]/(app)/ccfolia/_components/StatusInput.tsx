@@ -1,10 +1,7 @@
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { FC } from 'react';
-import {
-  numberFormatterGenerator,
-  variableFieldChangeHandlerGenerator,
-} from './composable/variableFieldChangeHandler';
+import { numberFormatterGenerator, variableFieldChangeHandlerGenerator } from './composable/variableFieldChangeHandler';
 import type { InputFormSchemaType } from './hooks/useInputForm';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -17,10 +14,7 @@ export type StatusInputProps = {
 };
 
 export const StatusInput: FC<StatusInputProps> = ({ value, onChange }) => {
-  const handleStatusChange = variableFieldChangeHandlerGenerator<Status>(
-    value,
-    onChange,
-  );
+  const handleStatusChange = variableFieldChangeHandlerGenerator<Status>(value, onChange);
 
   return (
     <div className="mt-4">
@@ -37,21 +31,13 @@ export const StatusInput: FC<StatusInputProps> = ({ value, onChange }) => {
               value={status.value}
               placeholder={t('ccfolia:input.status.status-value')}
               className="h-8 w-1/5 @xs:h-10"
-              onChange={handleStatusChange(
-                status,
-                'value',
-                numberFormatterGenerator<Status>('value'),
-              )}
+              onChange={handleStatusChange(status, 'value', numberFormatterGenerator<Status>('value'))}
             />
             <Input
               value={status.max}
               placeholder={t('ccfolia:input.status.status-max')}
               className="h-8 w-1/5 @xs:h-10"
-              onChange={handleStatusChange(
-                status,
-                'max',
-                numberFormatterGenerator<Status>('value'),
-              )}
+              onChange={handleStatusChange(status, 'max', numberFormatterGenerator<Status>('value'))}
             />
             <Button
               variant="outline"

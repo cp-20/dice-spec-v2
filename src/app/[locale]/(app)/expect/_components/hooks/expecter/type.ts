@@ -7,10 +7,7 @@ export type ComparingExpression = {
   sign: InequalitySign;
 };
 
-export type Expression =
-  | DiceExpression
-  | NumberExpression
-  | OperationExpression;
+export type Expression = DiceExpression | NumberExpression | OperationExpression;
 
 export type DiceExpression = {
   type: 'dice';
@@ -41,18 +38,11 @@ export type Parenthesis = '(' | ')';
 
 export type InequalitySign = '>=' | '<=';
 
-export type DiceStr =
-  | `${number}d${number}`
-  | `${number}D${number}`
-  | `${number}d`
-  | `${number}D`;
+export type DiceStr = `${number}d${number}` | `${number}D${number}` | `${number}d` | `${number}D`;
 
 export type Token = Parenthesis | Operator | DiceStr;
 
-export type RawExpectResult = Omit<
-  ExpectResult,
-  'CI' | 'SD' | 'chance' | 'distribution' | 'withTarget'
->;
+export type RawExpectResult = Omit<ExpectResult, 'CI' | 'SD' | 'chance' | 'distribution' | 'withTarget'>;
 
 export type ExpectResult = ExpectResultWithTarget | ExpectResultWithoutTarget;
 

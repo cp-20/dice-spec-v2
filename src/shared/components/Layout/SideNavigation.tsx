@@ -11,17 +11,15 @@ export type SideNavigationProps = {
   textProps?: ComponentProps<'span'>;
 };
 
-export const SideNavigation: FC<
-  ComponentProps<'nav'> & SideNavigationProps
-> = ({ className, active, textProps, ...props }) => (
+export const SideNavigation: FC<ComponentProps<'nav'> & SideNavigationProps> = ({
+  className,
+  active,
+  textProps,
+  ...props
+}) => (
   <nav className={twMerge('flex w-60 flex-col border-r', className)} {...props}>
     {navLinks.map(({ href, icon }) => (
-      <SideNavigationLink
-        key={href}
-        icon={icon}
-        href={t('link', { href })}
-        isActive={href === active}
-      >
+      <SideNavigationLink key={href} icon={icon} href={t('link', { href })} isActive={href === active}>
         <span {...textProps}>{t(`common:${href.slice(1)}.title`)}</span>
       </SideNavigationLink>
     ))}

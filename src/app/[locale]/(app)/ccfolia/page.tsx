@@ -4,10 +4,7 @@ import type { NextPage } from 'next';
 import { InputForm } from './_components/InputForm';
 import { LoadClipboardButton } from './_components/LoadClipboardButton';
 import { ResultView } from './_components/ResultView';
-import {
-  PageDescriptionContainer,
-  PageDescriptionText,
-} from '@/app/[locale]/(app)/_components/PageDescription';
+import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { Toaster } from '@/shared/components/ui/toaster';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';

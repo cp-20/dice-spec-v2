@@ -3,9 +3,7 @@ import { useCallback, useState } from 'react';
 
 export type DropHandler = (filename: string, content: string) => void;
 
-export const useDropzone = <Element = HTMLElement>(
-  dropHandler: DropHandler,
-) => {
+export const useDropzone = <Element = HTMLElement>(dropHandler: DropHandler) => {
   const [isDraggedOver, setIsDraggedOver] = useState(false);
 
   const readFile = useCallback(

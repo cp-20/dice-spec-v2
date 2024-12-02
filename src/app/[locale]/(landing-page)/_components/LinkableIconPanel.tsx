@@ -10,9 +10,13 @@ export type LinkableIconPanelProps = {
   contents: React.ReactNode;
 };
 
-export const LinkableIconPanel: FC<
-  CustomLinkProps & LinkableIconPanelProps
-> = ({ icon: Icon, label, contents, className, ...props }) => (
+export const LinkableIconPanel: FC<CustomLinkProps & LinkableIconPanelProps> = ({
+  icon: Icon,
+  label,
+  contents,
+  className,
+  ...props
+}) => (
   <CustomLink
     className={twMerge(
       'flex cursor-pointer gap-2 rounded-md border p-4 pt-6 transition-colors duration-75 hover:bg-slate-50 active:bg-slate-100 max-md:gap-4 md:flex-col md:items-center',

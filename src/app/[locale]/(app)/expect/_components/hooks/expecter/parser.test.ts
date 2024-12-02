@@ -115,16 +115,10 @@ describe('parseDiceCommand', () => {
   });
 
   test('不正な計算式はパースできない', () => {
-    expect(() => parseDiceCommand('1 + 1d6 + ')).toThrowError(
-      new Error('Invalid expression'),
-    );
+    expect(() => parseDiceCommand('1 + 1d6 + ')).toThrowError(new Error('Invalid expression'));
 
-    expect(() => parseDiceCommand('1 + 2) * 3')).toThrowError(
-      new Error('Invalid expression'),
-    );
+    expect(() => parseDiceCommand('1 + 2) * 3')).toThrowError(new Error('Invalid expression'));
 
-    expect(() => parseDiceCommand('((2 * 2d6) + 3')).toThrowError(
-      new Error('Invalid expression'),
-    );
+    expect(() => parseDiceCommand('((2 * 2d6) + 3')).toThrowError(new Error('Invalid expression'));
   });
 });

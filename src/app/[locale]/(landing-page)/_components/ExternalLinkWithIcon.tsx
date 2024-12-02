@@ -7,15 +7,15 @@ export type IconLinkProps = {
   icon: FC<IconProps>;
 };
 
-export const ExternalLinkWithIcon: FC<
-  ComponentProps<'a'> & LinkProps<never> & IconLinkProps
-> = ({ children, className, icon: Icon, ...props }) => {
+export const ExternalLinkWithIcon: FC<ComponentProps<'a'> & LinkProps<never> & IconLinkProps> = ({
+  children,
+  className,
+  icon: Icon,
+  ...props
+}) => {
   return (
     <a
-      className={twMerge(
-        'inline-flex items-center gap-1 hover:text-slate-600 hover:underline',
-        className,
-      )}
+      className={twMerge('inline-flex items-center gap-1 hover:text-slate-600 hover:underline', className)}
       target="_blank"
       rel="noopener noreferrer"
       {...props}

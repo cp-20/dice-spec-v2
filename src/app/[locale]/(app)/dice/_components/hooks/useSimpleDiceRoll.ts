@@ -8,24 +8,18 @@ export const useSimpleDiceRollCore = () => {
     const validDices = Object.entries(dices).filter(([, count]) => count > 0);
     if (validDices.length === 0) return null;
 
-    const inputStr = validDices
-      .map(([dice, count]) => `${count}D${dice}`)
-      .join(' + ');
+    const inputStr = validDices.map(([dice, count]) => `${count}D${dice}`).join(' + ');
 
     const result = validDices.map(([dice, count]) => ({
       dice: dice as AvailableDice,
-      result: [...Array(count)].map(
-        () => Math.floor(Math.random() * Number(dice)) + 1,
-      ),
+      result: [...Array(count)].map(() => Math.floor(Math.random() * Number(dice)) + 1),
     }));
 
     const allSum = sum(result.map(({ result }) => sum(result)));
 
     const resultStr = [
       inputStr,
-      result
-        .map(({ result }) => `${sum(result)}[${result.join(', ')}]`)
-        .join(' + '),
+      result.map(({ result }) => `${sum(result)}[${result.join(', ')}]`).join(' + '),
       allSum,
     ].join(' => ');
 

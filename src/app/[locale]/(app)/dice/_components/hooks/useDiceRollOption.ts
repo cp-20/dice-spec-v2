@@ -11,9 +11,7 @@ export type DiceRollOptions = {
 };
 
 const diceRollOptionAtom = atom<DiceRollOptions>(defaultOption);
-const diceRegexpAtom = atom(
-  (get) => new RegExp(get(diceRollOptionAtom).systemInfo.command_pattern),
-);
+const diceRegexpAtom = atom((get) => new RegExp(get(diceRollOptionAtom).systemInfo.command_pattern));
 
 export const useDiceRollOption = () => {
   const { getGameSystemInfo } = useBcdiceApi();
@@ -40,10 +38,7 @@ export const useDiceRollOption = () => {
 export const useDiceRollValidation = () => {
   const [diceRegexp] = useAtom(diceRegexpAtom);
 
-  const validate = useCallback(
-    (command: string) => diceRegexp.test(command),
-    [diceRegexp],
-  );
+  const validate = useCallback((command: string) => diceRegexp.test(command), [diceRegexp]);
 
   return { validate };
 };

@@ -2,16 +2,7 @@ import { atom, useAtom } from 'jotai';
 import { useCallback } from 'react';
 import { useSimpleDiceRoll } from './useSimpleDiceRoll';
 
-export const availableDice = [
-  '3',
-  '4',
-  '6',
-  '8',
-  '10',
-  '12',
-  '20',
-  '100',
-] as const;
+export const availableDice = ['3', '4', '6', '8', '10', '12', '20', '100'] as const;
 
 export type AvailableDice = (typeof availableDice)[number];
 
@@ -65,10 +56,7 @@ export const useSimpleDiceInput = () => {
     });
   }, [setSimpleDices]);
 
-  const rollDice = useCallback(
-    () => simpleDiceRoll(simpleDices),
-    [simpleDiceRoll, simpleDices],
-  );
+  const rollDice = useCallback(() => simpleDiceRoll(simpleDices), [simpleDiceRoll, simpleDices]);
 
   return {
     simpleDices,

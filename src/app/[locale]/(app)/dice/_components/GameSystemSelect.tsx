@@ -10,18 +10,8 @@ import styles from './GameSystemSelect.module.css';
 import { useDiceRollOption } from './hooks/useDiceRollOption';
 import { useGameSystemList } from './hooks/useGameSystemList';
 import { Button } from '@/shared/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from '@/shared/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/shared/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/shared/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
 import { cn } from '@/shared/lib/shadcn-utils';
 
 import scrollbarStyles from '@/shared/styles/pretty-scrollbar.module.css';
@@ -69,29 +59,17 @@ export const GameSystemSelect: FC = () => {
           {systems && system ? (
             systems.find((s) => s.id === system)?.name
           ) : (
-            <span className="text-slate-600">
-              {t('dice:advanced.game-system.button')}
-            </span>
+            <span className="text-slate-600">{t('dice:advanced.game-system.button')}</span>
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className={clsx('h-60 p-0', styles['popover-content'])}
-        ref={popoverRef}
-      >
+      <PopoverContent className={clsx('h-60 p-0', styles['popover-content'])} ref={popoverRef}>
         {/* フィルタリングアルゴリズムをいい感じに上書きして最近使ったのを上に出す */}
         <Command className="h-full">
           <CommandInput placeholder={t('dice:advanced.game-system.search')} />
-          <CommandEmpty>
-            {t('dice:advanced.game-system.no-result')}
-          </CommandEmpty>
-          <CommandGroup
-            className={clsx(
-              'h-fit overflow-y-auto',
-              scrollbarStyles['pretty-scrollbar'],
-            )}
-          >
+          <CommandEmpty>{t('dice:advanced.game-system.no-result')}</CommandEmpty>
+          <CommandGroup className={clsx('h-fit overflow-y-auto', scrollbarStyles['pretty-scrollbar'])}>
             {systems &&
               systems.map((s) => (
                 <CommandItem
@@ -102,12 +80,7 @@ export const GameSystemSelect: FC = () => {
                     setOpen(false);
                   }}
                 >
-                  <Check
-                    className={cn(
-                      'mr-2 h-4 w-4',
-                      system !== s.id && 'invisible',
-                    )}
-                  />
+                  <Check className={cn('mr-2 h-4 w-4', system !== s.id && 'invisible')} />
                   {s.name}
                 </CommandItem>
               ))}

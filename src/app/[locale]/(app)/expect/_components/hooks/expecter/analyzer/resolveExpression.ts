@@ -1,10 +1,4 @@
-import type {
-  DiceExpression,
-  Expression,
-  NumberExpression,
-  OperationExpression,
-  ResolvedExpression,
-} from '../type';
+import type { DiceExpression, Expression, NumberExpression, OperationExpression, ResolvedExpression } from '../type';
 import { applyOperatorMap } from './utils';
 
 export class ResolverError extends Error {
@@ -13,9 +7,7 @@ export class ResolverError extends Error {
   }
 }
 
-export const resolveExpression = (
-  expression: Expression,
-): ResolvedExpression => {
+export const resolveExpression = (expression: Expression): ResolvedExpression => {
   if (expression.type === 'operation') {
     return resolveOperationExpression(expression);
   }
@@ -32,9 +24,7 @@ export const resolveExpression = (
   throw new Error('unknown DiceAST type');
 };
 
-const resolveOperationExpression = (
-  expression: OperationExpression,
-): ResolvedExpression => {
+const resolveOperationExpression = (expression: OperationExpression): ResolvedExpression => {
   const leftExpression = resolveExpression(expression.left);
   const rightExpression = resolveExpression(expression.right);
 
@@ -57,9 +47,7 @@ const resolveOperationExpression = (
     }
     if (expression.operator === '*') {
       // V(X*Y) = V(X) * V(Y) + E(X)^2 * E(Y) + E(Y)^2 * E(X)
-      return (
-        LVariance * RVariance + LMean ** 2 * RVariance + RMean ** 2 * LVariance
-      );
+      return LVariance * RVariance + LMean ** 2 * RVariance + RMean ** 2 * LVariance;
     }
 
     // 定数での割り算
@@ -93,9 +81,7 @@ const resolveOperationExpression = (
   };
 };
 
-const resolveDiceExpression = (
-  expression: DiceExpression,
-): ResolvedExpression => {
+const resolveDiceExpression = (expression: DiceExpression): ResolvedExpression => {
   const { num, faces } = expression;
 
   if (num <= 0 || faces <= 0) {
@@ -124,9 +110,7 @@ const resolveDiceExpression = (
   };
 };
 
-const resolveNumberExpression = (
-  expression: NumberExpression,
-): ResolvedExpression => {
+const resolveNumberExpression = (expression: NumberExpression): ResolvedExpression => {
   return {
     type: 'resolved',
     result: {

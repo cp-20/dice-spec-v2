@@ -9,18 +9,9 @@ export const useBcdiceApi = () => {
 
   const bcdiceApiEndpoint = advancedSettings.bcdiceApiEndpoint;
 
-  const getDiceRoll = useMemo(
-    () => getDiceRollGenerator(bcdiceApiEndpoint),
-    [bcdiceApiEndpoint],
-  );
-  const getGameSystemInfo = useMemo(
-    () => getGameSystemInfoGenerator(bcdiceApiEndpoint),
-    [bcdiceApiEndpoint],
-  );
-  const getGameSystemList = useMemo(
-    () => getGameSystemListGenerator(bcdiceApiEndpoint),
-    [bcdiceApiEndpoint],
-  );
+  const getDiceRoll = useMemo(() => getDiceRollGenerator(bcdiceApiEndpoint), [bcdiceApiEndpoint]);
+  const getGameSystemInfo = useMemo(() => getGameSystemInfoGenerator(bcdiceApiEndpoint), [bcdiceApiEndpoint]);
+  const getGameSystemList = useMemo(() => getGameSystemListGenerator(bcdiceApiEndpoint), [bcdiceApiEndpoint]);
 
   return { getDiceRoll, getGameSystemInfo, getGameSystemList };
 };

@@ -36,18 +36,12 @@ export const DiceCommandInput: FC = () => {
           {t('expect:input.calculation')}
         </Button>
       </div>
-      {expectFailed && (
-        <div className="text-sm text-red-500">
-          {t('expect:input.calculation-error')}
-        </div>
-      )}
+      {expectFailed && <div className="text-sm text-red-500">{t('expect:input.calculation-error')}</div>}
       <div className="items-top flex space-x-2">
         <Checkbox
           id="autoRecalculation"
           checked={autoRecalculation}
-          onCheckedChange={(checked) =>
-            setAutoRecalculation(checked === 'indeterminate' ? true : checked)
-          }
+          onCheckedChange={(checked) => setAutoRecalculation(checked === 'indeterminate' ? true : checked)}
         />
         <label
           htmlFor="autoRecalculation"

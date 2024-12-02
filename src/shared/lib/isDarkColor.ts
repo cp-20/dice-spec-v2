@@ -9,10 +9,7 @@ export const checkIsDarkColor = (color: string): boolean => {
 
 const hexToRgb = (hex: string): [number, number, number] => {
   // ショートバンド (e.g. #03F) をフルバンド (e.g. #0033FF) に変換
-  const hexValue = hex.replace(
-    /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
-    (_m, r, g, b) => r + r + g + g + b + b,
-  );
+  const hexValue = hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, (_m, r, g, b) => r + r + g + g + b + b);
 
   const rgb = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hexValue);
 
@@ -20,5 +17,5 @@ const hexToRgb = (hex: string): [number, number, number] => {
     throw new Error(`Invalid hex value: ${hex}`);
   }
 
-  return [parseInt(rgb[1], 16), parseInt(rgb[2], 16), parseInt(rgb[3], 16)];
+  return [Number.parseInt(rgb[1], 16), Number.parseInt(rgb[2], 16), Number.parseInt(rgb[3], 16)];
 };

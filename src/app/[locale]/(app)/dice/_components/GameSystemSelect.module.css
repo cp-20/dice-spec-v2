@@ -1,5 +1,5 @@
 /* 横幅を合わせるときのちらつきをなくすために元々のアニメーションに遅延を持たせる */
-.popover-content[data-state='open'] {
+.popover-content[data-state="open"] {
   visibility: hidden;
   animation: enter 0.15s 0.05s forwards ease-out;
 }

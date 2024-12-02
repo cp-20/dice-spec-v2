@@ -4,10 +4,7 @@ import type { NextPage } from 'next';
 import { DiceCommandInput } from './_components/DiceCommandInput';
 import { ExpectResultDistributionChart } from './_components/ExpectResultDistributionChart';
 import { ExpectResultStats } from './_components/ExpectResultStats';
-import {
-  PageDescriptionContainer,
-  PageDescriptionText,
-} from '@/app/[locale]/(app)/_components/PageDescription';
+import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { InlineCommand } from '@/app/[locale]/(app)/expect/_components/InlineCommand';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';
@@ -42,12 +39,8 @@ const ExpectPage: NextPage = () => (
     <div>
       <PageTitle icon={IconSearch}>{t('common:expect.title')}</PageTitle>
       <PageDescriptionContainer>
-        <PageDescriptionText>
-          {insertInlineCommand(t('expect:usage1'))}
-        </PageDescriptionText>
-        <PageDescriptionText>
-          {insertInlineCommand(t('expect:usage2'))}
-        </PageDescriptionText>
+        <PageDescriptionText>{insertInlineCommand(t('expect:usage1'))}</PageDescriptionText>
+        <PageDescriptionText>{insertInlineCommand(t('expect:usage2'))}</PageDescriptionText>
       </PageDescriptionContainer>
     </div>
 

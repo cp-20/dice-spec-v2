@@ -39,12 +39,7 @@ export const UpdateAnnouncement: FC = () => {
           {t('common:update-announcement.v1')}
         </a>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="max-sm:h-6 max-sm:w-6"
-        onClick={handleClose}
-      >
+      <Button variant="ghost" size="icon" className="max-sm:h-6 max-sm:w-6" onClick={handleClose}>
         <IconX className="max-sm:h-4 max-sm:w-4" />
       </Button>
     </div>

@@ -36,17 +36,9 @@ export const LogAnalysisCharts: FC = () => {
   const result = useCharacterLogAnalysis(character);
 
   useEffect(() => {
-    import('chart.js').then(
-      ({ Chart, BarController, CategoryScale, LinearScale, BarElement }) => {
-        Chart.register(
-          BarController,
-          CategoryScale,
-          LinearScale,
-          BarElement,
-          customCanvasBackgroundColorPlugin,
-        );
-      },
-    );
+    import('chart.js').then(({ Chart, BarController, CategoryScale, LinearScale, BarElement }) => {
+      Chart.register(BarController, CategoryScale, LinearScale, BarElement, customCanvasBackgroundColorPlugin);
+    });
   }, []);
 
   if (!result) {
@@ -56,9 +48,7 @@ export const LogAnalysisCharts: FC = () => {
   const withNumberDiceResults = result.diceResults.filter(
     ({ diceResultNumber }) => diceResultNumber !== undefined,
   ) as withNumberDiceResult[];
-  const diceResultNumber = withNumberDiceResults.map(
-    ({ diceResultNumber }) => diceResultNumber,
-  );
+  const diceResultNumber = withNumberDiceResults.map(({ diceResultNumber }) => diceResultNumber);
   const defaultDiceResultNumber: Record<number, number[]> = {
     0: [],
     1: [],
@@ -75,31 +65,18 @@ export const LogAnalysisCharts: FC = () => {
     ...defaultDiceResultNumber,
     ...groupBy(diceResultNumber, (result) => Math.floor((result - 1) / 10)),
   }).map((results) => (results ? results.length : 0));
-  const diceResultNumberLabels = [...Array(10)].map(
-    (_, i) => `${i * 10 + 1}-${i * 10 + 10}`,
-  );
+  const diceResultNumberLabels = [...Array(10)].map((_, i) => `${i * 10 + 1}-${i * 10 + 10}`);
 
   const diceResult = withNumberDiceResults.map(({ diceResult }) => diceResult);
-  const aggregatedDiceResult = Object.entries(
-    groupBy(diceResult, (result) => result),
-  )
+  const aggregatedDiceResult = Object.entries(groupBy(diceResult, (result) => result))
     .map(([result, results]) => [result, results ? results.length : 0] as const)
     .toSorted(([, a], [, b]) => b - a);
-  const aggregatedDiceResultLabels = aggregatedDiceResult.map(
-    ([result]) => result,
-  );
-  const aggregatedDiceResultData = aggregatedDiceResult.map(
-    ([, value]) => value,
-  );
+  const aggregatedDiceResultLabels = aggregatedDiceResult.map(([result]) => result);
+  const aggregatedDiceResultData = aggregatedDiceResult.map(([, value]) => value);
 
   return (
     <div className="space-y-4 @container">
-      <Button
-        variant="secondary"
-        className="w-full"
-        onClick={shareImage}
-        disabled={isSharingInProgress}
-      >
+      <Button variant="secondary" className="w-full" onClick={shareImage} disabled={isSharingInProgress}>
         {isSharingInProgress ? (
           <div className="animate-slide-in-top" key="sharing-in-progress">
             <IconLoader className="animate-spin" />

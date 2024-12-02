@@ -3,22 +3,14 @@
 import clsx from 'clsx';
 import { t } from 'i18next';
 import { useState, type FC, type ReactNode } from 'react';
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from '@/shared/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/components/ui/tabs';
 
 export type DiceRollModeTabsProps = {
   simpleTabContent: ReactNode;
   advancedTabContent: ReactNode;
 };
 
-export const DiceRollModeTabs: FC<DiceRollModeTabsProps> = ({
-  simpleTabContent,
-  advancedTabContent,
-}) => {
+export const DiceRollModeTabs: FC<DiceRollModeTabsProps> = ({ simpleTabContent, advancedTabContent }) => {
   const [value, setValue] = useState('simple');
 
   return (
@@ -30,10 +22,7 @@ export const DiceRollModeTabs: FC<DiceRollModeTabsProps> = ({
           value === 'advanced' && 'before:translate-x-full',
         )}
       >
-        <TabsTrigger
-          className="z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
-          value="simple"
-        >
+        <TabsTrigger className="z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none" value="simple">
           {t('dice:simple.label')}
         </TabsTrigger>
         <TabsTrigger
@@ -43,16 +32,10 @@ export const DiceRollModeTabs: FC<DiceRollModeTabsProps> = ({
           {t('dice:advanced.label')}
         </TabsTrigger>
       </TabsList>
-      <TabsContent
-        className={clsx(value === 'simple' && 'animate-slide-in-right')}
-        value="simple"
-      >
+      <TabsContent className={clsx(value === 'simple' && 'animate-slide-in-right')} value="simple">
         {simpleTabContent}
       </TabsContent>
-      <TabsContent
-        className={clsx(value === 'advanced' && 'animate-slide-in-left')}
-        value="advanced"
-      >
+      <TabsContent className={clsx(value === 'advanced' && 'animate-slide-in-left')} value="advanced">
         {advancedTabContent}
       </TabsContent>
     </Tabs>

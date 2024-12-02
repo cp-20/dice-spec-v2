@@ -24,11 +24,7 @@ export const diceExpecter = (input: string): DiceExpecterResult => {
     const result = analyzeDiceExpression(ast);
     return { success: true, ...result };
   } catch (err) {
-    if (
-      err instanceof ParserError ||
-      err instanceof ResolverError ||
-      err instanceof TokenizerError
-    ) {
+    if (err instanceof ParserError || err instanceof ResolverError || err instanceof TokenizerError) {
       return {
         success: false,
         message: err.message,

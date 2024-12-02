@@ -2,10 +2,7 @@
 
 import { useCallback, type FC } from 'react';
 import type { SimpleDices } from './hooks/useSimpleDiceInput';
-import {
-  formatSimpleDices,
-  useSimpleDiceRoll,
-} from './hooks/useSimpleDiceRoll';
+import { formatSimpleDices, useSimpleDiceRoll } from './hooks/useSimpleDiceRoll';
 import { Button } from '@/shared/components/ui/button';
 
 export const SimpleDiceQuickInput: FC = () => {
@@ -27,9 +24,7 @@ type SimpleDiceQuickInputPanelProps = {
   dices: Partial<SimpleDices>;
 };
 
-const SimpleDiceQuickInputPanel: FC<SimpleDiceQuickInputPanelProps> = ({
-  dices,
-}) => {
+const SimpleDiceQuickInputPanel: FC<SimpleDiceQuickInputPanelProps> = ({ dices }) => {
   const { simpleDiceRoll } = useSimpleDiceRoll();
 
   const handleClick = useCallback(() => {

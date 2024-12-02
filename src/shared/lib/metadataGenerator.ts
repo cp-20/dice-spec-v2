@@ -10,11 +10,7 @@ export const appBaseUrl = 'https://dicespec.vercel.app';
 export const defaultOgImage = `${appBaseUrl}/ogp.png`;
 export const appName = 'ダイススペック';
 
-export const metadataGenerator = ({
-  title: rawTitle,
-  description,
-  ogp,
-}: Option): Metadata => {
+export const metadataGenerator = ({ title: rawTitle, description, ogp }: Option): Metadata => {
   const title = rawTitle ? `${rawTitle} - ${appName}` : appName;
 
   return {

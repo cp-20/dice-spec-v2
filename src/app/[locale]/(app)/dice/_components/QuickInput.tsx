@@ -18,21 +18,11 @@ export const QuickInput: FC = () => {
             variant="outline"
             size="icon"
             className="h-8 w-8 rounded-e-none border-r-0"
-            onClick={() =>
-              updateItem({ ...item, isFavorite: !item.isFavorite })
-            }
+            onClick={() => updateItem({ ...item, isFavorite: !item.isFavorite })}
           >
-            {item.isFavorite ? (
-              <IconStarFilled size="16" />
-            ) : (
-              <IconStar size="16" />
-            )}
+            {item.isFavorite ? <IconStarFilled size="16" /> : <IconStar size="16" />}
           </Button>
-          <Button
-            variant="outline"
-            className="h-8 rounded-s-none px-3"
-            onClick={() => diceRoll(item.command)}
-          >
+          <Button variant="outline" className="h-8 rounded-s-none px-3" onClick={() => diceRoll(item.command)}>
             {item.command}
           </Button>
         </div>

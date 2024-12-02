@@ -28,12 +28,7 @@ const successPattern = [
   'イクストリーム成功',
 ];
 
-const failurePattern = [
-  '失敗',
-  '致命的失敗/ファンブル',
-  '致命的失敗',
-  'ファンブル',
-];
+const failurePattern = ['失敗', '致命的失敗/ファンブル', '致命的失敗', 'ファンブル'];
 
 export const analyzeDiceResult = ({ result, tab }: ParsedLog): DiceResult => {
   const diceFullStr = `${tab} ${result.message}`;

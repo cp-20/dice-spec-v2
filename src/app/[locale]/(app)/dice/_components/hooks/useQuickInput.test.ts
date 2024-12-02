@@ -148,9 +148,7 @@ describe('useQuickInput', () => {
       },
     ]);
 
-    act(() =>
-      result.current.updateItem({ command: '1d20', isFavorite: false }),
-    );
+    act(() => result.current.updateItem({ command: '1d20', isFavorite: false }));
     expect(result.current.items).toEqual([
       {
         command: '1d100',

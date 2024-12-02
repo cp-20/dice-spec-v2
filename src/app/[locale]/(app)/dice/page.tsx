@@ -11,10 +11,7 @@ import { QuickInput } from './_components/QuickInput';
 import { SimpleDiceInput } from './_components/SimpleDiceInput';
 import { SimpleDiceOutput } from './_components/SimpleDiceOutput';
 import { SimpleDiceQuickInput } from './_components/SimpleDiceQuickInput';
-import {
-  PageDescriptionContainer,
-  PageDescriptionText,
-} from '@/app/[locale]/(app)/_components/PageDescription';
+import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { Toaster } from '@/shared/components/ui/toaster';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';
@@ -32,9 +29,7 @@ const DicePage: NextPage = async () => {
         <div>
           <PageTitle icon={IconDice5}>{t('common:dice.title')}</PageTitle>
           <PageDescriptionContainer>
-            <PageDescriptionText>
-              {t('common:dice.description')}
-            </PageDescriptionText>
+            <PageDescriptionText>{t('common:dice.description')}</PageDescriptionText>
           </PageDescriptionContainer>
         </div>
 
@@ -50,9 +45,7 @@ const DicePage: NextPage = async () => {
             <div className="space-y-12">
               <div className="space-y-4">
                 <div>
-                  <div className="mb-2 text-sm font-bold">
-                    {t('dice:advanced.game-system.label')}
-                  </div>
+                  <div className="mb-2 text-sm font-bold">{t('dice:advanced.game-system.label')}</div>
                   <GameSystemSelect />
                 </div>
 

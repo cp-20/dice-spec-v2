@@ -17,8 +17,7 @@ export const en = {
       },
       1: {
         label: 'Lightweight Operation',
-        contents:
-          'DiceSpec is designed with performance in mind, so there is hardly any waiting time for processing.',
+        contents: 'DiceSpec is designed with performance in mind, so there is hardly any waiting time for processing.',
       },
       2: {
         label: 'Open Source',
@@ -42,13 +41,11 @@ export const en = {
   expect: {
     usage1:
       'By calculating the expected value of a die, such as `1d6` or `1d100`, you can predict what the result will be when you roll the die.',
-    usage2:
-      'In addition, by entering `1d100<=10` or `2d6>=10`, the probability can also be known.',
+    usage2: 'In addition, by entering `1d100<=10` or `2d6>=10`, the probability can also be known.',
     input: {
       placeholder: 'Please enter a formula',
       calculation: 'Calculate',
-      'calculation-error':
-        'Calculation failed. Please check the calculation formula.',
+      'calculation-error': 'Calculation failed. Please check the calculation formula.',
       'auto-recalculation-option': 'Automatic recalculation upon change',
     },
     stats: {
@@ -93,8 +90,7 @@ export const en = {
     },
   },
   'analyze-logs': {
-    usage1:
-      'Analyze the logs of Cocoforia to calculate the expected value of the dice, etc.',
+    usage1: 'Analyze the logs of Cocoforia to calculate the expected value of the dice, etc.',
     usage2: '(Only supports Call of Cthulhu TRPG and New Call of Cthulhu TRPG)',
     upload: {
       button: 'Click to upload or drag and drop to upload',
@@ -120,8 +116,7 @@ export const en = {
     'load-clipboard': {
       button: 'Load from clipboard',
       error: 'Failed to load from clipboard',
-      'error-description':
-        'Failed to load from clipboard. Please check the format of the copied text.',
+      'error-description': 'Failed to load from clipboard. Please check the format of the copied text.',
     },
     input: {
       name: {
@@ -164,8 +159,7 @@ export const en = {
         label: 'Chat Color',
         character: 'Character 1',
         time: 'Today 13:04',
-        message:
-          "This is a test message. The color is reflected in the character's name.",
+        message: "This is a test message. The color is reflected in the character's name.",
       },
       commands: {
         label: 'Chat Palette',

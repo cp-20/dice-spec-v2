@@ -8,27 +8,19 @@ export type DiceResultSummary = {
 };
 
 export const calculateDiceResultSummary = (diceResults: DiceResult[]) => {
-  const successRate =
-    (diceResults.filter(({ success }) => success).length / diceResults.length) *
-    100;
+  const successRate = (diceResults.filter(({ success }) => success).length / diceResults.length) * 100;
 
   const withNumberDices = diceResults
     .filter(({ diceResultNumber }) => diceResultNumber !== undefined)
     .map(({ diceResultNumber }) => diceResultNumber!);
 
-  const average =
-    withNumberDices.reduce((acc, number) => acc + number, 0) /
-    withNumberDices.length;
+  const average = withNumberDices.reduce((acc, number) => acc + number, 0) / withNumberDices.length;
 
   const diceRollCount = diceResults.length;
 
   const SD =
-    Math.sqrt(
-      withNumberDices.reduce(
-        (acc, number) => acc + (number - average) ** 2,
-        0,
-      ) / withNumberDices.length,
-    ) / Math.sqrt(diceRollCount);
+    Math.sqrt(withNumberDices.reduce((acc, number) => acc + (number - average) ** 2, 0) / withNumberDices.length) /
+    Math.sqrt(diceRollCount);
 
   const deviationScore = (-(average - 50.5) * 10) / SD + 50;
 

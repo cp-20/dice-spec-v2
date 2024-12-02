@@ -8,8 +8,7 @@ import { Stats } from '@/shared/components/elements/Stats';
 import { round } from '@/shared/lib/round';
 
 const getResultFormatBase =
-  (formatter: (result: SuccessExpectResult) => ReactNode) =>
-  (result: DiceExpecterResult | null) => {
+  (formatter: (result: SuccessExpectResult) => ReactNode) => (result: DiceExpecterResult | null) => {
     if (result === null) return '-';
     if (!result.success) return '-';
     return formatter(result);
@@ -54,22 +53,12 @@ export const ExpectResultStats: FC = () => {
   return (
     <div className="@container">
       <div className="grid gap-2 @[300px]:grid-cols-2 @[400px]:grid-cols-3 @[800px]:grid-cols-6">
-        <Stats
-          label={t('expect:stats.chance')}
-          number={chance}
-          unit={chance !== '-' ? '%' : null}
-        />
+        <Stats label={t('expect:stats.chance')} number={chance} unit={chance !== '-' ? '%' : null} />
         <Stats label={t('expect:stats.mean')} number={getMeanFormat(result)} />
         <Stats label={t('expect:stats.ci')} number={getCIFormat(result)} />
         <Stats label={t('expect:stats.sd')} number={getSDFormat(result)} />
-        <Stats
-          label={t('expect:stats.variance')}
-          number={getVarianceFormat(result)}
-        />
-        <Stats
-          label={t('expect:stats.range')}
-          number={getRangeFormat(result)}
-        />
+        <Stats label={t('expect:stats.variance')} number={getVarianceFormat(result)} />
+        <Stats label={t('expect:stats.range')} number={getRangeFormat(result)} />
       </div>
     </div>
   );

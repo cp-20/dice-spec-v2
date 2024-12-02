@@ -18,23 +18,8 @@ export const ExpectResultDistributionChart: FC = () => {
 
   useEffect(() => {
     import('chart.js').then(
-      ({
-        Chart,
-        LineController,
-        LineElement,
-        CategoryScale,
-        LinearScale,
-        PointElement,
-        Filler,
-      }) => {
-        Chart.register(
-          LineController,
-          LineElement,
-          CategoryScale,
-          LinearScale,
-          PointElement,
-          Filler,
-        );
+      ({ Chart, LineController, LineElement, CategoryScale, LinearScale, PointElement, Filler }) => {
+        Chart.register(LineController, LineElement, CategoryScale, LinearScale, PointElement, Filler);
       },
     );
   }, []);
@@ -49,8 +34,7 @@ export const ExpectResultDistributionChart: FC = () => {
 
   const inCI = (ctx: ScriptableLineSegmentContext) => {
     return (
-      result.CI.min < result.range.min + ctx.p0.parsed.x + 1 &&
-      result.range.min + ctx.p1.parsed.x - 1 < result.CI.max
+      result.CI.min < result.range.min + ctx.p0.parsed.x + 1 && result.range.min + ctx.p1.parsed.x - 1 < result.CI.max
     );
   };
 
@@ -58,10 +42,8 @@ export const ExpectResultDistributionChart: FC = () => {
     if (!result.withTarget) return false;
 
     return (
-      (result.target.sign === '<=' &&
-        result.range.min + ctx.p1.parsed.x <= result.target.value) ||
-      (result.target.sign === '>=' &&
-        result.range.min + ctx.p0.parsed.x >= result.target.value)
+      (result.target.sign === '<=' && result.range.min + ctx.p1.parsed.x <= result.target.value) ||
+      (result.target.sign === '>=' && result.range.min + ctx.p0.parsed.x >= result.target.value)
     );
   };
 
