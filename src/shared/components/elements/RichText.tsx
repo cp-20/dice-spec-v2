@@ -16,6 +16,7 @@ const replaceBr = (text: string) =>
     if (index === 0) {
       return text;
     }
+    // biome-ignore lint/suspicious/noArrayIndexKey: ok
     return [<br key={index} />, text];
   });
 

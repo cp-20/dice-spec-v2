@@ -22,6 +22,7 @@ const insertInlineCommand = (value: string) => {
 
   let match = null;
   let index = 0;
+  // biome-ignore lint/suspicious/noAssignInExpressions: hack
   while ((match = inlineCommandRegex.exec(value)) !== null) {
     const [inlineCommand] = match;
     result.push(value.slice(index, match.index));

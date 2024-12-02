@@ -1,14 +1,14 @@
 import { tokenize } from './tokenizer';
 import type {
-  Operator,
-  DiceStr,
   DiceAST,
-  Token,
-  Parenthesis,
   DiceExpression,
+  DiceStr,
+  Expression,
   NumberExpression,
   OperationExpression,
-  Expression,
+  Operator,
+  Parenthesis,
+  Token,
 } from './type';
 
 const operatorsSet = new Set<Operator>(['+', '-', '*', '/']);
@@ -24,11 +24,7 @@ const precedenceMap = new Map<Operator, number>([
   ['/', 2],
 ]);
 
-export class ParserError extends Error {
-  public constructor(message?: string) {
-    super(message);
-  }
-}
+export class ParserError extends Error {}
 
 const precedence = (operator: string): number => precedenceMap.get(operator as Operator) ?? 0;
 

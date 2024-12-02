@@ -1,6 +1,12 @@
 {
   // デフォルトのフォーマッタ設定
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "biomejs.biome",
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
 
   // セーブ時に自動でフォーマットとLintを実行
   "editor.formatOnSave": true,

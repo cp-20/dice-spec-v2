@@ -5,7 +5,8 @@ export const groupBy = <K extends PropertyKey, V>(
   array.reduce(
     (obj, cur, idx, src) => {
       const key = getKey(cur, idx, src);
-      (obj[key] || (obj[key] = []))!.push(cur);
+      // biome-ignore lint/suspicious/noAssignInExpressions: hack
+      (obj[key] || (obj[key] = []))?.push(cur);
       return obj;
     },
     {} as Partial<Record<K, V[]>>,

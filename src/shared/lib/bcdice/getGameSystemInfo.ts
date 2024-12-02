@@ -15,6 +15,7 @@ const gameSystemInfoCache = new Map<string, GameSystemInfo>();
 
 export const getGameSystemInfoGenerator = (bcdiceApiEndpoint: string) => async (system: string) => {
   if (gameSystemInfoCache.has(system)) {
+    // biome-ignore lint/style/noNonNullAssertion: has
     return gameSystemInfoCache.get(system)!;
   }
 

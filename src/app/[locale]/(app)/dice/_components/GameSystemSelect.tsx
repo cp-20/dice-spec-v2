@@ -49,18 +49,14 @@ export const GameSystemSelect: FC = () => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between"
-          ref={buttonRef}
-        >
-          {systems && system ? (
-            systems.find((s) => s.id === system)?.name
-          ) : (
-            <span className="text-slate-600">{t('dice:advanced.game-system.button')}</span>
-          )}
+        <Button variant="outline" asChild aria-expanded={open} className="w-full justify-between" ref={buttonRef}>
+          <select>
+            {systems && system ? (
+              systems.find((s) => s.id === system)?.name
+            ) : (
+              <span className="text-slate-600">{t('dice:advanced.game-system.button')}</span>
+            )}
+          </select>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -70,20 +66,19 @@ export const GameSystemSelect: FC = () => {
           <CommandInput placeholder={t('dice:advanced.game-system.search')} />
           <CommandEmpty>{t('dice:advanced.game-system.no-result')}</CommandEmpty>
           <CommandGroup className={clsx('h-fit overflow-y-auto', scrollbarStyles['pretty-scrollbar'])}>
-            {systems &&
-              systems.map((s) => (
-                <CommandItem
-                  key={s.id}
-                  value={s.name}
-                  onSelect={() => {
-                    changeSystem(s.id === system ? '' : s.id);
-                    setOpen(false);
-                  }}
-                >
-                  <Check className={cn('mr-2 h-4 w-4', system !== s.id && 'invisible')} />
-                  {s.name}
-                </CommandItem>
-              ))}
+            {systems?.map((s) => (
+              <CommandItem
+                key={s.id}
+                value={s.name}
+                onSelect={() => {
+                  changeSystem(s.id === system ? '' : s.id);
+                  setOpen(false);
+                }}
+              >
+                <Check className={cn('mr-2 h-4 w-4', system !== s.id && 'invisible')} />
+                {s.name}
+              </CommandItem>
+            ))}
           </CommandGroup>
         </Command>
       </PopoverContent>

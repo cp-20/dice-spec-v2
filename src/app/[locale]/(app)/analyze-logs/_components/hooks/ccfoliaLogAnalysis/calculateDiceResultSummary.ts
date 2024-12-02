@@ -11,8 +11,8 @@ export const calculateDiceResultSummary = (diceResults: DiceResult[]) => {
   const successRate = (diceResults.filter(({ success }) => success).length / diceResults.length) * 100;
 
   const withNumberDices = diceResults
-    .filter(({ diceResultNumber }) => diceResultNumber !== undefined)
-    .map(({ diceResultNumber }) => diceResultNumber!);
+    .map(({ diceResultNumber }) => diceResultNumber)
+    .filter((num) => num !== undefined);
 
   const average = withNumberDices.reduce((acc, number) => acc + number, 0) / withNumberDices.length;
 

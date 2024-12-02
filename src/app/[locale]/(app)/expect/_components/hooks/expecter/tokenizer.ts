@@ -2,16 +2,13 @@ import type { Token } from './type';
 
 const tokenRegexp = /^\d+d\d*|[()*+\-/]|\d+/i;
 
-export class TokenizerError extends Error {
-  public constructor(message?: string) {
-    super(message);
-  }
-}
+export class TokenizerError extends Error {}
 
 export const tokenize = (command: string): Token[] => {
   const tokens: Token[] = [];
   let match: RegExpMatchArray | null;
   let processingCommand = command;
+  // biome-ignore lint/suspicious/noAssignInExpressions: hack
   while ((match = processingCommand.match(tokenRegexp))) {
     if (match.index !== 0) {
       throw new TokenizerError(`Unexpected token: ${processingCommand}`);

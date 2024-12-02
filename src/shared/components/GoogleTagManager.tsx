@@ -1,13 +1,13 @@
-import { headers, type UnsafeUnwrappedHeaders } from 'next/headers';
+import { headers } from 'next/headers';
 import Script from 'next/script';
 import type { FC } from 'react';
 
 const id = process.env.NEXT_PUBLIC_GTM_ID;
 
-export const GoogleTagManager: FC = () => {
+export const GoogleTagManager: FC = async () => {
   if (!id) return <></>;
 
-  const nonce = (headers() as unknown as UnsafeUnwrappedHeaders).get('X-CSP-Nonce') ?? '';
+  const nonce = (await headers()).get('X-CSP-Nonce') ?? '';
 
   return (
     <>
@@ -15,6 +15,7 @@ export const GoogleTagManager: FC = () => {
         nonce={nonce}
         id="gtm"
         strategy="lazyOnload"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: for GTM script
         dangerouslySetInnerHTML={{
           __html: `
       (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -28,6 +29,7 @@ export const GoogleTagManager: FC = () => {
 
       <noscript>
         <iframe
+          title="Google Tag Manager"
           src={`https://www.googletagmanager.com/ns.html?id=${id}`}
           height="0"
           width="0"

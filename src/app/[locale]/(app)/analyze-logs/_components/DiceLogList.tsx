@@ -13,17 +13,16 @@ export const DiceLogList: FC<ComponentProps<'div'>> = ({ ...props }) => {
 
   return (
     <ContainerSection label={t('analyze-logs:log')} {...props}>
-      {result !== undefined &&
-        result.diceResults.map((log, index) => (
-          <DiceLog
-            key={index}
-            log={{
-              success: log.success,
-              failure: log.failure,
-              value: log.diceFullStr,
-            }}
-          />
-        ))}
+      {result?.diceResults.map((log) => (
+        <DiceLog
+          key={`${log.diceFullStr}-${log.diceResult}-${log.diceResultNumber}-${log.diceTarget}`}
+          log={{
+            success: log.success,
+            failure: log.failure,
+            value: log.diceFullStr,
+          }}
+        />
+      ))}
     </ContainerSection>
   );
 };

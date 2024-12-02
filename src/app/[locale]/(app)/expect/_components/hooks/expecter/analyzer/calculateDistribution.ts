@@ -68,5 +68,5 @@ const calculateDiceDistribution = (expression: DiceExpression): Record<string, n
   return new Array(num * faces - num + 1)
     .fill(0)
     .map((_, i) => ({ [i + num]: dp[num - 1][i] }))
-    .reduce((acc, cur) => ({ ...acc, ...cur }), {});
+    .reduce((acc, cur) => Object.assign(acc, cur), {});
 };

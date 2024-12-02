@@ -5,7 +5,7 @@ const nextConfig = {
   redirects: async () => [
     {
       source: '/analyze-logs/og',
-      destination: `/analyze-logs`,
+      destination: '/analyze-logs',
       permanent: true,
     },
   ],

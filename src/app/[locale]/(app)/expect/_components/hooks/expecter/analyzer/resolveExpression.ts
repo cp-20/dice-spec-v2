@@ -1,11 +1,7 @@
 import type { DiceExpression, Expression, NumberExpression, OperationExpression, ResolvedExpression } from '../type';
 import { applyOperatorMap } from './utils';
 
-export class ResolverError extends Error {
-  constructor(message?: string) {
-    super(message);
-  }
-}
+export class ResolverError extends Error {}
 
 export const resolveExpression = (expression: Expression): ResolvedExpression => {
   if (expression.type === 'operation') {

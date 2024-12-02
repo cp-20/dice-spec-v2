@@ -41,7 +41,7 @@ export const numberFormatterGenerator =
 
     const value = Number.parseInt(rawValue);
 
-    if (isNaN(value)) {
+    if (Number.isNaN(value)) {
       return field[key];
     }
 
