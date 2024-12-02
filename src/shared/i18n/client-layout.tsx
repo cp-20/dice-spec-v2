@@ -17,8 +17,6 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
   const localeCandidate = pathname.split('/')[1];
   const locale = i18nConfig.locales.includes(localeCandidate) ? localeCandidate : i18nConfig.defaultLocale;
-  console.log('client locale', locale);
-
   i18n.changeLanguage(locale);
   return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
 };
