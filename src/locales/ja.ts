@@ -172,6 +172,22 @@ export const ja = {
     'copy-to-clipboard': 'クリップボードにコピー',
   },
   common: {
+    header: {
+      'feedback-button': 'フィードバック',
+      feedback: {
+        title: 'フィードバック',
+        description:
+          '「ここをこういう風に改善して欲しい！」「なんかバグった」「この機能が欲しい！」といったフィードバックをお寄せください (なるべく具体的に書いてもらえると嬉しいです！)',
+        name: '名前 (任意)',
+        feedback: 'フィードバック',
+        submit: '送信',
+        submitted: 'フィードバックを送信しました！',
+        'submitted-description': 'フィードバックを送信していただきありがとうございます！',
+        error: 'フィードバックの送信に失敗しました',
+      },
+      'discord-button': 'サポートDiscord',
+      'twitter-button': '作者のついった',
+    },
     'update-announcement': {
       label: 'ダイススペックはv2にアップデートされました。',
       v1: 'もとのv1はここからアクセスできます。',

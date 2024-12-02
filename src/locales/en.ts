@@ -172,6 +172,18 @@ export const en = {
     'copy-to-clipboard': 'Copy to clipboard',
   },
   common: {
+    header: {
+      'feedback-button': 'Feedback',
+      feedback: {
+        title: 'Feedback',
+        description: 'Please feel free to give us your feedback.',
+        name: 'Name (optional)',
+        feedback: 'Feedback',
+        submit: 'Submit',
+      },
+      'discord-button': 'Discord',
+      'twitter-button': "Developer's Twitter",
+    },
     'update-announcement': {
       label: 'DiceSpec have been updated to v2.',
       v1: 'The original v1 can be accessed here.',
