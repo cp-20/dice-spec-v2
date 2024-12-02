@@ -26,7 +26,7 @@ export const Header: FC<ComponentProps<'header'>> = ({
           href={t('link', { href: '/' })}
           className="transition-opacity duration-100 hover:opacity-70"
         >
-          <TitleLogo className="h-5 w-auto text-slate-800 max-sm:h-6 max-sm:w-[7.5ren]" />
+          <TitleLogo className="h-5 w-auto text-slate-800 max-sm:h-6 max-sm:w-[7rem]" />
         </CustomLink>
         <div className="max-sm:text-sm">v{appVersion}</div>
       </div>
