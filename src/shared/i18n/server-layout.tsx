@@ -15,6 +15,7 @@ export const wrapRootLayout = (RootLayout: FC<{ children: ReactNode; locale: str
   }> = async ({ children, params }) => {
     const { locale } = await params;
     i18n.changeLanguage(locale);
+    console.log('server locale', locale);
     return <RootLayout locale={locale}>{children}</RootLayout>;
   };
 
