@@ -93,6 +93,16 @@ export const ja = {
   'analyze-logs': {
     usage1: 'ココフォリアのログを解析してダイスの期待値などを計算します。',
     usage2: '(クトゥルフ神話TRPG・新クトゥルフ神話TRPGのみ対応)',
+    'game-system-request': {
+      label: '他ゲームシステム対応をリクエスト',
+      system: 'ゲームシステム名',
+      logs: 'ログファイル (任意)',
+      'logs-description': 'ログファイルがあると対応がしやすくなります！',
+      submit: '送信',
+      submitted: 'リクエストを送信しました！',
+      'submitted-description': 'リクエストありがとうございます！',
+      error: 'リクエストの送信に失敗しました',
+    },
     upload: {
       button: 'クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード',
       'button-mouseover': '離してアップロード',

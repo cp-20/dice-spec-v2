@@ -21,7 +21,7 @@ export const sendFeedback = async (feedback: Feedback) => {
       },
     ],
   };
-  const response = await fetch(webhookUrl, {
+  const res = await fetch(webhookUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -29,7 +29,42 @@ export const sendFeedback = async (feedback: Feedback) => {
     body: JSON.stringify(body),
   });
 
-  if (!response.ok) {
+  if (!res.ok) {
     throw new Error('Failed to send feedback');
+  }
+};
+
+type GameSystemRequest = {
+  system: string;
+  logFile: File | null;
+};
+
+export const sendGameSystemRequest = async (request: GameSystemRequest) => {
+  const payload = {
+    content: '他ゲームシステム対応リクエストが届きました (ログ分析)',
+    embeds: [
+      {
+        title: 'ログ分析: 他ゲームシステム対応リクエスト',
+        fields: [
+          {
+            name: 'ゲームシステム名',
+            value: request.system,
+          },
+        ],
+      },
+    ],
+  };
+
+  const formData = new FormData();
+  formData.append('payload_json', JSON.stringify(payload));
+  if (request.logFile) formData.append('files[0]', request.logFile);
+
+  const res = await fetch(webhookUrl, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to send game system request');
   }
 };

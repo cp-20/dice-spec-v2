@@ -92,6 +92,16 @@ export const en = {
   'analyze-logs': {
     usage1: 'Analyze the logs of Cocoforia to calculate the expected value of the dice, etc.',
     usage2: '(Only supports Call of Cthulhu TRPG and New Call of Cthulhu TRPG)',
+    'game-system-request': {
+      label: 'New Game System Request',
+      system: 'Game System',
+      logs: 'Log File (optional)',
+      'logs-description': 'Having a log file makes it easier to support!',
+      submit: 'Submit',
+      submitted: 'Request submitted!',
+      'submitted-description': 'Thank you for your request!',
+      error: 'Failed to submit request',
+    },
     upload: {
       button: 'Click to upload or drag and drop to upload',
       'button-mouseover': 'Release and upload',

@@ -8,6 +8,7 @@ import { Header } from '@/shared/components/Layout/Header';
 import { SideNavigation } from '@/shared/components/Layout/SideNavigation';
 import { UpdateAnnouncement } from '@/shared/components/elements/UpdateAnnouncement';
 import { isNavPath } from '@/shared/lib/navigation';
+import { Toaster } from '@/shared/components/ui/toaster';
 
 type AppLayout = {
   children?: ReactNode;
@@ -36,6 +37,8 @@ const AppLayout: FC<AppLayout> = ({ children }) => {
         </div>
       </div>
       <BottomNavigation className="sm:hidden" active={pathname} />
+
+      <Toaster />
     </div>
   );
 };

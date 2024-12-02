@@ -9,6 +9,7 @@ import { UploadLogFileButton } from './_components/UploadLogFileButton';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { metadataGenerator, viewportGenerator } from '@/shared/lib/metadataGenerator';
+import { GameSystemRequest } from '@/app/[locale]/(app)/analyze-logs/_components/GameSystemRequest';
 
 type props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -48,6 +49,7 @@ const AnalyzeLogsPage: NextPage = () => (
     </div>
 
     <div className="space-y-4">
+      <GameSystemRequest />
       <UploadLogFileButton />
       <CharacterSelect />
     </div>
