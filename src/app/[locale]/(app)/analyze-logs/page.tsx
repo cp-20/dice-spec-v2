@@ -14,14 +14,15 @@ import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { metadataGenerator } from '@/shared/lib/metadataGenerator';
 
 type props = {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 const ogpImageRegex = new RegExp(
   `^https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/.+.png`,
 );
 
-export const generateMetadata = ({ searchParams }: props): Metadata => {
+export const generateMetadata = async (props0: props): Promise<Metadata> => {
+  const searchParams = await props0.searchParams;
   const title = 'ログ解析';
   const description =
     'ココフォリアから出力されたログを解析して、ダイスの出目を抽出・分析します。 (クトゥルフ神話TRPG・新クトゥルフ神話TRPGのみ対応)';

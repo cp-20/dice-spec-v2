@@ -1,11 +1,11 @@
-import type { TablerIconsProps } from '@tabler/icons-react';
+import type { IconProps } from '@tabler/icons-react';
 import type { FC, ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 import type { CustomLinkProps } from '@/shared/components/elements/CustomLink';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 
 export type LinkableIconPanelProps = {
-  icon: FC<TablerIconsProps>;
+  icon: FC<IconProps>;
   label: ReactNode;
   contents: React.ReactNode;
 };

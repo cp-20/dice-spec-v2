@@ -1,29 +1,29 @@
-import { atom } from 'jotai';
-import { useCallback } from 'react';
-import type { Input } from 'valibot';
-import { array, boolean, object, string } from 'valibot';
-import { formatDiceCommand } from '@/shared/lib/formatDiceCommand';
-import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
-import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
+import { atom } from "jotai";
+import { useCallback } from "react";
+import type { InferInput } from "valibot";
+import * as v from "valibot";
+import { formatDiceCommand } from "@/shared/lib/formatDiceCommand";
+import { useGoogleAnalytics } from "@/shared/lib/useGoogleAnalytics";
+import { useLocalStorageAtom } from "@/shared/lib/useLocalStorage";
 
-export const quickInputItemsSchema = array(
-  object({
-    command: string(),
-    isFavorite: boolean(),
+export const quickInputItemsSchema = v.array(
+  v.object({
+    command: v.string(),
+    isFavorite: v.boolean(),
   }),
 );
 
-export type QuickInputItem = Input<typeof quickInputItemsSchema>[number];
+export type QuickInputItem = InferInput<typeof quickInputItemsSchema>[number];
 
 const quickInputAtom = atom<QuickInputItem[]>([
-  { command: '1d6', isFavorite: true },
-  { command: '1d100', isFavorite: true },
+  { command: "1d6", isFavorite: true },
+  { command: "1d100", isFavorite: true },
 ]);
 
 export const useQuickInput = () => {
   const { sendEvent } = useGoogleAnalytics();
   const [items, setItems] = useLocalStorageAtom(
-    'quick-input-items',
+    "quick-input-items",
     quickInputAtom,
     quickInputItemsSchema,
   );
@@ -32,8 +32,8 @@ export const useQuickInput = () => {
     (updateFunc: (prev: QuickInputItem[]) => QuickInputItem[]) => {
       setItems((prev) =>
         updateFunc(prev).toSorted(({ isFavorite: a }, { isFavorite: b }) =>
-          a === b ? 0 : a ? -1 : 1,
-        ),
+          a === b ? 0 : a ? -1 : 1
+        )
       );
     },
     [setItems],
@@ -61,8 +61,8 @@ export const useQuickInput = () => {
   const updateItem = useCallback(
     (item: QuickInputItem) => {
       const eventName = item.isFavorite
-        ? 'favoriteCommand'
-        : 'unfavoriteCommand';
+        ? "favoriteCommand"
+        : "unfavoriteCommand";
       sendEvent(eventName, formatDiceCommand(item.command));
       updateItems((prev) => [
         item,
@@ -74,8 +74,8 @@ export const useQuickInput = () => {
 
   const resetItems = useCallback(() => {
     setItems([
-      { command: '1d6', isFavorite: true },
-      { command: '1d100', isFavorite: true },
+      { command: "1d6", isFavorite: true },
+      { command: "1d100", isFavorite: true },
     ]);
   }, [setItems]);
 

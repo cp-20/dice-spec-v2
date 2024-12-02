@@ -1,29 +1,29 @@
-import { atom } from 'jotai';
-import { useCallback, useEffect } from 'react';
-import useImmutableSWR from 'swr/immutable';
-import { array } from 'valibot';
-import { useBcdiceApi } from './useBcdiceApi';
+import { atom } from "jotai";
+import { useCallback, useEffect } from "react";
+import useImmutableSWR from "swr/immutable";
+import * as v from "valibot";
+import { useBcdiceApi } from "./useBcdiceApi";
 import {
-  gameSystemSchema,
   type GameSystem,
-} from '@/shared/lib/bcdice/getGameSystemList';
-import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
+  gameSystemSchema,
+} from "@/shared/lib/bcdice/getGameSystemList";
+import { useLocalStorageAtom } from "@/shared/lib/useLocalStorage";
 
-const gameSystemListSchema = array(gameSystemSchema);
+const gameSystemListSchema = v.array(gameSystemSchema);
 
 const gameSystemListAtom = atom<GameSystem[]>([
-  { id: 'DiceBot', name: 'DiceBot', sort_key: '*たいすほつと' },
+  { id: "DiceBot", name: "DiceBot", sort_key: "*たいすほつと" },
 ]);
 
 export const useGameSystemList = () => {
   const [gameSystemList, setGameSystemList] = useLocalStorageAtom(
-    'game-system-list',
+    "game-system-list",
     gameSystemListAtom,
     gameSystemListSchema,
   );
 
   const { getGameSystemList } = useBcdiceApi();
-  const { data } = useImmutableSWR('bcdice/systems', getGameSystemList);
+  const { data } = useImmutableSWR("bcdice/systems", getGameSystemList);
 
   useEffect(() => {
     if (data !== undefined) {

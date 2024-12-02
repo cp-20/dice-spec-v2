@@ -1,10 +1,10 @@
-import type { TablerIconsProps } from '@tabler/icons-react';
+import type { IconProps } from '@tabler/icons-react';
 import type { LinkProps } from 'next/link';
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 export type IconLinkProps = {
-  icon: FC<TablerIconsProps>;
+  icon: FC<IconProps>;
 };
 
 export const ExternalLinkWithIcon: FC<

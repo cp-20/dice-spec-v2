@@ -1,19 +1,19 @@
-import type { Input } from 'valibot';
-import { array, object, parse, string } from 'valibot';
+import type { InferInput } from "valibot";
+import * as v from "valibot";
 
-export const gameSystemSchema = object({
-  id: string(),
-  name: string(),
-  sort_key: string(),
+export const gameSystemSchema = v.object({
+  id: v.string(),
+  name: v.string(),
+  sort_key: v.string(),
 });
 
-export type GameSystem = Input<typeof gameSystemSchema>;
+export type GameSystem = InferInput<typeof gameSystemSchema>;
 
-const getGameSystemListSchema = object({
-  game_system: array(gameSystemSchema),
+const getGameSystemListSchema = v.object({
+  game_system: v.array(gameSystemSchema),
 });
 
-export type GameSystemList = Input<typeof getGameSystemListSchema>;
+export type GameSystemList = InferInput<typeof getGameSystemListSchema>;
 
 export const getGameSystemListGenerator =
   (bcdiceApiEndpoint: string) => async () => {
@@ -23,7 +23,7 @@ export const getGameSystemListGenerator =
 
       const maybeGameSystems = await res.json();
 
-      const gameSystems = parse(getGameSystemListSchema, maybeGameSystems);
+      const gameSystems = v.parse(getGameSystemListSchema, maybeGameSystems);
 
       return gameSystems.game_system;
     } catch (err) {

@@ -26,14 +26,9 @@ const customCanvasBackgroundColorPlugin: Plugin = {
   },
 };
 
-const Bar = dynamic(
-  async () =>
-    (await import('@/shared/components/elements/RefForwardedBarChart'))
-      .RefForwardedBarChart,
-  {
-    ssr: false,
-  },
-);
+const Bar = dynamic(async () => (await import('react-chartjs-2')).Bar, {
+  ssr: false,
+});
 
 export const LogAnalysisCharts: FC = () => {
   const { chartRef, isSharingInProgress, shareImage } = useChartImageShare();
@@ -140,7 +135,7 @@ export const LogAnalysisCharts: FC = () => {
                 padding: 32,
               },
             } as const)}
-            forwardedRef={chartRef}
+            ref={chartRef}
           />
         </div>
         <div className="min-w-0 flex-1">

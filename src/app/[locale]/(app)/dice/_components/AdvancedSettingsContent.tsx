@@ -6,16 +6,8 @@ import { t } from 'i18next';
 import { useEffect, type FC } from 'react';
 import { useForm } from 'react-hook-form';
 
-import type { Output } from 'valibot';
-import {
-  boolean,
-  maxValue,
-  minValue,
-  number,
-  object,
-  string,
-  url,
-} from 'valibot';
+import type { InferOutput } from 'valibot';
+import * as v from 'valibot';
 import { useAdvancedSettings } from './hooks/useAdvancedSettings';
 import { Button } from '@/shared/components/ui/button';
 import {
@@ -30,14 +22,14 @@ import { Slider } from '@/shared/components/ui/slider';
 import { Switch } from '@/shared/components/ui/switch';
 import { bcdiceApiEndpoint } from '@/shared/lib/const';
 
-export const AdvancedSettingsFormSchema = object({
-  showHelp: boolean(),
-  playSound: boolean(),
-  volume: number([minValue(0), maxValue(100)]),
-  bcdiceApiEndpoint: string([url()]),
+export const AdvancedSettingsFormSchema = v.object({
+  showHelp: v.boolean(),
+  playSound: v.boolean(),
+  volume: v.pipe(v.number(), v.minValue(0), v.maxValue(100)),
+  bcdiceApiEndpoint: v.pipe(v.string(), v.url()),
 });
 
-export type AdvancedSettings = Output<typeof AdvancedSettingsFormSchema>;
+export type AdvancedSettings = InferOutput<typeof AdvancedSettingsFormSchema>;
 
 export const AdvancedSettingsContent: FC = () => {
   const { advancedSettings, setAdvancedSettings } = useAdvancedSettings();

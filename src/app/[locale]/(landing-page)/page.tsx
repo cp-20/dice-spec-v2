@@ -1,4 +1,4 @@
-import type { TablerIconsProps } from '@tabler/icons-react';
+import type { IconProps } from '@tabler/icons-react';
 import {
   IconBrandDiscord,
   IconBrandX,
@@ -31,7 +31,7 @@ export const metadata = metadataGenerator({
 });
 
 const LandingPage: NextPage = () => {
-  const featureIcons: Record<string, FC<TablerIconsProps>> = {
+  const featureIcons: Record<string, FC<IconProps>> = {
     expect: IconSearch,
     dice: IconDice5,
     'analyze-logs': IconTimeline,

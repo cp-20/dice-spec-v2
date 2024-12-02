@@ -1,9 +1,9 @@
-import type { TablerIconsProps } from '@tabler/icons-react';
+import type { IconProps } from '@tabler/icons-react';
 import type { FC, ReactNode } from 'react';
 import { H1 } from '@/shared/components/Typography/H1';
 
 export type PageTitleProps = {
-  icon: FC<TablerIconsProps>;
+  icon: FC<IconProps>;
   children?: ReactNode;
 };
 

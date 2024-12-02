@@ -4,44 +4,36 @@ import { IconCheck, IconClipboard } from '@tabler/icons-react';
 import clsx from 'clsx';
 import { t } from 'i18next';
 import { useCallback, type FC, useState } from 'react';
-import {
-  array,
-  number,
-  object,
-  optional,
-  parse,
-  string,
-  transform,
-} from 'valibot';
+import * as v from 'valibot';
 import { InputFormSchema, useInputForm } from './hooks/useInputForm';
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
 
-export const InputFormValueSchema = object({
+export const InputFormValueSchema = v.object({
   ...InputFormSchema.entries,
-  status: array(
-    transform(
-      object({
-        label: string(),
-        value: optional(number()),
-        max: optional(number()),
+  status: v.array(
+    v.pipe(
+      v.object({
+        label: v.string(),
+        value: v.optional(v.number()),
+        max: v.optional(v.number()),
       }),
-      (value) => ({
+      v.transform((value) => ({
         ...value,
         key: Date.now().toString(36) + Math.random().toString(36).slice(2),
-      }),
+      })),
     ),
   ),
-  params: array(
-    transform(
-      object({
-        label: string(),
-        value: string(),
+  params: v.array(
+    v.pipe(
+      v.object({
+        label: v.string(),
+        value: v.string(),
       }),
-      (value) => ({
+      v.transform((value) => ({
         ...value,
         key: Date.now().toString(36) + Math.random().toString(36).slice(2),
-      }),
+      })),
     ),
   ),
 });
@@ -54,7 +46,7 @@ export const LoadClipboardButton: FC = () => {
   const handleCopyFromClipboard = useCallback(async () => {
     try {
       const text = await navigator.clipboard.readText();
-      const json = parse(InputFormValueSchema, JSON.parse(text));
+      const json = v.parse(InputFormValueSchema, JSON.parse(text));
       form.reset(json);
 
       setDone(true);

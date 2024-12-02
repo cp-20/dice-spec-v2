@@ -1,20 +1,22 @@
-import type { PrimitiveAtom } from 'jotai';
-import { useAtom } from 'jotai';
-import { useState, useCallback, useEffect } from 'react';
-import type { BaseSchema } from 'valibot';
-import { parse } from 'valibot';
+import type { PrimitiveAtom } from "jotai";
+import { useAtom } from "jotai";
+import { useCallback, useEffect, useState } from "react";
+import type { BaseIssue, BaseSchema } from "valibot";
+import * as v from "valibot";
+
+type Schema<T> = BaseSchema<unknown, T, BaseIssue<unknown>>;
 
 const getLocalStorageValue = <T>(
   key: string,
   initValue: T,
-  schema: BaseSchema<T>,
+  schema: Schema<T>,
 ) => {
   const item = localStorage.getItem(key);
   if (item === null) return initValue;
 
   try {
     const json = JSON.parse(item);
-    const value = parse(schema, json);
+    const value = v.parse(schema, json);
     return value;
   } catch (err) {
     console.error(err);
@@ -25,18 +27,17 @@ const getLocalStorageValue = <T>(
 export const useLocalStorage = <T>(
   key: string,
   initValue: T,
-  schema: BaseSchema<T>,
+  schema: Schema<T>,
 ) => {
   const [value, setValue] = useState(() =>
-    getLocalStorageValue(key, initValue, schema),
+    getLocalStorageValue(key, initValue, schema)
   );
 
   const setLocalStorageValue = useCallback(
     (setStateAction: T | ((prevState: T) => T)) => {
-      const newValue =
-        setStateAction instanceof Function
-          ? setStateAction(value)
-          : setStateAction;
+      const newValue = setStateAction instanceof Function
+        ? setStateAction(value)
+        : setStateAction;
 
       localStorage.setItem(key, JSON.stringify(newValue));
       setValue(newValue);
@@ -50,7 +51,7 @@ export const useLocalStorage = <T>(
 export const useLocalStorageAtom = <T>(
   key: string,
   atom: PrimitiveAtom<T>,
-  schema: BaseSchema<T>,
+  schema: Schema<T>,
   rawInitValue?: T,
 ) => {
   const [value, setValue] = useAtom(atom);
@@ -63,10 +64,9 @@ export const useLocalStorageAtom = <T>(
 
   const setLocalStorageValue = useCallback(
     (setStateAction: T | ((prevState: T) => T)) => {
-      const newValue =
-        setStateAction instanceof Function
-          ? setStateAction(value)
-          : setStateAction;
+      const newValue = setStateAction instanceof Function
+        ? setStateAction(value)
+        : setStateAction;
 
       localStorage.setItem(key, JSON.stringify(newValue));
       setValue(newValue);

@@ -1,4 +1,4 @@
-import type { TablerIconsProps } from '@tabler/icons-react';
+import type { IconProps } from '@tabler/icons-react';
 import clsx from 'clsx';
 import type { FC, ComponentProps } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -27,7 +27,7 @@ export const BottomNavigation: FC<
 );
 
 type SideNavigationLinkProps = {
-  icon: FC<TablerIconsProps>;
+  icon: FC<IconProps>;
   isActive?: boolean;
 };
 
