@@ -49,14 +49,12 @@ export const GameSystemSelect: FC = () => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" asChild aria-expanded={open} className="w-full justify-between" ref={buttonRef}>
-          <select>
-            {systems && system ? (
-              systems.find((s) => s.id === system)?.name
-            ) : (
-              <span className="text-slate-600">{t('dice:advanced.game-system.button')}</span>
-            )}
-          </select>
+        <Button variant="outline" aria-expanded={open} className="w-full justify-between" ref={buttonRef}>
+          {systems && system ? (
+            systems.find((s) => s.id === system)?.name
+          ) : (
+            <span className="text-slate-600">{t('dice:advanced.game-system.button')}</span>
+          )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
