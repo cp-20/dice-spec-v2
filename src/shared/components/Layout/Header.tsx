@@ -84,12 +84,7 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
                 <div className="space-y-4">
                   <div className="space-y-1">
                     <Label htmlFor="feedback-form-name">{t('common:header.feedback.name')}</Label>
-                    <Input
-                      id="feedback-form-name"
-                      value={name}
-                      onChange={(e) => setName(e.currentTarget.value)}
-                      className="col-span-3"
-                    />
+                    <Input id="feedback-form-name" value={name} onChange={(e) => setName(e.currentTarget.value)} />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="feedback-form-feedback">{t('common:header.feedback.feedback')}</Label>
@@ -97,7 +92,6 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
                       id="feedback-form-feedback"
                       value={feedback}
                       onChange={(e) => setFeedback(e.currentTarget.value)}
-                      className="col-span-3"
                       // @ts-expect-error fieldSizing is a newer CSS property
                       style={{ fieldSizing: 'content' }}
                       required
