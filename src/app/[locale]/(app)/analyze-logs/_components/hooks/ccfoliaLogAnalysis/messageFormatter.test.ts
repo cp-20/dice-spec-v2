@@ -3,7 +3,7 @@ import { formatMessage } from './messageFormatter';
 describe('formatMessage', () => {
   test('"x<number> " が含まれてなければそのまま', () => {
     const message = 'This is a normal message';
-    expect(formatMessage(message)).toBe(message);
+    expect(formatMessage(message)).toEqual([message]);
   });
 
   test('"x<number> " が含まれていれば分割', () => {
