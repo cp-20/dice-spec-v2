@@ -26,8 +26,9 @@ export const UploadLogFileButton: FC = () => {
 
   const handleRemove = useCallback(() => {
     setCurrentFile(null);
+    setFileContent('');
     if (inputRef.current) inputRef.current.value = '';
-  }, []);
+  }, [setFileContent]);
 
   return (
     <Button asChild variant="outline">
