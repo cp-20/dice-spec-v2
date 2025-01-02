@@ -1,4 +1,5 @@
 import type { System } from '../';
+import { emokloreParser, emokloreSystemStats } from './emoklore';
 import { CoC6thParser, CoC6thSystemStats } from './cthulhu6th';
 import { CoC7thParser, CoC7thSystemStats } from './cthulhu7th';
 
@@ -29,6 +30,7 @@ export type SystemStats = {
 };
 
 const parsers: Record<System, MessageParser> = {
+  emoklore: emokloreParser,
   CoC6th: CoC6thParser,
   CoC7th: CoC7thParser,
 };
@@ -36,11 +38,13 @@ const parsers: Record<System, MessageParser> = {
 export const parseMessage = (system: System, message: string) => parsers[system](message);
 
 export const systemStats: Record<System, SystemStats> = {
+  emoklore: emokloreSystemStats,
   CoC6th: CoC6thSystemStats,
   CoC7th: CoC7thSystemStats,
 };
 
 export const systems: Record<System, { id: System; name: string }> = {
+  emoklore: { id: 'emoklore', name: 'エモクロアTRPG' },
   CoC6th: { id: 'CoC6th', name: 'クトゥルフ神話TRPG' },
   CoC7th: { id: 'CoC7th', name: '新クトゥルフ神話TRPG' },
 };
