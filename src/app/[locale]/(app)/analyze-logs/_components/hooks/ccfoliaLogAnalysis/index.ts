@@ -1,82 +1,49 @@
-import type { DiceResultSummary } from './calculateDiceResultSummary';
-import { calculateDiceResultSummary } from './calculateDiceResultSummary';
-import type { DiceResult } from './diceResultAnalyzer';
-import { analyzeDiceResult } from './diceResultAnalyzer';
-import { parseMessage } from './messageParser';
+import { parseHtmlLog } from './htmlParser';
+import { type MessageParserResult, parseMessage, systemStats } from './messageParser';
+import { formatMessage } from './messageFormatter';
+import { type DiceResultSummary, summarizeResults } from './summarizer';
 
-export type ParsedLog = {
-  tab: string;
-  character: string;
-  result: {
-    message: string;
-    diceResultNumber: number | undefined;
-    diceResult: string;
-    diceTarget: number;
-  };
+export type System = 'CoC7th' | 'CoC6th';
+
+type ResultRecord = MessageParserResult & {
+  fullStr: string;
 };
 
-export type CharacterResult = {
+export type DiceResultForCharacter = {
   id: string;
   name: string;
-  diceResults: DiceResult[];
-  diceResultSummary: DiceResultSummary;
+  results: ResultRecord[];
+  summary: DiceResultSummary;
 };
 
-export const analyzeCcfoliaLog = (html: string) => {
-  const parser = new DOMParser();
-
-  const doc = parser.parseFromString(html, 'text/html');
-  const logElements = Array.from(doc.querySelectorAll('body > p'));
-
-  const extractedLogs = logElements.map(extractLogFromElement);
-  const parsedLogs = extractedLogs
+export const analyzeCcfoliaLog = (system: System, html: string) => {
+  const logs = parseHtmlLog(html);
+  const analyzedLogs = logs
     .flatMap(({ message, ...log }) =>
-      parseMessage(message).map((result) => ({
-        ...log,
-        result,
-      })),
+      formatMessage(message).map((m) => {
+        const result = parseMessage(system, m);
+        if (result === null) return null;
+        return { ...log, result: { ...result, fullStr: `${log.tab} ${message}` } };
+      }),
     )
-    .filter(({ result }) => result !== undefined) as ParsedLog[];
+    .filter((log) => log !== null);
 
-  const analyzedLogs = parsedLogs.map((log) => ({
-    ...log,
-    result: analyzeDiceResult(log),
-  }));
-
-  const allDiceResults = analyzedLogs.map(({ result }) => result);
-
-  const allCharactersDiceResults: CharacterResult = {
+  const allResults = analyzedLogs.map(({ result }) => result);
+  const allCharacterResults: DiceResultForCharacter = {
     id: 'all',
     name: '[ALL]',
-    diceResults: allDiceResults,
-    diceResultSummary: calculateDiceResultSummary(allDiceResults),
+    results: allResults,
+    summary: summarizeResults(allResults, systemStats[system]),
   };
 
   const characters = takeUnique(analyzedLogs.map(({ character }) => character));
-
-  const characterResults: CharacterResult[] = characters.map((character) => {
-    const diceResults = analyzedLogs.filter(({ character: c }) => c === character).map(({ result }) => result);
-
-    const diceResultSummary = calculateDiceResultSummary(diceResults);
-
-    return {
-      id: `character-${character}`,
-      name: character,
-      diceResults,
-      diceResultSummary,
-    };
+  const characterResults: DiceResultForCharacter[] = characters.map((character) => {
+    const results = analyzedLogs.filter(({ character: c }) => c === character).map(({ result }) => result);
+    const summary = summarizeResults(results, systemStats[system]);
+    return { id: `character-${character}`, name: character, results, summary };
   });
 
-  return [allCharactersDiceResults, ...characterResults];
+  return [allCharacterResults, ...characterResults];
 };
 
 const takeUnique = <T>(array: T[]) => Array.from(new Set(array));
-
-const extractLogFromElement = (element: Element) => {
-  const spanElements = Array.from(element.getElementsByTagName('span'));
-  const textContents = spanElements.map((element) => element.innerText);
-
-  const [tab, character, message] = textContents;
-
-  return { tab, character, message: message.trim() };
-};

@@ -9,7 +9,8 @@ import { UploadLogFileButton } from './_components/UploadLogFileButton';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { metadataGenerator, viewportGenerator } from '@/shared/lib/metadataGenerator';
-import { GameSystemRequest } from '@/app/[locale]/(app)/analyze-logs/_components/GameSystemRequest';
+import { GameSystemRequest } from './_components/GameSystemRequest';
+import { GameSystemSelect } from './_components/GameSystemSelect';
 
 type props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -22,8 +23,7 @@ const ogpImageRegex = new RegExp(
 export const generateMetadata = async (props0: props): Promise<Metadata> => {
   const searchParams = await props0.searchParams;
   const title = 'ログ解析';
-  const description =
-    'ココフォリアから出力されたログを解析して、ダイスの出目を抽出・分析します。 (クトゥルフ神話TRPG・新クトゥルフ神話TRPGのみ対応)';
+  const description = 'ココフォリアから出力されたログを解析して、ダイスの出目を抽出・分析します。';
   const ogp =
     typeof searchParams.ogp === 'string' && ogpImageRegex.test(searchParams.ogp) ? searchParams.ogp : undefined;
 
@@ -44,13 +44,13 @@ const AnalyzeLogsPage: NextPage = () => (
       <PageTitle icon={IconTimeline}>{t('common:analyze-logs.title')}</PageTitle>
       <PageDescriptionContainer>
         <PageDescriptionText>{t('analyze-logs:usage1')}</PageDescriptionText>
-        <PageDescriptionText>{t('analyze-logs:usage2')}</PageDescriptionText>
       </PageDescriptionContainer>
     </div>
 
     <div className="space-y-4">
       <GameSystemRequest />
       <UploadLogFileButton />
+      <GameSystemSelect />
       <CharacterSelect />
     </div>
 

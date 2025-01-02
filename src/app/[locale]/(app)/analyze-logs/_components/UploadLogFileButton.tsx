@@ -7,27 +7,27 @@ import { useCallback, type FC, useState, useRef } from 'react';
 import { useDropzone } from './hooks/useDropzone';
 import { useLogAnalysis } from './hooks/useLogAnalysis';
 import { Button } from '@/shared/components/ui/button';
+import { useFileContent } from './hooks/useFileContent';
 
 export const UploadLogFileButton: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [currentFile, setCurrentFile] = useState<string | null>(null);
+  const { fileContent, setFileContent } = useFileContent();
 
-  const { analyze, reset } = useLogAnalysis();
   const dropHandler = useCallback(
     (filename: string, content: string) => {
       setCurrentFile(filename);
-      analyze(content);
+      setFileContent(content);
     },
-    [analyze],
+    [setFileContent],
   );
 
   const { containerProps, inputProps, isDraggedOver } = useDropzone(dropHandler);
 
   const handleRemove = useCallback(() => {
     setCurrentFile(null);
-    reset();
     if (inputRef.current) inputRef.current.value = '';
-  }, [reset]);
+  }, []);
 
   return (
     <Button asChild variant="outline">

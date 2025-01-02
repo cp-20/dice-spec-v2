@@ -17,7 +17,7 @@ export const useChartImageShare = () => {
   const shareImage = useCallback(() => {
     if (!result) return;
 
-    const { average, deviationScore, successRate, diceRollCount } = result.diceResultSummary;
+    const { average, deviationScore, successRate, diceRollCount } = result.summary;
 
     const averageStr = round(average, 2);
     const deviationScoreStr = round(deviationScore, 2);

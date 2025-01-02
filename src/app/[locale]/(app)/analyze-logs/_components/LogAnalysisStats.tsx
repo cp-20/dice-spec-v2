@@ -18,20 +18,20 @@ export const LogAnalysisStats: FC = () => {
       <div className="grid grid-cols-2 gap-4 @lg:grid-cols-4">
         <Stats
           label={t('analyze-logs:stats.mean')}
-          number={numberWrapper(result && round(result.diceResultSummary.average, 2))}
+          number={numberWrapper(result && round(result.summary.average, 2))}
         />
         <Stats
           label={t('analyze-logs:stats.deviation')}
-          number={numberWrapper(result && round(result.diceResultSummary.deviationScore, 2))}
+          number={numberWrapper(result && round(result.summary.deviationScore, 2))}
         />
         <Stats
           label={t('analyze-logs:stats.success-rate')}
-          number={numberWrapper(result && round(result.diceResultSummary.successRate, 2))}
+          number={numberWrapper(result && round(result.summary.successRate, 2))}
           unit={result ? '%' : null}
         />
         <Stats
           label={t('analyze-logs:stats.roll-count')}
-          number={numberWrapper(result?.diceResultSummary.diceRollCount)}
+          number={numberWrapper(result?.summary.diceRollCount)}
           unit={result ? t('analyze-logs:stats.roll-count-unit') : null}
         />
       </div>

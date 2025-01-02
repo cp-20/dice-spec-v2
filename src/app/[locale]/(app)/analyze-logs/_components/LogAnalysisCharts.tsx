@@ -6,13 +6,14 @@ import merge from 'deepmerge';
 import { t } from 'i18next';
 import dynamic from 'next/dynamic';
 import { type FC, useEffect } from 'react';
-import type { withNumberDiceResult } from './hooks/ccfoliaLogAnalysis/diceResultAnalyzer';
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
 import { useChartImageShare } from './hooks/useChartImageShare';
 import { Button } from '@/shared/components/ui/button';
 import { commonChartOption } from '@/shared/lib/commonChartOption';
 import { groupBy } from '@/shared/lib/groupBy';
+import { aggregateResults } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/ccfoliaLogAnalysis/resultAggregator';
+import { useLogAnalysisSystem } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/useLogAnalysis';
 
 const customCanvasBackgroundColorPlugin: Plugin = {
   id: 'customCanvasBackgroundColor',
@@ -31,9 +32,10 @@ const Bar = dynamic(async () => (await import('react-chartjs-2')).Bar, {
 });
 
 export const LogAnalysisCharts: FC = () => {
+  const { system } = useLogAnalysisSystem();
   const { chartRef, isSharingInProgress, shareImage } = useChartImageShare();
   const { character } = useCharacterSelect();
-  const result = useCharacterLogAnalysis(character);
+  const analysisResult = useCharacterLogAnalysis(character);
 
   useEffect(() => {
     import('chart.js').then(({ Chart, BarController, CategoryScale, LinearScale, BarElement }) => {
@@ -41,38 +43,21 @@ export const LogAnalysisCharts: FC = () => {
     });
   }, []);
 
-  if (!result) {
-    return null;
-  }
+  if (analysisResult === undefined) return null;
+  if (system === null) return null;
 
-  const withNumberDiceResults = result.diceResults.filter(
-    ({ diceResultNumber }) => diceResultNumber !== undefined,
-  ) as withNumberDiceResult[];
-  const diceResultNumber = withNumberDiceResults.map(({ diceResultNumber }) => diceResultNumber);
-  const defaultDiceResultNumber: Record<number, number[]> = {
-    0: [],
-    1: [],
-    2: [],
-    3: [],
-    4: [],
-    5: [],
-    6: [],
-    7: [],
-    8: [],
-    9: [],
-  };
-  const aggregatedDiceResultNumber = Object.values({
-    ...defaultDiceResultNumber,
-    ...groupBy(diceResultNumber, (result) => Math.floor((result - 1) / 10)),
-  }).map((results) => (results ? results.length : 0));
-  const diceResultNumberLabels = [...Array(10)].map((_, i) => `${i * 10 + 1}-${i * 10 + 10}`);
+  const { labels: aggregatedResultLabels, data: aggregatedResultData } = aggregateResults(
+    analysisResult.results,
+    system,
+  );
 
-  const diceResult = withNumberDiceResults.map(({ diceResult }) => diceResult);
-  const aggregatedDiceResult = Object.entries(groupBy(diceResult, (result) => result))
+  const evaluations = analysisResult.results.map(({ evaluation }) => evaluation);
+  const aggregatedEvaluations = Object.entries(groupBy(evaluations, (result) => result))
     .map(([result, results]) => [result, results ? results.length : 0] as const)
     .toSorted(([, a], [, b]) => b - a);
-  const aggregatedDiceResultLabels = aggregatedDiceResult.map(([result]) => result);
-  const aggregatedDiceResultData = aggregatedDiceResult.map(([, value]) => value);
+
+  const aggregatedEvaluationLabels = aggregatedEvaluations.map(([label]) => label);
+  const aggregatedEvaluationData = aggregatedEvaluations.map(([, value]) => value);
 
   return (
     <div className="space-y-4 @container">
@@ -92,10 +77,10 @@ export const LogAnalysisCharts: FC = () => {
         <div className="fixed left-full">
           <Bar
             data={{
-              labels: diceResultNumberLabels,
+              labels: aggregatedResultLabels,
               datasets: [
                 {
-                  data: aggregatedDiceResultNumber,
+                  data: aggregatedResultData,
                   backgroundColor: 'rgba(100, 116, 139, 0.5)',
                   yAxisID: 'y',
                 },
@@ -118,10 +103,10 @@ export const LogAnalysisCharts: FC = () => {
         <div className="min-w-0 flex-1">
           <Bar
             data={{
-              labels: diceResultNumberLabels,
+              labels: aggregatedResultLabels,
               datasets: [
                 {
-                  data: aggregatedDiceResultNumber,
+                  data: aggregatedResultData,
                   backgroundColor: 'rgba(100, 116, 139, 0.5)',
                   yAxisID: 'y',
                 },
@@ -134,10 +119,10 @@ export const LogAnalysisCharts: FC = () => {
         <div className="min-w-0 flex-1">
           <Bar
             data={{
-              labels: aggregatedDiceResultLabels,
+              labels: aggregatedEvaluationLabels,
               datasets: [
                 {
-                  data: aggregatedDiceResultData,
+                  data: aggregatedEvaluationData,
                   backgroundColor: 'rgba(100, 116, 139, 0.5)',
                 },
               ],

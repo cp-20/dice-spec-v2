@@ -91,7 +91,6 @@ export const en = {
   },
   'analyze-logs': {
     usage1: 'Analyze the logs of Cocoforia to calculate the expected value of the dice, etc.',
-    usage2: '(Only supports Call of Cthulhu TRPG and New Call of Cthulhu TRPG)',
     'game-system-request': {
       label: 'New Game System Request',
       system: 'Game System',
@@ -106,6 +105,9 @@ export const en = {
       button: 'Click to upload or drag and drop to upload',
       'button-mouseover': 'Release and upload',
       'current-file': 'Currently selected file',
+    },
+    'game-system-select': {
+      label: 'Select a game system',
     },
     'character-select': {
       label: 'Select a character',

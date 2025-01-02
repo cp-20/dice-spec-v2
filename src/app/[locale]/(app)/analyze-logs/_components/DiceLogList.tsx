@@ -13,13 +13,13 @@ export const DiceLogList: FC<ComponentProps<'div'>> = ({ ...props }) => {
 
   return (
     <ContainerSection label={t('analyze-logs:log')} {...props}>
-      {result?.diceResults.map((log) => (
+      {result?.results.map((log, i) => (
         <DiceLog
-          key={`${log.diceFullStr}-${log.diceResult}-${log.diceResultNumber}-${log.diceTarget}`}
+          key={`${log.fullStr}-${i}`}
           log={{
-            success: log.success,
-            failure: log.failure,
-            value: log.diceFullStr,
+            success: log.evaluationStatus === 'success',
+            failure: log.evaluationStatus === 'failure',
+            value: log.fullStr,
           }}
         />
       ))}
