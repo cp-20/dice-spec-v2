@@ -12,8 +12,8 @@ export type DiceResultSummary = {
 };
 
 export const summarizeResults = (results: MessageParserResult[], stats: SystemStats): DiceResultSummary => {
-  const diceRollCount = results.length;
-  const numberResults = results.map(({ result }) => result);
+  const numberResults = results.flatMap(({ results }) => results);
+  const diceRollCount = numberResults.length;
 
   const successCount = results.filter(({ evaluationStatus }) => evaluationStatus === 'success').length;
   const successRate = (successCount / diceRollCount) * 100;

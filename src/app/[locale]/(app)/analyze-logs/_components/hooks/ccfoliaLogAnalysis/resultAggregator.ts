@@ -10,10 +10,12 @@ export const aggregateResults = (results: DiceResultForCharacter['results'], sys
     return `${min}-${max}`;
   });
 
-  const data = results.reduce((acc, { result }) => {
-    const pivot = stats.pivots.findIndex((pivot) => result < pivot) - 1;
-    return acc.map((value, i) => (i === pivot ? value + 1 : value));
-  }, new Array(labels.length).fill(0));
+  const data = results
+    .flatMap(({ results }) => results)
+    .reduce((acc, result) => {
+      const pivot = stats.pivots.findIndex((pivot) => result < pivot) - 1;
+      return acc.map((value, i) => (i === pivot ? value + 1 : value));
+    }, new Array(labels.length).fill(0));
 
   return { labels, data };
 };

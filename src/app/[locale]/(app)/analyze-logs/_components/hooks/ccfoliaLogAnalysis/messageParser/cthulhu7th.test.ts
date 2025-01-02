@@ -11,21 +11,21 @@ describe('CoC7thParser', () => {
     ).toStrictEqual({
       evaluation: 'ファンブル',
       evaluationStatus: 'failure',
-      result: 80,
+      results: [80],
       target: 60,
     });
 
     expect(CoC7thParser('CC<=30 (1D100<=30) ボーナス・ペナルティダイス[0] ＞ 95 ＞ 95 ＞ 失敗')).toStrictEqual({
       evaluation: '失敗',
       evaluationStatus: 'failure',
-      result: 95,
+      results: [95],
       target: 30,
     });
 
     expect(CoC7thParser('CC(1)<=20 (1D100<=20) ボーナス・ペナルティダイス[1] ＞ 89, 49 ＞ 49 ＞ 失敗')).toStrictEqual({
       evaluation: '失敗',
       evaluationStatus: 'failure',
-      result: 89,
+      results: [89],
       target: 20,
     });
 
@@ -34,14 +34,14 @@ describe('CoC7thParser', () => {
     ).toStrictEqual({
       evaluation: 'レギュラー成功',
       evaluationStatus: 'success',
-      result: 45,
+      results: [45],
       target: 60,
     });
 
     expect(CoC7thParser('(9/10) (1D100<=10) ボーナス・ペナルティダイス[0] ＞ 3 ＞ 3 ＞ ハード成功')).toStrictEqual({
       evaluation: 'ハード成功',
       evaluationStatus: 'success',
-      result: 3,
+      results: [3],
       target: 10,
     });
 
@@ -50,14 +50,14 @@ describe('CoC7thParser', () => {
     ).toStrictEqual({
       evaluation: 'イクストリーム成功',
       evaluationStatus: 'success',
-      result: 17,
+      results: [17],
       target: 100,
     });
 
     expect(CoC7thParser('CC<=100 (1D100<=100) ボーナス・ペナルティダイス[0] ＞ 1 ＞ 1 ＞ クリティカル')).toStrictEqual({
       evaluation: 'クリティカル',
       evaluationStatus: 'success',
-      result: 1,
+      results: [1],
       target: 100,
     });
   });

@@ -9,8 +9,8 @@ export type MessageParserResult = {
   evaluation: string;
   // ダイス結果のシステムに依存しない評価 (例: 成功)
   evaluationStatus: 'success' | 'failure' | 'other';
-  // ダイス結果の数値 (例: 38)
-  result: number;
+  // ダイス結果の数値 (例: [38])
+  results: number[];
   // 目標値
   target: number;
 };

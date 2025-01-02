@@ -23,7 +23,7 @@ export const CoC7thParser: MessageParser = (message) => {
   const evaluation = match[5];
   const evaluationStatus = evalResult(evaluation);
 
-  return { evaluation, evaluationStatus, result, target };
+  return { evaluation, evaluationStatus, results: [result], target };
 };
 
 export const CoC7thSystemStats = {
