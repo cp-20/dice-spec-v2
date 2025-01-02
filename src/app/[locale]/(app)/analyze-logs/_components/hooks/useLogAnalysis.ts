@@ -3,7 +3,8 @@ import { useCallback, useEffect } from 'react';
 import { analyzeCcfoliaLog, type System, type DiceResultForCharacter } from './ccfoliaLogAnalysis';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
-import { useFileContent } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/useFileContent';
+import { useFileContent } from './useFileContent';
+import { detectSystem } from './ccfoliaLogAnalysis/detector';
 
 const resultAtom = atom<DiceResultForCharacter[]>([]);
 const systemAtom = atom<System | null>(null);
@@ -12,7 +13,7 @@ export const useLogAnalysis = () => {
   const { fileContent } = useFileContent();
 
   const [result, setResult] = useAtom(resultAtom);
-  const [system] = useAtom(systemAtom);
+  const [system, setSystem] = useAtom(systemAtom);
   const { sendEvent } = useGoogleAnalytics();
 
   const analyze = useCallback(
@@ -44,8 +45,10 @@ export const useLogAnalysis = () => {
       reset();
       return;
     }
+
+    setSystem(detectSystem(fileContent));
     analyze(fileContent);
-  }, [fileContent, analyze, reset]);
+  }, [fileContent, analyze, reset, setSystem]);
 
   return {
     result,

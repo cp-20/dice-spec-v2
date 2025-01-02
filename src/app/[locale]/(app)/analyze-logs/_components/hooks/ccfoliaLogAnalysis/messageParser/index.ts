@@ -29,7 +29,7 @@ export type SystemStats = {
   pivots: number[];
 };
 
-const parsers: Record<System, MessageParser> = {
+export const parsers: Record<System, MessageParser> = {
   emoklore: emokloreParser,
   CoC6th: CoC6thParser,
   CoC7th: CoC7thParser,

@@ -1,7 +1,7 @@
 import { atom, useAtom } from 'jotai';
 import { useCallback } from 'react';
 
-const characterAtom = atom<string | undefined>(undefined);
+const characterAtom = atom<string>('all');
 
 export const useCharacterSelect = () => {
   const [character, setCharacter] = useAtom(characterAtom);
@@ -13,13 +13,8 @@ export const useCharacterSelect = () => {
     [setCharacter],
   );
 
-  const clearCharacter = useCallback(() => {
-    setCharacter(undefined);
-  }, [setCharacter]);
-
   return {
     character,
     selectCharacter,
-    clearCharacter,
   };
 };
