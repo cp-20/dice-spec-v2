@@ -7,8 +7,7 @@ const normalRoutePattern = /^\/([^/]+\/)?(?:analyze-logs|ccfolia|dice|expect)?$/
 export const middleware: NextMiddleware = (req, event) => {
   cspMiddleware(req, event);
 
-  const pathname = new URL(req.url).pathname;
-  if (normalRoutePattern.test(pathname)) {
+  if (normalRoutePattern.test(req.nextUrl.pathname)) {
     return i18nMiddleware(req, event);
   }
 };
