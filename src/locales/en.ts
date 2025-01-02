@@ -219,5 +219,9 @@ export const en = {
         'Calculate the expected value of the dice, etc. You can predict what kind of result you will get when you roll the dice.',
     },
     ccfolia: { title: 'CCFOLIA Export' },
+    error: {
+      message: 'An unexpected error occurred.',
+      reload: 'Reload Page',
+    },
   },
 };

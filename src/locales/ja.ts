@@ -219,5 +219,9 @@ export const ja = {
       description: 'ダイスの期待値などを計算します。ダイスを振るときに、どういう結果が出るのかを予測できます。',
     },
     ccfolia: { title: 'ココフォリア出力' },
+    error: {
+      message: '予期せぬエラーが発生しました',
+      reload: '再読み込み',
+    },
   },
 };
