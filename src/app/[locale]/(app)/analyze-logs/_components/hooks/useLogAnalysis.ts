@@ -27,6 +27,7 @@ export const useLogAnalysis = () => {
 
       const { average, deviationScore, successRate, diceRollCount } = allResult.summary;
       sendEvent('analyzeLogs', [
+        system,
         `${round(average, 3)}`,
         `${round(deviationScore, 3)}`,
         `${round(successRate, 3)}`,
