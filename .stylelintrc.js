@@ -3,9 +3,7 @@ module.exports = {
   rules: {
     'at-rule-no-unknown': [
       true,
-      {
-        ignoreAtRules: ['tailwind', 'layer', 'apply'],
-      },
+      { ignoreAtRules: ['tailwind', 'layer', 'apply', 'plugin', 'custom-variant', 'theme', 'utility'] },
     ],
     'function-url-quotes': 'always',
     'hue-degree-notation': 'number',
