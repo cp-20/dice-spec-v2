@@ -8,10 +8,14 @@ export type simpleDiceOutputAtom = {
   resultStr: string;
 };
 
-const simpleDiceOutputAtom = atom<simpleDiceOutputAtom | null>(null);
+const simpleDiceOutputAtom = atom<[simpleDiceOutputAtom | null]>([null]);
 
 export const useSimpleDiceOutput = () => {
-  const [simpleDiceOutput, setSimpleDiceOutput] = useAtom(simpleDiceOutputAtom);
+  const [[simpleDiceOutput], setter] = useAtom(simpleDiceOutputAtom);
+
+  const setSimpleDiceOutput = (output: simpleDiceOutputAtom) => {
+    setter([output]);
+  };
 
   return { simpleDiceOutput, setSimpleDiceOutput };
 };

@@ -1,4 +1,4 @@
-import { atom, useAtom } from 'jotai';
+import { atom, useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';
 import type { DiceExpecterResult } from './expecter';
 import { diceExpecter } from './expecter';
@@ -11,7 +11,7 @@ export type DiceExpecterOption = {
 };
 
 const commandAtom = atom<string>('');
-export const resultAtom = atom<DiceExpecterResult | null>(null);
+export const resultAtom = atom<[DiceExpecterResult | null]>([null]);
 const optionAtom = atom<DiceExpecterOption>({
   autoRecalculation: true,
 });
@@ -27,7 +27,7 @@ export const useDiceCommandInput = () => {
 
 export const useRecalculation = () => {
   const [command] = useAtom(commandAtom);
-  const [_, setResult] = useAtom(resultAtom);
+  const setResult = useSetAtom(resultAtom);
   const { sendEvent } = useGoogleAnalytics();
 
   const recalculate = useCallback(() => {
@@ -36,7 +36,7 @@ export const useRecalculation = () => {
     }
 
     sendEvent('diceExpecter', command);
-    setResult(diceExpecter(command));
+    setResult([diceExpecter(command)]);
   }, [command, sendEvent, setResult]);
 
   return {
@@ -47,7 +47,7 @@ export const useRecalculation = () => {
 const useAutoRecalculation = (enabled: boolean) => {
   const [command] = useAtom(commandAtom);
   const debouncedCommand = useDebounce(command, 500);
-  const [_, setResult] = useAtom(resultAtom);
+  const setResult = useSetAtom(resultAtom);
   const { sendEvent } = useGoogleAnalytics();
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const useAutoRecalculation = (enabled: boolean) => {
     }
 
     sendEvent('diceExpecter', formatDiceCommand(debouncedCommand));
-    setResult(diceExpecter(debouncedCommand));
+    setResult([diceExpecter(debouncedCommand)]);
   }, [debouncedCommand, enabled, sendEvent, setResult]);
 };
 
@@ -91,9 +91,7 @@ export const useDiceExpecterOption = () => {
 };
 
 export const useDiceExpecterResult = () => {
-  const [result] = useAtom(resultAtom);
+  const [[result]] = useAtom(resultAtom);
 
-  return {
-    result,
-  };
+  return { result };
 };

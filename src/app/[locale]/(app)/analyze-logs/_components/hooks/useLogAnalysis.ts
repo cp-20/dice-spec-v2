@@ -7,13 +7,14 @@ import { useFileContent } from './useFileContent';
 import { detectSystem } from './ccfoliaLogAnalysis/detector';
 
 const resultAtom = atom<DiceResultForCharacter[]>([]);
-const systemAtom = atom<System | null>(null);
+//  for avoiding it to be inferred as Atom (not WritableAtom)
+const systemAtom = atom<[System | null]>([null]);
 
 export const useLogAnalysis = () => {
   const { fileContent } = useFileContent();
 
   const [result, setResult] = useAtom(resultAtom);
-  const [system, setSystem] = useAtom(systemAtom);
+  const [[system], setSystem] = useAtom(systemAtom);
   const { sendEvent } = useGoogleAnalytics();
 
   const analyze = useCallback(
@@ -47,7 +48,7 @@ export const useLogAnalysis = () => {
       return;
     }
 
-    setSystem(detectSystem(fileContent));
+    setSystem([detectSystem(fileContent)]);
     analyze(fileContent);
   }, [fileContent, analyze, reset, setSystem]);
 
@@ -59,11 +60,11 @@ export const useLogAnalysis = () => {
 };
 
 export const useLogAnalysisSystem = () => {
-  const [system, setSystem] = useAtom(systemAtom);
+  const [[system], setSystem] = useAtom(systemAtom);
 
   const changeSystem = useCallback(
     (system: System) => {
-      setSystem(system);
+      setSystem([system]);
     },
     [setSystem],
   );
