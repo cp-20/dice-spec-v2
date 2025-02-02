@@ -124,7 +124,7 @@ importers:
         version: 3.0.1
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@4.0.0)
+        version: 1.0.7(tailwindcss@4.0.3)
       use-sound:
         specifier: ^4.0.3
         version: 4.0.3(react@19.0.0)
@@ -143,10 +143,10 @@ importers:
         version: 8.1.0(typescript@5.7.3)
       '@tailwindcss/container-queries':
         specifier: ^0.1.1
-        version: 0.1.1(tailwindcss@4.0.0)
+        version: 0.1.1(tailwindcss@4.0.3)
       '@tailwindcss/postcss':
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^4.0.3
+        version: 4.0.3
       '@testing-library/react':
         specifier: ^16.2.0
         version: 16.2.0(@testing-library/dom@9.3.4)(@types/react-dom@19.0.3(@types/react@19.0.8))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -187,8 +187,8 @@ importers:
         specifier: ^37.0.0
         version: 37.0.0(stylelint@16.14.1(typescript@5.7.3))
       tailwindcss:
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^4.0.3
+        version: 4.0.3
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
@@ -2195,8 +2195,8 @@ packages:
     resolution: {integrity: sha512-FFcp3VNvRjjmFA39ORM27g2mbflMQljhvM7gxBAujHxUy4LXlKa6yMF9wbHdTbPqTONiCyyOYxccvJyVyI/XBg==}
     engines: {node: '>= 10'}
 
-  '@tailwindcss/postcss@4.0.0':
-    resolution: {integrity: sha512-lI2bPk4TvwavHdehjr5WiC6HnZ59hacM6ySEo4RM/H7tsjWd8JpqiNW9ThH7rO/yKtrn4mGBoXshpvn8clXjPg==}
+  '@tailwindcss/postcss@4.0.3':
+    resolution: {integrity: sha512-qUyxuhuI2eTgRJ+qfCQRAr69Cw7BdSz+PoNFUNoRuhPjikNC8+sxK+Mi/chaXAXewjv/zbf6if6z6ItVLh+e9Q==}
 
   '@testing-library/dom@9.3.4':
     resolution: {integrity: sha512-FlS4ZWlp97iiNWig0Muq8p+3rVDjRiYE+YKGbAqXOu9nwJFFOdL00kFpz42M+4huzYi86vAK1sOOfyOG45muIQ==}
@@ -4621,9 +4621,6 @@ packages:
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
-
-  tailwindcss@4.0.0:
-    resolution: {integrity: sha512-ULRPI3A+e39T7pSaf1xoi58AqqJxVCLg8F/uM5A3FadUbnyDTgltVnXJvdkTjwCOGA6NazqHVcwPJC5h2vRYVQ==}
 
   tailwindcss@4.0.3:
     resolution: {integrity: sha512-ImmZF0Lon5RrQpsEAKGxRvHwCvMgSC4XVlFRqmbzTEDb/3wvin9zfEZrMwgsa3yqBbPqahYcVI6lulM2S7IZAA==}
@@ -7111,9 +7108,9 @@ snapshots:
 
   '@tabler/icons@3.29.0': {}
 
-  '@tailwindcss/container-queries@0.1.1(tailwindcss@4.0.0)':
+  '@tailwindcss/container-queries@0.1.1(tailwindcss@4.0.3)':
     dependencies:
-      tailwindcss: 4.0.0
+      tailwindcss: 4.0.3
 
   '@tailwindcss/node@4.0.3':
     dependencies:
@@ -7168,14 +7165,14 @@ snapshots:
       '@tailwindcss/oxide-win32-arm64-msvc': 4.0.3
       '@tailwindcss/oxide-win32-x64-msvc': 4.0.3
 
-  '@tailwindcss/postcss@4.0.0':
+  '@tailwindcss/postcss@4.0.3':
     dependencies:
       '@alloc/quick-lru': 5.2.0
       '@tailwindcss/node': 4.0.3
       '@tailwindcss/oxide': 4.0.3
       lightningcss: 1.29.1
       postcss: 8.5.1
-      tailwindcss: 4.0.0
+      tailwindcss: 4.0.3
 
   '@testing-library/dom@9.3.4':
     dependencies:
@@ -9828,11 +9825,9 @@ snapshots:
 
   tailwind-merge@3.0.1: {}
 
-  tailwindcss-animate@1.0.7(tailwindcss@4.0.0):
+  tailwindcss-animate@1.0.7(tailwindcss@4.0.3):
     dependencies:
-      tailwindcss: 4.0.0
-
-  tailwindcss@4.0.0: {}
+      tailwindcss: 4.0.3
 
   tailwindcss@4.0.3: {}
 

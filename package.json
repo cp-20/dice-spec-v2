@@ -66,7 +66,7 @@
     "@next/bundle-analyzer": "15.1.6",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/container-queries": "^0.1.1",
-    "@tailwindcss/postcss": "^4.0.0",
+    "@tailwindcss/postcss": "^4.0.3",
     "@testing-library/react": "^16.2.0",
     "@types/node": "22.13.0",
     "@types/react": "19.0.8",
@@ -80,7 +80,7 @@
     "stylelint": "^16.14.1",
     "stylelint-config-recess-order": "^6.0.0",
     "stylelint-config-standard": "^37.0.0",
-    "tailwindcss": "^4.0.0",
+    "tailwindcss": "^4.0.3",
     "typescript": "^5.7.3",
     "vite": "^6.0.11",
     "vitest": "^3.0.4"
@@ -91,5 +91,5 @@
     "minimumChangeThreshold": 0,
     "showDetails": true
   },
-  "packageManager": "pnpm@10.0.0-beta.1+sha512.629de0531b9ae9a3f8e372d014ef8f5a57906d9a48095ced54bbfbd246b4136381478032c8d13819fd1eedde8330517a799ea6756eedd9a136e36524fa3083cf"
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
 }
