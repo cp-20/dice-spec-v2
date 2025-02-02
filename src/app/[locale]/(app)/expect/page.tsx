@@ -16,7 +16,7 @@ import {
 
 const inlineCommandRegex = /`((?:[^`]|\\`)+)`/g;
 
-const stripInlineCommand = (value: string) => value.replace(inlineCommandRegex, '$1');
+const stripInlineCommand = (value: string) => value.replaceAll(inlineCommandRegex, '$1');
 
 const insertInlineCommand = (value: string) => {
   const result = [];
