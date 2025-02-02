@@ -67,11 +67,11 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
             <Button
               variant="outline"
               size="icon"
-              className="h-6 w-6 sm:h-8 sm:w-8"
+              className="size-6 sm:size-8"
               title={t('common:header.feedback-button')}
               onClick={() => setOpen(true)}
             >
-              <IconMessageReply className="h-4 w-5 sm:h-5 sm:w-5" />
+              <IconMessageReply className="size-4 sm:size-5" />
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-2xl">
@@ -105,25 +105,25 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
             </form>
           </DialogContent>
         </Dialog>
-        <Button variant="outline" size="icon" className="h-6 w-6 sm:h-8 sm:w-8" asChild>
+        <Button variant="outline" size="icon" className="size-6 sm:size-8" asChild>
           <a
             href="https://discord.gg/YQ7negGTUK"
             target="_blank"
             rel="noopener noreferrer"
             title={t('common:header.discord-button')}
           >
-            <IconBrandDiscord className="h-4 w-5 sm:h-5 sm:w-5" />
+            <IconBrandDiscord className="size-4 sm:size-5" />
           </a>
         </Button>
         <Button
           variant="outline"
           size="icon"
-          className="h-6 w-6 sm:h-8 sm:w-8"
+          className="size-6 sm:size-8"
           asChild
           title={t('common:header.twitter-button')}
         >
           <a href="https://twitter.com/__cp20__" target="_blank" rel="noopener noreferrer">
-            <IconBrandX className="h-4 w-5 sm:h-5 sm:w-5" />
+            <IconBrandX className="size-4 sm:size-5" />
           </a>
         </Button>
       </div>

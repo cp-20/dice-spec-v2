@@ -1,4 +1,3 @@
-import 'ress';
 import '@/shared/styles/globals.css';
 import clsx from 'clsx';
 import { Next13NProgress } from 'nextjs13-progress';
