@@ -17,7 +17,7 @@ export const QuickInput: FC = () => {
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8 rounded-e-none border-r-0"
+            className="size-8 rounded-e-none border-r-0"
             onClick={() => updateItem({ ...item, isFavorite: !item.isFavorite })}
           >
             {item.isFavorite ? <IconStarFilled size="16" /> : <IconStar size="16" />}

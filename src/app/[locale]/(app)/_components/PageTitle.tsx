@@ -9,7 +9,7 @@ export type PageTitleProps = {
 
 export const PageTitle: FC<PageTitleProps> = ({ icon: Icon, children }) => (
   <H1 className="flex gap-2 text-3xl lg:text-4xl">
-    <Icon className="h-10 w-10" />
+    <Icon className="size-10" />
     <span>{children}</span>
   </H1>
 );

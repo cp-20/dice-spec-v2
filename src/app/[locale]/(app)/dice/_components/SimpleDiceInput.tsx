@@ -56,14 +56,14 @@ const SimpleDiceInputPanel: FC<SimpleDiceInputPanelProps> = ({ dice, count }) =>
 
   return (
     <div className="inline-flex items-center justify-center gap-2">
-      <Button variant="outline" className="h-8 w-8 p-2" onClick={handleDecrement} disabled={count <= 0}>
-        <IconMinus className="inline-block h-4 w-4" />
+      <Button variant="outline" className="size-8 p-2" onClick={handleDecrement} disabled={count <= 0}>
+        <IconMinus className="inline-block size-4" />
       </Button>
       <div className="w-20 select-none text-center text-lg font-semibold">
         {count}D{dice}
       </div>
-      <Button variant="outline" className="h-8 w-8 p-2" disabled={count >= 999} onClick={handleIncrement}>
-        <IconPlus className="inline-block h-4 w-4" />
+      <Button variant="outline" className="size-8 p-2" disabled={count >= 999} onClick={handleIncrement}>
+        <IconPlus className="inline-block size-4" />
       </Button>
     </div>
   );

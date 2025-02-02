@@ -24,7 +24,7 @@ export const LinkableIconPanel: FC<CustomLinkProps & LinkableIconPanelProps> = (
     )}
     {...props}
   >
-    <Icon className="h-12 w-12 max-sm:h-9 max-sm:w-9" />
+    <Icon className="size-12 max-sm:size-9" />
 
     <div className="flex flex-1 flex-col gap-4">
       <div className="text-lg font-bold md:text-center">{label}</div>

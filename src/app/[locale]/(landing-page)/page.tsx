@@ -47,7 +47,7 @@ const LandingPage: NextPage = () => {
         <main className="mx-auto flex w-full max-w-(--breakpoint-lg) flex-1 flex-col items-center gap-16 px-8 py-8 max-sm:px-4">
           <div className="mt-16 flex max-w-full items-center justify-center gap-8 max-md:mt-8 max-md:flex-col max-md:gap-2 max-sm:mt-4">
             <div>
-              <LogoIcon className="h-32 w-32 max-sm:h-24 max-sm:w-24" />
+              <LogoIcon className="size-32 max-sm:h-24 max-sm:w-24" />
             </div>
 
             <div className="flex max-w-full flex-col">

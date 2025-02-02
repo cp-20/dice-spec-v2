@@ -68,46 +68,43 @@ type DiceProps = {
 } & ComponentProps<'div'>;
 
 export const DiceD3: FC<DiceProps> = ({ count, className, ...props }) => (
-  <div className={twMerge('relative inline-grid h-12 w-12 select-none place-content-center', className)} {...props}>
-    <D3 className={clsx('mt-[0.1rem] h-12 w-12', styles['dice-image'])} />
+  <div className={twMerge('relative inline-grid size-12 select-none place-content-center', className)} {...props}>
+    <D3 className={clsx('mt-[0.1rem] size-12', styles['dice-image'])} />
     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-semibold">{count}</div>
   </div>
 );
 
 export const DiceD4: FC<DiceProps> = ({ count, className, ...props }) => (
-  <div className={twMerge('relative inline-grid h-12 w-12 select-none place-content-center', className)} {...props}>
-    <D4 className={clsx('mt-[0.1rem] h-12 w-12', styles['dice-image'])} />
-    <div className="absolute left-1/2 top-1/2 inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
+  <div className={twMerge('relative inline-grid size-12 select-none place-content-center', className)} {...props}>
+    <D4 className={clsx('mt-[0.1rem] size-12', styles['dice-image'])} />
+    <div className="absolute left-1/2 top-1/2 inline-grid size-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
       {count}
     </div>
   </div>
 );
 
 export const DiceD6: FC<DiceProps> = ({ count, className, ...props }) => (
-  <div
-    className={twMerge('relative -mt-1 inline-grid h-12 w-12 select-none place-content-center', className)}
-    {...props}
-  >
-    <D6 className={clsx('mb-[0.15rem] h-9 w-9', styles['dice-image'])} />
-    <div className="absolute left-1/2 top-[calc(50%-0.1rem)] inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center text-lg font-semibold">
+  <div className={twMerge('relative -mt-1 inline-grid size-12 select-none place-content-center', className)} {...props}>
+    <D6 className={clsx('mb-[0.15rem] size-9', styles['dice-image'])} />
+    <div className="absolute left-1/2 top-[calc(50%-0.1rem)] inline-grid size-5 -translate-x-1/2 -translate-y-1/2 place-content-center text-lg font-semibold">
       {count}
     </div>
   </div>
 );
 
 export const DiceD8: FC<DiceProps> = ({ count, className, ...props }) => (
-  <div className={twMerge('relative inline-grid h-12 w-12 select-none place-content-center', className)} {...props}>
-    <D8 className={clsx('mb-1 h-10 w-10', styles['dice-image'])} />
-    <div className="absolute left-1/2 top-[calc(50%-0.15rem)] inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
+  <div className={twMerge('relative inline-grid size-12 select-none place-content-center', className)} {...props}>
+    <D8 className={clsx('mb-1 size-10', styles['dice-image'])} />
+    <div className="absolute left-1/2 top-[calc(50%-0.15rem)] inline-grid size-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
       {count}
     </div>
   </div>
 );
 
 export const DiceD10Base: FC<{ count: ReactNode } & ComponentProps<'div'>> = ({ count, className, ...props }) => (
-  <div className={twMerge('relative inline-grid h-12 w-12 select-none place-content-center', className)} {...props}>
-    <D20 className={clsx('mb-1 h-10 w-10', styles['dice-image'])} />
-    <div className="absolute left-1/2 top-[calc(50%-0.15rem)] inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
+  <div className={twMerge('relative inline-grid size-12 select-none place-content-center', className)} {...props}>
+    <D20 className={clsx('mb-1 size-10', styles['dice-image'])} />
+    <div className="absolute left-1/2 top-[calc(50%-0.15rem)] inline-grid size-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
       {count}
     </div>
   </div>
@@ -116,9 +113,9 @@ export const DiceD10Base: FC<{ count: ReactNode } & ComponentProps<'div'>> = ({ 
 export const DiceD10: FC<DiceProps> = ({ count, ...props }) => <DiceD10Base count={count} {...props} />;
 
 export const DiceD12: FC<DiceProps> = ({ count, className, ...props }) => (
-  <div className={twMerge('relative inline-grid h-12 w-12 select-none place-content-center', className)} {...props}>
-    <D12 className={clsx('mb-1 h-10 w-10', styles['dice-image'])} />
-    <div className="absolute left-1/2 top-[calc(50%-0.15rem)] inline-grid h-5 w-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
+  <div className={twMerge('relative inline-grid size-12 select-none place-content-center', className)} {...props}>
+    <D12 className={clsx('mb-1 size-10', styles['dice-image'])} />
+    <div className="absolute left-1/2 top-[calc(50%-0.15rem)] inline-grid size-5 -translate-x-1/2 -translate-y-1/2 place-content-center rounded-full bg-white text-lg font-semibold">
       {count}
     </div>
   </div>

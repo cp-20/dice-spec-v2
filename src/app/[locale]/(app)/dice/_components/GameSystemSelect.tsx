@@ -55,7 +55,7 @@ export const GameSystemSelect: FC = () => {
           ) : (
             <span className="text-slate-600">{t('dice:advanced.game-system.button')}</span>
           )}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className={clsx('h-60 p-0', styles['popover-content'])} ref={popoverRef}>
@@ -73,7 +73,7 @@ export const GameSystemSelect: FC = () => {
                   setOpen(false);
                 }}
               >
-                <Check className={cn('mr-2 h-4 w-4', system !== s.id && 'invisible')} />
+                <Check className={cn('mr-2 size-4', system !== s.id && 'invisible')} />
                 {s.name}
               </CommandItem>
             ))}

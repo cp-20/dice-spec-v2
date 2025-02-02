@@ -55,7 +55,7 @@ export const ColorInput: FC<ColorInputProps> = ({ value, onChange }) => {
         <ColorTip color="#e0e0e0" value={value} onChange={onChange} />
 
         <div className="relative">
-          <div className="absolute left-0 top-0 grid h-8 w-8 place-content-center rounded-s-md bg-slate-200">
+          <div className="absolute left-0 top-0 grid size-8 place-content-center rounded-s-md bg-slate-200">
             <IconHash size="16" />
           </div>
           <Input

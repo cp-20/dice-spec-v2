@@ -36,7 +36,7 @@ export const ParameterInput: FC<ParameterInputProps> = ({ value, onChange }) => 
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8 @xs:h-10 @xs:w-10"
+              className="size-8 @xs:h-10 @xs:w-10"
               onClick={() => {
                 onChange(value.filter((s) => s.key !== status.key));
               }}
