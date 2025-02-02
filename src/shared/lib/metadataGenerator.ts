@@ -21,10 +21,23 @@ export const metadataHelper = ({ title: rawTitle, description, locale, ogp }: Op
   }[locale];
   const title = rawTitle ? `${rawTitle} - ${appName}` : appName;
 
+  const alternates = i18nConfig.locales
+    .filter((lang) => lang !== locale)
+    .reduce(
+      (acc, lang) => {
+        acc[lang] = `${appBaseUrl}/${lang}`;
+        return acc;
+      },
+      {} as Record<Locale, string>,
+    );
+
   return {
     title,
     description,
     metadataBase: new URL(appBaseUrl),
+    alternates: {
+      languages: alternates,
+    },
     openGraph: {
       title,
       description,
