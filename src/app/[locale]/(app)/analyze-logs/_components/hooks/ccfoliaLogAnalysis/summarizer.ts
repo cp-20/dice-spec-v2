@@ -16,7 +16,8 @@ export const summarizeResults = (results: MessageParserResult[], stats: SystemSt
   const diceRollCount = numberResults.length;
 
   const successCount = results.filter(({ evaluationStatus }) => evaluationStatus === 'success').length;
-  const successRate = (successCount / diceRollCount) * 100;
+  const failureCount = results.filter(({ evaluationStatus }) => evaluationStatus === 'failure').length;
+  const successRate = (successCount / (successCount + failureCount)) * 100;
 
   const average = numberResults.reduce((acc, number) => acc + number, 0) / diceRollCount;
 

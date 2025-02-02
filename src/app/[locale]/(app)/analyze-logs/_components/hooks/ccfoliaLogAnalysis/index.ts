@@ -3,7 +3,7 @@ import { type MessageParserResult, parseMessage, systemStats } from './messagePa
 import { formatMessage } from './messageFormatter';
 import { type DiceResultSummary, summarizeResults } from './summarizer';
 
-export type System = 'emoklore' | 'CoC7th' | 'CoC6th';
+export type System = 'emoklore' | 'CoC7th' | 'CoC6th' | 'shinobigami';
 
 type ResultRecord = MessageParserResult & {
   fullStr: string;
