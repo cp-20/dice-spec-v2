@@ -8,7 +8,7 @@ const unrefText: ForwardRefRenderFunction<HTMLParagraphElement, ComponentPropsWi
   ref,
 ) => {
   return (
-    <p className={twMerge('leading-7 [&:not(:first-child)]:mt-6', className)} ref={ref} {...props}>
+    <p className={twMerge('leading-7 not-first:mt-6', className)} ref={ref} {...props}>
       {children}
     </p>
   );

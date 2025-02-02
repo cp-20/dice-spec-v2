@@ -9,7 +9,7 @@ export const PageDescriptionContainer: FC<ComponentProps<'div'>> = ({ className,
 );
 
 export const PageDescriptionText: FC<ComponentProps<'p'>> = ({ className, children, ...props }) => (
-  <Text className={twMerge('leading-6 [&:not(:first-child)]:mt-0', className)} {...props}>
+  <Text className={twMerge('leading-6 not-first:mt-0', className)} {...props}>
     {children}
   </Text>
 );
