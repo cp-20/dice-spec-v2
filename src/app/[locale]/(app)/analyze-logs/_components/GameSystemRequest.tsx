@@ -13,6 +13,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { sendGameSystemRequest } from '@/shared/lib/webhook';
+import { DialogDescription } from '@radix-ui/react-dialog';
 import { IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { useState, type FC } from 'react';
@@ -45,9 +46,9 @@ export const GameSystemRequest: FC = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" onClick={() => setOpen(true)} className="flex gap-2 w-full">
-          <IconMessageReply className="h-4 w-5 sm:h-5 sm:w-5" />
-          <span>{t('analyze-logs:game-system-request:label')}</span>
+        <Button variant="outline" onClick={() => setOpen(true)} className="flex flex-wrap gap-2 w-full">
+          <IconMessageReply className="size-5 shrink-0" />
+          <span className="text-balance">{t('analyze-logs:game-system-request:label')}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">

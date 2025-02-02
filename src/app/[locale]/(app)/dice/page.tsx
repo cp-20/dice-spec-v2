@@ -39,7 +39,8 @@ const DicePage: NextPage = async () => {
         <div>
           <PageTitle icon={IconDice5}>{t('common:dice.title')}</PageTitle>
           <PageDescriptionContainer>
-            <PageDescriptionText>{t('common:dice.description')}</PageDescriptionText>
+            <PageDescriptionText>{t('dice:usage1')}</PageDescriptionText>
+            <PageDescriptionText>{t('dice:usage2')}</PageDescriptionText>
           </PageDescriptionContainer>
         </div>
 

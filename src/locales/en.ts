@@ -61,6 +61,10 @@ export const en = {
     },
   },
   dice: {
+    usage1:
+      'In simple mode, you can roll basic dice. For dice rolls not on the screen, adjust the number of dice yourself',
+    usage2:
+      'In the advanced mode, you can roll dice according to various game systems. Please refer to the explanation of each game system for specific usage.',
     simple: {
       label: 'Simple',
       output: 'The result will be displayed here',
@@ -209,17 +213,16 @@ export const en = {
     expect: {
       title: 'Dice Expecter',
       description:
-        'Analyze Cocoforia\'s logs to calculate dice averages, etc. You may be thinking, "I feel like I had bad luck with dice this session, but what really happened?" If you are thinking, "I think I had bad luck with dice this session, but what really happened?',
+        'Calculate the expected value of the dice, etc. You can predict what kind of result you will get when you roll the dice.',
     },
     dice: {
       title: 'Dice Roll',
-      description:
-        'You can roll any dice you like, and because it uses BCDice, it is as comfortable to use as session tools such as CCFOLIA.',
+      description: 'Roll the dice. You can also use the command to roll the dice, such as "1d6" or "2d6+3".',
     },
     'analyze-logs': {
       title: 'Log Analyzer',
       description:
-        'Calculate the expected value of the dice, etc. You can predict what kind of result you will get when you roll the dice.',
+        'Analyze Cocoforia\'s logs to calculate dice averages, etc. You may be thinking, "I feel like I had bad luck with dice this session, but what really happened?" If you are thinking, "I think I had bad luck with dice this session, but what really happened?',
     },
     ccfolia: { title: 'CCFOLIA Export' },
     error: {

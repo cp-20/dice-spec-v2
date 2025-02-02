@@ -35,7 +35,7 @@ export const UploadLogFileButton: FC = () => {
       {currentFile === null ? (
         <label
           htmlFor="log-file-uploader"
-          className="inline-grid h-fit min-h-20 w-full place-content-center p-4"
+          className="h-fit min-h-20 w-full place-content-center p-4"
           {...containerProps}
         >
           {isDraggedOver ? (
@@ -43,9 +43,9 @@ export const UploadLogFileButton: FC = () => {
               {t('analyze-logs:upload.button-mouseover')}
             </div>
           ) : (
-            <div className="inline-flex animate-slide-in-top items-center gap-2" key="content">
+            <div className="flex flex-wrap justify-center animate-slide-in-top items-center gap-2" key="content">
               <IconUpload className="shrink-0" />
-              <span>{t('analyze-logs:upload.button')}</span>
+              <span className="text-wrap">{t('analyze-logs:upload.button')}</span>
             </div>
           )}
           <input

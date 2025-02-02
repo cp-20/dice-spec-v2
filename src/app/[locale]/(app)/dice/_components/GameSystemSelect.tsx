@@ -61,7 +61,7 @@ export const GameSystemSelect: FC = () => {
       <PopoverContent className={clsx('h-60 p-0', styles['popover-content'])} ref={popoverRef}>
         {/* フィルタリングアルゴリズムをいい感じに上書きして最近使ったのを上に出す */}
         <Command className="h-full">
-          <CommandInput placeholder={t('dice:advanced.game-system.search')} />
+          <CommandInput placeholder={t('dice:advanced.game-system.search')} autoFocus />
           <CommandEmpty>{t('dice:advanced.game-system.no-result')}</CommandEmpty>
           <CommandGroup className={clsx('h-fit overflow-y-auto', scrollbarStyles['pretty-scrollbar'])}>
             {systems?.map((s) => (
