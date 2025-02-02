@@ -7,17 +7,16 @@ import { ExpectResultStats } from './_components/ExpectResultStats';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { InlineCommand } from '@/app/[locale]/(app)/expect/_components/InlineCommand';
-import { metadataGenerator, viewportGenerator } from '@/shared/lib/metadataGenerator';
+import {
+  localeHelper,
+  type MetadataGenerator,
+  metadataHelper,
+  viewportGenerator,
+} from '@/shared/lib/metadataGenerator';
 
-export const metadata = metadataGenerator({
-  title: 'ダイス予測',
-  description:
-    '1d6や1D100といったダイスの期待値を計算することで、ダイスを振るときにどういう結果が出るのかを予測できます。さらに1d100<=10や2D6>=10と入力することで、その確率も知ることができます。',
-});
+const inlineCommandRegex = /`((?:[^`]|\\`)+)`/g;
 
-export const viewport = viewportGenerator();
-
-const inlineCommandRegex = /`([^`]|\\`)+`/g;
+const stripInlineCommand = (value: string) => value.replace(inlineCommandRegex, '$1');
 
 const insertInlineCommand = (value: string) => {
   const result = [];
@@ -36,6 +35,17 @@ const insertInlineCommand = (value: string) => {
 
   return result;
 };
+
+export const generateMetadata: MetadataGenerator = async (props) => {
+  const locale = await localeHelper(props);
+  return metadataHelper({
+    title: t('common:expect.title'),
+    description: stripInlineCommand(`${t('expect:usage1')} ${t('expect:usage2')}`),
+    locale,
+  });
+};
+
+export const viewport = viewportGenerator();
 
 const ExpectPage: NextPage = () => (
   <div className="space-y-12">

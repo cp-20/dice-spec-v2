@@ -4,6 +4,9 @@ export const en = {
     link: '/en{{- href}}',
   },
   'landing-page': {
+    title: 'DiceSpec',
+    description:
+      'DiceSpec is a service that collects little tools for TRPGs. Tools such as dice prediction, dice rolling, and log analysis are available for free.',
     catchphrase: 'DiceSpec is a service that collects little tools for TRPGs.',
     'try-it-out': 'Try it out!',
     features: {

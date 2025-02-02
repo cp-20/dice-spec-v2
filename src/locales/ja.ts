@@ -4,6 +4,9 @@ export const ja = {
     link: '{{- href}}',
   },
   'landing-page': {
+    title: 'ダイススペック',
+    description:
+      'ダイススペックはTRPGのちょっとしたツールを集めたサービスです。ダイス予測、ダイスロール、ログ解析といったツールが用意されており、それらを全て無料で使うことができます。',
     catchphrase: 'ダイススペックはTRPGのちょっとしたツールを集めたサービスです。',
     'try-it-out': '今すぐ使ってみる！',
     features: {

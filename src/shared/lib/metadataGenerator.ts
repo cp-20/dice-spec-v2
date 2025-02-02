@@ -1,16 +1,24 @@
+import { i18nConfig, type Locale } from '@/shared/i18n/config';
 import type { Metadata, Viewport } from 'next';
 
 export type Option = {
-  title: string;
+  title?: string;
   description: string;
+  locale: Locale;
   ogp?: string;
 };
 
 export const appBaseUrl = 'https://dicespec.vercel.app';
-export const defaultOgImage = `${appBaseUrl}/ogp.png`;
-export const appName = 'ダイススペック';
 
-export const metadataGenerator = ({ title: rawTitle, description, ogp }: Option): Metadata => {
+export const metadataHelper = ({ title: rawTitle, description, locale, ogp }: Option): Metadata => {
+  const appName = {
+    en: 'DiceSpec',
+    ja: 'ダイススペック',
+  }[locale];
+  const defaultOgImage = {
+    en: `${appBaseUrl}/ogp-en.png`,
+    ja: `${appBaseUrl}/ogp.png`,
+  }[locale];
   const title = rawTitle ? `${rawTitle} - ${appName}` : appName;
 
   return {
@@ -21,9 +29,10 @@ export const metadataGenerator = ({ title: rawTitle, description, ogp }: Option)
       title,
       description,
       type: 'website',
-      locale: 'ja',
+      locale,
       siteName: title,
       images: ogp ?? defaultOgImage,
+      url: appBaseUrl,
     },
     manifest: '/manifest.webmanifest',
     icons: [
@@ -57,3 +66,17 @@ export const viewportGenerator = (): Viewport => ({
   initialScale: 1,
   themeColor: '#334155',
 });
+
+type MetadataProps = {
+  params: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export type MetadataGenerator = (props: MetadataProps) => Promise<Metadata>;
+
+export const localeHelper = async (props: MetadataProps): Promise<Locale> => {
+  const params = await props.params;
+  if (typeof params.locale !== 'string') return i18nConfig.defaultLocale;
+  if (!i18nConfig.locales.includes(params.locale as Locale)) return i18nConfig.defaultLocale;
+  return params.locale as Locale;
+};

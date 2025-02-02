@@ -13,28 +13,33 @@ import { Text } from '@/shared/components/Typography/Text';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { UpdateAnnouncement } from '@/shared/components/elements/UpdateAnnouncement';
 import { Button } from '@/shared/components/ui/button';
-import { metadataGenerator, viewportGenerator } from '@/shared/lib/metadataGenerator';
+import {
+  localeHelper,
+  type MetadataGenerator,
+  metadataHelper,
+  viewportGenerator,
+} from '@/shared/lib/metadataGenerator';
 import LogoIcon from '/public/icon.svg';
 import TitleLogoJP from '/public/title-logo.svg';
 import TitleLogoEN from '/public/title-logo-en.svg';
 
-export const metadata = metadataGenerator({
-  title: '',
-  description:
-    'ダイススペックはTRPGのちょっとしたツールを集めたサービスです。ダイス予測、ダイスロール、ログ解析といったツールが用意されており、それらを全て無料で使うことができます。',
-});
-
+export const generateMetadata: MetadataGenerator = async (props) => {
+  const locale = await localeHelper(props);
+  return metadataHelper({
+    description: t('landing-page:description'),
+    locale,
+  });
+};
 export const viewport = viewportGenerator();
 
+const featureIcons: Record<string, FC<IconProps>> = {
+  expect: IconSearch,
+  dice: IconDice5,
+  'analyze-logs': IconTimeline,
+};
+
 const LandingPage: NextPage = () => {
-  const featureIcons: Record<string, FC<IconProps>> = {
-    expect: IconSearch,
-    dice: IconDice5,
-    'analyze-logs': IconTimeline,
-  };
-
   const TitleLogo = t('lang') === 'en' ? TitleLogoEN : TitleLogoJP;
-
   return (
     <>
       <div className="flex min-h-screen w-full flex-col">

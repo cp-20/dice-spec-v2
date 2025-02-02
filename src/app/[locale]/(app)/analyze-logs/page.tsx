@@ -8,11 +8,16 @@ import { LogAnalysisStats } from './_components/LogAnalysisStats';
 import { UploadLogFileButton } from './_components/UploadLogFileButton';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
-import { metadataGenerator, viewportGenerator } from '@/shared/lib/metadataGenerator';
+import {
+  localeHelper,
+  type MetadataGenerator,
+  metadataHelper,
+  viewportGenerator,
+} from '@/shared/lib/metadataGenerator';
 import { GameSystemRequest } from './_components/GameSystemRequest';
 import { GameSystemSelect } from './_components/GameSystemSelect';
 
-type props = {
+type MetaProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
@@ -20,16 +25,19 @@ const ogpImageRegex = new RegExp(
   `^https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/.+.png`,
 );
 
-export const generateMetadata = async (props0: props): Promise<Metadata> => {
-  const searchParams = await props0.searchParams;
-  const title = 'ログ解析';
-  const description = 'ココフォリアから出力されたログを解析して、ダイスの出目を抽出・分析します。';
+export const generateMetadata: MetadataGenerator = async (props) => {
+  const searchParams = await props.searchParams;
+  const title = t('common:analyze-logs.title');
+  const description = t('analyze-logs:usage1');
   const ogp =
     typeof searchParams.ogp === 'string' && ogpImageRegex.test(searchParams.ogp) ? searchParams.ogp : undefined;
 
-  const metadata = metadataGenerator({
+  const locale = await localeHelper(props);
+
+  const metadata = metadataHelper({
     title,
     description,
+    locale,
     ogp,
   });
 

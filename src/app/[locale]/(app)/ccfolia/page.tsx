@@ -6,13 +6,16 @@ import { LoadClipboardButton } from './_components/LoadClipboardButton';
 import { ResultView } from './_components/ResultView';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
-import { metadataGenerator } from '@/shared/lib/metadataGenerator';
+import { localeHelper, type MetadataGenerator, metadataHelper } from '@/shared/lib/metadataGenerator';
 
-export const metadata = metadataGenerator({
-  title: 'ココフォリア出力',
-  description:
-    'キャラの各項目を記入すると、ココフォリアに出力できる形式にフォーマットしてくれるツールです。逆にココフォリア出力形式から読み込むこともできるので、「ここの値を少しだけ変えたい！」といった場合に便利です。',
-});
+export const generateMetadata: MetadataGenerator = async (props) => {
+  const locale = await localeHelper(props);
+  return metadataHelper({
+    title: t('common:ccfolia.title'),
+    description: t('ccfolia:usage'),
+    locale,
+  });
+};
 
 const CcfoliaPage: NextPage = () => (
   <>
