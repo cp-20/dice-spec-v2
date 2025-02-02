@@ -1,20 +1,21 @@
 import { atom, useAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';
-import { analyzeCcfoliaLog, type System, type DiceResultForCharacter } from './ccfoliaLogAnalysis';
+import { analyzeCcfoliaLog, type DiceResultForCharacter } from './ccfoliaLogAnalysis';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { useFileContent } from './useFileContent';
 import { detectSystem } from './ccfoliaLogAnalysis/detector';
 
+type System = 'emoklore' | 'CoC7th' | 'CoC6th' | 'shinobigami';
+
 const resultAtom = atom<DiceResultForCharacter[]>([]);
-//  for avoiding it to be inferred as Atom (not WritableAtom)
-const systemAtom = atom<[System | null]>([null]);
+const systemAtom = atom<System | null>(null);
 
 export const useLogAnalysis = () => {
   const { fileContent } = useFileContent();
 
   const [result, setResult] = useAtom(resultAtom);
-  const [[system], setSystem] = useAtom(systemAtom);
+  const [system, setSystem] = useAtom(systemAtom);
   const { sendEvent } = useGoogleAnalytics();
 
   const analyze = useCallback(
@@ -48,7 +49,7 @@ export const useLogAnalysis = () => {
       return;
     }
 
-    setSystem([detectSystem(fileContent)]);
+    setSystem(detectSystem(fileContent));
     analyze(fileContent);
   }, [fileContent, analyze, reset, setSystem]);
 
@@ -60,11 +61,11 @@ export const useLogAnalysis = () => {
 };
 
 export const useLogAnalysisSystem = () => {
-  const [[system], setSystem] = useAtom(systemAtom);
+  const [system, setSystem] = useAtom(systemAtom);
 
   const changeSystem = useCallback(
     (system: System) => {
-      setSystem([system]);
+      setSystem(system);
     },
     [setSystem],
   );

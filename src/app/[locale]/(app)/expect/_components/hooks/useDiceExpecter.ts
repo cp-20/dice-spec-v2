@@ -11,7 +11,7 @@ export type DiceExpecterOption = {
 };
 
 const commandAtom = atom<string>('');
-export const resultAtom = atom<[DiceExpecterResult | null]>([null]);
+export const resultAtom = atom<DiceExpecterResult | null>(null);
 const optionAtom = atom<DiceExpecterOption>({
   autoRecalculation: true,
 });
@@ -36,7 +36,7 @@ export const useRecalculation = () => {
     }
 
     sendEvent('diceExpecter', command);
-    setResult([diceExpecter(command)]);
+    setResult(diceExpecter(command));
   }, [command, sendEvent, setResult]);
 
   return {
@@ -58,7 +58,7 @@ const useAutoRecalculation = (enabled: boolean) => {
     }
 
     sendEvent('diceExpecter', formatDiceCommand(debouncedCommand));
-    setResult([diceExpecter(debouncedCommand)]);
+    setResult(diceExpecter(debouncedCommand));
   }, [debouncedCommand, enabled, sendEvent, setResult]);
 };
 
@@ -91,7 +91,7 @@ export const useDiceExpecterOption = () => {
 };
 
 export const useDiceExpecterResult = () => {
-  const [[result]] = useAtom(resultAtom);
+  const [result] = useAtom(resultAtom);
 
   return { result };
 };
