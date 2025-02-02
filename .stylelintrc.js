@@ -1,7 +1,7 @@
 module.exports = {
   extends: ['stylelint-config-standard', 'stylelint-config-recess-order'],
   rules: {
-    'import-notation': 'off',
+    'import-notation': null,
     'at-rule-no-unknown': [
       true,
       { ignoreAtRules: ['tailwind', 'layer', 'apply', 'plugin', 'custom-variant', 'theme', 'utility'] },
