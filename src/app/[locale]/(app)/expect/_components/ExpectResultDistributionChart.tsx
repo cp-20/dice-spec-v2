@@ -53,14 +53,16 @@ export const ExpectResultDistributionChart: FC = () => {
     return 'rgba(100, 116, 139, 0.2)';
   };
 
+  const labels = Object.keys(result.distribution).sort((a, b) => Number(a) - Number(b));
+
   return (
     <div>
       <Line
         data={{
-          labels: Object.keys(result.distribution),
+          labels,
           datasets: [
             {
-              data: Object.values(result.distribution),
+              data: labels.map((key) => result.distribution[key]),
               fill: true,
               segment: {
                 backgroundColor: colorFunc,
