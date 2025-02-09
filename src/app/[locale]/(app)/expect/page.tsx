@@ -52,8 +52,8 @@ const ExpectPage: NextPage = () => (
     <div>
       <PageTitle icon={IconSearch}>{t('common:expect.title')}</PageTitle>
       <PageDescriptionContainer>
-        <PageDescriptionText>{insertInlineCommand(t('expect:usage1'))}</PageDescriptionText>
-        <PageDescriptionText>{insertInlineCommand(t('expect:usage2'))}</PageDescriptionText>
+        <PageDescriptionText key="0">{insertInlineCommand(t('expect:usage1'))}</PageDescriptionText>
+        <PageDescriptionText key="1">{insertInlineCommand(t('expect:usage2'))}</PageDescriptionText>
       </PageDescriptionContainer>
     </div>
 

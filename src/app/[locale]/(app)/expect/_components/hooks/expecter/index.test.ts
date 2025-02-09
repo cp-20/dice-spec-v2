@@ -139,6 +139,36 @@ describe('diceExpecter', () => {
       },
     });
   });
+  test('1d6 - 1d6', () => {
+    expect(diceExpecter('1d6-1d6')).toEqual({
+      success: true,
+      withTarget: false,
+      mean: 0,
+      variance: expect.closeTo(singleD6Variance * 2, 1),
+      SD: expect.closeTo(Math.sqrt(singleD6Variance * 2), 1),
+      range: {
+        min: -5,
+        max: 5,
+      },
+      CI: {
+        min: expect.closeTo(-4.9, 1),
+        max: expect.closeTo(4.9, 1),
+      },
+      distribution: {
+        '-5': expect.closeTo(1 / 36, 3),
+        '-4': expect.closeTo(2 / 36, 3),
+        '-3': expect.closeTo(3 / 36, 3),
+        '-2': expect.closeTo(4 / 36, 3),
+        '-1': expect.closeTo(5 / 36, 3),
+        '0': expect.closeTo(6 / 36, 3),
+        '1': expect.closeTo(5 / 36, 3),
+        '2': expect.closeTo(4 / 36, 3),
+        '3': expect.closeTo(3 / 36, 3),
+        '4': expect.closeTo(2 / 36, 3),
+        '5': expect.closeTo(1 / 36, 3),
+      },
+    });
+  });
   test('3 + 5d >= 15', () => {
     expect(diceExpecter('3 + 5d >= 15')).toEqual({
       success: true,

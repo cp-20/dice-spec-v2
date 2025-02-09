@@ -44,6 +44,15 @@ describe('parseDiceCommand', () => {
     });
   });
 
+  test('マイナスもパースできる', () => {
+    expect(parseDiceCommand('1 - 2')).toEqual({
+      type: 'operation',
+      operator: '-',
+      left: { type: 'number', value: 1 },
+      right: { type: 'number', value: 2 },
+    });
+  });
+
   test('複雑な計算式をパースできる', () => {
     expect(parseDiceCommand('1 + 2 * 3')).toEqual({
       type: 'operation',
