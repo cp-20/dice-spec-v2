@@ -12,7 +12,7 @@ export const Stats: FC<StatsProps> = ({ label, number, unit }) => {
     <div className="rounded-md border p-3">
       <Text className="text-xs font-bold text-slate-500">{label}</Text>
       <div className="mt-1">
-        {number ? (
+        {number !== undefined ? (
           <Text>
             <span className="text-xl">{number}</span>
             {unit && <span className="text-xs">{unit}</span>}
