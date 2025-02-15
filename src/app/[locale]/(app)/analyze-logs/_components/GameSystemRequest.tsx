@@ -13,7 +13,6 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { sendGameSystemRequest } from '@/shared/lib/webhook';
-import { DialogDescription } from '@radix-ui/react-dialog';
 import { IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { useState, type FC } from 'react';
@@ -23,6 +22,15 @@ export const GameSystemRequest: FC = () => {
   const [open, setOpen] = useState(false);
   const [system, setSystem] = useState('');
   const [logFile, setLogFile] = useState<File | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const validate = (value: string) => {
+    if (/(CoC|クトゥルフ|エモクロア|シノビガミ)/.test(value)) {
+      setErrorMessage(t('analyze-logs:game-system-request:already-implemented'));
+    } else {
+      setErrorMessage(null);
+    }
+  };
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -63,9 +71,13 @@ export const GameSystemRequest: FC = () => {
                 <Input
                   id="request-form-name"
                   value={system}
-                  onChange={(e) => setSystem(e.currentTarget.value)}
+                  onChange={(e) => {
+                    setSystem(e.currentTarget.value);
+                    validate(e.currentTarget.value);
+                  }}
                   required
                 />
+                {errorMessage && <div className="text-red-500 text-sm">{errorMessage}</div>}
               </div>
               <div className="space-y-1">
                 <Label htmlFor="request-form-logs">{t('analyze-logs:game-system-request:logs')}</Label>
