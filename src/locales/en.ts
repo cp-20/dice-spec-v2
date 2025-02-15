@@ -107,6 +107,7 @@ export const en = {
       submitted: 'Request submitted!',
       'submitted-description': 'Thank you for your request!',
       error: 'Failed to submit request',
+      'already-implemented': 'This game system has already been implemented.',
     },
     upload: {
       button: 'Click to upload or drag and drop to upload',

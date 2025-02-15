@@ -108,6 +108,7 @@ export const ja = {
       submitted: 'リクエストを送信しました！',
       'submitted-description': 'リクエストありがとうございます！',
       error: 'リクエストの送信に失敗しました',
+      'already-implemented': 'このゲームシステムは今すぐ使えます',
     },
     upload: {
       button: 'クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード',
