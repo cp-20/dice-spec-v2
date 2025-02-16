@@ -13,34 +13,35 @@ import D20 from '/public/assets/images/D20.svg';
 import { twMerge } from 'tailwind-merge';
 
 import styles from './SimpleDiceOutput.module.css';
+import scrollbarStyles from '@/shared/styles/pretty-scrollbar.module.css';
 import type { AvailableDice } from './hooks/useSimpleDiceInput';
 import { useSimpleDiceOutput } from './hooks/useSimpleDiceOutput';
 
 export const SimpleDiceOutput: FC = () => {
-  const { simpleDiceOutput } = useSimpleDiceOutput();
+  const { latestOutput, history } = useSimpleDiceOutput();
 
-  if (simpleDiceOutput === null) {
-    return <div className="grid min-h-[5rem] place-content-center text-slate-400">{t('dice:simple.output')}</div>;
+  if (latestOutput === null) {
+    return <div className="grid h-36 place-content-center text-slate-400">{t('dice:simple.output')}</div>;
   }
 
-  const diceComponentCount = simpleDiceOutput.result.reduce((acc, { result }) => {
+  const diceComponentCount = latestOutput.result.reduce((acc, { result }) => {
     return acc + result.length;
   }, 0);
   const animationDelayStep = diceComponentCount > 10 ? 0.3 / diceComponentCount : 0.03;
 
   return (
-    <div className="min-h-[5rem]">
-      <div className="flex flex-wrap items-center">
-        {simpleDiceOutput.result.map(({ dice, result }, i) => {
+    <div>
+      <div className="flex flex-wrap items-center min-h-12">
+        {latestOutput.result.map(({ dice, result }, i) => {
           const DiceComponent = diceComponents[dice];
 
-          const index = simpleDiceOutput.result.slice(0, i).reduce((acc, { result }) => {
+          const index = latestOutput.result.slice(0, i).reduce((acc, { result }) => {
             return acc + result.length;
           }, 0);
 
           return result.map((count, i) => (
             <DiceComponent
-              key={`${simpleDiceOutput.key}-${dice}-${i}`}
+              key={`${latestOutput.key}-${dice}-${i}`}
               count={count}
               className="animate-popup opacity-0"
               style={{ animationDelay: `${(index + i) * animationDelayStep}s` }}
@@ -52,13 +53,23 @@ export const SimpleDiceOutput: FC = () => {
           style={{
             animationDelay: `${diceComponentCount * animationDelayStep + 0.2}s`,
           }}
-          key={simpleDiceOutput.key}
+          key={latestOutput.key}
         >
           <IconChevronsRight />
-          <div className="text-xl font-bold">{simpleDiceOutput.sum}</div>
+          <div className="text-xl font-bold">{latestOutput.sum}</div>
         </div>
       </div>
-      <div className="text-slate-400">{simpleDiceOutput.resultStr}</div>
+      <div className="text-slate-500">{latestOutput.resultStr}</div>
+      <div className={clsx('h-16 overflow-auto mt-2', scrollbarStyles['pretty-scrollbar'])}>
+        {history
+          .toReversed()
+          .slice(1)
+          .map((output) => (
+            <div className="text-slate-300" key={output.key}>
+              {output.resultStr}
+            </div>
+          ))}
+      </div>
     </div>
   );
 };
