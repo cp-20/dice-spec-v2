@@ -61,10 +61,7 @@ export const en = {
     },
   },
   dice: {
-    usage1:
-      'In simple mode, you can roll basic dice. For dice rolls not on the screen, adjust the number of dice yourself',
-    usage2:
-      'In the advanced mode, you can roll dice according to various game systems. Please refer to the explanation of each game system for specific usage.',
+    usage: 'In simple mode, you can roll basic dice, and in advanced mode, you can roll dice for various game systems.',
     simple: {
       label: 'Simple',
       output: 'The result will be displayed here',
