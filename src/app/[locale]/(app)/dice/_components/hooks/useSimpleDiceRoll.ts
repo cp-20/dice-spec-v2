@@ -33,7 +33,7 @@ const sum = (arr: number[]) => arr.reduce((acc, curr) => acc + curr, 0);
 
 export const useSimpleDiceRoll = () => {
   const { simpleDiceRoll: simpleDiceRollCore } = useSimpleDiceRollCore();
-  const { setSimpleDiceOutput } = useSimpleDiceOutput();
+  const { setOutput } = useSimpleDiceOutput();
   const { sendEvent } = useGoogleAnalytics();
 
   const simpleDiceRoll = useCallback(
@@ -49,12 +49,12 @@ export const useSimpleDiceRoll = () => {
           .join('+'),
       );
 
-      setSimpleDiceOutput({
+      setOutput({
         key: Date.now().toString(36) + Math.random().toString(36).slice(2),
         ...result,
       });
     },
-    [sendEvent, setSimpleDiceOutput, simpleDiceRollCore],
+    [sendEvent, setOutput, simpleDiceRollCore],
   );
 
   return { simpleDiceRoll };
