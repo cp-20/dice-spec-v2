@@ -56,7 +56,6 @@ const AnalyzeLogsPage: NextPage = () => (
     </div>
 
     <div className="space-y-4">
-      <GameSystemRequest />
       <UploadLogFileButton />
       <GameSystemSelect />
       <CharacterSelect />

@@ -5,6 +5,7 @@ import { useLogAnalysisSystem } from './hooks/useLogAnalysis';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/shared/components/ui/select';
 import { t } from 'i18next';
 import { systems } from './hooks/ccfoliaLogAnalysis/messageParser';
+import { GameSystemRequest } from '@/app/[locale]/(app)/analyze-logs/_components/GameSystemRequest';
 
 export const GameSystemSelect: FC = () => {
   const { system, changeSystem } = useLogAnalysisSystem();
@@ -22,6 +23,8 @@ export const GameSystemSelect: FC = () => {
             {system.name}
           </SelectItem>
         ))}
+        <div className="h-1" />
+        <GameSystemRequest />
       </SelectContent>
     </Select>
   );
