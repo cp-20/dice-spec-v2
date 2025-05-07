@@ -7,6 +7,7 @@ import { ResultView } from './_components/ResultView';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { localeHelper, type MetadataGenerator, metadataHelper } from '@/shared/lib/metadataGenerator';
+import { wrapPage } from '@/shared/i18n/page-layout';
 
 export const generateMetadata: MetadataGenerator = async (props) => {
   const locale = await localeHelper(props);
@@ -40,4 +41,4 @@ const CcfoliaPage: NextPage = () => (
   </>
 );
 
-export default CcfoliaPage;
+export default wrapPage(CcfoliaPage);

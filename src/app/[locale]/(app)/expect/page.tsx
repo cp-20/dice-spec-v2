@@ -1,5 +1,5 @@
 import { IconSearch } from '@tabler/icons-react';
-import { t } from 'i18next';
+import { t, changeLanguage } from 'i18next';
 import type { NextPage } from 'next';
 import { DiceCommandInput } from './_components/DiceCommandInput';
 import { ExpectResultDistributionChart } from './_components/ExpectResultDistributionChart';
@@ -14,6 +14,7 @@ import {
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
 import { Fragment } from 'react';
+import { wrapPage } from '@/shared/i18n/page-layout';
 
 const inlineCommandRegex = /`((?:[^`]|\\`)+)`/g;
 
@@ -67,4 +68,4 @@ const ExpectPage: NextPage = () => (
   </div>
 );
 
-export default ExpectPage;
+export default wrapPage(ExpectPage);

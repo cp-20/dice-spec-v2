@@ -20,6 +20,7 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
+import { wrapPage } from '@/shared/i18n/page-layout';
 
 export const generateMetadata: MetadataGenerator = async (props) => {
   const locale = await localeHelper(props);
@@ -76,4 +77,4 @@ const DicePage: NextPage = async () => {
   );
 };
 
-export default DicePage;
+export default wrapPage(DicePage);

@@ -14,8 +14,8 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
-import { GameSystemRequest } from './_components/GameSystemRequest';
 import { GameSystemSelect } from './_components/GameSystemSelect';
+import { wrapPage } from '@/shared/i18n/page-layout';
 
 type MetaProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -74,4 +74,4 @@ const AnalyzeLogsPage: NextPage = () => (
   </div>
 );
 
-export default AnalyzeLogsPage;
+export default wrapPage(AnalyzeLogsPage);

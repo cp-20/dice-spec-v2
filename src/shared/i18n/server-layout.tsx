@@ -1,6 +1,7 @@
-import i18n from 'i18next';
+import * as i18n from 'i18next';
 import type { FC, ReactNode } from 'react';
 import { i18nextInitOptions } from '@/locales/i18next';
+import { i18nConfig, type Locale } from '@/shared/i18n/config';
 
 i18n.init(i18nextInitOptions, (err) => {
   if (err) {
@@ -13,7 +14,8 @@ export const wrapRootLayout = (RootLayout: FC<{ children: ReactNode; locale: str
     children: ReactNode;
     params: Promise<{ locale: string }>;
   }> = async ({ children, params }) => {
-    const { locale } = await params;
+    const p = await params;
+    const locale = i18nConfig.locales.includes(p.locale as Locale) ? (p.locale as Locale) : i18nConfig.defaultLocale;
     i18n.changeLanguage(locale);
     return <RootLayout locale={locale}>{children}</RootLayout>;
   };

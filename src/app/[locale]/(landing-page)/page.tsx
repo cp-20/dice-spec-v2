@@ -22,6 +22,7 @@ import {
 import LogoIcon from '/public/icon.svg';
 import TitleLogoJP from '/public/title-logo.svg';
 import TitleLogoEN from '/public/title-logo-en.svg';
+import { wrapPage } from '@/shared/i18n/page-layout';
 
 export const generateMetadata: MetadataGenerator = async (props) => {
   const locale = await localeHelper(props);
@@ -136,4 +137,4 @@ const LandingPage: NextPage = () => {
   );
 };
 
-export default LandingPage;
+export default wrapPage(LandingPage);
