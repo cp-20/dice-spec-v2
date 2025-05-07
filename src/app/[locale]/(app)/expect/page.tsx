@@ -13,6 +13,7 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
+import { Fragment } from 'react';
 
 const inlineCommandRegex = /`((?:[^`]|\\`)+)`/g;
 
@@ -23,15 +24,16 @@ const insertInlineCommand = (value: string) => {
 
   let match = null;
   let index = 0;
+  let key = 0;
   // biome-ignore lint/suspicious/noAssignInExpressions: hack
   while ((match = inlineCommandRegex.exec(value)) !== null) {
     const [inlineCommand] = match;
-    result.push(value.slice(index, match.index));
-    result.push(<InlineCommand>{inlineCommand.slice(1, -1)}</InlineCommand>);
+    result.push(<Fragment key={key++}>{value.slice(index, match.index)}</Fragment>);
+    result.push(<InlineCommand key={key++}>{inlineCommand.slice(1, -1)}</InlineCommand>);
     index = match.index + inlineCommand.length;
   }
 
-  result.push(value.slice(index));
+  result.push(<Fragment key={key++}>{value.slice(index)}</Fragment>);
 
   return result;
 };
