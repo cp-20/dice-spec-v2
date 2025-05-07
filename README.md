@@ -40,39 +40,12 @@ TRPGのちょっとしたツールをまとめたようなアプリです。現�
 
 ## 環境セットアップ
 
-### 事前準備
-
-[nodenv](https://github.com/nodenv/nodenv) なり [asdf](https://asdf-vm.com/) なり [n](https://github.com/tj/n) なりを使って `.node-version` にあるNode.jsのバージョンをインストールしてください。 (たぶんv18とかでも動くけどね)
-
-`npm i -g corepack` で [Corepack](https://github.com/nodejs/corepack) をインストールしてください
-
-### セットアップ
-
-まず、下のコマンドのどちらかでリポジトリをクローンしてください。
+必要なもの: Node.js (`.node-version` のバージョン) と Bun (https://bun.sh)
 
 ```sh
-git clone https://github.com/cp-20/dice-spec-v2
+bun i
+bun run dev
 ```
-
-```sh
-git clone git@github.com:cp-20/dice-spec-v2.git
-```
-
-次に下のコマンドで依存関係をインストールしてください。
-
-```sh
-pnpm i
-```
-
-正しくインストールができれば、次のコマンドで開発サーバーが起動します。
-
-```sh
-pnpm dev
-```
-
-デフォルトで `localhost:3000` にサーバーが立ちます。ブラウザで正しく表示されれば成功です。
-
-他のコマンドは `package.json` を参照してください。
 
 ## リポジトリの設計
 
