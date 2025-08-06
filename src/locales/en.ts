@@ -123,6 +123,7 @@ export const en = {
       'success-rate': 'Success Rate',
       'roll-count': 'Number of dice rolled',
       'roll-count-unit': '',
+      'dice-count-unit': '',
       share: 'Share analysis results',
     },
     log: 'Dice Logs',

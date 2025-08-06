@@ -125,6 +125,7 @@ export const ja = {
       'success-rate': '成功率',
       'roll-count': 'ダイスを振った回数',
       'roll-count-unit': '回',
+      'dice-count-unit': '個',
       share: '解析結果をシェア',
     },
     log: 'ダイスログ',

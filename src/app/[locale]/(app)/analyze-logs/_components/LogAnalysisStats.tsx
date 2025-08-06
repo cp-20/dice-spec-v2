@@ -11,7 +11,7 @@ export const LogAnalysisStats: FC = () => {
   const { character } = useCharacterSelect();
   const result = useCharacterLogAnalysis(character);
 
-  const numberWrapper = (number: ReactNode) => (result ? number : <span className="text-slate-500">-</span>);
+  const numberWrapper = (number: ReactNode) => result && number;
 
   return (
     <div className="@container">
@@ -27,12 +27,16 @@ export const LogAnalysisStats: FC = () => {
         <Stats
           label={t('analyze-logs:stats.success-rate')}
           number={numberWrapper(result && round(result.summary.successRate, 2))}
-          unit={result ? '%' : null}
+          unit="%"
         />
         <Stats
           label={t('analyze-logs:stats.roll-count')}
           number={numberWrapper(result?.summary.diceRollCount)}
-          unit={result ? t('analyze-logs:stats.roll-count-unit') : null}
+          unit={t('analyze-logs:stats.roll-count-unit')}
+          small={
+            result?.summary.diceCount !== result?.summary.diceRollCount &&
+            `${result?.summary.diceCount}${t('analyze-logs:stats.dice-count-unit')}`
+          }
         />
       </div>
     </div>
