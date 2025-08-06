@@ -2,9 +2,9 @@ import { atom } from 'jotai';
 import { useCallback, useEffect } from 'react';
 import useImmutableSWR from 'swr/immutable';
 import * as v from 'valibot';
-import { useBcdiceApi } from './useBcdiceApi';
 import { type GameSystem, gameSystemSchema } from '@/shared/lib/bcdice/getGameSystemList';
 import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
+import { useBcdiceApi } from './useBcdiceApi';
 
 const gameSystemListSchema = v.array(gameSystemSchema);
 

@@ -1,4 +1,4 @@
-import { NextResponse, type NextMiddleware } from 'next/server';
+import { type NextMiddleware, NextResponse } from 'next/server';
 import { i18nConfig } from './config';
 
 export const i18nMiddleware: NextMiddleware = (req) => {

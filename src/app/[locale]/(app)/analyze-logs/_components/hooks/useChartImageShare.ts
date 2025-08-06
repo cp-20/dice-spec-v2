@@ -1,10 +1,10 @@
 import { useCallback, useRef, useState } from 'react';
 import type { ChartJSOrUndefined } from 'react-chartjs-2/dist/types';
-import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
-import { useCharacterSelect } from './useCharacterSelect';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
+import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
+import { useCharacterSelect } from './useCharacterSelect';
 
 export const useChartImageShare = () => {
   const chartRef = useRef<ChartJSOrUndefined<'bar', number[], string>>(null);

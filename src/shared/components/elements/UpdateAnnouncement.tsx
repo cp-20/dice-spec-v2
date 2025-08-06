@@ -3,7 +3,7 @@
 import { IconX } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { atom } from 'jotai';
-import { useCallback, type FC } from 'react';
+import { type FC, useCallback } from 'react';
 import * as v from 'valibot';
 import { Button } from '@/shared/components/ui/button';
 import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';

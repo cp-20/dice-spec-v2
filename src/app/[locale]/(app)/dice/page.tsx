@@ -1,6 +1,16 @@
 import { IconDice5 } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
+import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
+import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
+import { Toaster } from '@/shared/components/ui/toaster';
+import { wrapPage } from '@/shared/i18n/page-layout';
+import {
+  localeHelper,
+  type MetadataGenerator,
+  metadataHelper,
+  viewportGenerator,
+} from '@/shared/lib/metadataGenerator';
 import { AdvancedSettings } from './_components/AdvancedSettings';
 import { DiceBotHelp } from './_components/DiceBotDescription';
 import { DiceCommandInput } from './_components/DiceCommandInput';
@@ -11,16 +21,6 @@ import { QuickInput } from './_components/QuickInput';
 import { SimpleDiceInput } from './_components/SimpleDiceInput';
 import { SimpleDiceOutput } from './_components/SimpleDiceOutput';
 import { SimpleDiceQuickInput } from './_components/SimpleDiceQuickInput';
-import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
-import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
-import { Toaster } from '@/shared/components/ui/toaster';
-import {
-  localeHelper,
-  type MetadataGenerator,
-  metadataHelper,
-  viewportGenerator,
-} from '@/shared/lib/metadataGenerator';
-import { wrapPage } from '@/shared/i18n/page-layout';
 
 export const generateMetadata: MetadataGenerator = async (props) => {
   const locale = await localeHelper(props);

@@ -1,10 +1,10 @@
 import { atom, useAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';
-import { analyzeCcfoliaLog, type DiceResultForCharacter } from './ccfoliaLogAnalysis';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
-import { useFileContent } from './useFileContent';
+import { analyzeCcfoliaLog, type DiceResultForCharacter } from './ccfoliaLogAnalysis';
 import { detectSystem } from './ccfoliaLogAnalysis/detector';
+import { useFileContent } from './useFileContent';
 
 type System = 'emoklore' | 'CoC7th' | 'CoC6th' | 'shinobigami';
 

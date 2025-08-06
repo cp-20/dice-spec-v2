@@ -1,5 +1,5 @@
-import { CoC6thSystemStats } from './messageParser/cthulhu6th';
 import type { MessageParserResult, SystemStats } from './messageParser';
+import { CoC6thSystemStats } from './messageParser/cthulhu6th';
 import { summarizeResults } from './summarizer';
 
 describe('summarizeResults', () => {

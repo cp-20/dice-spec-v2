@@ -1,11 +1,11 @@
 'use client';
 
-import type { FC } from 'react';
-import { useLogAnalysisSystem } from './hooks/useLogAnalysis';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/shared/components/ui/select';
 import { t } from 'i18next';
-import { systems } from './hooks/ccfoliaLogAnalysis/messageParser';
+import type { FC } from 'react';
 import { GameSystemRequest } from '@/app/[locale]/(app)/analyze-logs/_components/GameSystemRequest';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+import { systems } from './hooks/ccfoliaLogAnalysis/messageParser';
+import { useLogAnalysisSystem } from './hooks/useLogAnalysis';
 
 export const GameSystemSelect: FC = () => {
   const { system, changeSystem } = useLogAnalysisSystem();

@@ -1,25 +1,21 @@
 import { IconChevronsRight, IconTimeline } from '@tabler/icons-react';
 import { t } from 'i18next';
-import type { Metadata, NextPage } from 'next';
-import { CharacterSelect } from './_components/CharacterSelect';
-import { DiceLogList } from './_components/DiceLogList';
-import { LogAnalysisCharts } from './_components/LogAnalysisCharts';
-import { LogAnalysisStats } from './_components/LogAnalysisStats';
-import { UploadLogFileButton } from './_components/UploadLogFileButton';
+import type { NextPage } from 'next';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
+import { wrapPage } from '@/shared/i18n/page-layout';
 import {
   localeHelper,
   type MetadataGenerator,
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
+import { CharacterSelect } from './_components/CharacterSelect';
+import { DiceLogList } from './_components/DiceLogList';
 import { GameSystemSelect } from './_components/GameSystemSelect';
-import { wrapPage } from '@/shared/i18n/page-layout';
-
-type MetaProps = {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
+import { LogAnalysisCharts } from './_components/LogAnalysisCharts';
+import { LogAnalysisStats } from './_components/LogAnalysisStats';
+import { UploadLogFileButton } from './_components/UploadLogFileButton';
 
 const ogpImageRegex = new RegExp(
   `^https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/.+.png`,

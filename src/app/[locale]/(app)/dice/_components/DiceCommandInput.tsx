@@ -1,12 +1,12 @@
 'use client';
 
 import { t } from 'i18next';
-import { useEffect, useState } from 'react';
 import type { FC, FormEventHandler } from 'react';
-import { useDiceRoll } from './hooks/useDiceRoll';
-import { useDiceRollValidation } from './hooks/useDiceRollOption';
+import { useEffect, useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
+import { useDiceRoll } from './hooks/useDiceRoll';
+import { useDiceRollValidation } from './hooks/useDiceRollOption';
 
 export const DiceCommandInput: FC = () => {
   const { diceRoll } = useDiceRoll();

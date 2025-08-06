@@ -1,18 +1,16 @@
 'use client';
 
-import { IconUpload } from '@tabler/icons-react';
-import { IconX } from '@tabler/icons-react';
+import { IconUpload, IconX } from '@tabler/icons-react';
 import { t } from 'i18next';
-import { useCallback, type FC, useState, useRef } from 'react';
-import { useDropzone } from './hooks/useDropzone';
-import { useLogAnalysis } from './hooks/useLogAnalysis';
+import { type FC, useCallback, useRef, useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
+import { useDropzone } from './hooks/useDropzone';
 import { useFileContent } from './hooks/useFileContent';
 
 export const UploadLogFileButton: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [currentFile, setCurrentFile] = useState<string | null>(null);
-  const { fileContent, setFileContent } = useFileContent();
+  const { setFileContent } = useFileContent();
 
   const dropHandler = useCallback(
     (filename: string, content: string) => {

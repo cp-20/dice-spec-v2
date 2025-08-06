@@ -2,13 +2,13 @@
 
 import { t } from 'i18next';
 import type { FC } from 'react';
-import { ColorInput } from './ColorInput';
-import { ParameterInput } from './ParameterInput';
-import { StatusInput } from './StatusInput';
-import { useInputForm } from './hooks/useInputForm';
-import { Form, FormControl, FormField, FormLabel, FormItem, FormDescription } from '@/shared/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
+import { ColorInput } from './ColorInput';
+import { useInputForm } from './hooks/useInputForm';
+import { ParameterInput } from './ParameterInput';
+import { StatusInput } from './StatusInput';
 
 export const InputForm: FC = () => {
   const { form, handleSubmit } = useInputForm();

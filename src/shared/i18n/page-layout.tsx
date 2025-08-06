@@ -1,6 +1,6 @@
 import * as i18n from 'i18next';
-import { i18nConfig, type Locale } from '@/shared/i18n/config';
 import type { NextPage } from 'next';
+import { i18nConfig, type Locale } from '@/shared/i18n/config';
 
 export const wrapPage = (Page: NextPage) => {
   const WrappedPage: NextPage<{ params: Promise<{ locale: string }> }> = async ({ params }) => {

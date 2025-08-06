@@ -1,4 +1,4 @@
-import { parseDiceCommand, ParserError } from './parser';
+import { ParserError, parseDiceCommand } from './parser';
 
 describe('parseDiceCommand', () => {
   test('単純な数字をパースできる', () => {

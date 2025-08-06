@@ -2,10 +2,10 @@
 
 import { t } from 'i18next';
 import type { FC, ReactNode } from 'react';
-import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
-import { useCharacterSelect } from './hooks/useCharacterSelect';
 import { Stats } from '@/shared/components/elements/Stats';
 import { round } from '@/shared/lib/round';
+import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
+import { useCharacterSelect } from './hooks/useCharacterSelect';
 
 export const LogAnalysisStats: FC = () => {
   const { character } = useCharacterSelect();

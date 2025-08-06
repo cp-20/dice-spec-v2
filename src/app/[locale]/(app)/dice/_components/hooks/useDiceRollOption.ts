@@ -1,9 +1,9 @@
 import { atom, useAtom } from 'jotai';
 import { useCallback } from 'react';
-import { useBcdiceApi } from './useBcdiceApi';
 import { defaultOption } from '@/shared/lib/bcdice/defaultOption';
 import type { GameSystemInfo } from '@/shared/lib/bcdice/getGameSystemInfo';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
+import { useBcdiceApi } from './useBcdiceApi';
 
 export type DiceRollOptions = {
   system: string;

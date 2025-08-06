@@ -1,6 +1,6 @@
-import { parsers } from './messageParser';
 import type { System } from './';
 import { parseHtmlLog } from './htmlParser';
+import { parsers } from './messageParser';
 
 const shuffle = <T>(array: T[]): T[] => {
   const shuffled = array.slice(); // 元の配列をコピー

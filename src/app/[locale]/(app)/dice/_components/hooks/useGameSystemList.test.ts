@@ -1,8 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
 import { useAtom } from 'jotai';
 import * as useImmutableSWR from 'swr/immutable';
-import { useGameSystemList } from './useGameSystemList';
 import * as useLocalStorage from '@/shared/lib/useLocalStorage';
+import { useGameSystemList } from './useGameSystemList';
 
 describe('useGameSystemList', () => {
   beforeEach(() => {

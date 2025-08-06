@@ -6,18 +6,18 @@ import merge from 'deepmerge';
 import { t } from 'i18next';
 import dynamic from 'next/dynamic';
 import { type FC, useEffect } from 'react';
-import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
-import { useCharacterSelect } from './hooks/useCharacterSelect';
-import { useChartImageShare } from './hooks/useChartImageShare';
+import { aggregateResults } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/ccfoliaLogAnalysis/resultAggregator';
+import { useLogAnalysisSystem } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/useLogAnalysis';
 import { Button } from '@/shared/components/ui/button';
 import { commonChartOption } from '@/shared/lib/commonChartOption';
 import { groupBy } from '@/shared/lib/groupBy';
-import { aggregateResults } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/ccfoliaLogAnalysis/resultAggregator';
-import { useLogAnalysisSystem } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/useLogAnalysis';
+import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
+import { useCharacterSelect } from './hooks/useCharacterSelect';
+import { useChartImageShare } from './hooks/useChartImageShare';
 
 const customCanvasBackgroundColorPlugin: Plugin = {
   id: 'customCanvasBackgroundColor',
-  beforeDraw: (chart, args, options) => {
+  beforeDraw: (chart, _args, options) => {
     const { ctx } = chart;
     ctx.save();
     ctx.globalCompositeOperation = 'destination-over';

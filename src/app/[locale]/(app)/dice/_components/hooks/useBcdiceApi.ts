@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { useAdvancedSettings } from './useAdvancedSettings';
 import { getDiceRollGenerator } from '@/shared/lib/bcdice/getDiceRoll';
 import { getGameSystemInfoGenerator } from '@/shared/lib/bcdice/getGameSystemInfo';
 import { getGameSystemListGenerator } from '@/shared/lib/bcdice/getGameSystemList';
+import { useAdvancedSettings } from './useAdvancedSettings';
 
 export const useBcdiceApi = () => {
   const { advancedSettings } = useAdvancedSettings();

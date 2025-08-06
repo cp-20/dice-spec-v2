@@ -3,10 +3,10 @@
 import { IconCheck, IconClipboard } from '@tabler/icons-react';
 import clsx from 'clsx';
 import { t } from 'i18next';
-import { useCallback, type FC, useState } from 'react';
-import { useFormResult } from './hooks/useFormResult';
+import { type FC, useCallback, useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Textarea } from '@/shared/components/ui/textarea';
+import { useFormResult } from './hooks/useFormResult';
 
 export const ResultView: FC = () => {
   const { formResult } = useFormResult();

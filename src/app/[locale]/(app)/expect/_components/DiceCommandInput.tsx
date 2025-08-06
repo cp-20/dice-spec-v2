@@ -2,15 +2,15 @@
 
 import { t } from 'i18next';
 import type { FC } from 'react';
+import { Button } from '@/shared/components/ui/button';
+import { Checkbox } from '@/shared/components/ui/checkbox';
+import { Input } from '@/shared/components/ui/input';
 import {
   useDiceCommandInput,
   useDiceExpecterOption,
   useDiceExpecterResult,
   useRecalculation,
 } from './hooks/useDiceExpecter';
-import { Button } from '@/shared/components/ui/button';
-import { Checkbox } from '@/shared/components/ui/checkbox';
-import { Input } from '@/shared/components/ui/input';
 
 export const DiceCommandInput: FC = () => {
   const { command, setCommand } = useDiceCommandInput();

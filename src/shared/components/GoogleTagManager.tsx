@@ -5,7 +5,7 @@ import type { FC } from 'react';
 const id = process.env.NEXT_PUBLIC_GTM_ID;
 
 export const GoogleTagManager: FC = async () => {
-  if (!id) return <></>;
+  if (!id) return null;
 
   const nonce = (await headers()).get('X-CSP-Nonce') ?? '';
 

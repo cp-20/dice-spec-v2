@@ -1,10 +1,10 @@
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { FC } from 'react';
-import { numberFormatterGenerator, variableFieldChangeHandlerGenerator } from './composable/variableFieldChangeHandler';
-import type { InputFormSchemaType } from './hooks/useInputForm';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
+import { numberFormatterGenerator, variableFieldChangeHandlerGenerator } from './composable/variableFieldChangeHandler';
+import type { InputFormSchemaType } from './hooks/useInputForm';
 
 type Status = InputFormSchemaType['status'][number];
 

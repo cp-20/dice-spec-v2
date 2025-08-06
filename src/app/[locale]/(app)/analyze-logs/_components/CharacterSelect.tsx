@@ -3,9 +3,9 @@
 import clsx from 'clsx';
 import { t } from 'i18next';
 import type { FC } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
 import { useLogAnalysis } from './hooks/useLogAnalysis';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/shared/components/ui/select';
 
 export const CharacterSelect: FC = () => {
   const { character, selectCharacter } = useCharacterSelect();

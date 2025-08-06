@@ -6,15 +6,14 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 
 import type { FC } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import styles from './GameSystemSelect.module.css';
-import { useDiceRollOption } from './hooks/useDiceRollOption';
-import { useGameSystemList } from './hooks/useGameSystemList';
 import { Button } from '@/shared/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/shared/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
 import { cn } from '@/shared/lib/shadcn-utils';
-
 import scrollbarStyles from '@/shared/styles/pretty-scrollbar.module.css';
+import styles from './GameSystemSelect.module.css';
+import { useDiceRollOption } from './hooks/useDiceRollOption';
+import { useGameSystemList } from './hooks/useGameSystemList';
 
 export const GameSystemSelect: FC = () => {
   const { gameSystemList: systems, selectSystem } = useGameSystemList();

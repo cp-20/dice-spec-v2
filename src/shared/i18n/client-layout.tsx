@@ -1,11 +1,11 @@
 'use client';
 
 import i18n from 'i18next';
+import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { i18nextInitOptions } from '@/locales/i18next';
 import { i18nConfig, type Locale } from '@/shared/i18n/config';
-import { usePathname } from 'next/navigation';
 
 i18n.init(i18nextInitOptions, (err) => {
   if (err) {

@@ -1,20 +1,20 @@
 import { IconSearch } from '@tabler/icons-react';
-import { t, changeLanguage } from 'i18next';
+import { t } from 'i18next';
 import type { NextPage } from 'next';
-import { DiceCommandInput } from './_components/DiceCommandInput';
-import { ExpectResultDistributionChart } from './_components/ExpectResultDistributionChart';
-import { ExpectResultStats } from './_components/ExpectResultStats';
+import { Fragment } from 'react';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { InlineCommand } from '@/app/[locale]/(app)/expect/_components/InlineCommand';
+import { wrapPage } from '@/shared/i18n/page-layout';
 import {
   localeHelper,
   type MetadataGenerator,
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
-import { Fragment } from 'react';
-import { wrapPage } from '@/shared/i18n/page-layout';
+import { DiceCommandInput } from './_components/DiceCommandInput';
+import { ExpectResultDistributionChart } from './_components/ExpectResultDistributionChart';
+import { ExpectResultStats } from './_components/ExpectResultStats';
 
 const inlineCommandRegex = /`((?:[^`]|\\`)+)`/g;
 

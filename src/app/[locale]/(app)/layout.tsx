@@ -2,13 +2,13 @@
 
 import { usePathname } from 'next/navigation';
 import type { FC, ReactNode } from 'react';
+import { UpdateAnnouncement } from '@/shared/components/elements/UpdateAnnouncement';
 import { BottomNavigation } from '@/shared/components/Layout/BottomNavigation';
 import { Footer } from '@/shared/components/Layout/Footer';
 import { Header } from '@/shared/components/Layout/Header';
 import { SideNavigation } from '@/shared/components/Layout/SideNavigation';
-import { UpdateAnnouncement } from '@/shared/components/elements/UpdateAnnouncement';
-import { isNavPath } from '@/shared/lib/navigation';
 import { Toaster } from '@/shared/components/ui/toaster';
+import { isNavPath } from '@/shared/lib/navigation';
 
 type AppLayout = {
   children?: ReactNode;

@@ -40,7 +40,6 @@
   --animate-popup: popup 0.2s ease forwards;
 }
 
-
 @keyframes accordion-down {
   from {
     height: 0;

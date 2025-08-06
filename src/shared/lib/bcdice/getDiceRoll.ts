@@ -40,7 +40,7 @@ export const getDiceRollGenerator = (bcdiceApiEndpoint: string) => async (comman
     const result = parse(diceRollResultSchema, json);
 
     return result;
-  } catch (err) {
+  } catch (_err) {
     return {
       ok: false,
     } as const;

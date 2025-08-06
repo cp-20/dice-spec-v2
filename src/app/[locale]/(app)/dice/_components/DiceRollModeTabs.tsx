@@ -2,8 +2,8 @@
 
 import clsx from 'clsx';
 import { t } from 'i18next';
-import { useState, type FC, type ReactNode } from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/components/ui/tabs';
+import { type FC, type ReactNode, useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 
 export type DiceRollModeTabsProps = {
   simpleTabContent: ReactNode;

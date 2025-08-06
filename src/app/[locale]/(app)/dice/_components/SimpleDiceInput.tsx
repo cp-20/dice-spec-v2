@@ -2,10 +2,10 @@
 
 import { IconMinus, IconPlus } from '@tabler/icons-react';
 import { t } from 'i18next';
-import { useCallback, type FC } from 'react';
+import { type FC, useCallback } from 'react';
+import { Button } from '@/shared/components/ui/button';
 import type { AvailableDice } from './hooks/useSimpleDiceInput';
 import { useSimpleDiceInput } from './hooks/useSimpleDiceInput';
-import { Button } from '@/shared/components/ui/button';
 
 export const SimpleDiceInput: FC = () => {
   const { simpleDices, resetDice, rollDice } = useSimpleDiceInput();

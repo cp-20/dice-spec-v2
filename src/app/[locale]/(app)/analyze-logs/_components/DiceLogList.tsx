@@ -2,10 +2,10 @@
 
 import { t } from 'i18next';
 import type { ComponentProps, FC } from 'react';
+import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { DiceLog } from './DiceLog';
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
-import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 
 export const DiceLogList: FC<ComponentProps<'div'>> = ({ ...props }) => {
   const { character } = useCharacterSelect();

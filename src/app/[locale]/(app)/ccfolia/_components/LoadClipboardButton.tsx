@@ -3,11 +3,11 @@
 import { IconCheck, IconClipboard } from '@tabler/icons-react';
 import clsx from 'clsx';
 import { t } from 'i18next';
-import { useCallback, type FC, useState } from 'react';
+import { type FC, useCallback, useState } from 'react';
 import * as v from 'valibot';
-import { InputFormSchema, useInputForm } from './hooks/useInputForm';
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { InputFormSchema, useInputForm } from './hooks/useInputForm';
 
 export const InputFormValueSchema = v.object({
   ...InputFormSchema.entries,
@@ -55,7 +55,7 @@ export const LoadClipboardButton: FC = () => {
         setDone(false);
         clearTimeout(timeout);
       };
-    } catch (err) {
+    } catch (_err) {
       toast({
         title: t('ccfolia:load-clipboard.error'),
         description: t('ccfolia:load-clipboard.error-description'),

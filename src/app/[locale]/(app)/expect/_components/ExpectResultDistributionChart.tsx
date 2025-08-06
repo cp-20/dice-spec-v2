@@ -5,8 +5,8 @@ import merge from 'deepmerge';
 import dynamic from 'next/dynamic';
 import type { FC } from 'react';
 import { useEffect } from 'react';
-import { useDiceExpecterResult } from './hooks/useDiceExpecter';
 import { commonChartOption } from '@/shared/lib/commonChartOption';
+import { useDiceExpecterResult } from './hooks/useDiceExpecter';
 
 const Line = dynamic(async () => (await import('react-chartjs-2')).Line, {
   ssr: false,

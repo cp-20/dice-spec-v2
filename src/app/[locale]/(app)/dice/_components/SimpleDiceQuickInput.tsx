@@ -1,9 +1,9 @@
 'use client';
 
-import { useCallback, type FC } from 'react';
+import { type FC, useCallback } from 'react';
+import { Button } from '@/shared/components/ui/button';
 import type { SimpleDices } from './hooks/useSimpleDiceInput';
 import { formatSimpleDices, useSimpleDiceRoll } from './hooks/useSimpleDiceRoll';
-import { Button } from '@/shared/components/ui/button';
 
 export const SimpleDiceQuickInput: FC = () => {
   return (

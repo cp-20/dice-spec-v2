@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import type { AvailableDice, SimpleDices } from './useSimpleDiceInput';
 import { useSimpleDiceOutput } from './useSimpleDiceOutput';
-import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 export const useSimpleDiceRollCore = () => {
   const simpleDiceRoll = useCallback((dices: Partial<SimpleDices>) => {

@@ -2,10 +2,10 @@ import { IconCheck, IconHash, IconUserCircle } from '@tabler/icons-react';
 import clsx from 'clsx';
 import { t } from 'i18next';
 import type { FC } from 'react';
-import type { InputFormSchemaType } from './hooks/useInputForm';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { checkIsDarkColor } from '@/shared/lib/isDarkColor';
+import type { InputFormSchemaType } from './hooks/useInputForm';
 
 type HexColorString = InputFormSchemaType['color'];
 

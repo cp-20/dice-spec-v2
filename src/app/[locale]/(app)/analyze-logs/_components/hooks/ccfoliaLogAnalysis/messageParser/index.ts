@@ -1,7 +1,7 @@
 import type { System } from '../';
-import { emokloreParser, emokloreSystemStats } from './emoklore';
 import { CoC6thParser, CoC6thSystemStats } from './cthulhu6th';
 import { CoC7thParser, CoC7thSystemStats } from './cthulhu7th';
+import { emokloreParser, emokloreSystemStats } from './emoklore';
 import { shinobigamiParser, shinobigamiSystemStats } from './shinobigami';
 
 export type MessageParser = (message: string) => MessageParserResult | null;

@@ -1,12 +1,9 @@
 import { IconBrandDiscord, IconBrandX, IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
-import { useState, type ComponentProps, type FC } from 'react';
+import { type ComponentProps, type FC, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
-import { appVersion } from '@/shared/lib/const';
-import TitleLogoJP from '/public/title-logo.svg';
-import TitleLogoEN from '/public/title-logo-en.svg';
 import {
   Dialog,
   DialogContent,
@@ -20,7 +17,10 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { appVersion } from '@/shared/lib/const';
 import { sendFeedback } from '@/shared/lib/webhook';
+import TitleLogoJP from '/public/title-logo.svg';
+import TitleLogoEN from '/public/title-logo-en.svg';
 
 export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) => {
   const TitleLogo = t('lang') === 'en' ? TitleLogoEN : TitleLogoJP;
@@ -42,7 +42,7 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
         description: t('common:header.feedback.submitted-description'),
         variant: 'default',
       });
-    } catch (err) {
+    } catch (_err) {
       toast({
         title: t('common:header.feedback.error'),
         variant: 'destructive',

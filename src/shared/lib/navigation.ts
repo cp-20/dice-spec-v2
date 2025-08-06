@@ -1,4 +1,4 @@
-import { IconSearch, IconDice5, IconTimeline, IconFileExport } from '@tabler/icons-react';
+import { IconDice5, IconFileExport, IconSearch, IconTimeline } from '@tabler/icons-react';
 
 export const navLinks = [
   { href: '/expect', icon: IconSearch },
