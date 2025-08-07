@@ -18,6 +18,7 @@ describe('summarizeResults', () => {
       successRate: 60,
       average: 38,
       diceRollCount: 5,
+      diceCount: 5,
       deviationScore: ((stats.average - 38) * 10) / Math.sqrt(stats.variance / 5) + 50,
     });
   });
