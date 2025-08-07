@@ -280,4 +280,56 @@ describe('diceExpecter', () => {
       message: expect.any(String),
     });
   });
+
+  test('2bd6', () => {
+    expect(diceExpecter('2bd6')).toEqual({
+      success: true,
+      withTarget: false,
+      mean: expect.closeTo(161 / 36, 1),
+      variance: expect.closeTo(791 / 36 - (161 / 36) ** 2, 1),
+      SD: expect.closeTo(Math.sqrt(791 / 36 - (161 / 36) ** 2), 1),
+      range: {
+        min: 1,
+        max: 6,
+      },
+      CI: {
+        min: expect.closeTo(1.1, 1),
+        max: expect.closeTo(6.0, 1),
+      },
+      distribution: {
+        1: expect.closeTo(1 / 36, 3),
+        2: expect.closeTo(3 / 36, 3),
+        3: expect.closeTo(5 / 36, 3),
+        4: expect.closeTo(7 / 36, 3),
+        5: expect.closeTo(9 / 36, 3),
+        6: expect.closeTo(11 / 36, 3),
+      },
+    });
+  });
+
+  test('2pd6', () => {
+    expect(diceExpecter('2pd6')).toEqual({
+      success: true,
+      withTarget: false,
+      mean: expect.closeTo(91 / 36, 1),
+      variance: expect.closeTo(791 / 36 - (161 / 36) ** 2, 1),
+      SD: expect.closeTo(Math.sqrt(791 / 36 - (161 / 36) ** 2), 1),
+      range: {
+        min: 1,
+        max: 6,
+      },
+      CI: {
+        min: expect.closeTo(1.0, 1),
+        max: expect.closeTo(5.9, 1),
+      },
+      distribution: {
+        1: expect.closeTo(11 / 36, 3),
+        2: expect.closeTo(9 / 36, 3),
+        3: expect.closeTo(7 / 36, 3),
+        4: expect.closeTo(5 / 36, 3),
+        5: expect.closeTo(3 / 36, 3),
+        6: expect.closeTo(1 / 36, 3),
+      },
+    });
+  });
 });

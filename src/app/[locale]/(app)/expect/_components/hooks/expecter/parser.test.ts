@@ -22,6 +22,7 @@ describe('parseDiceCommand', () => {
   test('ダイスをパースできる', () => {
     expect(parseDiceCommand('1d6')).toEqual({
       type: 'dice',
+      kind: 'normal',
       num: 1,
       faces: 6,
     });
@@ -30,6 +31,7 @@ describe('parseDiceCommand', () => {
   test('Dが大文字のダイスをパースできる', () => {
     expect(parseDiceCommand('1D6')).toEqual({
       type: 'dice',
+      kind: 'normal',
       num: 1,
       faces: 6,
     });
@@ -86,7 +88,7 @@ describe('parseDiceCommand', () => {
       type: 'operation',
       operator: '+',
       left: { type: 'number', value: 1 },
-      right: { type: 'dice', num: 2, faces: 6 },
+      right: { type: 'dice', kind: 'normal', num: 2, faces: 6 },
     });
   });
 
@@ -101,11 +103,11 @@ describe('parseDiceCommand', () => {
           type: 'operation',
           operator: '+',
           left: { type: 'number', value: 1 },
-          right: { type: 'dice', num: 2, faces: 3 },
+          right: { type: 'dice', kind: 'normal', num: 2, faces: 3 },
         },
         right: { type: 'number', value: 2 },
       },
-      right: { type: 'dice', num: 10, faces: 6 },
+      right: { type: 'dice', kind: 'normal', num: 10, faces: 6 },
     });
   });
 
@@ -116,7 +118,7 @@ describe('parseDiceCommand', () => {
         type: 'operation',
         operator: '+',
         left: { type: 'number', value: 1 },
-        right: { type: 'dice', num: 2, faces: 6 },
+        right: { type: 'dice', kind: 'normal', num: 2, faces: 6 },
       },
       target: 10,
       sign: '>=',
