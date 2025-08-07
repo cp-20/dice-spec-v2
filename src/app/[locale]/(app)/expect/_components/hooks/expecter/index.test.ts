@@ -16,8 +16,8 @@ describe('diceExpecter', () => {
         max: 6,
       },
       CI: {
-        min: expect.closeTo(1.1, 1),
-        max: expect.closeTo(5.9, 1),
+        min: 1,
+        max: 6,
       },
       distribution: {
         1: expect.closeTo(1 / 6, 3),
@@ -41,8 +41,8 @@ describe('diceExpecter', () => {
         max: 9,
       },
       CI: {
-        min: expect.closeTo(-0.9, 1),
-        max: expect.closeTo(8.9, 1),
+        min: -1,
+        max: 9,
       },
       distribution: {
         [-1]: expect.closeTo(1 / 36, 3),
@@ -71,8 +71,8 @@ describe('diceExpecter', () => {
         max: 77,
       },
       CI: {
-        min: expect.closeTo(7, 1),
-        max: expect.closeTo(76.9, 1),
+        min: 7,
+        max: 77,
       },
       distribution: {
         7: expect.closeTo(1 / 36, 3),
@@ -126,8 +126,8 @@ describe('diceExpecter', () => {
         max: 5,
       },
       CI: {
-        min: expect.closeTo(0.1, 1),
-        max: expect.closeTo(4.9, 1),
+        min: 0,
+        max: 5,
       },
       distribution: {
         0: expect.closeTo(1 / 6, 3),
@@ -151,8 +151,8 @@ describe('diceExpecter', () => {
         max: 5,
       },
       CI: {
-        min: expect.closeTo(-4.9, 1),
-        max: expect.closeTo(4.9, 1),
+        min: -5,
+        max: 5,
       },
       distribution: {
         '-5': expect.closeTo(1 / 36, 3),
@@ -181,8 +181,8 @@ describe('diceExpecter', () => {
         max: 33,
       },
       CI: {
-        min: expect.closeTo(13, 1),
-        max: expect.closeTo(28, 1),
+        min: 13,
+        max: 28,
       },
       chance: expect.closeTo(0.941, 3),
       distribution: expect.anything(),
@@ -204,8 +204,8 @@ describe('diceExpecter', () => {
         max: 33,
       },
       CI: {
-        min: expect.closeTo(13, 1),
-        max: expect.closeTo(28, 1),
+        min: 13,
+        max: 28,
       },
       chance: expect.closeTo(1 - 0.941, 3),
       distribution: expect.anything(),
@@ -227,8 +227,8 @@ describe('diceExpecter', () => {
         max: 6,
       },
       CI: {
-        min: expect.closeTo(1.1, 1),
-        max: expect.closeTo(5.9, 1),
+        min: 1,
+        max: 6,
       },
       chance: expect.closeTo(0, 3),
       distribution: {
@@ -293,8 +293,8 @@ describe('diceExpecter', () => {
         max: 6,
       },
       CI: {
-        min: expect.closeTo(1.1, 1),
-        max: expect.closeTo(6.0, 1),
+        min: 1,
+        max: 6,
       },
       distribution: {
         1: expect.closeTo(1 / 36, 3),
@@ -319,8 +319,8 @@ describe('diceExpecter', () => {
         max: 6,
       },
       CI: {
-        min: expect.closeTo(1.0, 1),
-        max: expect.closeTo(5.9, 1),
+        min: 1,
+        max: 6,
       },
       distribution: {
         1: expect.closeTo(11 / 36, 3),
