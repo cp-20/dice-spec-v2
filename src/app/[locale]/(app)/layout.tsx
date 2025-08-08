@@ -2,7 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 import type { FC, ReactNode } from 'react';
-import { UpdateAnnouncement } from '@/shared/components/elements/UpdateAnnouncement';
 import { BottomNavigation } from '@/shared/components/Layout/BottomNavigation';
 import { Footer } from '@/shared/components/Layout/Footer';
 import { Header } from '@/shared/components/Layout/Header';
@@ -23,7 +22,6 @@ const AppLayout: FC<AppLayout> = ({ children }) => {
 
   return (
     <div className="flex h-full flex-col">
-      <UpdateAnnouncement />
       <Header />
       <div className="flex min-h-0 flex-1">
         <SideNavigation
