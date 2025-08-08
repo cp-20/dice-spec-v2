@@ -1,0 +1,225 @@
+import { BlogImage } from '../../_components/BlogImage';
+import { BlogLink } from '../../_components/BlogLink';
+import { PresentationalExpectResultDistributionChart } from '@/app/[locale]/(app)/expect/_components/ExpectResultDistributionChart';
+import { diceExpecter } from '@/app/[locale]/(app)/expect/_components/hooks/expecter';
+import { WithCaption } from '@/mdx-components';
+
+# TRPGプレイヤーのための確率統計 <br />【第3回：対抗判定を徹底調査！】
+
+前回: [【第2回：2d6と1d12は何が違う？】](/blogs/stats-for-trpg/2-basic-probability)
+
+第3回は「実戦編」のスタート！今回は色んなシステムで絶対に遭遇する「対抗判定」について、確率の観点から解析していくよ！
+
+いろんなシステムで採用されてるから、幅広いTRPGプレイヤーに役立つはず！
+
+<BlogImage src="niko.png" alt="" width={256} height={256} />
+
+## 対抗判定って？
+
+2人以上がダイスを振って、お互いに競い合う判定のことを **対抗判定** と呼ぶことが多いの！
+
+結構いろんなシステムで使われてて、例えば新クトゥルフ神話TRPGのだとお互いの技能値を使った対抗ロールが採用されてるね。他にも戦闘系のシステムだと攻撃に合わせて回避をするのは定番だよね！
+
+でも対抗判定って単純な判定よりも計算が複雑で分かりづらいよね、、、
+
+<BlogImage src="awoo.png" alt="" width={256} height={256} />
+
+でも大丈夫！　いくつかパターン分けしながら、一緒に見ていこう！！
+
+## パターン1：成功/失敗で勝負 (シノビガミなど)
+
+これが一番単純なパターン。お互いのダイスを振って、成功した方が勝ちで、失敗した方が負けというシンプルなルール。シノビガミとかはこのルールだね！　引き分けの時の処理はシステムによっていろいろだから、ここでは勝ち、負け、引き分けの3パターンの確率を考えて行こう！
+
+例えばAさんとBさんがお互いに2d6を振って、Aさんは成功値が8、Bさんは成功値が7という状況を考えてみよう♪　このときAさんが成功する確率は **約41.7%**、Bさんが成功する確率は **約58.3%** だね。(詳しくは [前回](/blogs/stats-for-trpg/2-basic-probability) を見てね！)
+
+このときAさんが成功する or しない、Bさんが成功する or しない、で表を書いてみると、、、？
+
+<div className="grid grid-cols-3 my-6">
+    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border"></div>
+    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aが成功</div>
+    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aが失敗</div>
+    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bが成功</div>
+    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約24.3%</div>
+    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約34.0%</div>
+    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bが失敗</div>
+    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約17.4%</div>
+    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約24.3%</div>
+</div>
+
+この計算をする上で重要なのが **独立** っていう概念だよ！
+
+この対抗判定で、AさんとBさんのダイスロールってお互いに影響がないよね？　というのはAさんが成功したらBさんもつられて成功しやすくなる、わけじゃないよね？　こういう状況を独立と呼ぶの！
+
+お互いに独立な状況だと確率の計算はとってもシンプル！
+
+<div className="text-center my-4">**2人が成功する確率 = Aさんが成功する確率 × Bさんが成功する確率**</div>
+
+単純に掛け算で計算できるの！　とっても便利！
+
+<BlogImage src="smile.png" alt="" width={256} height={256} />
+
+その上で、このときの対抗の結果の確率はこんな感じ！
+
+- Aさんが勝利する確率：**約17.4%**
+- Bさんが勝利する確率：**約34.0%**
+- 引き分けになる確率：**約48.6%**
+
+つまりこの場合は半分ぐらいの確率で引き分けになるから、引き分けの時の処理がかなり重要になるね！
+
+もっと広い場合を見ても、このパターンは **引き分けになる確率が高くなる** 傾向にあるの！　もし引き分けが負けと判定される状況だと、勝てる確率がかなり低くなるから注意！
+
+## パターン2：ダイスの大小で勝負 (アリアンロッド2Eなど)
+
+2d6や1d20などのダイスを振って、出た目の大小で勝負するパターン。アリアンロッド2Eとかで見るね！　このルールも引き分けのときの処理がシステムとかで変わるから、さっきと同じ3パターンで考えていこう！
+
+今回はAさんが2d6+1、Bさんが2d6+2を振って対抗するという状況を考えてみるね！
+
+例えばAさんが勝つ確率は 2d6+1 > 2d6+2 という条件を満たす確率を求めることになるよね。でもこれって実質 2d6-2d6 > 1 という条件に変換できるんだ！　こうすると [前回](/blogs/stats-for-trpg/2-basic-probability) みたいな確率分布を1つ考えると良くなるから、計算が楽になるよ！
+
+でもここで注意して欲しいのは、**2d6-2d6 は 0 ではない**ってこと！　単純に引き算すると0にしたくなっちゃうけど、2d6-2d6 は実際 -10 から +10 の値を取り得る、れっきとした確率分布なんだ！
+
+確率分布のグラフを見てみるとこんな感じ！　0を中心としてるのは確かだけど、色んな値を取り得ることが分かるね！
+
+<WithCaption caption="2d6-2d6の分布"><PresentationalExpectResultDistributionChart result={diceExpecter('2d6-2d6')} /></WithCaption>
+
+実際にこの値を計算してみると、**約33.6%** の確率でAさんが勝つことが分かるよ！　逆にBさんが勝つ確率は **約55.6%** で、引き分けの確率は **約10.8%** だね！
+
+こうしてみてみるとパターン1に比べて引き分けの確率が低いことが分かるね！　純粋にダイス運の強さで決まることが多いってこと！
+
+<BlogImage src="mouth.png" alt="" width={256} height={256} />
+
+## パターン3：クラス分けして勝負 (新クトゥルフ神話TRPGなど)
+
+新クトゥルフ神話TRPGは成功に段階が設けられてるよね！　そういう感じでいくつかのクラスに分けて勝負するパターンだね！
+
+このパターンは実はパターン1と似てて、表がもう少し複雑になったパターンって感じ！　実際の例で計算して確かめてみよう♪
+
+例えば新クトゥルフ神話TRPGでAさんが技能値80、Bさんが技能値60の状況を考えてみよう！　あとここではクリティカルは1だけってことにするね！
+
+<div className="grid grid-cols-6 my-6">
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border"></div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aがクリティカル(1%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aがイクストリーム(15%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aがハード成功(24%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aがレギュラー成功(40%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aが失敗(20%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bがクリティカル(1%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">0.01%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.15%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.24%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.40%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.20%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bがイクストリーム(11%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.11%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">1.65%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">2.64%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">4.40%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">2.20%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bがハード成功(18%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.18%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">2.70%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">4.32%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">7.20%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">3.60%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bがレギュラー成功(30%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.30%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">4.50%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">7.20%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">12.00%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">6.00%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bが失敗(40%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.40%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">6.00%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">9.60%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">16.00%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">8.00%</div>
+</div>
+
+オレンジ色の背景がAが勝ったところ、青色の背景のところがBが勝ったところ、何も色がついてないのが引き分けのところだから、それぞれ足し合わせると、、、？
+
+- Aさんが勝利する確率：**46.99%**
+- Bさんが勝利する確率：**27.03%**
+- 引き分けになる確率：**25.98%**
+
+だいたいパターン1とパターン2の中間ぐらいの引き分け率になったね！　それもそのはず、パターン2は実はこのクラスをめちゃめちゃ細かくしたバージョンとも言えるからね！　クラスを細かく分ければ分けるほど、AとBで被る確率がどんどんちっちゃくなるってこと！
+
+<BlogImage src="hirameki.png" alt="" width={256} height={256} />
+
+## パターン4：成功数で勝負 (エモクロアTRPGなど)
+
+ダイスの値を元に決めるんじゃなくて、特定の値を超えたダイスの数で勝負するパターン。エモクロアTRPGとかでよく見るね！　このパターンは成功数を数えるから、成功数が多い方が勝ちっていうルールだよ！
+
+これも結局は表を書けばOK！　特にエモクロアTRPGの場合は [判定計算ツール](https://uminekovip.sakura.ne.jp/emoklore/) があるから、それを使うのがオススメ！
+
+今回は例としてエモクロアTRPGを考えてみよう♪　Aさんはダイス2個で判定値3、Bさんはダイス1個で判定値6という設定にするね！
+
+<div className="grid grid-cols-8 my-6">
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border"></div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=4 (1%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=3 (4%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=2 (16%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=1 (26%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=0 (40%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=-1 (12%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=-2 (1%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">B=2 (10%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.1%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.4%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">1.6%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">2.6%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">4.0%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">1.2%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.1%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">B=1 (50%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.5%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">2.0%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">8.0%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">13.0%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">20.0%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">6.0%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.5%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">B=0 (30%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.3%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">1.2%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">4.8%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">7.8%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">12.0%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">3.6%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.3%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">B=-1 (10%)</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.1%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.4%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">1.6%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">2.6%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">4.0%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">1.2%</div>
+    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.1%</div>
+</div>
+
+オレンジ色の背景がAが勝ったところ、青色の背景のところがBが勝ったところ、何も色がついてないのが引き分けのところだから、それぞれ足し合わせると、、、？
+
+- Aさんが勝利する確率：**33.8%**
+- Bさんが勝利する確率：**38.4%**
+- 引き分けになる確率：**27.8%**
+
+実はBさんの方が勝利する確率が高いんだね！　成功数が重要だからダイスの数の方が重要そうだけど、判定値が低いと全然不利になっちゃうってこと！
+
+<BlogImage src="amazed.png" alt="" width={256} height={256} />
+
+なんとなくの感覚と、実際の確率がズレることがあるから、気になったら自分でも計算してみると面白いね！
+
+## 次回予告
+
+第4回は **「実戦編その2：補正値が与える影響」** だよ！
+
+- 新クトゥルフ神話TRPGのボーナスダイスって強いの？
+- 2d6の補正値の影響はどれぐらい？
+- ダイスと固定値どっちが強い？
+
+いろんな場面で出てくる補正値について、実際の確率にどのように影響するのかを見ていくよ！
+
+良きTRPGライフを！✨
+
+<BlogImage src="smile.png" alt="" width={256} height={256} />
+
+<BlogLink category="stats-for-trpg" slug="4-practical-calc-second" />

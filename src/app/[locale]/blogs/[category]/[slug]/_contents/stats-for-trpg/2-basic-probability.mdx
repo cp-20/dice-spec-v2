@@ -1,0 +1,130 @@
+import { BlogImage } from '../../_components/BlogImage';
+import { BlogLink } from '../../_components/BlogLink';
+import { DiceD12, DiceD6 } from '@/shared/components/elements/Dice';
+import { PresentationalExpectResultDistributionChart } from '@/app/[locale]/(app)/expect/_components/ExpectResultDistributionChart';
+import { diceExpecter } from '@/app/[locale]/(app)/expect/_components/hooks/expecter';
+import { WithCaption } from '@/mdx-components';
+
+# TRPGプレイヤーのための確率統計 <br />【第2回：2d6と1d12は何が違う？】
+
+前回: [【第1回：なぜ今回もファンブル！？】](/blogs/stats-for-trpg/1-introduction)
+
+第2回は「ダイスの基本確率」について解説していくよ！　前回の導入編、読んでくれた人ありがとう✨
+
+今回は実際にダイスを使って、確率の基本を体感していこう！
+
+<BlogImage src="niko.png" alt="" width={256} height={256} />
+
+## まずは基本から ー ダイス1個
+
+### 1d100の場合 (クトゥルフ神話TRPGなど)
+
+さっそくクイズ！　1d100 で 30以下の値が出る確率は？
+
+<BlogImage src="hatena.png" alt="" width={256} height={256} />
+
+**答え：30%**
+
+理由は簡単。1～30までが出れば成功、31～100までが出れば失敗で、それぞれ1%の確率で出るから、成功する確率は30%になるね！
+
+めちゃめちゃ単純だけど、これが基本的な確率の考え方だよ！　ここで覚えておいてほしいのは、ある事柄が起きる確率は次の式で求められるってコト！
+
+<div className="text-center my-4">**ある事柄が起きる確率 = その事柄が起きる通り数 / 全部の通り数**</div>
+
+この場合に当てはめてみると、全部の通り数は100通り、30以下の値が出るのは30通りだから、30/100 = 0.3 = 30% になるね！　どんな場合でもこの方法で確率を求められるから、ぜひ覚えておいてね！
+
+## ここからが本題！複数ダイスの不思議
+
+さて、ここで問題。
+
+**「2d6」と「1d12」、どちらも最大値は12で同じ。でも何かが違う気がしない？**
+
+<BlogImage src="chill.png" alt="" width={256} height={256} />
+
+### 期待値を考えてみよう♪
+
+ダイスの出方を測る分かりやすい指標の1つに **期待値** というものがあるよ！　これは平均的にどのくらいの値が出るかを示すものなの！
+
+例えば1d12を考えてみるね。
+
+<div className="grid place-items-center my-6 grid-cols-6 md:grid-cols-12">{new Array(12).fill(0).map((_, i) => <DiceD12 key={i} count={i + 1} />)}</div>
+
+1d12は1～12が同じ確率で出るから、期待値は 1+2+3+...+12 を12で割った値、つまり **6.5** になるね！
+
+同じように2d6についても考えてみよう！　2d6は2つのダイスを振るから出る目の組み合わせは下のような36通りが考えられるね。
+
+<div className="flex flex-col gap-2 my-6">
+  {new Array(6).fill(0).map((_, i) => (
+    <div key={i} className="grid place-items-center grid-cols-3 md:grid-cols-6 gap-1">
+      {new Array(6).fill(0).map((_, j) => (
+        <div key={`${i}-${j}`} className="flex items-center justify-center">
+          <DiceD6 count={i + 1} className="text-orange-400" />
+          <DiceD6 count={j + 1} className="text-blue-400 -ml-2" />
+        </div>
+      ))}
+    </div>
+  ))}
+</div>
+
+注意して欲しいのは 1-2 の組み合わせと 2-1 の組み合わせを区別していること！！！パッと見同じなんだけど、それぞれのダイスは色分けされてて見分けがつくと考えれば、全く別の出目として扱うことも納得できるかな？
+
+これを全部足して36で割ると...期待値は **7** になるよ！
+
+つまり **1d12よりも2d6の方が平均的に高い値が出やすい** ってことだね！
+
+<BlogImage src="amazed.png" alt="" width={256} height={256} />
+
+### 出目の分布を見てみよう♪
+
+逆に期待値が同じなら実質的に同じダイスなのかな...？　と思っちゃうかもだけど、実はそうじゃないんだ！
+
+例えば「2d6」と「1d13」はどっちも期待値 7 だけど、これって同じようなダイスの出方をするっていう意味じゃないの！　こういうときに役立つのが **確率分布** という考え方！
+
+折れ線グラフみたいなものを思い浮かべてもらって、横軸にダイスの出目、縦軸にその出目がどれぐらいの確率で出るかでグラフを描いたものが確率分布のグラフ！　これを見るとダイスの特性が一目で分かっちゃう！
+
+<WithCaption caption="2d6の分布"><PresentationalExpectResultDistributionChart result={diceExpecter('2d6')} /></WithCaption>
+
+<WithCaption caption="1d13の分布"><PresentationalExpectResultDistributionChart result={diceExpecter('1d13')} /></WithCaption>
+
+見ただけで違いが分かっちゃうね！！　どっちも確かに7を中心に分布してるけど、2d6は7の周りが高い (=出やすい) のに対して、1d13は全体がぺったんこ (=どの目も同じ確率) だね！
+
+<BlogImage src="niko.png" alt="" width={256} height={256} />
+
+## 実際の確率を計算してみよう！
+
+実際の確率をいくつか計算してみよーー！
+
+- 1d6で5以上が出る確率は？ ⇒ 2/6 ≅ **33.3%**
+- 2d6で10以上が出る確率は？ ⇒ 1/6 ≅ **16.7%**
+- 3d6で15以上が出る確率は？ ⇒ 20/216 ≅ **9.3%**
+- 4d6で20以上が出る確率は？ ⇒ 79/1296 ≅ **5.4%**
+- 5d6で25以上が出る確率は？ ⇒ 252/7776 ≅ **3.2%**
+- 10d6で50以上が出る確率は？ ⇒ 174746/60466176 ≅ **0.3%**
+
+ダイス1つ分の値は変わらないはずなのに、ダイスの数が増えるほど難しくなるのが分かるね、、、！　これは確率分布がどんどん中央によっていくからなんだ！
+
+試しに10d6の分布を見てみよう！
+
+<WithCaption caption="10d6の分布"><PresentationalExpectResultDistributionChart result={diceExpecter('10d6')} /></WithCaption>
+
+すっごい中央に寄ってる！　これなら50以上の確率が0.3%ぐらいなのも納得だね！
+
+<BlogImage src="hirameki.png" alt="" width={256} height={256} />
+
+もっといろんなダイスの確率が知りたいときはダイススペックの [ダイス予測](/expect) を使ってみてね！　例えば10d6で50以上になる確率が知りたいときは **10d6>=50** って入力すればOK！
+
+## 次回予告
+
+第3回は **「実戦編その1：対抗判定を徹底調査！」** だよ！
+
+- クトゥルフ神話TRPGの対抗判定の確率って？
+- シノビガミの対抗判定はどうなる？
+- エモクロアTRPGだとどう？
+
+みたいにいろんなシステムの対抗判定を確率の観点から解析していくよ！
+
+良きTRPGライフを！✨
+
+<BlogImage src="smile.png" alt="" width={256} height={256} />
+
+<BlogLink category="stats-for-trpg" slug="3-practical-calc-first" />
