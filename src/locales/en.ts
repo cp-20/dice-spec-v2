@@ -205,10 +205,6 @@ export const en = {
       'discord-button': 'Discord',
       'twitter-button': "Developer's Twitter",
     },
-    'update-announcement': {
-      label: 'DiceSpec have been updated to v2.',
-      v1: 'The original v1 can be accessed here.',
-    },
     expect: {
       title: 'Dice Expecter',
       description:

@@ -207,10 +207,6 @@ export const ja = {
       'discord-button': 'サポートDiscord',
       'twitter-button': '作者のついった',
     },
-    'update-announcement': {
-      label: 'ダイススペックはv2にアップデートされました。',
-      v1: 'もとのv1はここからアクセスできます。',
-    },
     expect: {
       title: 'ダイス予測',
       description: 'ダイスの期待値などを計算します。ダイスを振るときに、どういう結果が出るのかを予測できます。',
