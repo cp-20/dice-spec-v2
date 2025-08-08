@@ -17,7 +17,7 @@ const BlogTopPage = () => {
                 <IconChevronRight />
               </Link>
             </h2>
-            <p className="text-sm text-gray-500 mb-4">{category.description}</p>
+            <p className="text-sm text-slate-500 mb-4">{category.description}</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {category.articles.map((article) => (

@@ -20,9 +20,9 @@ export const BlogCard: FC<BlogCardProps> = ({ category, slug }) => {
       <div className="w-full aspect-[1200/630] relative">
         <Image src={`/assets/blog-images/og/${category}/${slug}.png`} alt={article.title ?? ''} fill />
       </div>
-      <div className="px-4 py-2 bg-gray-50 flex flex-col gap-1 flex-1">
-        <div className="text-gray-700 font-bold">{article.shortTitle}</div>
-        <div className="text-gray-400 text-xs">{article.description}</div>
+      <div className="px-4 py-2 bg-slate-50 flex flex-col gap-1 flex-1">
+        <div className="text-slate-700 font-bold">{article.shortTitle}</div>
+        <div className="text-slate-400 text-xs">{article.description}</div>
       </div>
     </Link>
   );

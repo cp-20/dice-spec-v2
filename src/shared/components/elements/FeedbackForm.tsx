@@ -38,7 +38,7 @@ export const FeedbackForm = () => {
     <form onSubmit={feedbackSubmitHandler}>
       <div>
         <div className="text-lg font-bold">{t('common:header.feedback.title')}</div>
-        <div className="text-sm text-gray-500 mt-1 mb-2">{t('common:header.feedback.description')}</div>
+        <div className="text-sm text-slate-500 mt-1 mb-2">{t('common:header.feedback.description')}</div>
       </div>
       <div className="grid gap-4 py-4">
         <div className="space-y-6">

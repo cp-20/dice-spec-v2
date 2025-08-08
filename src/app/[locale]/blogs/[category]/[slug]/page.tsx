@@ -75,22 +75,22 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       <div className="mb-8">
         <BlogBreadCrumb category={category} slug={slug} />
       </div>
-      <div className="relative w-full aspect-[1200/630] mb-8 border border-gray-50">
+      <div className="relative w-full aspect-[1200/630] mb-8 border border-slate-50">
         <Image src={`/assets/blog-images/og/${category}/${slug}.png`} alt="" fill objectFit="contain" />
       </div>
-      <div className="text-gray-500 flex flex-col gap-1 items-end mb-8">
+      <div className="text-slate-500 flex flex-col gap-1 items-end mb-8">
         <div>投稿日: {article.isPublished ? formatDate(article.publishedAt) : '未公開'}</div>
         <div>最終更新日: {article.isPublished ? formatDate(article.updatedAt) : '未公開'}</div>
       </div>
       <Post />
       <footer className="mt-8">
-        <div className="text-gray-500 text-sm">
+        <div className="text-slate-500 text-sm">
           ※本文中の挿絵には{' '}
-          <a href="https://twitter.com/sora_douhu" className="underline hover:text-gray-600">
+          <a href="https://twitter.com/sora_douhu" className="underline hover:text-slate-600">
             空どうふ (@sora_douhu)
           </a>{' '}
           さんの{' '}
-          <a href="https://seiga.nicovideo.jp/seiga/im11640678" className="underline hover:text-gray-600">
+          <a href="https://seiga.nicovideo.jp/seiga/im11640678" className="underline hover:text-slate-600">
             ピョコピョコしてる足立レイ立ち絵素材
           </a>{' '}
           を一部加工してお借りしています

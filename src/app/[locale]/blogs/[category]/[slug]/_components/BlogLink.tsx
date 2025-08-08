@@ -19,7 +19,7 @@ export const BlogLink: React.FC<Props> = ({ category, slug }) => {
       <div className="w-full aspect-[1200/630] relative">
         <Image src={`/assets/blog-images/og/${category}/${slug}.png`} alt={title ?? ''} fill />
       </div>
-      <div className="flex justify-end items-center px-4 py-2 bg-gray-50">
+      <div className="flex justify-end items-center px-4 py-2 bg-slate-50">
         <span className="text-blue-600 font-semibold group-hover:underline flex items-center gap-1">
           <span>次へ</span>
           <IconChevronRight className="size-5" />

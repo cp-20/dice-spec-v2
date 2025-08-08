@@ -16,7 +16,7 @@ const CategoryPage = async ({ params }: { params: Promise<Params> }) => {
         <CategoryBreadCrumb category={category} />
       </div>
       <h1 className="text-3xl font-bold mb-4">{currentCategory?.name}</h1>
-      <p className="text-gray-600 mb-6">{currentCategory?.description}</p>
+      <p className="text-slate-600 mb-6">{currentCategory?.description}</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {currentCategory?.articles.map((article) => (
           <BlogCard key={article.slug} category={category} slug={article.slug} />
