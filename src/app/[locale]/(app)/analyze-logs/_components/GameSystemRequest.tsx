@@ -1,25 +1,17 @@
 'use client';
 
-import { IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
-import { type FC, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/shared/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { sendGameSystemRequest } from '@/shared/lib/webhook';
 
-export const GameSystemRequest: FC = () => {
+export const useGameSystemRequestDialog = () => {
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [system, setSystem] = useState('');
   const [logFile, setLogFile] = useState<File | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -36,7 +28,7 @@ export const GameSystemRequest: FC = () => {
     e.preventDefault();
     try {
       await sendGameSystemRequest({ system, logFile });
-      setOpen(false);
+      setIsOpen(false);
       toast({
         title: t('analyze-logs:game-system-request:submitted'),
         description: t('analyze-logs:game-system-request:submitted-description'),
@@ -51,14 +43,8 @@ export const GameSystemRequest: FC = () => {
     }
   };
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" onClick={() => setOpen(true)} className="flex flex-wrap gap-2 w-full">
-          <IconMessageReply className="size-5 shrink-0" />
-          <span className="text-balance">{t('analyze-logs:game-system-request:label')}</span>
-        </Button>
-      </DialogTrigger>
+  const render = () => (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-2xl">
         <form onSubmit={submitHandler}>
           <DialogHeader>
@@ -98,4 +84,9 @@ export const GameSystemRequest: FC = () => {
       </DialogContent>
     </Dialog>
   );
+
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+
+  return { open, close, render };
 };
