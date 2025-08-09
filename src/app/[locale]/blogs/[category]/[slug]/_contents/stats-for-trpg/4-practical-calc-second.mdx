@@ -1,0 +1,75 @@
+import { BlogImage } from '../../_components/BlogImage';
+import { BlogLink } from '../../_components/BlogLink';
+import { PresentationalExpectResultDistributionChart } from '@/app/[locale]/(app)/expect/_components/ExpectResultDistributionChart';
+import { diceExpecter } from '@/app/[locale]/(app)/expect/_components/hooks/expecter';
+import { WithCaption } from '@/mdx-components';
+
+# TRPGプレイヤーのための確率統計 <br />【第4回：補正値が与える影響】
+
+前回: [【第3回：対抗判定を徹底調査！】](/blogs/stats-for-trpg/3-practical-calc-first)
+
+第3回に引き続き、第4回でも実践編をお届けするよ！　今回は対抗判定と並んでよく使われる **補正値** について、実際の確率にどのように影響するのかを見ていくよ！
+
+それじゃあ、楽しんで学んでいこう！
+
+<BlogImage src="niko.png" alt="" width={256} height={256} />
+
+## 補正値って？
+
+単にダイスを振るだけじゃなくて、出目に対して補正をすることを **補正値** って呼ぶの！　ダイスを2個振って良い方を採用する、みたいなルールもあるんだけど、ここではそれも補正値としてまとめて扱うね！
+
+補正値は有利な方向に働くこともあるし、不利な方向に働くこともあるよ！　例えば新クトゥルフ神話TRPGのボーナスダイスは有利な方向に働く補正値だし、2d6-2のような負の補正値は不利な方向に働く補正値だね！
+
+これもいくつかパターンに分けて見ていくよ！
+
+## パターン1: ダイスに固定値を足す (シノビガミなど)
+
+シノビガミのようにダイスの出目に固定値を足すパターンだね！　例えば2d6+2のようなダイスがこれに当たるよ！
+
+単に固定値を足すだけだから簡単、、、かと思いきや、意外に奥が深いんだよ～～
+
+例えば目標値が10のとき、単に2d6だと成功率は **約16.7%** しかないんだけど、2d6+1で **約27.8%** 、2d6+2で **約41.7%** まで上がるんだよ！　ざっくり+1で10%以上も成功率が上がる計算だね、すごい！
+
+これは2d6が2～12という狭い範囲の値しか取らないという影響が大きいの！　逆に1d100とかで+1の補正が入ったとしても成功率は1%しか上がらないからあんまり意味ないね。
+
+<BlogImage src="default.png" alt="" width={256} height={256} />
+
+## パターン2: ダイスを2個振って良い方 (新クトゥルフ神話TRPGなど)
+
+このパターンはちょっと計算が複雑になるよ、、、！
+
+具体的に新クトゥルフ神話TRPGの例で考えてみよう！　ボーナスダイスのルールをおさらいすると、1d100に加えてボーナスダイス (10の位のダイス) を振って、10の位の値のうち一番良い (小さい) のを採用するっていう感じだったね！
+
+この確率分布はこんな形になるよ～！
+
+<WithCaption caption="1d100+ボーナスダイス1個の分布"><PresentationalExpectResultDistributionChart result={diceExpecter('2pd10*10-10+1d10')} /></WithCaption>
+
+なかなか面白い形だね～！　でもちゃんと小さい値の方が出やすくなってることが分かるね！
+
+ちなみにボーナスダイス2個だとこんな感じ！　形はあんまり変わらないけど、縦軸の値の範囲が広がってるのが分かるかな？
+
+<WithCaption caption="1d100+ボーナスダイス2個の分布"><PresentationalExpectResultDistributionChart result={diceExpecter('3pd10*10-10+1d10')} /></WithCaption>
+
+これを技能判定の確率に直すと、**技能値が半分ぐらいより小さいときは成功率が大きく上がる**んだけど、逆に**技能値が高いときはそこまで成功率が上がらない**んだよね～。
+
+具体的な確率で言うと、ボーナスダイス1個のときは技能値30で成功率が半分を超えて、技能値56で成功率が80%を超えるよ！　ボーナスダイス2個だともっとすごくて、技能値21で成功率が半分を超えて、技能値42で成功率が80%を超えるね！
+
+もっと詳しい確率は @ysakasin さんの [ボーナスダイス/ペナルティダイス 成功確率早見表](https://gist.github.com/ysakasin/f3bc3335896a498b046c95508055923a) を見てみてね～～！
+
+<BlogImage src="chill.png" alt="" width={256} height={256} />
+
+## 次回予告
+
+第5回は **「セッション分析：10%を10回振ったら出る？」** だよ！
+
+- 10%で成功するなら10回振ったら1回は必ず成功する？
+- セッション中の出目って実は収束してない？
+- 運の良さ、悪さを測る指標は？
+
+単にTRPGだけじゃなくてガチャとかにも応用できる内容の予定！　お楽しみに～～！！
+
+良きTRPGライフを！✨
+
+<BlogImage src="smile.png" alt="" width={256} height={256} />
+
+<BlogLink category="stats-for-trpg" slug="5-analysis-over-session" />

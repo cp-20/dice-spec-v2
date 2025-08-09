@@ -1,0 +1,102 @@
+import { BlogImage } from '../../_components/BlogImage';
+import { BlogLink } from '../../_components/BlogLink';
+import { PresentationalExpectResultDistributionChart } from '@/app/[locale]/(app)/expect/_components/ExpectResultDistributionChart';
+import { diceExpecter } from '@/app/[locale]/(app)/expect/_components/hooks/expecter';
+import { WithCaption } from '@/mdx-components';
+import { FeedbackForm } from '@/shared/components/elements/FeedbackForm';
+import { GameSystemRequestForm } from '@/shared/components/elements/GameSystemRequestForm';
+
+# TRPGプレイヤーのための確率統計 <br />【第6回：ツールを使いこなせ！】
+
+前回: [【第5回：10%を10回振ったら出る？】](/blogs/stats-for-trpg/5-analysis-over-session)
+
+今回が最終回！　TRPGプレイヤー必見のツール **ダイススペック** の使い方を紹介するよ！
+
+<BlogImage src="niko.png" alt="" width={256} height={256} />
+
+## ダイススペックって？
+
+TRPGのちょっとしたツールを集めたサービスで、例えばダイスの期待値を求めることができちゃうんだよ！
+
+実はこのブログの連載でも使ってる↓みたいな分布！　これはダイススペックの機能の1つ **「ダイス予測」** のグラフを使ってるの！！
+
+<WithCaption caption="「ダイス予測」で見られるグラフの例"><PresentationalExpectResultDistributionChart result={diceExpecter('5d6')} /></WithCaption>
+
+こんな感じでグラフが見れるだけじゃなくて、他にもいろいろな機能があるよー！　ひとつずつ順に紹介してくね！
+
+## [「ダイス予測」](/expect)
+
+さっきも紹介したこの機能は単に分布を見るだけじゃなくて、ダイスの期待値とか、確率とかを計算してくれるすっごい便利な機能なの！
+
+単純に 3d6 みたいに入力すると、おなじみの分布が見れるよ！　さらにその期待値、とり得る値の範囲、信頼区間、分散 (標準偏差) も一緒に見れちゃう♪
+
+さらにさらに、3d6>=15 みたいに入力すると、3d6が15以上になる確率が分かっちゃう！　すごーい！
+
+<BlogImage src="foo.png" alt="" width={256} height={256} />
+
+簡単に使えるんだけど、実は結構複雑な入力もできちゃうの！
+
+- **3d6\*5** みたいな掛け算もできる！
+- **2d6+1d8** みたいに異なるダイスの足し算もおっけー！
+- **2d6-2d6** みたいな引き算ももちろんおっけー！
+- **3bd6** はダイスを3つ振って一番出目が大きいやつを選ぶって意味！
+- **3pd6** は逆に一番小さいやつを選ぶよ！
+
+もしもっと複雑な入力の計算をしたい！って場合は、開発者にフィードバックを送ると良いかも！
+
+<div className="p-4 border my-4 border-slate-400 rounded-md bg-slate-50"><FeedbackForm /></div>
+
+<BlogImage src="hirameki.png" alt="" width={256} height={256} />
+
+## [「ダイスロール」](/dice)
+
+計算とかじゃなくて、実際にダイスを振れるのがコレ！　簡単にいろんなダイスを振れちゃうの♪
+
+「シンプル」モードと「アドバンスド」モードがあるから、それぞれ紹介してくね！
+
+### シンプルモード ー 簡単にダイスを振れる！
+
+1d6とか、2d6とか、1d10とか、1d100とかのよく使うダイスを簡単に振れちゃうモード！　演出がカワイイからつい何度でも振りたくなっちゃう～～！！
+
+<BlogImage src="diceroll-simple-screenshot.png" alt="" width={736} height={495} border />
+
+### アドバンスドモード ー いろんなシステムのダイスを振れる！
+
+**BCDice** っていうココフォリアでも使われてるダイスロールエンジンを使ってるから、普段のセッションと同じ感覚でダイスを振れちゃう！　わざわざダイスを振るためにココフォリアとかを開きたくないよ～って人にオススメ！
+
+<BlogImage src="diceroll-advanced-screenshot.png" alt="" width={736} height={495} border />
+
+<BlogImage src="smile.png" alt="" width={256} height={256} />
+
+## [「ログ解析」](/analyze-logs)
+
+[第5回](/blogs/stats-for-trpg/5-analysis-over-session) で見たようなセッションを通した分析を、自動でやってくれるツール！！　ココフォリアのセッションログを投げるだけで勝手に分析してくれるから、めちゃめちゃ便利！！！　分析結果はぜひSNSにシェアしてね～～！
+
+<BlogImage src="log-analysis-screenshot.png" alt="" width={736} height={495} border />
+
+今はこの4つのシステムに対応してるよ！
+
+- **旧クトゥルフ神話TRPG (6版)**
+- **新クトゥルフ神話TRPG (7版)**
+- **エモクロアTRPG**
+- **シノビガミ**
+
+この他のシステムも対応して欲しい人は、↓のフォームからリクエストしてね！！
+
+<div className="p-4 border my-4 border-slate-400 rounded-md bg-slate-50"><GameSystemRequestForm /></div>
+
+<BlogImage src="niko.png" alt="" width={256} height={256} />
+
+## [「ココフォリア出力」](/ccfolia)
+
+ココフォリアの [Clipboard API](https://docs.ccfolia.com/developer-api/clipboard-api) を使って、ココフォリアの駒の出力ができる機能だよ～！　良かったら使ってみてね～！
+
+## さいごに
+
+みんなーーー！　おつかれさまーー！　最後まで読んでくれてありがと～～！！
+
+どう？確率統計についてちょっとだけ詳しくなれたんじゃない？　明日からのセッションに活かしてもらえたら嬉しいな♪
+
+それじゃあ、良きTRPGライフを！✨
+
+<BlogImage src="smile.png" alt="" width={256} height={256} />

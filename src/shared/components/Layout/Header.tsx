@@ -81,12 +81,12 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
                 <DialogDescription>{t('common:header.feedback.description')}</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="space-y-4">
-                  <div className="space-y-1">
+                <div className="space-y-6">
+                  <div className="flex flex-col gap-2">
                     <Label htmlFor="feedback-form-name">{t('common:header.feedback.name')}</Label>
                     <Input id="feedback-form-name" value={name} onChange={(e) => setName(e.currentTarget.value)} />
                   </div>
-                  <div className="space-y-1">
+                  <div className="flex flex-col gap-2">
                     <Label htmlFor="feedback-form-feedback">{t('common:header.feedback.feedback')}</Label>
                     <Textarea
                       id="feedback-form-feedback"

@@ -14,7 +14,7 @@ import type {
 const operatorsSet = new Set<Operator>(['+', '-', '*', '/']);
 const isOperator = (token: string): token is Operator => operatorsSet.has(token as Operator);
 
-const diceRegexp = /(\d+)d(\d*)/i;
+const diceRegexp = /(\d+)(d|bd|pd)(\d*)/i;
 const isDiceStr = (token: string): token is DiceStr => diceRegexp.test(token);
 
 const precedenceMap = new Map<Operator, number>([
@@ -51,12 +51,13 @@ const parseDiceExpression = (expressionStr: string): Expression => {
       }
       operators.push(token);
     } else if (isDiceStr(token)) {
-      const [num, rawFaces] = token.split(/d/i).map(Number);
-      const faces = rawFaces || 6;
+      // biome-ignore lint/style/noNonNullAssertion: already checked with isDiceStr()
+      const [_, num, kind, rawFaces] = token.match(diceRegexp)!;
       const expr: DiceExpression = {
         type: 'dice',
-        num,
-        faces,
+        kind: ({ d: 'normal', bd: 'bonus', pd: 'penalty' }[kind.toLowerCase()] ?? 'normal') as DiceExpression['kind'],
+        num: Number(num),
+        faces: Number(rawFaces) || 6,
       };
       stack.push(expr);
     } else {

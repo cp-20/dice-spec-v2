@@ -45,9 +45,18 @@ const calculateOperationDistribution = (expression: OperationExpression): Record
 };
 
 const calculateDiceDistribution = (expression: DiceExpression): Record<string, number> => {
-  const { num, faces } = expression;
+  const { num, kind, faces } = expression;
 
   // O(num^2 * faces)
+
+  if (kind === 'bonus' || kind === 'penalty') {
+    const result: Record<string, number> = {};
+    for (let i = 0; i < faces; i++) {
+      const key = kind === 'bonus' ? i + 1 : faces - i;
+      result[key] = ((i + 1) ** num - i ** num) / faces ** num;
+    }
+    return result;
+  }
 
   const dp = generate2DArray(num, faces * num, 0.0);
   for (let i = 0; i < faces; i++) {
@@ -65,11 +74,11 @@ const calculateDiceDistribution = (expression: DiceExpression): Record<string, n
     }
   }
 
-  return new Array(num * faces - num + 1)
-    .fill(0)
-    .map((_, i) => ({ key: i + num, value: dp[num - 1][i] }))
-    .reduce<Record<string, number>>((acc, cur) => {
-      acc[cur.key] = cur.value;
-      return acc;
-    }, {});
+  const result: Record<string, number> = {};
+  for (let i = 0; i < num * faces - num + 1; i++) {
+    const key = i + num;
+    const value = dp[num - 1][i];
+    result[key] = value;
+  }
+  return result;
 };

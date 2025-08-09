@@ -5,6 +5,7 @@ import merge from 'deepmerge';
 import dynamic from 'next/dynamic';
 import type { FC } from 'react';
 import { useEffect } from 'react';
+import type { DiceExpecterResult } from '@/app/[locale]/(app)/expect/_components/hooks/expecter';
 import { commonChartOption } from '@/shared/lib/commonChartOption';
 import { useDiceExpecterResult } from './hooks/useDiceExpecter';
 
@@ -14,8 +15,19 @@ const Line = dynamic(async () => (await import('react-chartjs-2')).Line, {
 
 export const ExpectResultDistributionChart: FC = () => {
   const { result } = useDiceExpecterResult();
-  // const { chartElement } = useChartElement();
 
+  if (!result) {
+    return null;
+  }
+
+  return <PresentationalExpectResultDistributionChart result={result} />;
+};
+
+type PresentationalProps = {
+  result: DiceExpecterResult;
+};
+
+export const PresentationalExpectResultDistributionChart: FC<PresentationalProps> = ({ result }) => {
   useEffect(() => {
     import('chart.js').then(
       ({ Chart, LineController, LineElement, CategoryScale, LinearScale, PointElement, Filler }) => {
@@ -24,7 +36,7 @@ export const ExpectResultDistributionChart: FC = () => {
     );
   }, []);
 
-  if (!result || !result?.success) {
+  if (!result?.success) {
     return null;
   }
 

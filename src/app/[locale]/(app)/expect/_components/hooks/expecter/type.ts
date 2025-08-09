@@ -11,6 +11,7 @@ export type Expression = DiceExpression | NumberExpression | OperationExpression
 
 export type DiceExpression = {
   type: 'dice';
+  kind: 'normal' | 'bonus' | 'penalty';
   num: number;
   faces: number;
 };
@@ -38,7 +39,7 @@ export type Parenthesis = '(' | ')';
 
 export type InequalitySign = '>=' | '<=';
 
-export type DiceStr = `${number}d${number}` | `${number}D${number}` | `${number}d` | `${number}D`;
+export type DiceStr = `${number}${'d' | 'D' | 'bd' | 'BD' | 'pd' | 'PD'}${number | ''}`;
 
 export type Token = Parenthesis | Operator | DiceStr;
 

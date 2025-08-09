@@ -73,7 +73,7 @@ export const useGameSystemRequestDialog = () => {
                   accept="text/html"
                   onChange={(e) => setLogFile(e.currentTarget.files?.[0] ?? null)}
                 />
-                <p className="text-xs text-gray-500">{t('analyze-logs:game-system-request:logs-description')}</p>
+                <p className="text-xs text-slate-500">{t('analyze-logs:game-system-request:logs-description')}</p>
               </div>
             </div>
           </div>
