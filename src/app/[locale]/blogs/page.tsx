@@ -20,9 +20,11 @@ const BlogTopPage = () => {
             <p className="text-sm text-slate-500 mb-4">{category.description}</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {category.articles.map((article) => (
-                <BlogCard key={article.slug} category={category.category} slug={article.slug} />
-              ))}
+              {category.articles
+                .filter((article) => article.isPublished)
+                .map((article) => (
+                  <BlogCard key={article.slug} category={category.category} slug={article.slug} />
+                ))}
             </div>
           </div>
         ))}

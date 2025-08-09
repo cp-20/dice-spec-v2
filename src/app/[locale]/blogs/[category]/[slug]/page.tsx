@@ -102,7 +102,9 @@ export default async function Page({ params }: { params: Promise<Params> }) {
 
 export const generateStaticParams = async () => {
   return contents.flatMap(({ category, articles }) =>
-    articles.map((article) => ({ category, slug: article.slug, locale: 'ja' })),
+    articles
+      .filter((article) => article.isPublished)
+      .map((article) => ({ category, slug: article.slug, locale: 'ja' })),
   );
 };
 
