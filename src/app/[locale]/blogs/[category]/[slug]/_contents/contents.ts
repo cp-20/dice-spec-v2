@@ -65,9 +65,9 @@ export const contents: CategoryContent[] = [
         shortTitle: '第4回：補正値が与える影響',
         description:
           '補正値ってどのくらい効くの？　2d6+修正の威力、CoCボーナスダイスの実力を数字で検証！　戦略的な判断ができるようになっちゃう！！',
-        isPublished: false,
-        // publishedAt: new Date('2025-08-13'),
-        // updatedAt: new Date('2025-08-13'),
+        isPublished: true,
+        publishedAt: new Date('2025-08-13'),
+        updatedAt: new Date('2025-08-13'),
       },
       {
         slug: '5-analysis-over-session',
