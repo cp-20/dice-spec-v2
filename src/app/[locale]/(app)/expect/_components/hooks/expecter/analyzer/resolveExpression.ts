@@ -1,3 +1,4 @@
+import { calculateDistribution } from '@/app/[locale]/(app)/expect/_components/hooks/expecter/analyzer/calculateDistribution';
 import type { DiceExpression, Expression, NumberExpression, OperationExpression, ResolvedExpression } from '../type';
 import { applyOperatorMap } from './utils';
 
@@ -78,7 +79,7 @@ const resolveOperationExpression = (expression: OperationExpression): ResolvedEx
 };
 
 const resolveDiceExpression = (expression: DiceExpression): ResolvedExpression => {
-  const { num, faces } = expression;
+  const { num, kind, faces } = expression;
 
   if (num <= 0 || faces <= 0) {
     throw new ResolverError('invalid dice roll');
@@ -86,6 +87,27 @@ const resolveDiceExpression = (expression: DiceExpression): ResolvedExpression =
 
   if (num * num * faces > 1e5) {
     throw new ResolverError('too many dice');
+  }
+
+  if (kind === 'bonus' || kind === 'penalty') {
+    const distribution = calculateDistribution(expression);
+    const mean = Object.entries(distribution).reduce((acc, [key, value]) => acc + Number(key) * value, 0);
+    const variance = Object.entries(distribution).reduce(
+      (acc, [key, value]) => acc + (Number(key) - mean) ** 2 * value,
+      0,
+    );
+    const range = {
+      min: 1,
+      max: faces,
+    };
+    return {
+      type: 'resolved',
+      result: {
+        mean,
+        variance,
+        range,
+      },
+    };
   }
 
   // ref: https://qiita.com/cp20/items/b475b6f6757be814846f#dice-integer%E3%81%AE%E6%89%B1%E3%81%84

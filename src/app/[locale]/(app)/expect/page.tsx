@@ -2,6 +2,7 @@ import { IconSearch } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
 import { Fragment } from 'react';
+import { BlogCallout } from '@/app/[locale]/(app)/_components/BlogCallout';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { InlineCommand } from '@/app/[locale]/(app)/expect/_components/InlineCommand';
@@ -65,6 +66,10 @@ const ExpectPage: NextPage = () => (
     <ExpectResultStats />
 
     <ExpectResultDistributionChart />
+
+    <div className="my-16">
+      <BlogCallout />
+    </div>
   </div>
 );
 

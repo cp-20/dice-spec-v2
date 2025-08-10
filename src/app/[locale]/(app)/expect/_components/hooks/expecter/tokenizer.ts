@@ -1,6 +1,6 @@
 import type { Token } from './type';
 
-const tokenRegexp = /^\d+d\d*|[()*+\-/]|\d+/i;
+const tokenRegexp = /^\d+(d|bd|pd)\d*|[()*+\-/]|\d+/i;
 
 export class TokenizerError extends Error {}
 

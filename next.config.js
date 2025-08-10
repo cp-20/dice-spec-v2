@@ -1,3 +1,9 @@
+import withBundleAnalyzerFn from '@next/bundle-analyzer';
+import withMDXFn from '@next/mdx';
+import withPWAFn from 'next-pwa';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -7,6 +13,7 @@ const nextConfig = {
       destination: '/analyze-logs',
     },
   ],
+  pageExtensions: ['md', 'mdx', 'ts', 'tsx'],
   webpack: (config) => {
     config.module.rules.push({
       test: /\.svg$/,
@@ -33,15 +40,21 @@ const nextConfig = {
   },
 };
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
+const withBundleAnalyzer = withBundleAnalyzerFn({
   enabled: process.env.ANALYZE === 'true',
 });
 
-const withPWA = require('next-pwa')({
+const withPWA = withPWAFn({
   dest: 'public',
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
 });
 
-module.exports = withBundleAnalyzer(withPWA(nextConfig));
+const withMDX = withMDXFn({
+  options: {
+    remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
+  },
+});
+
+export default withMDX(withBundleAnalyzer(withPWA(nextConfig)));
