@@ -45,9 +45,9 @@ export const contents: CategoryContent[] = [
         shortTitle: '第2回：2d6と1d12は何が違う？',
         description:
           '2d6と1d12、最大値同じなのになんか違う！？　期待値・分布・成功率を比較してスッキリ解決！　複数ダイスの謎を理解してTRPG上達しちゃおう！！',
-        isPublished: false,
-        // publishedAt: new Date('2025-08-11'),
-        // updatedAt: new Date('2025-08-11'),
+        isPublished: true,
+        publishedAt: new Date('2025-08-11'),
+        updatedAt: new Date('2025-08-11'),
       },
       {
         slug: '3-practical-calc-first',
