@@ -55,9 +55,9 @@ export const contents: CategoryContent[] = [
         shortTitle: '第3回：対抗判定を徹底調査！',
         description:
           '対抗判定で勝てる確率って？　CoC・シノビガミ・エモクロア等の勝率を実例で計算！　判定方法の違いによる特色も分かって対戦がもっと楽しくなるよ♪',
-        isPublished: false,
-        // publishedAt: new Date('2025-08-12'),
-        // updatedAt: new Date('2025-08-12'),
+        isPublished: true,
+        publishedAt: new Date('2025-08-12'),
+        updatedAt: new Date('2025-08-12'),
       },
       {
         slug: '4-practical-calc-second',
