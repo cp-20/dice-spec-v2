@@ -75,9 +75,9 @@ export const contents: CategoryContent[] = [
         shortTitle: '第5回：10%を10回振ったら出る？',
         description:
           '10%×10回=絶対成功は間違い！？　セッション出目の運を科学的に判定する方法教えちゃう！！　正規化スコア・信頼区間で客観的に分析しよう！！',
-        isPublished: false,
-        // publishedAt: new Date('2025-08-14'),
-        // updatedAt: new Date('2025-08-14'),
+        isPublished: true,
+        publishedAt: new Date('2025-08-14'),
+        updatedAt: new Date('2025-08-14'),
       },
       {
         slug: '6-tool-introduction',
