@@ -85,9 +85,9 @@ export const contents: CategoryContent[] = [
         shortTitle: '第6回：ツールを使いこなせ！',
         description:
           'ダイススペック使いこなし術！　期待値計算・ダイスロール・ログ解析・ココフォリア連携まで全部紹介！　これでTRPGがもっと楽しくなる♪',
-        isPublished: false,
-        // publishedAt: new Date('2025-08-15'),
-        // updatedAt: new Date('2025-08-15'),
+        isPublished: true,
+        publishedAt: new Date('2025-08-15'),
+        updatedAt: new Date('2025-08-15'),
       },
     ],
   },
