@@ -155,7 +155,7 @@ export const ja = {
       'external-url': {
         label: '参照URL',
         placeholder: 'https://example.com/some_character',
-        description: 'キャラの参照先のURLです。通常はキャラシのURlが入ります。',
+        description: 'キャラの参照先のURLです。通常はキャラシのURLが入ります。',
       },
       status: {
         label: 'ステータス',
