@@ -6,8 +6,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
     "start": "next start",
     "lint": "biome lint",
     "stylelint": "stylelint --ignore-path .gitignore --ignore-path .stylelintignore './src/**/*.{css,scss}'",

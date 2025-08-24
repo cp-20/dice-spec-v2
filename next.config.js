@@ -12,29 +12,13 @@ const nextConfig = {
     },
   ],
   pageExtensions: ['md', 'mdx', 'ts', 'tsx'],
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: [
-        {
-          loader: '@svgr/webpack',
-          options: {
-            svgoConfig: {
-              plugins: [
-                {
-                  name: 'preset-default',
-                  params: { overrides: { removeViewBox: false } },
-                },
-              ],
-            },
-          },
-        },
-      ],
-    });
-    return config;
-  },
-  images: {
-    disableStaticImages: true,
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
   },
 };
 
