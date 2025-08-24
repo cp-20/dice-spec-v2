@@ -1,8 +1,6 @@
 import withBundleAnalyzerFn from '@next/bundle-analyzer';
 import withMDXFn from '@next/mdx';
 import withPWAFn from 'next-pwa';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -51,10 +49,6 @@ const withPWA = withPWAFn({
   disable: process.env.NODE_ENV === 'development',
 });
 
-const withMDX = withMDXFn({
-  options: {
-    remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
-  },
-});
+const withMDX = withMDXFn({});
 
 export default withMDX(withBundleAnalyzer(withPWA(nextConfig)));

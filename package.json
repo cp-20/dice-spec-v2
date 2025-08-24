@@ -55,8 +55,6 @@
     "react-dom": "19.1.1",
     "react-hook-form": "^7.62.0",
     "react-i18next": "^15.6.1",
-    "remark-frontmatter": "^5.0.0",
-    "remark-mdx-frontmatter": "^5.2.0",
     "sharp": "^0.34.3",
     "swr": "^2.3.4",
     "tailwind-merge": "^3.3.1",
