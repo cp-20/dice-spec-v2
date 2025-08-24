@@ -4,7 +4,6 @@ import { Next13NProgress } from 'nextjs13-progress';
 import type { FC, ReactNode } from 'react';
 import { WebVitals } from '@/shared/components/elements/WebVitals';
 import { GoogleTagManager } from '@/shared/components/GoogleTagManager';
-import { fontNotoSansJP } from '@/shared/fonts/NotoSansJP';
 import { I18nProvider } from '@/shared/i18n/client-layout';
 import { wrapRootLayout } from '@/shared/i18n/server-layout';
 
@@ -12,7 +11,7 @@ const RootLayout: FC<{ children: ReactNode; locale: string }> = ({ children, loc
   return (
     <I18nProvider>
       <html lang={locale} className="h-full">
-        <body className={clsx('h-full text-slate-700', fontNotoSansJP.className)}>
+        <body className={clsx('h-full text-slate-700 font-(family-name:--font-main)')}>
           <GoogleTagManager />
           <WebVitals />
           <Next13NProgress color="#334155" options={{ showSpinner: false }} />

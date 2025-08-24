@@ -1,5 +1,4 @@
 import type { ChartOptions } from 'chart.js';
-import { fontNotoSansJP } from '@/shared/fonts/NotoSansJP';
 
 export const commonChartOption = {
   maintainAspectRatio: false,
@@ -31,6 +30,6 @@ export const commonChartOption = {
     },
   },
   font: {
-    family: fontNotoSansJP.style.fontFamily,
+    family: 'var(--font-main)',
   },
 } satisfies ChartOptions;

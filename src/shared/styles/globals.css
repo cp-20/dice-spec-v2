@@ -198,3 +198,9 @@
 * {
   outline-color: var(--color-primary);
 }
+
+:root {
+  --font-main:
+    "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+    "Noto Sans JP", Meiryo, sans-serif;
+}
