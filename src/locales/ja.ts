@@ -68,6 +68,8 @@ export const ja = {
       output: 'ここに結果が表示されます',
       'reset-dice': 'リセット',
       'roll-dice': 'ダイスロール',
+      increment: '{{dice}}を増やす',
+      decrement: '{{dice}}を減らす',
     },
     advanced: {
       label: 'アドバンスド',
@@ -78,6 +80,10 @@ export const ja = {
         'no-result': '該当するゲームシステムが見つかりませんでした。',
       },
       output: '出力',
+      'quick-input': {
+        'add-favorite': '{{command}}をお気に入りに登録',
+        'remove-favorite': '{{command}}をお気に入りから削除',
+      },
       input: {
         'error-failed': 'ロールに失敗しました。コマンドを見直してみてください',
         'error-invalid': 'コマンドの形式が不正です',
@@ -192,6 +198,7 @@ export const ja = {
   },
   common: {
     header: {
+      'app-name': 'ダイススペック',
       'feedback-button': 'フィードバック',
       feedback: {
         title: 'フィードバック',

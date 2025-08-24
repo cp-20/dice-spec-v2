@@ -1,6 +1,7 @@
 'use client';
 
 import { IconStar, IconStarFilled } from '@tabler/icons-react';
+import { t } from 'i18next';
 import type { FC } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { useDiceRoll } from './hooks/useDiceRoll';
@@ -19,6 +20,11 @@ export const QuickInput: FC = () => {
             size="icon"
             className="size-8 rounded-e-none border-r-0"
             onClick={() => updateItem({ ...item, isFavorite: !item.isFavorite })}
+            aria-label={
+              item.isFavorite
+                ? t('dice:advanced.quick-input.remove-favorite', { command: item.command })
+                : t('dice:advanced.quick-input.add-favorite', { command: item.command })
+            }
           >
             {item.isFavorite ? <IconStarFilled size="16" /> : <IconStar size="16" />}
           </Button>

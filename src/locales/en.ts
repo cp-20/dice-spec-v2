@@ -67,6 +67,8 @@ export const en = {
       output: 'The result will be displayed here',
       'reset-dice': 'Reset',
       'roll-dice': 'Roll Dice',
+      increment: 'Increase {{dice}}',
+      decrement: 'Decrease {{dice}}',
     },
     advanced: {
       label: 'Advanced',
@@ -77,6 +79,10 @@ export const en = {
         'no-result': 'No game system found.',
       },
       output: 'Output',
+      'quick-input': {
+        'add-favorite': 'Save {{command}} to favorite',
+        'remove-favorite': 'Remove {{command}} from favorite',
+      },
       input: {
         'error-failed': 'Roll failed. Please review the command',
         'error-invalid': 'The command format is invalid',
@@ -190,6 +196,7 @@ export const en = {
     'copy-to-clipboard': 'Copy to clipboard',
   },
   common: {
+    'app-name': 'DiceSpec',
     header: {
       'feedback-button': 'Feedback',
       feedback: {

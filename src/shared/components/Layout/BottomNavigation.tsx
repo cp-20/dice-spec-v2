@@ -1,5 +1,6 @@
 import type { IconProps } from '@tabler/icons-react';
 import clsx from 'clsx';
+import { t } from 'i18next';
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
 import type { CustomLinkProps } from '@/shared/components/elements/CustomLink';
@@ -43,6 +44,7 @@ const BottomNavigationLink: FC<CustomLinkProps & SideNavigationLinkProps> = ({
       ),
       className,
     )}
+    aria-label={t(`common:${props.href.slice(1)}.title`)}
     {...props}
   >
     <Icon />

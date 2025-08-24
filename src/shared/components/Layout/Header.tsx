@@ -56,7 +56,11 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
       {...props}
     >
       <div className="flex items-center gap-2">
-        <CustomLink href={t('link', { href: '/' })} className="transition-opacity duration-100 hover:opacity-70">
+        <CustomLink
+          href={t('link', { href: '/' })}
+          className="transition-opacity duration-100 hover:opacity-70"
+          aria-label={t('common:header.app-name')}
+        >
           <TitleLogo className="h-5 w-auto text-slate-800 max-sm:h-6 max-sm:w-[7rem]" />
         </CustomLink>
         <div className="max-sm:text-sm">v{appVersion}</div>

@@ -23,7 +23,7 @@ export const SimpleDiceOutput: FC = () => {
   const { latestOutput, history } = useSimpleDiceOutput();
 
   if (latestOutput === null) {
-    return <div className="grid h-36 place-content-center text-slate-400">{t('dice:simple.output')}</div>;
+    return <div className="grid h-36 place-content-center text-slate-500">{t('dice:simple.output')}</div>;
   }
 
   const diceComponentCount = latestOutput.result.reduce((acc, { result }) => {
