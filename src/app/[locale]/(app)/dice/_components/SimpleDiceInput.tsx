@@ -65,7 +65,7 @@ const SimpleDiceInputPanel: FC<SimpleDiceInputPanelProps> = ({ dice, count }) =>
       >
         <IconMinus className="inline-block size-4" />
       </Button>
-      <div className="w-20 select-none text-center text-lg font-medium">
+      <div className="w-20 select-none text-center text-lg font-semibold">
         {count}D{dice}
       </div>
       <Button
