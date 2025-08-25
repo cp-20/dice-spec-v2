@@ -56,7 +56,7 @@ const LandingPage: NextPage = () => {
 
           <div className="flex max-w-full flex-col">
             <h1 className="max-w-full max-md:mx-auto max-md:px-4">
-              <TitleLogo className="max-w-full text-slate-800 md:h-16" />
+              <TitleLogo className="max-w-full text-slate-800 md:h-16 max-md:w-full" />
             </h1>
 
             <Text className="text-balance max-md:text-center">{t('landing-page:catchphrase')}</Text>
