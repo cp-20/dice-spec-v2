@@ -1,13 +1,21 @@
-import type { NextMiddleware } from 'next/server';
+import type { MiddlewareConfig, NextMiddleware } from 'next/server';
 import { i18nMiddleware } from '@/shared/i18n/middleware';
-import { cspMiddleware } from '@/shared/lib/csp';
 
-const normalRoutePattern = /^\/([^/]+\/)?(?:analyze-logs|ccfolia|dice|expect|blogs(?:\/.*)?)?$/;
+export const config: MiddlewareConfig = {
+  matcher: [
+    '/',
+    '/expect',
+    '/dice',
+    '/analyze-logs',
+    '/ccfolia',
+    '/blogs',
+    '/blogs/:category',
+    '/blogs/:category/:slug',
+  ],
+};
 
 export const middleware: NextMiddleware = (req, event) => {
   cspMiddleware(req, event);
 
-  if (normalRoutePattern.test(req.nextUrl.pathname)) {
-    return i18nMiddleware(req, event);
-  }
+  return i18nMiddleware(req, event);
 };
