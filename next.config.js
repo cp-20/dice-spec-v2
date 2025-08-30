@@ -8,7 +8,39 @@ const nextConfig = {
   rewrites: async () => [
     {
       source: '/analyze-logs/og',
-      destination: '/analyze-logs',
+      destination: '/ja/analyze-logs',
+    },
+    {
+      source: '/',
+      destination: '/ja/',
+    },
+    {
+      source: '/expect',
+      destination: '/ja/expect',
+    },
+    {
+      source: '/dice',
+      destination: '/ja/dice',
+    },
+    {
+      source: '/analyze-logs',
+      destination: '/ja/analyze-logs',
+    },
+    {
+      source: '/ccfolia',
+      destination: '/ja/ccfolia',
+    },
+    {
+      source: '/blogs',
+      destination: '/ja/blogs',
+    },
+    {
+      source: '/blogs/:category',
+      destination: '/ja/blogs/:category',
+    },
+    {
+      source: '/blogs/:category/:slug',
+      destination: '/ja/blogs/:category/:slug',
     },
   ],
   pageExtensions: ['md', 'mdx', 'ts', 'tsx'],
