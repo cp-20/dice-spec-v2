@@ -15,7 +15,5 @@ export const config: MiddlewareConfig = {
 };
 
 export const middleware: NextMiddleware = (req, event) => {
-  cspMiddleware(req, event);
-
   return i18nMiddleware(req, event);
 };
