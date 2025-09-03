@@ -71,6 +71,9 @@ export const metadataHelper = ({ title: rawTitle, description, locale, ogp }: Op
       card: 'summary_large_image',
       site: '@__cp20__',
     },
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? '',
+    },
   };
 };
 
