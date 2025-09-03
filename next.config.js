@@ -52,6 +52,7 @@ const nextConfig = {
       },
     },
   },
+  htmlLimitedBots: /Google-Site-Verification/,
 };
 
 const withBundleAnalyzer = withBundleAnalyzerFn({
