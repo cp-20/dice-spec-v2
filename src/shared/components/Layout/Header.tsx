@@ -51,19 +51,16 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
   };
 
   return (
-    <header
-      className={twMerge('flex items-center justify-between border-b px-4 py-2 max-sm:py-1', className)}
-      {...props}
-    >
+    <header className={twMerge('flex items-center justify-between border-b px-4 py-2', className)} {...props}>
       <div className="flex items-center gap-2">
         <CustomLink
           href={t('link', { href: '/' })}
           className="transition-opacity duration-100 hover:opacity-70"
           aria-label={t('common:header.app-name')}
         >
-          <TitleLogo className="h-5 w-auto text-slate-800 max-sm:h-6 max-sm:w-[7rem]" />
+          <TitleLogo className="h-5 w-auto text-slate-800 max-sm:h-7 max-sm:w-[10rem]" />
         </CustomLink>
-        <div className="max-sm:text-sm">v{appVersion}</div>
+        <div>v{appVersion}</div>
       </div>
       <div className="flex gap-2">
         <Dialog open={open} onOpenChange={setOpen}>
@@ -71,11 +68,11 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
             <Button
               variant="outline"
               size="icon"
-              className="size-6 sm:size-8"
+              className="size-8"
               title={t('common:header.feedback-button')}
               onClick={() => setOpen(true)}
             >
-              <IconMessageReply className="size-4 sm:size-5" />
+              <IconMessageReply className="size-5" />
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-2xl">
@@ -109,25 +106,19 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
             </form>
           </DialogContent>
         </Dialog>
-        <Button variant="outline" size="icon" className="size-6 sm:size-8" asChild>
+        <Button variant="outline" size="icon" className="size-8" asChild>
           <a
             href="https://discord.gg/YQ7negGTUK"
             target="_blank"
             rel="noopener noreferrer"
             title={t('common:header.discord-button')}
           >
-            <IconBrandDiscord className="size-4 sm:size-5" />
+            <IconBrandDiscord className="size-5" />
           </a>
         </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-6 sm:size-8"
-          asChild
-          title={t('common:header.twitter-button')}
-        >
+        <Button variant="outline" size="icon" className="size-8" asChild title={t('common:header.twitter-button')}>
           <a href="https://twitter.com/__cp20__" target="_blank" rel="noopener noreferrer">
-            <IconBrandX className="size-4 sm:size-5" />
+            <IconBrandX className="size-5" />
           </a>
         </Button>
       </div>

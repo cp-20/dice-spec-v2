@@ -33,21 +33,19 @@ const BottomNavigationLink: FC<CustomLinkProps & SideNavigationLinkProps> = ({
   className,
   icon: Icon,
   isActive,
-  children,
   ...props
 }) => (
   <CustomLink
     className={twMerge(
       clsx(
-        'grid flex-1 place-content-center p-2 hover:bg-slate-50 active:bg-slate-100',
+        'flex-1 flex flex-col justify-center items-center gap-0.5 p-1 hover:bg-slate-50 active:bg-slate-100',
         isActive && 'bg-slate-100 hover:bg-slate-100',
       ),
       className,
     )}
-    aria-label={t(`common:${props.href.slice(1)}.title`)}
     {...props}
   >
     <Icon />
-    {children}
+    <span className="text-xs font-bold text-pretty text-center">{t(`common:${props.href.slice(1)}.title`)}</span>
   </CustomLink>
 );
