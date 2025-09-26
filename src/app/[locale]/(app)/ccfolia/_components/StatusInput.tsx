@@ -26,18 +26,21 @@ export const StatusInput: FC<StatusInputProps> = ({ value, onChange }) => {
               placeholder={t('ccfolia:input.status.status-label')}
               className="h-8 flex-1 @xs:h-10"
               onChange={handleStatusChange(status, 'label')}
+              aria-label={t('ccfolia:input.status.status-label')}
             />
             <Input
               value={status.value}
               placeholder={t('ccfolia:input.status.status-value')}
               className="h-8 w-1/5 @xs:h-10"
               onChange={handleStatusChange(status, 'value', numberFormatterGenerator<Status>('value'))}
+              aria-label={t('ccfolia:input.status.status-value')}
             />
             <Input
               value={status.max}
               placeholder={t('ccfolia:input.status.status-max')}
               className="h-8 w-1/5 @xs:h-10"
               onChange={handleStatusChange(status, 'max', numberFormatterGenerator<Status>('value'))}
+              aria-label={t('ccfolia:input.status.status-max')}
             />
             <Button
               variant="outline"
