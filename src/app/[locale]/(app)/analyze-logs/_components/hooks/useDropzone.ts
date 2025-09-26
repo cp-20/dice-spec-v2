@@ -26,7 +26,9 @@ export const useDropzone = <Element = HTMLElement>(dropHandler: DropHandler) => 
       setIsDraggedOver(false);
 
       const file = e.dataTransfer.files[0];
-      readFile(file);
+      if (file !== null) {
+        readFile(file);
+      }
     },
     [readFile],
   );
