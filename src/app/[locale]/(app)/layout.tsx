@@ -24,17 +24,13 @@ const AppLayout: FC<AppLayout> = ({ children }) => {
     <div className="flex h-full flex-col">
       <Header />
       <div className="flex min-h-0 flex-1">
-        <SideNavigation
-          active={pathname}
-          className="h-full max-md:w-fit max-sm:hidden"
-          textProps={{ className: 'max-md:hidden' }}
-        />
+        <SideNavigation active={pathname} className="h-full max-md:w-fit max-md:hidden" />
         <div className="flex h-full flex-1 flex-col overflow-y-auto">
           <main className="flex-1 p-8 max-sm:px-4">{children}</main>
           <Footer className="max-sm:hidden" />
         </div>
       </div>
-      <BottomNavigation className="sm:hidden" active={pathname} />
+      <BottomNavigation className="md:hidden" active={pathname} />
 
       <Toaster />
     </div>

@@ -8,26 +8,20 @@ import { navLinks } from '@/shared/lib/navigation';
 
 export type SideNavigationProps = {
   active: (typeof navLinks)[number]['href'];
-  textProps?: ComponentProps<'span'>;
 };
 
-export const SideNavigation: FC<ComponentProps<'nav'> & SideNavigationProps> = ({
-  className,
-  active,
-  textProps,
-  ...props
-}) => (
+export const SideNavigation: FC<ComponentProps<'nav'> & SideNavigationProps> = ({ className, active, ...props }) => (
   <nav className={twMerge('flex w-60 flex-col border-r', className)} {...props}>
     {navLinks.map(({ href, icon }) => (
       <SideNavigationLink key={href} icon={icon} href={t('link', { href })} isActive={href === active}>
-        <span {...textProps}>{t(`common:${href.slice(1)}.title`)}</span>
+        <span>{t(`common:${href.slice(1)}.title`)}</span>
       </SideNavigationLink>
     ))}
   </nav>
 );
 
 type SideNavigationLinkProps = {
-  icon?: FC;
+  icon: FC;
   isActive?: boolean;
 };
 
@@ -48,7 +42,7 @@ const SideNavigationLink: FC<CustomLinkProps & SideNavigationLinkProps> = ({
     )}
     {...props}
   >
-    {Icon && <Icon />}
+    <Icon />
     {children}
   </CustomLink>
 );
