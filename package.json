@@ -34,6 +34,7 @@
     "@radix-ui/react-tabs": "^1.1.12",
     "@radix-ui/react-toast": "^1.2.14",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@sentry/nextjs": "^10",
     "@tabler/icons-react": "^3.34.1",
     "@types/mdx": "^2.0.13",
     "chart.js": "^4.5.0",
