@@ -26,9 +26,8 @@ export const useDropzone = <Element = HTMLElement>(dropHandler: DropHandler) => 
       setIsDraggedOver(false);
 
       const file = e.dataTransfer.files[0];
-      if (file !== null) {
-        readFile(file);
-      }
+      if (file === null || file === undefined) return;
+      readFile(file);
     },
     [readFile],
   );
@@ -53,7 +52,7 @@ export const useDropzone = <Element = HTMLElement>(dropHandler: DropHandler) => 
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
       const file = e.target.files?.[0];
-      if (file === undefined) return;
+      if (file === null || file === undefined) return;
 
       readFile(file);
     },
