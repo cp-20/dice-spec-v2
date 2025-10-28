@@ -1,4 +1,4 @@
-import { bench } from 'vitest';
+import { bench } from 'bun:test';
 import { diceExpecter } from '.';
 
 describe('通常のダイスの計算式', () => {

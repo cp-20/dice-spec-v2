@@ -1,4 +1,4 @@
-import { bench, describe } from 'vitest';
+import { bench, describe } from 'bun:test';
 import { parseDiceCommand } from './parser';
 
 describe('パーサーのベンチマーク', () => {

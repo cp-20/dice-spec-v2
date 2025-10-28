@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, mock, test, vi } from 'bun:test';
 import { act, renderHook } from '@testing-library/react';
 import { useAtom } from 'jotai';
 import * as useImmutableSWR from 'swr/immutable';
@@ -6,7 +7,7 @@ import { useGameSystemList } from './useGameSystemList';
 
 describe('useGameSystemList', () => {
   beforeEach(() => {
-    vi.mock('swr/immutable', () => ({
+    mock.module('swr/immutable', () => ({
       default: vi.fn(),
     }));
 

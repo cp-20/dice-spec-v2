@@ -19,28 +19,9 @@ TRPGのちょっとしたツールをまとめたようなアプリです。現�
 
 機能追加のリクエストは[サポート用のDiscordサーバー](https://discord.gg/YQ7negGTUK)までお願いします。
 
-### 技術スタック
-
-#### アプリケーション用
-
-- [Next.js v13 (App Router)](https://nextjs.org/)
-- [shadcn/ui](https://ui.shadcn.com/) (UIコンポーネント)
-  - [Radix UI](https://radix-ui.com/)
-- [Tabler Icons](https://tabler-icons.io/) (アイコン)
-- [Jotai](https://jotai.org/) (状態管理)
-- [Tailwind CSS](https://tailwindcss.com/) (スタイリング)
-- [Valibot](https://valibot.dev/) (型バリデーション)
-
-#### 開発者用
-
-- [Vitest](https://vitest.dev/)
-- [ESlint](https://eslint.org/)
-- [Stylelint](https://stylelint.io/)
-- [Prettier](https://prettier.io/)
-
 ## 環境セットアップ
 
-必要なもの: Node.js (`.node-version` のバージョン) と Bun (https://bun.sh)
+必要なもの: Bun (https://bun.sh)
 
 ```sh
 bun i
@@ -76,7 +57,3 @@ bun run dev
 ```
 
 基本的には `./_components` 以下のコンポーネントを使いながらページを作っていきます。長いロジックは`./_components/hooks`以下に切り出すと良いです。
-
-### ブランチ命名規則
-
-`issue-<issue番号>` という名前のブランチを切ってください。例えば、issue番号が `1` の場合は `issue-1` という名前のブランチを切ってください。
