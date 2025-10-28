@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { BlogBreadCrumb } from '@/app/[locale]/blogs/_components/BlogBreadCrumb';
-import { appBaseUrl } from '@/shared/lib/metadataGenerator';
+import { appBaseUrl, metadataHelper } from '@/shared/lib/metadataGenerator';
 import { contents } from './_contents/contents';
 
 type Params = {
@@ -18,44 +18,21 @@ export const generateMetadata = async ({ params }: { params: Promise<Params> }):
 
   const og = `${appBaseUrl}/assets/blog-images/og/${category}/${slug}.png`;
 
-  return {
+  const base = metadataHelper({
     title: `${title} - ダイススペックブログ`,
     description,
-    metadataBase: new URL(appBaseUrl),
+    path: `/blogs/${category}/${slug}`,
+    locale: 'ja',
+    ogp: og,
+  });
+
+  return {
+    ...base,
     openGraph: {
-      title,
-      description,
+      ...base.openGraph,
       type: 'article',
-      locale: 'ja',
-      siteName: `${title} - ダイススペックブログ`,
-      images: og,
-      url: `${appBaseUrl}/blogs/${category}/${slug}`,
       publishedTime: article.isPublished ? article.publishedAt.toISOString() : undefined,
       modifiedTime: article.isPublished ? article.updatedAt.toISOString() : undefined,
-    },
-    manifest: '/manifest.webmanifest',
-    icons: [
-      {
-        rel: 'icon',
-        url: '/favicon.ico',
-        sizes: 'any',
-      },
-      {
-        rel: 'icon',
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-      {
-        rel: 'apple-touch-icon',
-        url: '/apple-touch-icon.png',
-      },
-    ],
-    twitter: {
-      title,
-      description,
-      images: og,
-      card: 'summary_large_image',
-      site: '@__cp20__',
     },
   };
 };

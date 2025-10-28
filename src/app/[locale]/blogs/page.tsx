@@ -1,7 +1,19 @@
 import { IconChevronRight } from '@tabler/icons-react';
 import Link from 'next/link';
+import { type MetadataGenerator, metadataHelper, viewportGenerator } from '@/shared/lib/metadataGenerator';
 import { BlogCard } from './_components/BlogCard';
 import { contents } from './[category]/[slug]/_contents/contents';
+
+export const generateMetadata: MetadataGenerator = async () => {
+  return metadataHelper({
+    title: 'ブログトップ',
+    description: 'ダイススペックブログ記事のトップです。TRPGと数学に関する様々な記事を掲載しています。',
+    locale: 'ja',
+    path: '/blogs',
+  });
+};
+
+export const viewport = viewportGenerator();
 
 const BlogTopPage = () => {
   return (

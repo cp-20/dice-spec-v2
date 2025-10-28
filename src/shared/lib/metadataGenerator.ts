@@ -4,13 +4,20 @@ import { i18nConfig, type Locale } from '@/shared/i18n/config';
 export type Option = {
   title?: string;
   description: string;
+  path: string;
   locale: Locale;
   ogp?: string;
 };
 
-export const appBaseUrl = 'https://dicespec.vercel.app';
+export const appBaseUrl = 'https://dicespec.app';
 
-export const metadataHelper = ({ title: rawTitle, description, locale, ogp }: Option): Metadata => {
+const constructLocaleUrl = (path: string, locale: Locale): URL => {
+  const localePathPrefix = locale === i18nConfig.defaultLocale ? '' : `/${locale}`;
+  const url = new URL(localePathPrefix + path, appBaseUrl);
+  return url;
+};
+
+export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp }: Option) => {
   const appName = {
     en: 'DiceSpec',
     ja: 'ダイススペック',
@@ -25,18 +32,21 @@ export const metadataHelper = ({ title: rawTitle, description, locale, ogp }: Op
     .filter((lang) => lang !== locale)
     .reduce(
       (acc, lang) => {
-        acc[lang] = `${appBaseUrl}/${lang}`;
+        acc[lang] = constructLocaleUrl(path, lang);
         return acc;
       },
-      {} as Record<Locale, string>,
+      {} as Record<Locale, URL>,
     );
+
+  const appUrl = constructLocaleUrl(path, locale);
 
   return {
     title,
     description,
-    metadataBase: new URL(appBaseUrl),
+    metadataBase: appUrl,
     alternates: {
       languages: alternates,
+      canonical: appUrl.toString(),
     },
     openGraph: {
       title,
@@ -45,7 +55,7 @@ export const metadataHelper = ({ title: rawTitle, description, locale, ogp }: Op
       locale,
       siteName: title,
       images: ogp ?? defaultOgImage,
-      url: appBaseUrl,
+      url: appUrl,
     },
     manifest: '/manifest.webmanifest',
     icons: [
@@ -74,7 +84,7 @@ export const metadataHelper = ({ title: rawTitle, description, locale, ogp }: Op
     verification: {
       google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? '',
     },
-  };
+  } satisfies Metadata;
 };
 
 export const viewportGenerator = (): Viewport => ({

@@ -34,6 +34,7 @@ export const generateMetadata: MetadataGenerator = async (props) => {
   const metadata = metadataHelper({
     title,
     description,
+    path: '/analyze-logs',
     locale,
     ogp,
   });

@@ -1,9 +1,24 @@
+import type { Metadata } from 'next';
+import { metadataHelper } from '@/shared/lib/metadataGenerator';
 import { CategoryBreadCrumb } from '../_components/BlogBreadCrumb';
 import { BlogCard } from '../_components/BlogCard';
 import { contents } from './[slug]/_contents/contents';
 
 type Params = {
   category: string;
+};
+
+export const generateMetadata = async ({ params }: { params: Promise<Params> }): Promise<Metadata> => {
+  const { category } = await params;
+  const cat = contents.find((c) => c.category === category);
+  if (!cat) throw new Error(`Category not found: ${category}`);
+
+  return metadataHelper({
+    title: `${cat.name} - ダイススペックブログ`,
+    description: cat.description,
+    path: `/blogs/${category}`,
+    locale: 'ja',
+  });
 };
 
 const CategoryPage = async ({ params }: { params: Promise<Params> }) => {

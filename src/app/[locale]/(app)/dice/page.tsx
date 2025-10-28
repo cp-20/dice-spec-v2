@@ -28,6 +28,7 @@ export const generateMetadata: MetadataGenerator = async (props) => {
   return metadataHelper({
     title: t('common:dice.title'),
     description: t('common:dice.description'),
+    path: '/dice',
     locale,
   });
 };

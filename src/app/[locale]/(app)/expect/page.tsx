@@ -45,6 +45,7 @@ export const generateMetadata: MetadataGenerator = async (props) => {
   return metadataHelper({
     title: t('common:expect.title'),
     description: stripInlineCommand(`${t('expect:usage1')} ${t('expect:usage2')}`),
+    path: '/expect',
     locale,
   });
 };

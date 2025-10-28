@@ -33,6 +33,7 @@ export const generateMetadata: MetadataGenerator = async (props) => {
   const locale = await localeHelper(props);
   return metadataHelper({
     description: t('landing-page:description'),
+    path: '/',
     locale,
   });
 };

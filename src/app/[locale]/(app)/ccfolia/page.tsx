@@ -5,7 +5,12 @@ import { BlogCallout } from '@/app/[locale]/(app)/_components/BlogCallout';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { wrapPage } from '@/shared/i18n/page-layout';
-import { localeHelper, type MetadataGenerator, metadataHelper } from '@/shared/lib/metadataGenerator';
+import {
+  localeHelper,
+  type MetadataGenerator,
+  metadataHelper,
+  viewportGenerator,
+} from '@/shared/lib/metadataGenerator';
 import { InputForm } from './_components/InputForm';
 import { LoadClipboardButton } from './_components/LoadClipboardButton';
 import { ResultView } from './_components/ResultView';
@@ -15,9 +20,12 @@ export const generateMetadata: MetadataGenerator = async (props) => {
   return metadataHelper({
     title: t('common:ccfolia.title'),
     description: t('ccfolia:usage'),
+    path: '/ccfolia',
     locale,
   });
 };
+
+export const viewport = viewportGenerator();
 
 const CcfoliaPage: NextPage = () => (
   <>
