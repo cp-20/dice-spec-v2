@@ -6,6 +6,7 @@ import { WebVitals } from '@/shared/components/elements/WebVitals';
 import { GoogleTagManager } from '@/shared/components/GoogleTagManager';
 import { I18nProvider } from '@/shared/i18n/client-layout';
 import { wrapRootLayout } from '@/shared/i18n/server-layout';
+import { MigrationAnnouncementBanner } from './_components/MigrationAnnouncementBanner';
 
 const RootLayout: FC<{ children: ReactNode; locale: string }> = ({ children, locale }) => {
   return (
@@ -15,6 +16,8 @@ const RootLayout: FC<{ children: ReactNode; locale: string }> = ({ children, loc
           <GoogleTagManager />
           <WebVitals />
           <Next13NProgress color="#334155" options={{ showSpinner: false }} />
+
+          <MigrationAnnouncementBanner />
 
           {children}
         </body>

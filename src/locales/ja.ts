@@ -197,6 +197,12 @@ export const ja = {
     'copy-to-clipboard': 'クリップボードにコピー',
   },
   common: {
+    announcement: {
+      label: 'お知らせ',
+      migration:
+        'ダイススペックは <target>{{target}}</target> に移行しました。既存の機能は引き続き問題なくご利用いただけます。',
+      close: 'お知らせを閉じる',
+    },
     header: {
       'app-name': 'ダイススペック',
       'feedback-button': 'フィードバック',

@@ -196,8 +196,14 @@ export const en = {
     'copy-to-clipboard': 'Copy to clipboard',
   },
   common: {
-    'app-name': 'DiceSpec',
+    announcement: {
+      label: 'Announcement',
+      migration:
+        'DiceSpec has migrated to <target>{{target}}</target>. Existing features can still be used without any issues.',
+      close: 'Close announcement',
+    },
     header: {
+      'app-name': 'DiceSpec',
       'feedback-button': 'Feedback',
       feedback: {
         title: 'Feedback',
