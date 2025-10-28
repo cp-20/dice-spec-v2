@@ -37,6 +37,7 @@
     "@sentry/nextjs": "^10.22.0",
     "@tabler/icons-react": "^3.35.0",
     "@types/mdx": "^2.0.13",
+    "caniuse-lite": "^1.0.30001751",
     "chart.js": "^4.5.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
