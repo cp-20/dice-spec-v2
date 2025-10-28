@@ -11,9 +11,12 @@ export type Option = {
 
 export const appBaseUrl = 'https://dicespec.app';
 
-const constructLocaleUrl = (path: string, locale: Locale): URL => {
+const constructLocaleUrl = (path: string, locale: Locale): string => {
   const localePathPrefix = locale === i18nConfig.defaultLocale ? '' : `/${locale}`;
-  const url = new URL(localePathPrefix + path, appBaseUrl);
+  const rawPath = `${localePathPrefix}${path}`;
+  const beautifiedPath = rawPath.endsWith('/') ? rawPath.slice(0, -1) : rawPath;
+  const url = appBaseUrl + beautifiedPath;
+
   return url;
 };
 
@@ -35,7 +38,7 @@ export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp
         acc[lang] = constructLocaleUrl(path, lang);
         return acc;
       },
-      {} as Record<Locale, URL>,
+      {} as Record<Locale, string>,
     );
 
   const appUrl = constructLocaleUrl(path, locale);
