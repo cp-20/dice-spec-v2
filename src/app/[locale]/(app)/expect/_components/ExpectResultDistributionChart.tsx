@@ -46,7 +46,8 @@ export const PresentationalExpectResultDistributionChart: FC<PresentationalProps
 
   const inCI = (ctx: ScriptableLineSegmentContext) => {
     return (
-      result.CI.min < result.range.min + ctx.p0.parsed.x + 1 && result.range.min + ctx.p1.parsed.x - 1 < result.CI.max
+      // biome-ignore lint/style/noNonNullAssertion: たぶん大丈夫
+      result.CI.min < result.range.min + ctx.p0.parsed.x! + 1 && result.range.min + ctx.p1.parsed.x! - 1 < result.CI.max
     );
   };
 
@@ -54,8 +55,10 @@ export const PresentationalExpectResultDistributionChart: FC<PresentationalProps
     if (!result.withTarget) return false;
 
     return (
-      (result.target.sign === '<=' && result.range.min + ctx.p1.parsed.x <= result.target.value) ||
-      (result.target.sign === '>=' && result.range.min + ctx.p0.parsed.x >= result.target.value)
+      // biome-ignore lint/style/noNonNullAssertion: たぶん大丈夫
+      (result.target.sign === '<=' && result.range.min + ctx.p1.parsed.x! <= result.target.value) ||
+      // biome-ignore lint/style/noNonNullAssertion: たぶん大丈夫
+      (result.target.sign === '>=' && result.range.min + ctx.p0.parsed.x! >= result.target.value)
     );
   };
 
