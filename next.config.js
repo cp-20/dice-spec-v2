@@ -12,6 +12,7 @@ const nextConfig = {
       destination: 'https://dicespec.app/:path*',
       permanent: true,
       has: [{ type: 'host', value: 'dicespec.vercel.app' }],
+      statusCode: 301,
     },
   ],
   rewrites: async () => [
