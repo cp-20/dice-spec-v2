@@ -202,5 +202,5 @@
 :root {
   --font-main:
     "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Hiragino Sans",
-    "Noto Sans JP", Meiryo, Arial, sans-serif;
+    "Noto Sans JP", "meiryo", "arial", sans-serif;
 }

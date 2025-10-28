@@ -12,9 +12,7 @@
     "lint": "biome lint",
     "stylelint": "stylelint --ignore-path .gitignore --ignore-path .stylelintignore './src/**/*.{css,scss}'",
     "typecheck": "tsc",
-    "format": "biome format --write",
-    "test": "vitest --passWithNoTests",
-    "bench": "vitest bench --passWithNoTests"
+    "format": "biome format --write"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -78,6 +76,7 @@
     "@types/web": "^0.0.284",
     "cssnano": "^7.1.1",
     "happy-dom": "^20.0.8",
+    "mitata": "^1.0.34",
     "postcss": "^8.5.6",
     "postcss-syntax": "^0.36.2",
     "stylelint": "^16.25.0",
