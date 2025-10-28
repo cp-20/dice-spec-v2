@@ -30,7 +30,7 @@ export const useChartImageShare = () => {
 
     if (!chartRef.current) {
       sendEvent('shareImage', '');
-      const url = encodeURIComponent('https://dicespec.vercel.app/analyze-logs');
+      const url = encodeURIComponent('https://dicespec.app/analyze-logs');
       const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
       window.open(href, '_blank');
       return;
@@ -43,7 +43,7 @@ export const useChartImageShare = () => {
       .then((imageUrl) => {
         sendEvent('shareImage', imageUrl);
         const ogp = encodeURIComponent(imageUrl);
-        const url = encodeURIComponent(`https://dicespec.vercel.app/analyze-logs?ogp=${ogp}`);
+        const url = encodeURIComponent(`https://dicespec.app/analyze-logs?ogp=${ogp}`);
         const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
         window.open(href, '_blank');
       })
