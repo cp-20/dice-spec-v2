@@ -6,11 +6,15 @@ import withPWAFn from 'next-pwa';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  rewrites: async () => [
+  redirects: async () => [
     {
-      source: '/analyze-logs/og',
-      destination: '/ja/analyze-logs',
+      source: '/:path*',
+      destination: 'https://dicespec.app/:path*',
+      permanent: true,
+      has: [{ type: 'host', value: 'dicespec.vercel.app' }],
     },
+  ],
+  rewrites: async () => [
     {
       source: '/',
       destination: '/ja/',
