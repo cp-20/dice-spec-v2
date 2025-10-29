@@ -195,6 +195,8 @@ export const ja = {
       label: 'お知らせ',
       migration:
         'ダイススペックは <target>{{target}}</target> に移行しました。既存の機能は引き続き問題なくご利用いただけます。',
+      oldAppMigration:
+        'お使いのアプリは古いバージョンです。最新のダイススペックは <target>{{target}}</target> に移行しました。',
       close: 'お知らせを閉じる',
     },
     header: {

@@ -194,6 +194,7 @@ export const en = {
       label: 'Announcement',
       migration:
         'DiceSpec has migrated to <target>{{target}}</target>. Existing features can still be used without any issues.',
+      oldAppMigration: 'Your app is an old version. The latest DiceSpec has migrated to <target>{{target}}</target>.',
       close: 'Close announcement',
     },
     header: {
