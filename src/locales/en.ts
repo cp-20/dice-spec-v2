@@ -28,12 +28,6 @@ export const en = {
           'DiceSpec is developed entirely as open source, so anyone can freely view and propose modifications. So users can use it with confidence.',
       },
     },
-    links: {
-      label: 'Related Links',
-      discord: 'Support Community',
-      twitter: "Developer's Twitter",
-      github: 'GitHub Repo',
-    },
     credit: 'Credit',
     'privacy-policy': {
       label: 'Privacy Policy',
@@ -215,8 +209,6 @@ export const en = {
         'submitted-description': 'Thank you for your feedback!',
         error: 'Failed to submit feedback',
       },
-      'discord-button': 'Discord',
-      'twitter-button': "Developer's Twitter",
     },
     expect: {
       title: 'Dice Expecter',

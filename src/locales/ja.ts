@@ -28,12 +28,6 @@ export const ja = {
           'ダイススペックは全てオープンソースで開発されており、誰でも自由に閲覧・修正提案を行うことができます。なのでユーザーも安心して使うことができます',
       },
     },
-    links: {
-      label: '関連リンク',
-      discord: 'サポートコミュニティ',
-      twitter: '開発者のついった',
-      github: 'GitHubリポジトリ',
-    },
     credit: 'クレジット',
     'privacy-policy': {
       label: 'プライバシーポリシー',
@@ -217,8 +211,6 @@ export const ja = {
         'submitted-description': 'フィードバックを送信していただきありがとうございます！',
         error: 'フィードバックの送信に失敗しました',
       },
-      'discord-button': 'サポートDiscord',
-      'twitter-button': '作者のついった',
     },
     expect: {
       title: 'ダイス予測',

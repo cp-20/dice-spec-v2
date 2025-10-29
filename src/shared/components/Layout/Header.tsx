@@ -1,4 +1,4 @@
-import { IconBrandDiscord, IconBrandX, IconMessageReply } from '@tabler/icons-react';
+import { IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { type ComponentProps, type FC, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -106,21 +106,6 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
             </form>
           </DialogContent>
         </Dialog>
-        <Button variant="outline" size="icon" className="size-8" asChild>
-          <a
-            href="https://discord.gg/YQ7negGTUK"
-            target="_blank"
-            rel="noopener noreferrer"
-            title={t('common:header.discord-button')}
-          >
-            <IconBrandDiscord className="size-5" />
-          </a>
-        </Button>
-        <Button variant="outline" size="icon" className="size-8" asChild title={t('common:header.twitter-button')}>
-          <a href="https://twitter.com/__cp20__" target="_blank" rel="noopener noreferrer">
-            <IconBrandX className="size-5" />
-          </a>
-        </Button>
       </div>
     </header>
   );

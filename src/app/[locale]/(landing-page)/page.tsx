@@ -25,7 +25,6 @@ import {
 import LogoIcon from '/public/icon.svg';
 import TitleLogoJP from '/public/title-logo.svg';
 import TitleLogoEN from '/public/title-logo-en.svg';
-import { ExternalLinkWithIcon } from './_components/ExternalLinkWithIcon';
 import { LinkableIconPanel } from './_components/LinkableIconPanel';
 import { Panel } from './_components/Panel';
 
@@ -97,22 +96,6 @@ const LandingPage: NextPage = () => {
                 className="md:flex-1"
               />
             ))}
-          </div>
-        </div>
-
-        <div>
-          <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">{t('landing-page:links.label')}</H2>
-
-          <div className="flex gap-4 max-md:flex-col">
-            <ExternalLinkWithIcon icon={IconBrandDiscord} href="https://discord.gg/YQ7negGTUK">
-              {t('landing-page:links.discord')}
-            </ExternalLinkWithIcon>
-            <ExternalLinkWithIcon icon={IconBrandX} href="https://twitter.com/__cp20__">
-              {t('landing-page:links.twitter')}
-            </ExternalLinkWithIcon>
-            <ExternalLinkWithIcon icon={IconBrandGithub} href="https://github.com/cp-20/dice-spec-v2">
-              {t('landing-page:links.github')}
-            </ExternalLinkWithIcon>
           </div>
         </div>
 
