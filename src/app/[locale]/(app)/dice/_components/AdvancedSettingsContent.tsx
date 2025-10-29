@@ -5,7 +5,7 @@ import { IconRestore } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { type FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-
+import { Trans } from 'react-i18next';
 import type { InferOutput } from 'valibot';
 import * as v from 'valibot';
 import { Button } from '@/shared/components/ui/button';
@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shared/comp
 import { Input } from '@/shared/components/ui/input';
 import { Slider } from '@/shared/components/ui/slider';
 import { Switch } from '@/shared/components/ui/switch';
-import { bcdiceApiEndpoint } from '@/shared/lib/const';
+import { bcdiceApiEndpoint, isOldApp } from '@/shared/lib/const';
 import { useAdvancedSettings } from './hooks/useAdvancedSettings';
 
 export const AdvancedSettingsFormSchema = v.object({
@@ -129,6 +129,17 @@ export const AdvancedSettingsContent: FC = () => {
           )}
         />
       </form>
+      {!isOldApp && (
+        <p className="mt-2 px-4 text-xs text-slate-500 dark:text-slate-400">
+          <Trans
+            i18nKey="dice:advanced.advanced-settings.migration-announcement"
+            components={{
+              // biome-ignore lint/a11y/useAnchorContent: 後で children が渡される
+              l: <a href="https://dicespec.vercel.app/dice?keep-old=true" className="underline hover:opacity-70" />,
+            }}
+          />
+        </p>
+      )}
     </Form>
   );
 };

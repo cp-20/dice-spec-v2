@@ -77,6 +77,8 @@ export const ja = {
       'quick-input': {
         'add-favorite': '{{command}}をお気に入りに登録',
         'remove-favorite': '{{command}}をお気に入りから削除',
+        'migration-announcement':
+          '<l>旧アプリ</l>からの移行に際して履歴・お気に入りは引き継がれていません。必要であれば<l>旧アプリ</l>を参考に再登録をお願いします。',
       },
       input: {
         'error-failed': 'ロールに失敗しました。コマンドを見直してみてください',
@@ -92,6 +94,8 @@ export const ja = {
         'enable-sound': 'サウンドを再生する',
         volume: '音量',
         'bcdice-server': 'BCDiceサーバー',
+        'migration-announcement':
+          '<l>旧アプリ</l>からの移行に際して設定は引き継がれていません。必要であれば<l>旧アプリ</l>を参考に再設定をお願いします。',
       },
     },
   },

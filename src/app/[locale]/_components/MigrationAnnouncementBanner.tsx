@@ -41,7 +41,7 @@ export const MigrationAnnouncementBanner: FC = () => {
                 </a>
               ),
             }}
-          ></Trans>
+          />
         </span>
       </div>
       <Button

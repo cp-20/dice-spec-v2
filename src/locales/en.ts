@@ -76,6 +76,8 @@ export const en = {
       'quick-input': {
         'add-favorite': 'Save {{command}} to favorite',
         'remove-favorite': 'Remove {{command}} from favorite',
+        'migration-announcement':
+          '<l>Old App</l> migration does not carry over history or favorites. If necessary, please re-register using the <l>Old App</l> as a reference.',
       },
       input: {
         'error-failed': 'Roll failed. Please review the command',
@@ -90,6 +92,8 @@ export const en = {
         'enable-sound': 'Play Sound',
         volume: 'Volume',
         'bcdice-server': 'BCDice Server',
+        'migration-announcement':
+          '<l>Old App</l> migration does not carry over settings. If necessary, please reconfigure using the <l>Old App</l> as a reference.',
       },
     },
   },
