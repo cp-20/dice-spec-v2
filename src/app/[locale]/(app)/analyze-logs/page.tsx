@@ -53,10 +53,12 @@ const AnalyzeLogsPage: NextPage = () => (
       </PageDescriptionContainer>
     </div>
 
-    <div className="space-y-4">
+    <div className="space-y-4 @container">
       <UploadLogFileButton />
-      <GameSystemSelect />
-      <CharacterSelect />
+      <div className="grid grid-cols-2 gap-4 @max-md:grid-cols-1">
+        <GameSystemSelect />
+        <CharacterSelect />
+      </div>
     </div>
 
     <div className="grid place-content-center">
