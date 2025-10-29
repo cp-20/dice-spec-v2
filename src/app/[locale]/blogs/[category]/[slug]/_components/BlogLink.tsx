@@ -17,7 +17,7 @@ export const BlogLink: React.FC<Props> = ({ category, slug }) => {
   if (!article.isPublished) {
     return (
       <div className="w-full flex flex-col border rounded-md overflow-hidden">
-        <div className="w-full aspect-[1200/630] relative">
+        <div className="w-full aspect-1200/630 relative">
           <Image src={`/assets/blog-images/og/${category}/${slug}.png`} alt={article.title} fill />
         </div>
         <div className="flex justify-end items-center px-4 py-2 bg-slate-50">
@@ -34,7 +34,7 @@ export const BlogLink: React.FC<Props> = ({ category, slug }) => {
       href={`/blogs/${category}/${slug}`}
       className="w-full flex flex-col border rounded-md overflow-hidden group hover:opacity-70 transition"
     >
-      <div className="w-full aspect-[1200/630] relative">
+      <div className="w-full aspect-1200/630 relative">
         <Image src={`/assets/blog-images/og/${category}/${slug}.png`} alt={article.title} fill />
       </div>
       <div className="flex justify-end items-center px-4 py-2 bg-slate-50">

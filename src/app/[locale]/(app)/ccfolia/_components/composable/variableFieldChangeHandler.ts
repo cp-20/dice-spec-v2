@@ -39,7 +39,7 @@ export const numberFormatterGenerator =
       return undefined;
     }
 
-    const value = Number.parseInt(rawValue);
+    const value = Number.parseInt(rawValue, 10);
 
     if (Number.isNaN(value)) {
       return field[key];
