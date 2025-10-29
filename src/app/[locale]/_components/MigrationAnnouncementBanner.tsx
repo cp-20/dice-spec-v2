@@ -3,6 +3,7 @@
 import { IconX } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { atom } from 'jotai';
+import { usePathname } from 'next/navigation';
 import { type FC, useCallback } from 'react';
 import { Trans } from 'react-i18next';
 import * as v from 'valibot';
@@ -57,6 +58,7 @@ export const MigrationAnnouncementBanner: FC = () => {
 };
 
 export const OldAppMigrationAnnouncementBanner: FC = () => {
+  const pathname = usePathname();
   return (
     <div className="bg-yellow-100 text-yellow-800 px-4 py-3 flex justify-center items-center gap-2" role="alert">
       <div className="flex-1 flex justify-center items-start gap-1">
@@ -67,7 +69,7 @@ export const OldAppMigrationAnnouncementBanner: FC = () => {
             values={{ target: 'dicespec.app' }}
             components={{
               target: (
-                <a href="https://dicespec.app" className="underline hover:opacity-70">
+                <a href={`https://dicespec.app${pathname}`} className="underline hover:opacity-70">
                   dicespec.app
                 </a>
               ),
