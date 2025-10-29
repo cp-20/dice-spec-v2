@@ -12,21 +12,34 @@ export const CharacterSelect: FC = () => {
   const { result } = useLogAnalysis();
 
   return (
-    <Select disabled={result.length === 0} value={result.length > 0 ? character : ''} onValueChange={selectCharacter}>
-      <SelectTrigger className="w-full font-bold" aria-label={t('analyze-logs:character-select.label')}>
-        <SelectValue placeholder={<span className="text-slate-500">{t('analyze-logs:character-select.label')}</span>} />
-      </SelectTrigger>
-      <SelectContent>
-        {result.map((character) => (
-          <SelectItem
-            key={character.id}
-            value={character.id}
-            className={clsx(character.id === 'all' && 'font-semibold')}
-          >
-            {character.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div>
+      {/** biome-ignore lint/a11y/noLabelWithoutControl: aria-labelledby に紐づいてる */}
+      <label id="character-select-label" className="text-sm mb-1 font-bold block">
+        キャラクター
+      </label>
+      <Select
+        disabled={result.length === 0}
+        value={result.length > 0 ? character : ''}
+        onValueChange={selectCharacter}
+        aria-labelledby="character-select-label"
+      >
+        <SelectTrigger className="w-full font-bold" aria-label={t('analyze-logs:character-select.label')}>
+          <SelectValue
+            placeholder={<span className="text-slate-500">{t('analyze-logs:character-select.label')}</span>}
+          />
+        </SelectTrigger>
+        <SelectContent>
+          {result.map((character) => (
+            <SelectItem
+              key={character.id}
+              value={character.id}
+              className={clsx(character.id === 'all' && 'font-semibold')}
+            >
+              {character.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 };

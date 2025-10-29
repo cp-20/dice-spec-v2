@@ -14,8 +14,12 @@ export const GameSystemSelect: FC = () => {
   const { open, render } = useGameSystemRequestDialog();
 
   return (
-    <>
-      <Select value={system ?? undefined} onValueChange={changeSystem}>
+    <div>
+      {/** biome-ignore lint/a11y/noLabelWithoutControl: aria-labelledby に紐づいてる */}
+      <label id="gamesystem-select-label" className="text-sm mb-1 font-bold block">
+        ゲームシステム
+      </label>
+      <Select value={system ?? undefined} onValueChange={changeSystem} aria-labelledby="gamesystem-select-label">
         <SelectTrigger className="w-full font-bold" aria-label={t('analyze-logs:game-system-select.label')}>
           <SelectValue
             placeholder={<span className="text-slate-500">{t('analyze-logs:game-system-select.label')}</span>}
@@ -35,6 +39,6 @@ export const GameSystemSelect: FC = () => {
         </SelectContent>
       </Select>
       {render()}
-    </>
+    </div>
   );
 };
