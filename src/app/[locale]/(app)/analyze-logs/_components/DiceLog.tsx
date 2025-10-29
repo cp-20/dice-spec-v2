@@ -1,13 +1,13 @@
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-export type DiceLogType = {
+type DiceLogType = {
   success: boolean;
   failure: boolean;
   value: string;
 };
 
-export type DiceLogProps = {
+type DiceLogProps = {
   log: DiceLogType;
 };
 

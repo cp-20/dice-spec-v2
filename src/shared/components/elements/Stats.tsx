@@ -1,7 +1,7 @@
 import type { FC, ReactNode } from 'react';
 import { Text } from '@/shared/components/Typography/Text';
 
-export type StatsProps = {
+type StatsProps = {
   label?: ReactNode;
   number?: ReactNode;
   unit?: ReactNode;

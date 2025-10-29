@@ -6,14 +6,14 @@ import { formatDiceCommand } from '@/shared/lib/formatDiceCommand';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
 
-export const quickInputItemsSchema = v.array(
+const quickInputItemsSchema = v.array(
   v.object({
     command: v.string(),
     isFavorite: v.boolean(),
   }),
 );
 
-export type QuickInputItem = InferInput<typeof quickInputItemsSchema>[number];
+type QuickInputItem = InferInput<typeof quickInputItemsSchema>[number];
 
 const quickInputAtom = atom<QuickInputItem[]>([
   { command: '1d6', isFavorite: true },

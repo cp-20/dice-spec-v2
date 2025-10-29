@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { i18nConfig, type Locale } from '@/shared/i18n/config';
 
-export type Option = {
+type Option = {
   title?: string;
   description: string;
   path: string;

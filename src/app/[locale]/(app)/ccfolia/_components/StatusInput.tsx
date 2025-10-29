@@ -8,7 +8,7 @@ import type { InputFormSchemaType } from './hooks/useInputForm';
 
 type Status = InputFormSchemaType['status'][number];
 
-export type StatusInputProps = {
+type StatusInputProps = {
   value: Status[];
   onChange: (value: Status[]) => void;
 };

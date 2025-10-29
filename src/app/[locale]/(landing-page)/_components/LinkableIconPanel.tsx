@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import type { CustomLinkProps } from '@/shared/components/elements/CustomLink';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 
-export type LinkableIconPanelProps = {
+type LinkableIconPanelProps = {
   icon: FC<IconProps>;
   label: ReactNode;
   contents: React.ReactNode;

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/app/[locale]/blogs/[category]/[slug]/_contents/*/*.mdx",
+    "src/**/*.test.ts",
+    "src/**/*.bench.ts",
+    "src/test/**/*.ts"
+  ],
+  "project": ["src/**/*.{js,jsx,ts,tsx,mdx}"],
+  "ignoreDependencies": [
+    "sharp",
+    "tailwindcss-animate",
+    "vite",
+    "tailwindcss",
+    "cssnano",
+    "postcss-syntax",
+    "happy-dom",
+    "@svgr/webpack"
+  ],
+  "next": true
+}

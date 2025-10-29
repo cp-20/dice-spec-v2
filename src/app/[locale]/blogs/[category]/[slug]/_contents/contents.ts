@@ -1,4 +1,4 @@
-export type ContentArticle = {
+type ContentArticle = {
   slug: string;
   title: string;
   shortTitle: string;
@@ -15,7 +15,7 @@ type Unpublished = {
   isPublished: false;
 };
 
-export type CategoryContent = {
+type CategoryContent = {
   category: string;
   name: string;
   description: string;

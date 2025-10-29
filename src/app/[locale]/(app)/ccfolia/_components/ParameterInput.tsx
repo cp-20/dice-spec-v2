@@ -8,7 +8,7 @@ import type { InputFormSchemaType } from './hooks/useInputForm';
 
 type Parameter = InputFormSchemaType['params'][number];
 
-export type ParameterInputProps = {
+type ParameterInputProps = {
   value: Parameter[];
   onChange: (value: Parameter[]) => void;
 };

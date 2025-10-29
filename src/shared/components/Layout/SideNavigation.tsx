@@ -6,7 +6,7 @@ import type { CustomLinkProps } from '@/shared/components/elements/CustomLink';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { navLinks } from '@/shared/lib/navigation';
 
-export type SideNavigationProps = {
+type SideNavigationProps = {
   active: (typeof navLinks)[number]['href'];
 };
 

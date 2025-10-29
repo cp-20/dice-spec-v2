@@ -3,7 +3,7 @@ import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import type { AvailableDice, SimpleDices } from './useSimpleDiceInput';
 import { useSimpleDiceOutput } from './useSimpleDiceOutput';
 
-export const useSimpleDiceRollCore = () => {
+const useSimpleDiceRollCore = () => {
   const simpleDiceRoll = useCallback((dices: Partial<SimpleDices>) => {
     const validDices = Object.entries(dices).filter(([, count]) => count > 0);
     if (validDices.length === 0) return null;

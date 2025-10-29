@@ -9,7 +9,7 @@ import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { InputFormSchema, useInputForm } from './hooks/useInputForm';
 
-export const InputFormValueSchema = v.object({
+const InputFormValueSchema = v.object({
   ...InputFormSchema.entries,
   status: v.array(
     v.pipe(

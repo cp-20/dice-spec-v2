@@ -1,7 +1,7 @@
 import type { ChangeEventHandler, DragEventHandler } from 'react';
 import { useCallback, useState } from 'react';
 
-export type DropHandler = (filename: string, content: string) => void;
+type DropHandler = (filename: string, content: string) => void;
 
 export const useDropzone = <Element = HTMLElement>(dropHandler: DropHandler) => {
   const [isDraggedOver, setIsDraggedOver] = useState(false);

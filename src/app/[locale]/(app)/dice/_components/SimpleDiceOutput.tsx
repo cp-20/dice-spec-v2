@@ -76,7 +76,7 @@ export const SimpleDiceOutput: FC = () => {
   );
 };
 
-export const diceComponents: Record<AvailableDice, FC<DiceProps>> = {
+const diceComponents: Record<AvailableDice, FC<DiceProps>> = {
   3: DiceD3,
   4: DiceD4,
   6: DiceD6,

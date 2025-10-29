@@ -1,6 +1,6 @@
 export type DiceAST = Expression | ComparingExpression;
 
-export type ComparingExpression = {
+type ComparingExpression = {
   type: 'comparing';
   expression: Expression;
   target: number;
@@ -37,17 +37,17 @@ export type Operator = '+' | '-' | '*' | '/';
 
 export type Parenthesis = '(' | ')';
 
-export type InequalitySign = '>=' | '<=';
+type InequalitySign = '>=' | '<=';
 
 export type DiceStr = `${number}${'d' | 'D' | 'bd' | 'BD' | 'pd' | 'PD'}${number | ''}`;
 
 export type Token = Parenthesis | Operator | DiceStr;
 
-export type RawExpectResult = Omit<ExpectResult, 'CI' | 'SD' | 'chance' | 'distribution' | 'withTarget'>;
+type RawExpectResult = Omit<ExpectResult, 'CI' | 'SD' | 'chance' | 'distribution' | 'withTarget'>;
 
 export type ExpectResult = ExpectResultWithTarget | ExpectResultWithoutTarget;
 
-export type ExpectResultWithoutTarget = {
+type ExpectResultWithoutTarget = {
   withTarget: false;
   // 期待値 (expected value)
   mean: number;
@@ -69,7 +69,7 @@ export type ExpectResultWithoutTarget = {
   distribution: Record<string, number>;
 };
 
-export type ExpectResultWithTarget = {
+type ExpectResultWithTarget = {
   withTarget: true;
   target: {
     sign: InequalitySign;

@@ -9,7 +9,7 @@ export type SuccessExpectResult = {
   success: true;
 } & ExpectResult;
 
-export type FailedExpectResult = {
+type FailedExpectResult = {
   success: false;
   message?: string;
 };

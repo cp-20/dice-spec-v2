@@ -8,7 +8,7 @@ import { CustomLink } from '@/shared/components/elements/CustomLink';
 import type { NavPaths } from '@/shared/lib/navigation';
 import { navLinks } from '@/shared/lib/navigation';
 
-export type BottomNavigationProps = {
+type BottomNavigationProps = {
   active?: NavPaths;
 };
 

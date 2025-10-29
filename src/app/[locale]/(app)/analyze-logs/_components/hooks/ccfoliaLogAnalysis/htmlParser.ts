@@ -1,4 +1,4 @@
-export type StructuredLog = {
+type StructuredLog = {
   color: string | null;
   tab: string;
   character: string;

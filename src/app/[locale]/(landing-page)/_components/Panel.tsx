@@ -1,7 +1,7 @@
 import type { ComponentProps, FC, ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-export type PanelProps = {
+type PanelProps = {
   label: ReactNode;
   contents: ReactNode;
 };

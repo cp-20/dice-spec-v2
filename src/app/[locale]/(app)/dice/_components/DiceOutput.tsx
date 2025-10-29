@@ -6,7 +6,7 @@ import type { FC } from 'react';
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { type DiceLog, useDiceLogs } from './hooks/useDiceLogs';
 
-export type DiceOutputProps = {
+type DiceOutputProps = {
   logs: DiceLog[];
 };
 
@@ -16,7 +16,7 @@ export const DiceOutput: FC = () => {
   return <PresentialDiceOutput logs={diceLogs} />;
 };
 
-export const PresentialDiceOutput: FC<DiceOutputProps> = ({ logs }) => (
+const PresentialDiceOutput: FC<DiceOutputProps> = ({ logs }) => (
   <ContainerSection label={t('dice:advanced.output')} scrollable className="h-40">
     <div>
       {logs.map((log) => (

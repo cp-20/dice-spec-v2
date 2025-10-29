@@ -6,12 +6,12 @@ import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import type { DiceExpecterResult } from './expecter';
 import { diceExpecter } from './expecter';
 
-export type DiceExpecterOption = {
+type DiceExpecterOption = {
   autoRecalculation: boolean;
 };
 
 const commandAtom = atom<string>('');
-export const resultAtom = atom<DiceExpecterResult | null>(null);
+const resultAtom = atom<DiceExpecterResult | null>(null);
 const optionAtom = atom<DiceExpecterOption>({
   autoRecalculation: true,
 });

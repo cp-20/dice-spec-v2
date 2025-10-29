@@ -5,7 +5,7 @@ import { t } from 'i18next';
 import { type FC, type ReactNode, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 
-export type DiceRollModeTabsProps = {
+type DiceRollModeTabsProps = {
   simpleTabContent: ReactNode;
   advancedTabContent: ReactNode;
 };

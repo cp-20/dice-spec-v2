@@ -1,7 +1,7 @@
 import { atom, useAtom } from 'jotai';
 import type { AvailableDice } from './useSimpleDiceInput';
 
-export type simpleDiceOutputAtom = {
+type simpleDiceOutputAtom = {
   key: string;
   result: { dice: AvailableDice; result: number[] }[];
   sum: number;

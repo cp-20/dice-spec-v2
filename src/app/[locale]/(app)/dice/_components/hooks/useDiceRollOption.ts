@@ -5,7 +5,7 @@ import type { GameSystemInfo } from '@/shared/lib/bcdice/getGameSystemInfo';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { useBcdiceApi } from './useBcdiceApi';
 
-export type DiceRollOptions = {
+type DiceRollOptions = {
   system: string;
   systemInfo: GameSystemInfo;
 };
