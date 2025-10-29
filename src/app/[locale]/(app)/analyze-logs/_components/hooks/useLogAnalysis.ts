@@ -44,14 +44,17 @@ export const useLogAnalysis = () => {
   }, [setResult]);
 
   useEffect(() => {
+    if (fileContent === '') return;
+    setSystem(detectSystem(fileContent));
+  }, [fileContent, setSystem]);
+
+  useEffect(() => {
     if (fileContent === '') {
       reset();
       return;
     }
-
-    setSystem(detectSystem(fileContent));
     analyze(fileContent);
-  }, [fileContent, analyze, reset, setSystem]);
+  }, [fileContent, analyze, reset]);
 
   return {
     result,
