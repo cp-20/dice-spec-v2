@@ -1,12 +1,5 @@
 import type { IconProps } from '@tabler/icons-react';
-import {
-  IconBrandDiscord,
-  IconBrandGithub,
-  IconBrandX,
-  IconDice5,
-  IconSearch,
-  IconTimeline,
-} from '@tabler/icons-react';
+import { IconDice5, IconSearch, IconTimeline } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
 import type { FC } from 'react';
