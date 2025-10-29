@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import { contents } from '@/app/[locale]/blogs/[category]/[slug]/_contents/contents';
+import { CustomLink } from '@/shared/components/elements/CustomLink';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -24,11 +25,15 @@ export const BlogBreadCrumb: FC<BlogBreadcrumbProps> = ({ category, slug }) => {
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/blogs">ブログトップ</BreadcrumbLink>
+          <BreadcrumbLink asChild href="/blogs">
+            <CustomLink href="/blogs">ブログトップ</CustomLink>
+          </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbLink href={`/blogs/${category}`}>{contentCategory.name}</BreadcrumbLink>
+          <BreadcrumbLink asChild href={`/blogs/${category}`}>
+            <CustomLink href={`/blogs/${category}`}>{contentCategory.name}</CustomLink>
+          </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
@@ -51,7 +56,9 @@ export const CategoryBreadCrumb: FC<CategoryBreadCrumbProps> = ({ category }) =>
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/blogs">ブログトップ</BreadcrumbLink>
+          <BreadcrumbLink asChild href="/blogs">
+            <CustomLink href="/blogs">ブログトップ</CustomLink>
+          </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>

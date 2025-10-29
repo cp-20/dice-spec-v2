@@ -1,6 +1,6 @@
 import { IconChevronRight } from '@tabler/icons-react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { contents } from '../_contents/contents';
 
 type Props = {
@@ -30,7 +30,7 @@ export const BlogLink: React.FC<Props> = ({ category, slug }) => {
   }
 
   return (
-    <Link
+    <CustomLink
       href={`/blogs/${category}/${slug}`}
       className="w-full flex flex-col border rounded-md overflow-hidden group hover:opacity-70 transition"
     >
@@ -43,6 +43,6 @@ export const BlogLink: React.FC<Props> = ({ category, slug }) => {
           <IconChevronRight className="size-5" />
         </span>
       </div>
-    </Link>
+    </CustomLink>
   );
 };

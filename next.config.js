@@ -8,10 +8,11 @@ const nextConfig = {
   reactStrictMode: true,
   redirects: async () => [
     {
-      source: '/:path*',
-      destination: 'https://dicespec.app/:path*',
+      source: '/:path((?!_next/|assets).*)',
+      destination: 'https://dicespec.app/:path',
       permanent: true,
       has: [{ type: 'host', value: 'dicespec.vercel.app' }],
+      missing: [{ type: 'query', key: 'keep-old', value: 'true' }],
       statusCode: 301,
     },
   ],

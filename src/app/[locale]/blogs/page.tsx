@@ -1,5 +1,5 @@
 import { IconChevronRight } from '@tabler/icons-react';
-import Link from 'next/link';
+import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { type MetadataGenerator, metadataHelper, viewportGenerator } from '@/shared/lib/metadataGenerator';
 import { BlogCard } from './_components/BlogCard';
 import { contents } from './[category]/[slug]/_contents/contents';
@@ -24,10 +24,13 @@ const BlogTopPage = () => {
         {contents.map((category) => (
           <div key={category.category}>
             <h2 className="text-xl font-bold mb-1">
-              <Link href={`/blogs/${category.category}`} className="flex items-center gap-1 text-blue-500 underline">
+              <CustomLink
+                href={`/blogs/${category.category}`}
+                className="flex items-center gap-1 text-blue-500 underline"
+              >
                 <span>{category.name}</span>
                 <IconChevronRight />
-              </Link>
+              </CustomLink>
             </h2>
             <p className="text-sm text-slate-500 mb-4">{category.description}</p>
 
