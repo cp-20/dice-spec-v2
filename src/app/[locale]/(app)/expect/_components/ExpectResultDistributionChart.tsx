@@ -4,7 +4,7 @@ import type { ChartOptions, ScriptableLineSegmentContext } from 'chart.js';
 import merge from 'deepmerge';
 import dynamic from 'next/dynamic';
 import type { FC } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { DiceExpecterResult } from '@/app/[locale]/(app)/expect/_components/hooks/expecter';
 import { commonChartOption } from '@/shared/lib/commonChartOption';
 import { useDiceExpecterResult } from './hooks/useDiceExpecter';
@@ -14,9 +14,19 @@ const Line = dynamic(async () => (await import('react-chartjs-2')).Line, {
 });
 
 export const ExpectResultDistributionChart: FC = () => {
+  const [loaded, setLoaded] = useState(false);
   const { result } = useDiceExpecterResult();
 
-  if (!result) {
+  useEffect(() => {
+    import('chart.js').then(
+      ({ Chart, LineController, LineElement, CategoryScale, LinearScale, PointElement, Filler }) => {
+        Chart.register(LineController, LineElement, CategoryScale, LinearScale, PointElement, Filler);
+        setLoaded(true);
+      },
+    );
+  }, []);
+
+  if (!result || !loaded) {
     return null;
   }
 
@@ -28,14 +38,6 @@ type PresentationalProps = {
 };
 
 export const PresentationalExpectResultDistributionChart: FC<PresentationalProps> = ({ result }) => {
-  useEffect(() => {
-    import('chart.js').then(
-      ({ Chart, LineController, LineElement, CategoryScale, LinearScale, PointElement, Filler }) => {
-        Chart.register(LineController, LineElement, CategoryScale, LinearScale, PointElement, Filler);
-      },
-    );
-  }, []);
-
   if (!result?.success) {
     return null;
   }
