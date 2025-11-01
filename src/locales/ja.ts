@@ -125,12 +125,14 @@ export const ja = {
     },
     stats: {
       mean: '平均',
-      deviation: 'ダイス偏差値',
       'success-rate': '成功率',
       'roll-count': 'ダイスを振った回数',
       'roll-count-unit': '回',
       'dice-count-unit': '個',
       share: '解析結果をシェア',
+    },
+    chart: {
+      top: '上位',
     },
     log: 'ダイスログ',
   },

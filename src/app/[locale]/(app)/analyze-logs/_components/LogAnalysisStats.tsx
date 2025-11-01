@@ -15,14 +15,10 @@ export const LogAnalysisStats: FC = () => {
 
   return (
     <div className="@container">
-      <div className="grid grid-cols-2 gap-4 @lg:grid-cols-4">
+      <div className="flex flex-col gap-4">
         <Stats
           label={t('analyze-logs:stats.mean')}
           number={numberWrapper(result && round(result.summary.average, 2))}
-        />
-        <Stats
-          label={t('analyze-logs:stats.deviation')}
-          number={numberWrapper(result && round(result.summary.deviationScore, 2))}
         />
         <Stats
           label={t('analyze-logs:stats.success-rate')}

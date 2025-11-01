@@ -130,6 +130,9 @@ export const en = {
       'dice-count-unit': '',
       share: 'Share analysis results',
     },
+    chart: {
+      top: 'Top',
+    },
     log: 'Dice Logs',
   },
   ccfolia: {

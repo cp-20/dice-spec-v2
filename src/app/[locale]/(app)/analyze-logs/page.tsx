@@ -15,6 +15,7 @@ import { CharacterSelect } from './_components/CharacterSelect';
 import { DiceLogList } from './_components/DiceLogList';
 import { GameSystemSelect } from './_components/GameSystemSelect';
 import { LogAnalysisCharts } from './_components/LogAnalysisCharts';
+import { LogAnalysisRankingChart } from './_components/LogAnalysisRankingChart';
 import { LogAnalysisStats } from './_components/LogAnalysisStats';
 import { UploadLogFileButton } from './_components/UploadLogFileButton';
 
@@ -66,7 +67,10 @@ const AnalyzeLogsPage: NextPage = () => (
     </div>
 
     <div className="space-y-4">
-      <LogAnalysisStats />
+      <div className="grid grid-cols-2">
+        <LogAnalysisStats />
+        <LogAnalysisRankingChart />
+      </div>
       <LogAnalysisCharts />
     </div>
 
