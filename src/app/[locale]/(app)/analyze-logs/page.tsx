@@ -4,6 +4,7 @@ import type { NextPage } from 'next';
 import { BlogCallout } from '@/app/[locale]/(app)/_components/BlogCallout';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
+import { LogAnalysisShareButton } from '@/app/[locale]/(app)/analyze-logs/_components/LogAnalysisShareButton';
 import { wrapPage } from '@/shared/i18n/page-layout';
 import {
   localeHelper,
@@ -71,6 +72,7 @@ const AnalyzeLogsPage: NextPage = () => (
         <LogAnalysisStats />
         <LogAnalysisRankingChart />
       </div>
+      <LogAnalysisShareButton />
       <LogAnalysisCharts />
     </div>
 

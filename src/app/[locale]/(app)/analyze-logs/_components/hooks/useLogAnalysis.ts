@@ -1,12 +1,11 @@
 import { atom, useAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';
+import { systemStats } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/ccfoliaLogAnalysis/messageParser';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
-import { analyzeCcfoliaLog, type DiceResultForCharacter } from './ccfoliaLogAnalysis';
+import { analyzeCcfoliaLog, type DiceResultForCharacter, type System } from './ccfoliaLogAnalysis';
 import { detectSystem } from './ccfoliaLogAnalysis/detector';
 import { useFileContent } from './useFileContent';
-
-type System = 'emoklore' | 'CoC7th' | 'CoC6th' | 'shinobigami';
 
 const resultAtom = atom<DiceResultForCharacter[]>([]);
 const systemAtom = atom<System | null>(null);
@@ -58,6 +57,8 @@ export const useLogAnalysis = () => {
 
   return {
     result,
+    system,
+    systemStats: system ? systemStats[system] : null,
     analyze,
     reset,
   };

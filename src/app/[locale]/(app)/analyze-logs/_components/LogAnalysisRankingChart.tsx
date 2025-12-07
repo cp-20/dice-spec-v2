@@ -43,7 +43,7 @@ interface ChartProps {
 }
 
 const width = 480;
-const height = 140;
+const height = 300;
 const padding = 20;
 const domainMin = 20;
 const domainMax = 80;
@@ -57,7 +57,7 @@ const maxY = Math.max(...ys);
 const baselineY = height - padding;
 
 const scaleX = (x: number) => padding + ((x - domainMin) / (domainMax - domainMin)) * (width - padding * 2);
-const scaleY = (y: number) => baselineY - (y / maxY) * (height - padding * 2);
+const scaleY = (y: number) => baselineY - (y / maxY) * (height - padding * 7);
 
 const curvePath = xs.map((x, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(x)} ${scaleY(pdf(x))}`).join(' ');
 
@@ -75,6 +75,7 @@ const Chart: FC<ChartProps> = ({ score }) => {
   const scoreX = scaleX(Math.max(domainMin, Math.min(domainMax, score)));
   const leftWidth = Math.max(0, scoreX - padding);
   const rightWidth = Math.max(0, width - padding - scoreX);
+  const percentage = score && (1 - calcNormalCDF(score, mean, sd)) * 100;
 
   return (
     <svg width="100%" viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`score = ${score}`}>
@@ -120,8 +121,23 @@ const Chart: FC<ChartProps> = ({ score }) => {
           transition: 'transform 800ms cubic-bezier(.2,.8,.2,1)',
         }}
       >
-        <line x1={0} x2={0} y1={0} y2={baselineY} stroke="#111827" strokeWidth={2} />
-        <polygon points={`${-6},${0} ${6},${0} 0,8`} fill="#111827" stroke="#ffffffaa" strokeWidth={0.5} />
+        <line x1={0} x2={0} y1={padding * 5} y2={baselineY} stroke="#111827" strokeWidth={2} />
+        <polygon
+          points={`${-6},${padding * 5} ${6},${padding * 5} 0,${padding * 5 + 8}`}
+          fill="#111827"
+          stroke="#ffffffaa"
+          strokeWidth={0}
+        />
+        <text x={0} y={padding * 5 - 12} textAnchor="middle" fill="#111827">
+          <tspan fontSize={48} fontWeight="bold">
+            {percentage.toFixed(1)}
+          </tspan>
+
+          <tspan fontSize={16} fontWeight="normal">
+            {' '}
+            %
+          </tspan>
+        </text>
       </g>
 
       {/* ticks and labels */}

@@ -1,10 +1,4 @@
-import type { MessageParser, MessageParserResult, SystemStats } from '.';
-
-const evalResult = (result: string): MessageParserResult['evaluationStatus'] => {
-  if (['成功', 'スペシャル'].includes(result)) return 'success';
-  if (['失敗', 'ファンブル'].includes(result)) return 'failure';
-  return 'other';
-};
+import type { SystemMessageParser, SystemStats } from '.';
 
 // match[1]: 振ったダイスの数 (optional)
 // match[2]: 補正値 (optional)
@@ -17,7 +11,7 @@ const evalResult = (result: string): MessageParserResult['evaluationStatus'] => 
 const shinobigamiRegex =
   /\((\d*)SG(?:\+(\d+))?@(\d+)#(\d+)(?:>=(\d+))?\)(?: ＞ \[[\d,]+\])? ＞ (\d+)\[[\d,]+\](?:\+\d+)? ＞ (\d+)(?: ＞ (.+?)(?:\(.+\))?)?$/;
 
-export const shinobigamiParser: MessageParser = (message) => {
+export const shinobigamiParser: SystemMessageParser = (message) => {
   const match = message.match(shinobigamiRegex);
   if (match === null) return null;
 
@@ -25,9 +19,8 @@ export const shinobigamiParser: MessageParser = (message) => {
   const target = Number.isNaN(rawTarget) ? -1 : rawTarget;
   const results = [Number.parseInt(match[6], 10)];
   const evaluation = match[8] ?? '';
-  const evaluationStatus = evalResult(evaluation);
 
-  return { evaluation, evaluationStatus, results, target };
+  return { evaluation, results, target };
 };
 
 export const shinobigamiSystemStats = {
@@ -35,4 +28,10 @@ export const shinobigamiSystemStats = {
   variance: 5.833333333333333,
   better: 'high',
   pivots: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  evaluations: [
+    { label: 'ファンブル', status: 'failure' },
+    { label: '失敗', status: 'failure' },
+    { label: '成功', status: 'success' },
+    { label: 'スペシャル', status: 'success' },
+  ],
 } satisfies SystemStats;
