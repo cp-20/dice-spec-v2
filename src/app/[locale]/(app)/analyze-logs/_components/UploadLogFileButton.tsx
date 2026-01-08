@@ -5,7 +5,7 @@ import { t } from 'i18next';
 import { type FC, useCallback, useRef, useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { useDropzone } from './hooks/useDropzone';
-import { useFileContent } from './hooks/useFileContent';
+import { useFileContent } from './hooks/useLogAnalysis';
 
 export const UploadLogFileButton: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);

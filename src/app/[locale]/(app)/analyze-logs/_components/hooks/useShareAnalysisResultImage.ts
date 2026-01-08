@@ -1,17 +1,18 @@
-import { useCallback, useRef, useState } from 'react';
-import type { ChartJSOrUndefined } from 'react-chartjs-2/dist/types';
+import { useAtomValue } from 'jotai';
+import { useCallback, useTransition } from 'react';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
 import { useCharacterSelect } from './useCharacterSelect';
+import { sharingImageDataUrlAtom } from './useShareAnalysisResult';
 
-export const useChartImageShare = () => {
-  const chartRef = useRef<ChartJSOrUndefined<'bar', number[], string>>(null);
-  const [isSharingInProgress, setIsSharingInProgress] = useState(false);
+export const useShareAnalysisResultImage = () => {
+  const [isSharingImage, startTransition] = useTransition();
   const { uploadImage } = useFirebase();
   const { character } = useCharacterSelect();
   const result = useCharacterLogAnalysis(character);
+  const sharingImageDataUrl = useAtomValue(sharingImageDataUrlAtom);
   const { sendEvent } = useGoogleAnalytics();
 
   const shareImage = useCallback(() => {
@@ -28,7 +29,7 @@ export const useChartImageShare = () => {
       `▼あなたのダイス結果を分析した結果▼\n\n平均: ${averageStr}\nダイス偏差値: ${deviationScoreStr}\n成功率: ${successRateStr}\nダイスを振った回数: ${diceRollCountStr}\n\n#ダイススペック\n`,
     );
 
-    if (!chartRef.current) {
+    if (sharingImageDataUrl === null) {
       sendEvent('shareImage', '');
       const url = encodeURIComponent('https://dicespec.app/analyze-logs');
       const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
@@ -36,25 +37,20 @@ export const useChartImageShare = () => {
       return;
     }
 
-    setIsSharingInProgress(true);
-
-    const base64ImageUrl = chartRef.current.toBase64Image();
-    uploadImage(base64ImageUrl)
-      .then((imageUrl) => {
+    startTransition(async () => {
+      try {
+        const imageUrl = await uploadImage(sharingImageDataUrl);
         sendEvent('shareImage', imageUrl);
         const ogp = encodeURIComponent(imageUrl);
         const url = encodeURIComponent(`https://dicespec.app/analyze-logs?ogp=${ogp}`);
         const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
         window.open(href, '_blank');
-      })
-      .catch((err) => {
+      } catch (err) {
         sendEvent('shareImageFailed');
         console.error(err);
-      })
-      .finally(() => {
-        setIsSharingInProgress(false);
-      });
-  }, [result, sendEvent, uploadImage]);
+      }
+    });
+  }, [result, sendEvent, uploadImage, sharingImageDataUrl]);
 
-  return { chartRef, isSharingInProgress, shareImage };
+  return { isSharingImage, shareImage };
 };

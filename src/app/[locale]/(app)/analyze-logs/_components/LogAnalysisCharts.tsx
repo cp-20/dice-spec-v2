@@ -9,7 +9,6 @@ import { groupBy } from '@/shared/lib/groupBy';
 import { aggregateResults } from './hooks/ccfoliaLogAnalysis/resultAggregator';
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
-import { useChartImageShare } from './hooks/useChartImageShare';
 import { useLogAnalysisSystem } from './hooks/useLogAnalysis';
 import { useLogAnalysisSystemStats } from './hooks/useLogAnalysisSystemStats';
 
@@ -29,7 +28,6 @@ export const LogAnalysisCharts: FC = () => {
   const [loaded, setLoaded] = useState(false);
   const systemStats = useLogAnalysisSystemStats();
   const { system } = useLogAnalysisSystem();
-  const { chartRef, isSharingInProgress, shareImage } = useChartImageShare();
   const { character } = useCharacterSelect();
   const analysisResult = useCharacterLogAnalysis(character);
 

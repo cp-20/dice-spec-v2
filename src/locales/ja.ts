@@ -131,6 +131,12 @@ export const ja = {
       'dice-count-unit': '個',
       share: '解析結果をシェア',
     },
+    'share-analysis-result': {
+      title: '解析結果をシェア',
+      'scenario-name': 'シナリオ名 (任意)',
+      'scenario-name-description': '画像のタイトル部分に表示されます',
+      'share-image': '画像をシェア',
+    },
     chart: {
       top: '上位',
     },

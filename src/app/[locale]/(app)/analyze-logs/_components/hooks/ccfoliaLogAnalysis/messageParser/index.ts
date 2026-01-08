@@ -1,4 +1,3 @@
-import { message } from 'valibot';
 import type { System } from '../';
 import { CoC6thParser, CoC6thSystemStats } from './cthulhu6th';
 import { CoC7thParser, CoC7thSystemStats } from './cthulhu7th';
@@ -71,7 +70,7 @@ const postprocess = (system: System, result: SystemMessageParserResult | null) =
     console.error(`Unknown evaluation label: ${result.evaluation} for system: ${system}`);
     return {
       ...result,
-      evaluationStatus: 'other',
+      evaluationStatus: 'other' as const,
     };
   }
 

@@ -4,6 +4,7 @@ import { t } from 'i18next';
 import type { NextPage } from 'next';
 import type { FC } from 'react';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
+import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { Footer } from '@/shared/components/Layout/Footer';
 import { H2 } from '@/shared/components/Typography/H2';
 import { Text } from '@/shared/components/Typography/Text';
@@ -16,8 +17,6 @@ import {
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
 import LogoIcon from '/public/icon.svg';
-import TitleLogoJP from '/public/title-logo.svg';
-import TitleLogoEN from '/public/title-logo-en.svg';
 import { LinkableIconPanel } from './_components/LinkableIconPanel';
 import { Panel } from './_components/Panel';
 
@@ -38,7 +37,6 @@ const featureIcons: Record<string, FC<IconProps>> = {
 };
 
 const LandingPage: NextPage = () => {
-  const TitleLogo = t('lang') === 'en' ? TitleLogoEN : TitleLogoJP;
   return (
     <div className="flex min-h-screen w-full flex-col">
       <main className="mx-auto flex w-full max-w-(--breakpoint-lg) flex-1 flex-col items-center gap-16 px-8 py-8 max-sm:px-4">
