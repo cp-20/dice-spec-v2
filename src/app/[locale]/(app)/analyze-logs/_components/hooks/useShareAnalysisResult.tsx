@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { toPng } from 'html-to-image';
 import { t } from 'i18next';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
-import { type FC, type ReactNode, useCallback, useState } from 'react';
+import { type FC, type ReactNode, useCallback, useEffect, useState } from 'react';
 import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/dialog';
@@ -14,8 +14,7 @@ import { round } from '@/shared/lib/round';
 import LogoIcon from '/public/icon.svg';
 import { LogAnalysisRankingChart } from '../LogAnalysisRankingChart';
 import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
-import { logAnalysisCharacterAtom, useCharacterSelect } from './useCharacterSelect';
-import { logAnalysisResultAtom } from './useLogAnalysis';
+import { useCharacterSelect } from './useCharacterSelect';
 import { useShareAnalysisResultImage } from './useShareAnalysisResultImage';
 
 interface StatsProps {
@@ -44,11 +43,20 @@ const { currentValueAtom: scenarioNameAtom, debouncedValueAtom: debouncedScenari
   300,
   true,
 );
+
+const sharingImageVersion = atom(0);
+const useRegenerateImage = () => {
+  const setVersion = useSetAtom(sharingImageVersion);
+
+  const regenerateImage = useCallback(() => {
+    setVersion((v) => v + 1);
+  }, [setVersion]);
+
+  return { regenerateImage };
+};
+
 export const sharingImageDataUrlAtom = atom(async (get) => {
-  // implicitly dependencies
-  get(debouncedScenarioNameAtom);
-  get(logAnalysisCharacterAtom);
-  get(logAnalysisResultAtom);
+  get(sharingImageVersion);
 
   const imageRef = get(imageRefAtom);
 
@@ -157,6 +165,13 @@ const SharingAnalysisResult: FC<SharingAnalysisResultProps> = ({ className }) =>
     },
     [setImageRef],
   );
+
+  const { regenerateImage } = useRegenerateImage();
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: regenerate image after every render
+  useEffect(() => {
+    regenerateImage();
+  }, [regenerateImage, analysisResult, scenarioName]);
 
   return (
     <div

@@ -7,9 +7,9 @@ import { analyzeCcfoliaLog, type DiceResultForCharacter, type System } from './c
 import { detectSystem } from './ccfoliaLogAnalysis/detector';
 import { systemStats } from './ccfoliaLogAnalysis/messageParser';
 
-export const fileContentAtom = atom<string>('');
+const fileContentAtom = atom<string>('');
 
-export const logAnalysisSystemAtom = withAtomEffect(atom<System | null>(null), (get, set) => {
+const logAnalysisSystemAtom = withAtomEffect(atom<System | null>(null), (get, set) => {
   const fileContent = get(fileContentAtom);
 
   if (fileContent === '') {
@@ -21,7 +21,7 @@ export const logAnalysisSystemAtom = withAtomEffect(atom<System | null>(null), (
   set(logAnalysisSystemAtom, detectedSystem);
 });
 
-export const logAnalysisResultAtom = atom<DiceResultForCharacter[]>((get) => {
+const logAnalysisResultAtom = atom<DiceResultForCharacter[]>((get) => {
   const fileContent = get(fileContentAtom);
   const system = get(logAnalysisSystemAtom);
 
@@ -29,7 +29,7 @@ export const logAnalysisResultAtom = atom<DiceResultForCharacter[]>((get) => {
   return analyzeCcfoliaLog(system, fileContent);
 });
 
-export const systemStatsAtom = atom((get) => {
+const systemStatsAtom = atom((get) => {
   const system = get(logAnalysisSystemAtom);
   if (system === null) return null;
   return systemStats[system];
