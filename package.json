@@ -72,6 +72,7 @@
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
     "@types/web": "^0.0.284",
+    "@typescript/native-preview": "^7.0.0-dev.20260108.1",
     "cssnano": "^7.1.1",
     "happy-dom": "^20.0.8",
     "mitata": "^1.0.34",

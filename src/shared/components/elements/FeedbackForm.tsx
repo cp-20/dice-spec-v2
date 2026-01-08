@@ -52,9 +52,8 @@ export const FeedbackForm = () => {
               id="feedback-form-feedback"
               value={feedback}
               onChange={(e) => setFeedback(e.currentTarget.value)}
-              // @ts-expect-error fieldSizing is a newer CSS property
-              style={{ fieldSizing: 'content' }}
               required
+              className="field-sizing-content"
             />
           </div>
         </div>
