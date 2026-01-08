@@ -58,7 +58,7 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
           className="transition-opacity duration-100 hover:opacity-70"
           aria-label={t('common:header.app-name')}
         >
-          <TitleLogo className="h-5 w-auto text-slate-800 max-sm:h-7 max-sm:w-[10rem]" />
+          <TitleLogo className="h-5 w-auto text-slate-800 max-sm:h-7 max-sm:w-40" />
         </CustomLink>
         <div>v{appVersion}</div>
       </div>
@@ -93,9 +93,8 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
                       id="feedback-form-feedback"
                       value={feedback}
                       onChange={(e) => setFeedback(e.currentTarget.value)}
-                      // @ts-expect-error fieldSizing is a newer CSS property
-                      style={{ fieldSizing: 'content' }}
                       required
+                      className="field-sizing-content"
                     />
                   </div>
                 </div>

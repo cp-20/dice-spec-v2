@@ -130,6 +130,12 @@ export const en = {
       'dice-count-unit': '',
       share: 'Share analysis results',
     },
+    'share-analysis-result': {
+      title: 'Share analysis results',
+      'scenario-name': 'Scenario name (optional)',
+      'scenario-name-description': 'Displayed in the title section of the image',
+      'share-image': 'Share image',
+    },
     chart: {
       top: 'Top',
     },

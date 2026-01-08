@@ -8,14 +8,12 @@ describe('shinobigamiParser', () => {
   test('正常なダイス結果をパースする', () => {
     expect(shinobigamiParser('SG>=5 (SG@12#2>=5) ＞ 3[1,2] ＞ 3 ＞ 失敗')).toStrictEqual({
       evaluation: '失敗',
-      evaluationStatus: 'failure',
       results: [3],
       target: 5,
     });
 
     expect(shinobigamiParser('SG (SG@12#2) ＞ 11[5,6] ＞ 11')).toStrictEqual({
       evaluation: '',
-      evaluationStatus: 'other',
       results: [11],
       target: -1,
     });
@@ -26,14 +24,12 @@ describe('shinobigamiParser', () => {
       ),
     ).toStrictEqual({
       evaluation: 'スペシャル',
-      evaluationStatus: 'success',
       results: [12],
       target: 6,
     });
 
     expect(shinobigamiParser('SG>=6 (SG@12#2>=6) ＞ 8[2,6] ＞ 8 ＞ 成功')).toStrictEqual({
       evaluation: '成功',
-      evaluationStatus: 'success',
       results: [8],
       target: 6,
     });
