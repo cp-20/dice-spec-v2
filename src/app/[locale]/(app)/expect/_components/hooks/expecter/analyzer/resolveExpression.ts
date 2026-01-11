@@ -85,7 +85,7 @@ const resolveDiceExpression = (expression: DiceExpression): ResolvedExpression =
     throw new ResolverError('invalid dice roll');
   }
 
-  if (num * num * faces > 1e5) {
+  if (num * num * faces > 1e6) {
     throw new ResolverError('too many dice');
   }
 
