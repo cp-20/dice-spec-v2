@@ -7,7 +7,6 @@ import { useLogAnalysis } from './hooks/useLogAnalysis';
 
 export const AnalyzeLogsErrorAlert: FC = () => {
   const { result } = useLogAnalysis();
-  console.log(result);
 
   if (result?.type !== 'error') return null;
 
