@@ -37,7 +37,26 @@ type PresentationalProps = {
   result: DiceExpecterResult;
 };
 
-export const PresentationalExpectResultDistributionChart: FC<PresentationalProps> = ({ result }) => {
+const PreDefinedExpectResultDistributionChart: FC<PresentationalProps> = ({ result }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    import('chart.js').then(
+      ({ Chart, LineController, LineElement, CategoryScale, LinearScale, PointElement, Filler }) => {
+        Chart.register(LineController, LineElement, CategoryScale, LinearScale, PointElement, Filler);
+        setLoaded(true);
+      },
+    );
+  }, []);
+
+  if (!result || !loaded) {
+    return null;
+  }
+
+  return <PresentationalExpectResultDistributionChart result={result} />;
+};
+
+const PresentationalExpectResultDistributionChart: FC<PresentationalProps> = ({ result }) => {
   if (!result?.success) {
     return null;
   }

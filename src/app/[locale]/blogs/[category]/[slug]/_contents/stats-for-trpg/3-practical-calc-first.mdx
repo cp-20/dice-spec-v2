@@ -1,6 +1,6 @@
 import { BlogImage } from '../../_components/BlogImage';
 import { BlogLink } from '../../_components/BlogLink';
-import { PresentationalExpectResultDistributionChart } from '@/app/[locale]/(app)/expect/_components/ExpectResultDistributionChart';
+import { PreDefinedExpectResultDistributionChart } from '@/app/[locale]/(app)/expect/_components/ExpectResultDistributionChart';
 import { diceExpecter } from '@/app/[locale]/(app)/expect/_components/hooks/expecter';
 import { WithCaption } from '@/mdx-components';
 
@@ -80,7 +80,7 @@ import { WithCaption } from '@/mdx-components';
 
 確率分布のグラフを見てみるとこんな感じ！　0を中心としてるのは確かだけど、色んな値を取り得ることが分かるね！
 
-<WithCaption caption="2d6-2d6の分布"><PresentationalExpectResultDistributionChart result={diceExpecter('2d6-2d6')} /></WithCaption>
+<WithCaption caption="2d6-2d6の分布"><PreDefinedExpectResultDistributionChart result={diceExpecter('2d6-2d6')} /></WithCaption>
 
 実際にこの値を計算してみると、**約33.6%** の確率でAさんが勝つことが分かるよ！　逆にBさんが勝つ確率は **約55.6%** で、引き分けの確率は **約10.8%** だね！
 
