@@ -37,7 +37,7 @@ type PresentationalProps = {
   result: DiceExpecterResult;
 };
 
-const PreDefinedExpectResultDistributionChart: FC<PresentationalProps> = ({ result }) => {
+export const PreDefinedExpectResultDistributionChart: FC<PresentationalProps> = ({ result }) => {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
