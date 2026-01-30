@@ -6,6 +6,10 @@ import withPWAFn from 'next-pwa';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  images: {
+    loader: 'custom',
+    loaderFile: './src/image-loader.ts',
+  },
   redirects: async () => [
     {
       source: '/:path((?!_next/|assets).*)',
@@ -122,3 +126,7 @@ if (process.env.SENTRY_AUTH_TOKEN) {
 }
 
 export default config;
+
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
+
+initOpenNextCloudflareForDev();
