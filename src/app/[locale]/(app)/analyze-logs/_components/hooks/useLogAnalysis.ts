@@ -97,6 +97,6 @@ export const useLogAnalysisSystem = () => {
 
   return {
     system,
-    changeSystem: () => setSystem(system),
+    changeSystem: (system: System | null) => setSystem(system),
   };
 };

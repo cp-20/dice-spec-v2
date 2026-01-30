@@ -3,9 +3,10 @@
 import { IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { FC } from 'react';
-import { useGameSystemRequestDialog } from '@/app/[locale]/(app)/analyze-logs/_components/GameSystemRequest';
 import { Button } from '@/shared/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+import { useGameSystemRequestDialog } from './GameSystemRequest';
+import type { System } from './hooks/ccfoliaLogAnalysis';
 import { systems } from './hooks/ccfoliaLogAnalysis/messageParser';
 import { useLogAnalysisSystem } from './hooks/useLogAnalysis';
 
@@ -19,7 +20,11 @@ export const GameSystemSelect: FC = () => {
       <label id="gamesystem-select-label" className="text-sm mb-1 font-bold block">
         ゲームシステム
       </label>
-      <Select value={system ?? undefined} onValueChange={changeSystem} aria-labelledby="gamesystem-select-label">
+      <Select
+        value={system ?? undefined}
+        onValueChange={(val) => changeSystem(val as System)}
+        aria-labelledby="gamesystem-select-label"
+      >
         <SelectTrigger className="w-full font-bold" aria-label={t('analyze-logs:game-system-select.label')}>
           <SelectValue
             placeholder={<span className="text-slate-500">{t('analyze-logs:game-system-select.label')}</span>}
