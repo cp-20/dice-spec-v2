@@ -4,7 +4,6 @@ import type { NextPage } from 'next';
 import { BlogCallout } from '@/app/[locale]/(app)/_components/BlogCallout';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
-import { LogAnalysisShareButton } from '@/app/[locale]/(app)/analyze-logs/_components/LogAnalysisShareButton';
 import { wrapPage } from '@/shared/i18n/page-layout';
 import {
   localeHelper,
@@ -12,11 +11,13 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
+import { AnalyzeLogsErrorAlert } from './_components/AnalyzeLogsErrorAlert';
 import { CharacterSelect } from './_components/CharacterSelect';
 import { DiceLogList } from './_components/DiceLogList';
 import { GameSystemSelect } from './_components/GameSystemSelect';
 import { LogAnalysisCharts } from './_components/LogAnalysisCharts';
 import { LogAnalysisRankingChart } from './_components/LogAnalysisRankingChart';
+import { LogAnalysisShareButton } from './_components/LogAnalysisShareButton';
 import { LogAnalysisStats } from './_components/LogAnalysisStats';
 import { UploadLogFileButton } from './_components/UploadLogFileButton';
 
@@ -61,6 +62,10 @@ const AnalyzeLogsPage: NextPage = () => (
         <GameSystemSelect />
         <CharacterSelect />
       </div>
+    </div>
+
+    <div>
+      <AnalyzeLogsErrorAlert />
     </div>
 
     <div className="grid place-content-center">

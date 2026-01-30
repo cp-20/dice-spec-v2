@@ -123,6 +123,7 @@ export const ja = {
     'character-select': {
       label: 'キャラを選択',
     },
+    error: '解析中にエラーが発生しました。正しいログファイルをアップロードしているか確認してください。',
     stats: {
       mean: '平均',
       'success-rate': '成功率',

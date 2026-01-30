@@ -18,6 +18,10 @@ export type DiceResultForCharacter = {
 
 export const analyzeCcfoliaLog = (system: System, html: string) => {
   const logs = parseHtmlLog(html);
+  if (logs.length === 0) {
+    throw new Error('No logs detected');
+  }
+
   const analyzedLogs = logs
     .flatMap(({ message, ...log }) =>
       formatMessage(message).map((m) => {

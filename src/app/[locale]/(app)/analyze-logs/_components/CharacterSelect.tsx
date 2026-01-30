@@ -18,8 +18,8 @@ export const CharacterSelect: FC = () => {
         キャラクター
       </label>
       <Select
-        disabled={result.length === 0}
-        value={result.length > 0 ? character : ''}
+        disabled={result?.type !== 'success'}
+        value={result?.type === 'success' ? character : ''}
         onValueChange={selectCharacter}
         aria-labelledby="character-select-label"
       >
@@ -29,15 +29,16 @@ export const CharacterSelect: FC = () => {
           />
         </SelectTrigger>
         <SelectContent>
-          {result.map((character) => (
-            <SelectItem
-              key={character.id}
-              value={character.id}
-              className={clsx(character.id === 'all' && 'font-semibold')}
-            >
-              {character.name}
-            </SelectItem>
-          ))}
+          {result?.type === 'success' &&
+            result.results.map((character) => (
+              <SelectItem
+                key={character.id}
+                value={character.id}
+                className={clsx(character.id === 'all' && 'font-semibold')}
+              >
+                {character.name}
+              </SelectItem>
+            ))}
         </SelectContent>
       </Select>
     </div>

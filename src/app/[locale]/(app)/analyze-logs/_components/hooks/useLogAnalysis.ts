@@ -17,16 +17,34 @@ const logAnalysisSystemAtom = withAtomEffect(atom<System | null>(null), (get, se
     return;
   }
 
-  const detectedSystem = detectSystem(fileContent);
-  set(logAnalysisSystemAtom, detectedSystem);
+  try {
+    const detectedSystem = detectSystem(fileContent);
+    set(logAnalysisSystemAtom, detectedSystem);
+  } catch (_) {}
 });
 
-const logAnalysisResultAtom = atom<DiceResultForCharacter[]>((get) => {
+type LogAnalysisResult = LogAnalysisSuccess | LogAnalysisError | null;
+
+type LogAnalysisSuccess = {
+  type: 'success';
+  results: DiceResultForCharacter[];
+};
+
+type LogAnalysisError = {
+  type: 'error';
+};
+
+const logAnalysisResultAtom = atom<LogAnalysisResult>((get) => {
   const fileContent = get(fileContentAtom);
   const system = get(logAnalysisSystemAtom);
 
-  if (fileContent === '' || system === null) return [];
-  return analyzeCcfoliaLog(system, fileContent);
+  if (fileContent === '' || system === null) return null;
+  try {
+    const result = analyzeCcfoliaLog(system, fileContent);
+    return { type: 'success', results: result };
+  } catch (_) {
+    return { type: 'error' };
+  }
 });
 
 const systemStatsAtom = atom((get) => {
@@ -47,9 +65,14 @@ export const useLogAnalysis = () => {
   const { sendEvent } = useGoogleAnalytics();
 
   useEffect(() => {
-    if (result.length === 0) return;
+    if (result === null) return;
 
-    const allResult = result.find((p) => p.id === 'all');
+    if (result.type === 'error') {
+      sendEvent('analyzeLogsError');
+      return;
+    }
+
+    const allResult = result.results.find((p) => p.id === 'all');
     if (allResult === undefined || system === null) return;
 
     const { average, deviationScore, successRate, diceRollCount } = allResult.summary;

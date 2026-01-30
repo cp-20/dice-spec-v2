@@ -16,6 +16,9 @@ export const parseHtmlLog = (html: string): StructuredLog[] => {
   const logs = logElements.map((el) => {
     const spanElements = Array.from(el.getElementsByTagName('span'));
     const textContents = spanElements.map((el) => el.innerText);
+    if (textContents.length < 3) {
+      throw new Error('Invalid log format');
+    }
     const [tab, character, message] = textContents;
     // color:#012345; -> #012345
     const color = el.getAttribute('style')?.slice(6, -1) ?? null;

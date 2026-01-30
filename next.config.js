@@ -115,4 +115,10 @@ const sentryConfig = {
   automaticVercelMonitors: true,
 };
 
-export default withSentryConfig(withMDX(withBundleAnalyzer(withPWA(nextConfig))), sentryConfig);
+let config = withMDX(withBundleAnalyzer(withPWA(nextConfig)));
+
+if (process.env.SENTRY_AUTH_TOKEN) {
+  config = withSentryConfig(config, sentryConfig);
+}
+
+export default config;

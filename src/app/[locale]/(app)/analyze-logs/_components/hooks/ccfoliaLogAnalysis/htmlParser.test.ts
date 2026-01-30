@@ -80,7 +80,7 @@ const htmlLog = `<!DOCTYPE html>
 </html>`;
 
 describe('parseHtmlLog', () => {
-  test('work', () => {
+  test('正しくパースできる', () => {
     const actual = parseHtmlLog(htmlLog);
     const expected: ReturnType<typeof parseHtmlLog> = [
       { color: '#4caf50', tab: '[main]', character: 'テスト君', message: 'にゃっはろ～' },
@@ -110,5 +110,25 @@ describe('parseHtmlLog', () => {
     ];
 
     expect(actual).toEqual(expected);
+  });
+
+  test('不正なフォーマットは例外を投げる', () => {
+    const invalidHtmlLog = `<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>ccfolia - logs</title>
+  </head>
+  <body>
+    <p style="color:#4caf50;">
+      <span> [main]</span>
+      <span>テスト君</span>
+    </p>
+  </body>
+</html>`;
+
+    expect(() => parseHtmlLog(invalidHtmlLog)).toThrow('Invalid log format');
   });
 });

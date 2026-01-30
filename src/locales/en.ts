@@ -121,6 +121,7 @@ export const en = {
     'character-select': {
       label: 'Select a character',
     },
+    error: 'An error occurred during analysis. Please make sure you have uploaded the correct log file.',
     stats: {
       mean: 'Mean',
       deviation: 'Dice Deviation Value',
