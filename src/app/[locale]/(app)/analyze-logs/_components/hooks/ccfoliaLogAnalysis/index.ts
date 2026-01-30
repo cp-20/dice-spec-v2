@@ -32,6 +32,10 @@ export const analyzeCcfoliaLog = (system: System, html: string) => {
     )
     .filter((log) => log !== null);
 
+  if (analyzedLogs.length === 0) {
+    throw new Error('No valid dice rolls found');
+  }
+
   const allResults = analyzedLogs.map(({ result }) => result);
   const allCharacterResults: DiceResultForCharacter = {
     id: 'all',
