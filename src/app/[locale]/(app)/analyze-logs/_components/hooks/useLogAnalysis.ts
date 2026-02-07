@@ -8,6 +8,7 @@ import { detectSystem } from './ccfoliaLogAnalysis/detector';
 import { systemStats } from './ccfoliaLogAnalysis/messageParser';
 
 const fileContentAtom = atom<string>('');
+const currentFileAtom = atom<string | null>(null);
 
 const logAnalysisSystemAtom = withAtomEffect(atom<System | null>(null), (get, set) => {
   const fileContent = get(fileContentAtom);
@@ -56,6 +57,11 @@ const systemStatsAtom = atom((get) => {
 export const useFileContent = () => {
   const [fileContent, setFileContent] = useAtom(fileContentAtom);
   return { fileContent, setFileContent };
+};
+
+export const useCurrentFile = () => {
+  const [currentFile, setCurrentFile] = useAtom(currentFileAtom);
+  return { currentFile, setCurrentFile };
 };
 
 export const useLogAnalysis = () => {

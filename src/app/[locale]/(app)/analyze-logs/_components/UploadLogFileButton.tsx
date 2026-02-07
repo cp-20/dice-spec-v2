@@ -2,14 +2,14 @@
 
 import { IconUpload, IconX } from '@tabler/icons-react';
 import { t } from 'i18next';
-import { type FC, useCallback, useRef, useState } from 'react';
+import { type FC, useCallback, useRef } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { useDropzone } from './hooks/useDropzone';
-import { useFileContent } from './hooks/useLogAnalysis';
+import { useCurrentFile, useFileContent } from './hooks/useLogAnalysis';
 
 export const UploadLogFileButton: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [currentFile, setCurrentFile] = useState<string | null>(null);
+  const { currentFile, setCurrentFile } = useCurrentFile();
   const { setFileContent } = useFileContent();
 
   const dropHandler = useCallback(
@@ -17,7 +17,7 @@ export const UploadLogFileButton: FC = () => {
       setCurrentFile(filename);
       setFileContent(content);
     },
-    [setFileContent],
+    [setCurrentFile, setFileContent],
   );
 
   const { containerProps, inputProps, isDraggedOver } = useDropzone(dropHandler);
@@ -26,7 +26,7 @@ export const UploadLogFileButton: FC = () => {
     setCurrentFile(null);
     setFileContent('');
     if (inputRef.current) inputRef.current.value = '';
-  }, [setFileContent]);
+  }, [setCurrentFile, setFileContent]);
 
   return (
     <Button asChild variant="outline">
