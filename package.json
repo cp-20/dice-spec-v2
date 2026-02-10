@@ -76,7 +76,7 @@
     "@types/node": "25.0.3",
     "@types/react": "19.2.13",
     "@types/react-dom": "19.2.3",
-    "@types/web": "^0.0.327",
+    "@types/web": "^0.0.329",
     "@typescript/native-preview": "^7.0.0-dev.20260108.1",
     "cssnano": "^7.1.1",
     "happy-dom": "^20.0.8",
