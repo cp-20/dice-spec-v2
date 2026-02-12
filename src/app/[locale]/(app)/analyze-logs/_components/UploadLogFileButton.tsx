@@ -13,9 +13,17 @@ export const UploadLogFileButton: FC = () => {
   const { setFileContent } = useFileContent();
 
   const dropHandler = useCallback(
-    (filename: string, content: string) => {
-      setCurrentFile(filename);
-      setFileContent(content);
+    (file: File) => {
+      const filename = file.name;
+      const reader = new FileReader();
+      reader.addEventListener('load', (e) => {
+        const result = e.target?.result;
+        if (typeof result === 'string') {
+          setCurrentFile(filename);
+          setFileContent(result);
+        }
+      });
+      reader.readAsText(file);
     },
     [setCurrentFile, setFileContent],
   );

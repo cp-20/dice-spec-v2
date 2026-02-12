@@ -1,23 +1,10 @@
 import type { ChangeEventHandler, DragEventHandler } from 'react';
 import { useCallback, useState } from 'react';
 
-type DropHandler = (filename: string, content: string) => void;
+type DropHandler = (file: File) => void;
 
 export const useDropzone = <Element = HTMLElement>(dropHandler: DropHandler) => {
   const [isDraggedOver, setIsDraggedOver] = useState(false);
-
-  const readFile = useCallback(
-    (file: File) => {
-      const reader = new FileReader();
-      reader.addEventListener('load', (e) => {
-        if (e.target?.result) {
-          dropHandler(file.name, e.target.result.toString());
-        }
-      });
-      reader.readAsText(file);
-    },
-    [dropHandler],
-  );
 
   const handleDrop: DragEventHandler<Element> = useCallback(
     (e) => {
@@ -27,9 +14,9 @@ export const useDropzone = <Element = HTMLElement>(dropHandler: DropHandler) => 
 
       const file = e.dataTransfer.files[0];
       if (file === null || file === undefined) return;
-      readFile(file);
+      dropHandler(file);
     },
-    [readFile],
+    [dropHandler],
   );
 
   const handleDragEnter: DragEventHandler<Element> = useCallback((e) => {
@@ -54,9 +41,9 @@ export const useDropzone = <Element = HTMLElement>(dropHandler: DropHandler) => 
       const file = e.target.files?.[0];
       if (file === null || file === undefined) return;
 
-      readFile(file);
+      dropHandler(file);
     },
-    [readFile],
+    [dropHandler],
   );
 
   const containerProps = {
