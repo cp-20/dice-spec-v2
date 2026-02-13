@@ -4,17 +4,17 @@ import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
 import type { CustomLinkProps } from '@/shared/components/elements/CustomLink';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
-import { navLinks } from '@/shared/lib/navigation';
+import { type NavPaths, navLinks } from '@/shared/lib/navigation';
 
 type SideNavigationProps = {
-  active: (typeof navLinks)[number]['href'];
+  active: NavPaths | null;
 };
 
 export const SideNavigation: FC<ComponentProps<'nav'> & SideNavigationProps> = ({ className, active, ...props }) => (
   <nav className={twMerge('flex w-60 flex-col border-r', className)} {...props}>
-    {navLinks.map(({ href, icon }) => (
+    {navLinks.map(({ key, href, icon }) => (
       <SideNavigationLink key={href} icon={icon} href={t('link', { href })} isActive={href === active}>
-        <span>{t(`common:${href.slice(1)}.title`)}</span>
+        <span>{t(`common:${key}.title`)}</span>
       </SideNavigationLink>
     ))}
   </nav>

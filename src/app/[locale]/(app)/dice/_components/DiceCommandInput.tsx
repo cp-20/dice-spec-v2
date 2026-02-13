@@ -25,7 +25,7 @@ export const DiceCommandInput: FC = () => {
     if (result.ok) {
       setErrorMessage('');
     } else {
-      setErrorMessage(t('error-failed'));
+      setErrorMessage(t('dice:advanced.input.error-failed'));
     }
   };
 
@@ -33,7 +33,7 @@ export const DiceCommandInput: FC = () => {
     if (isValid) {
       setErrorMessage('');
     } else {
-      setErrorMessage(t('error-invalid'));
+      setErrorMessage(t('dice:advanced.input.error-invalid'));
     }
   }, [isValid]);
 

@@ -129,7 +129,7 @@ export const InputForm: FC = () => {
                 <FormLabel>{t('ccfolia:input.commands.label')}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder={t('ccfolia:input.commands.description')}
+                    placeholder={t('ccfolia:input.commands.placeholder')}
                     value={field.value}
                     onChange={field.onChange}
                   />

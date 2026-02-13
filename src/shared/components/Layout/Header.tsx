@@ -3,6 +3,7 @@ import { t } from 'i18next';
 import { type ComponentProps, type FC, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
+import { AuthWidget } from '@/shared/components/Layout/AuthWidget';
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
@@ -62,7 +63,8 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
         </CustomLink>
         <div>v{appVersion}</div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
+        <AuthWidget />
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button

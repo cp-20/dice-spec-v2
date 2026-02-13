@@ -3,6 +3,7 @@ import { withAtomEffect } from 'jotai-effect';
 import { useEffect } from 'react';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
+import { ALL_CHARACTER_ID } from '../constants';
 import { analyzeCcfoliaLog, type DiceResultForCharacter, type System } from './ccfoliaLogAnalysis';
 import { detectSystem } from './ccfoliaLogAnalysis/detector';
 import { systemStats } from './ccfoliaLogAnalysis/messageParser';
@@ -78,7 +79,7 @@ export const useLogAnalysis = () => {
       return;
     }
 
-    const allResult = result.results.find((p) => p.id === 'all');
+    const allResult = result.results.find((p) => p.id === ALL_CHARACTER_ID);
     if (allResult === undefined || system === null) return;
 
     const { average, deviationScore, successRate, diceRollCount } = allResult.summary;

@@ -9,7 +9,7 @@ import type { NavPaths } from '@/shared/lib/navigation';
 import { navLinks } from '@/shared/lib/navigation';
 
 type BottomNavigationProps = {
-  active?: NavPaths;
+  active?: NavPaths | null;
 };
 
 export const BottomNavigation: FC<ComponentProps<'nav'> & BottomNavigationProps> = ({
@@ -18,9 +18,11 @@ export const BottomNavigation: FC<ComponentProps<'nav'> & BottomNavigationProps>
   ...props
 }) => (
   <nav className={twMerge('flex border-t', className)} {...props}>
-    {navLinks.map(({ href, icon }) => (
-      <BottomNavigationLink key={href} href={t('link', { href })} icon={icon} isActive={href === active} />
-    ))}
+    {navLinks
+      .filter((link) => !link.sideNavOnly)
+      .map(({ href, icon }) => (
+        <BottomNavigationLink key={href} href={t('link', { href })} icon={icon} isActive={href === active} />
+      ))}
   </nav>
 );
 

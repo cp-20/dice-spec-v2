@@ -1,0 +1,53 @@
+import { IconList } from '@tabler/icons-react';
+import { t } from 'i18next';
+import type { NextPage } from 'next';
+import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
+import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
+import { AnalysisListContainer } from '@/app/[locale]/(app)/analyze-logs/list/_components/AnalysisListContainer';
+import {
+  localeHelper,
+  type MetadataGenerator,
+  metadataHelper,
+  viewportGenerator,
+} from '@/shared/lib/metadataGenerator';
+
+export const generateMetadata: MetadataGenerator = async (props) => {
+  const title = t('common:analysis-list.title');
+  const description = t('common:analysis-list.description');
+
+  const locale = await localeHelper(props);
+
+  const metadata = metadataHelper({
+    title,
+    description,
+    path: '/analyze-logs/list',
+    locale,
+  });
+
+  return {
+    ...metadata,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+};
+
+export const viewport = viewportGenerator();
+
+const AnalysisListPage: NextPage = () => {
+  return (
+    <div className="space-y-12">
+      <div>
+        <PageTitle icon={IconList}>{t('common:analysis-list.title')}</PageTitle>
+        <PageDescriptionContainer>
+          <PageDescriptionText>{t('common:analysis-list.description')}</PageDescriptionText>
+        </PageDescriptionContainer>
+      </div>
+
+      <AnalysisListContainer />
+    </div>
+  );
+};
+
+export default AnalysisListPage;

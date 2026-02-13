@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import { useAtomValue } from 'jotai';
 import { useCallback, useTransition } from 'react';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
@@ -23,10 +24,13 @@ export const useShareAnalysisResultImage = () => {
     const averageStr = round(average, 2);
     const deviationScoreStr = round(deviationScore, 2);
     const successRateStr = `${round(successRate, 2)}%`;
-    const diceRollCountStr = `${round(diceRollCount, 2)}回`;
-
     const text = encodeURIComponent(
-      `▼あなたのダイス結果を分析した結果▼\n\n平均: ${averageStr}\nダイス偏差値: ${deviationScoreStr}\n成功率: ${successRateStr}\nダイスを振った回数: ${diceRollCountStr}\n\n#ダイススペック\n`,
+      t('analyze-logs:share-analysis-result.share-text', {
+        average: averageStr,
+        deviationScore: deviationScoreStr,
+        successRate: successRateStr,
+        diceRollCount: round(diceRollCount, 2),
+      }),
     );
 
     if (sharingImageDataUrl === null) {

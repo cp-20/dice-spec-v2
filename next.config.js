@@ -27,6 +27,18 @@ const nextConfig = {
       destination: '/ja/',
     },
     {
+      source: '/terms',
+      destination: '/ja/terms',
+    },
+    {
+      source: '/privacy-policy',
+      destination: '/ja/privacy-policy',
+    },
+    {
+      source: '/specified-commercial-transactions',
+      destination: '/ja/specified-commercial-transactions',
+    },
+    {
       source: '/expect',
       destination: '/ja/expect',
     },
@@ -39,8 +51,20 @@ const nextConfig = {
       destination: '/ja/analyze-logs',
     },
     {
+      source: '/analyze-logs/list',
+      destination: '/ja/analyze-logs/list',
+    },
+    {
+      source: '/analyze-logs/:id',
+      destination: '/ja/analyze-logs/:id',
+    },
+    {
       source: '/ccfolia',
       destination: '/ja/ccfolia',
+    },
+    {
+      source: '/profile',
+      destination: '/ja/profile',
     },
     {
       source: '/blogs',

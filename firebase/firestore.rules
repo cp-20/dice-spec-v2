@@ -1,0 +1,334 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isUserPlan(plan) {
+      return plan == 'free' || plan == 'pro';
+    }
+
+    function isVisibilityLevel(level) {
+      return level == 'private' || level == 'unlisted' || level == 'public';
+    }
+
+    function hasOnlyKeys(data, keys) {
+      return data.keys().hasOnly(keys);
+    }
+
+    function requiredUserKeys() {
+      return [
+        'name',
+        'avatarUrl',
+        'plan',
+        'createdAt',
+        'updatedAt',
+        'stripeCustomerId',
+        'analysisCount',
+        'analysisCountSyncAnalysisId',
+      ];
+    }
+
+    function analysisCountOf(userData) {
+      return 'analysisCount' in userData ? userData.analysisCount : 0;
+    }
+
+    function isValidAnalysisCount(value) {
+      return value is int && value >= 0;
+    }
+
+    function isValidUserDocument(data) {
+      return hasOnlyKeys(data, requiredUserKeys())
+        && data.name is string
+        && (!('avatarUrl' in data) || data.avatarUrl == null || data.avatarUrl is string)
+        && isUserPlan(data.plan)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && data.stripeCustomerId is string
+        && (!('analysisCount' in data) || isValidAnalysisCount(data.analysisCount))
+        && (!('analysisCountSyncAnalysisId' in data)
+          || data.analysisCountSyncAnalysisId == null
+          || data.analysisCountSyncAnalysisId is string);
+    }
+
+    function isValidPublicOwner(owner) {
+      return hasOnlyKeys(owner, ['name', 'avatarUrl', 'plan', 'createdAt', 'updatedAt'])
+        && owner.name is string
+        && (!('avatarUrl' in owner) || owner.avatarUrl == null || owner.avatarUrl is string)
+        && isUserPlan(owner.plan)
+        && owner.createdAt is timestamp
+        && owner.updatedAt is timestamp;
+    }
+
+    function isValidPublicOwnerByUserDoc(owner, uid) {
+      let userPath = /databases/$(database)/documents/users/$(uid);
+      let userDoc = get(userPath);
+      return userDoc.data != null
+        && owner.name == userDoc.data.name
+        && owner.avatarUrl == userDoc.data.avatarUrl
+        && owner.plan == userDoc.data.plan
+        && owner.createdAt == userDoc.data.createdAt
+        && owner.updatedAt is timestamp;
+    }
+
+    function requiredAnalysisKeys() {
+      return [
+        'id',
+        'title',
+        'ownerUid',
+        'systemId',
+        'visibilityLevel',
+        'showRecordDetails',
+        'characterResults',
+        'sessionDate',
+        'createdAt',
+        'updatedAt',
+        'primaryDeviationScore',
+        'owner',
+      ];
+    }
+
+    function isValidAnalysisDocument(data, analysisId) {
+      return hasOnlyKeys(data, requiredAnalysisKeys())
+        && data.id is string
+        && data.id == analysisId
+        && data.title is string
+        && data.ownerUid is string
+        && data.systemId in ['emoklore', 'CoC7th', 'CoC6th', 'shinobigami']
+        && isVisibilityLevel(data.visibilityLevel)
+        && data.showRecordDetails is bool
+        && data.characterResults is list
+          && (data.sessionDate is timestamp || data.sessionDate == null)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && data.primaryDeviationScore is number
+        && data.owner is map
+        && isValidPublicOwner(data.owner)
+        && isValidPublicOwnerByUserDoc(data.owner, data.ownerUid);
+    }
+
+    function isAnalysisOwnerByResource() {
+      return isSignedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
+    function isAnalysisOwnerByRequest() {
+      return isSignedIn() && request.resource.data.ownerUid == request.auth.uid;
+    }
+
+    function canReadAnalysisDoc() {
+      return isAnalysisOwnerByResource() || resource.data.visibilityLevel == 'public' || resource.data.visibilityLevel == 'unlisted';
+    }
+
+    function changedKeys() {
+      return request.resource.data.diff(resource.data).changedKeys();
+    }
+
+    function isUserProfileUpdateOnly() {
+      return changedKeys().hasOnly(['name', 'avatarUrl', 'updatedAt'])
+        && request.resource.data.plan == resource.data.plan
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.stripeCustomerId == resource.data.stripeCustomerId
+        && request.resource.data.analysisCount == resource.data.analysisCount
+        && request.resource.data.analysisCountSyncAnalysisId == resource.data.analysisCountSyncAnalysisId
+        && request.resource.data.name is string
+        && (!('avatarUrl' in request.resource.data) || request.resource.data.avatarUrl == null || request.resource.data.avatarUrl is string)
+        && request.resource.data.updatedAt is timestamp;
+    }
+
+    function isUserAnalysisCountSyncUpdate() {
+      let nextCount = analysisCountOf(request.resource.data);
+      let prevCount = analysisCountOf(resource.data);
+      let syncAnalysisId =
+        ('analysisCountSyncAnalysisId' in request.resource.data
+          && request.resource.data.analysisCountSyncAnalysisId is string)
+          ? request.resource.data.analysisCountSyncAnalysisId
+          : '';
+
+      return changedKeys().hasOnly(['analysisCount', 'analysisCountSyncAnalysisId', 'updatedAt'])
+        && request.resource.data.name == resource.data.name
+        && request.resource.data.avatarUrl == resource.data.avatarUrl
+        && request.resource.data.plan == resource.data.plan
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.stripeCustomerId == resource.data.stripeCustomerId
+        && isValidAnalysisCount(prevCount)
+        && isValidAnalysisCount(nextCount)
+        && syncAnalysisId is string
+        && syncAnalysisId.size() > 0
+        && request.resource.data.updatedAt is timestamp
+        && (nextCount == prevCount + 1 || nextCount == prevCount - 1);
+    }
+
+    function isAnalysisMetaUpdateOnly() {
+      return changedKeys().hasOnly(['title', 'visibilityLevel', 'showRecordDetails', 'sessionDate', 'updatedAt'])
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && request.resource.data.systemId == resource.data.systemId
+        && request.resource.data.characterResults == resource.data.characterResults
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.primaryDeviationScore == resource.data.primaryDeviationScore
+        && request.resource.data.owner == resource.data.owner
+        && request.resource.data.title is string
+        && isVisibilityLevel(request.resource.data.visibilityLevel)
+        && request.resource.data.showRecordDetails is bool
+        && (request.resource.data.sessionDate is timestamp || request.resource.data.sessionDate == null)
+        && request.resource.data.updatedAt is timestamp;
+    }
+
+    function isAnalysisOwnerSyncUpdateOnly() {
+      return changedKeys().hasOnly(['owner'])
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && request.resource.data.systemId == resource.data.systemId
+        && request.resource.data.visibilityLevel == resource.data.visibilityLevel
+        && request.resource.data.showRecordDetails == resource.data.showRecordDetails
+        && request.resource.data.characterResults == resource.data.characterResults
+        && request.resource.data.sessionDate == resource.data.sessionDate
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == resource.data.updatedAt
+        && request.resource.data.primaryDeviationScore == resource.data.primaryDeviationScore
+        && request.resource.data.owner is map
+        && isValidPublicOwner(request.resource.data.owner)
+        && isValidPublicOwnerByUserDoc(request.resource.data.owner, request.resource.data.ownerUid);
+    }
+
+    function isValidAnalysisRecordsDocument(data, analysisId) {
+      return hasOnlyKeys(data, ['analysisId', 'ownerUid', 'isPublic', 'characterRecords'])
+        && data.analysisId is string
+        && data.analysisId == analysisId
+        && data.ownerUid is string
+        && data.isPublic is bool
+        && data.characterRecords is list;
+    }
+
+    function analysisRefById(analysisId) {
+      return /databases/$(database)/documents/analyses/$(analysisId);
+    }
+
+    function linkedAnalysis(analysisId) {
+      return get(analysisRefById(analysisId));
+    }
+
+    function linkedAnalysisAfter(analysisId) {
+      return getAfter(analysisRefById(analysisId));
+    }
+
+    function linkedUser(uid) {
+      return get(/databases/$(database)/documents/users/$(uid));
+    }
+
+    function linkedUserAfter(uid) {
+      return getAfter(/databases/$(database)/documents/users/$(uid));
+    }
+
+    function isAnalysisCountIncrementSynced(uid, analysisId) {
+      let userBefore = linkedUser(uid);
+      let userAfter = linkedUserAfter(uid);
+
+      return userBefore.data != null
+        && userAfter.data != null
+        && isValidAnalysisCount(analysisCountOf(userBefore.data))
+        && isValidAnalysisCount(analysisCountOf(userAfter.data))
+        && analysisCountOf(userAfter.data) == analysisCountOf(userBefore.data) + 1
+        && userAfter.data.analysisCountSyncAnalysisId is string
+        && userAfter.data.analysisCountSyncAnalysisId == analysisId;
+    }
+
+    function isAnalysisCountDecrementSynced(uid, analysisId) {
+      let userBefore = linkedUser(uid);
+      let userAfter = linkedUserAfter(uid);
+
+      return userBefore.data != null
+        && userAfter.data != null
+        && isValidAnalysisCount(analysisCountOf(userBefore.data))
+        && isValidAnalysisCount(analysisCountOf(userAfter.data))
+        && analysisCountOf(userAfter.data) == analysisCountOf(userBefore.data) - 1
+        && userAfter.data.analysisCountSyncAnalysisId is string
+        && userAfter.data.analysisCountSyncAnalysisId == analysisId;
+    }
+
+    function isFreePlanCreateWithinLimit(uid) {
+      let userBefore = linkedUser(uid);
+      return userBefore.data != null
+        && (
+          userBefore.data.plan != 'free'
+          || analysisCountOf(userBefore.data) < 3
+        );
+    }
+
+    function canReadAnalysisRecordsByAnalysisDoc(analysisId) {
+      let analysis = linkedAnalysis(analysisId);
+      return analysis.data != null
+        && (
+          (isSignedIn() && analysis.data.ownerUid == request.auth.uid)
+          || (
+            (analysis.data.visibilityLevel == 'public' || analysis.data.visibilityLevel == 'unlisted')
+            && analysis.data.showRecordDetails == true
+          )
+        );
+    }
+
+    match /users/{userId} {
+      allow get: if isSelf(userId);
+      allow list: if false;
+
+      allow create: if isSelf(userId)
+        && isValidUserDocument(request.resource.data)
+        && request.resource.data.plan == 'free'
+        && request.resource.data.analysisCount == 0
+        && (request.resource.data.analysisCountSyncAnalysisId == ''
+          || request.resource.data.analysisCountSyncAnalysisId == null);
+
+      allow update: if isSelf(userId)
+        && isValidUserDocument(request.resource.data)
+        && (isUserProfileUpdateOnly() || isUserAnalysisCountSyncUpdate());
+
+      allow delete: if false;
+    }
+
+    match /analyses/{analysisId} {
+      allow get: if canReadAnalysisDoc();
+      allow list: if (isSignedIn() && resource.data.ownerUid == request.auth.uid) || resource.data.visibilityLevel == 'public';
+
+      allow create: if isAnalysisOwnerByRequest()
+        && isValidAnalysisDocument(request.resource.data, analysisId)
+        && isFreePlanCreateWithinLimit(request.auth.uid)
+        && isAnalysisCountIncrementSynced(request.auth.uid, analysisId);
+
+      allow update: if isAnalysisOwnerByResource()
+        && isValidAnalysisDocument(request.resource.data, analysisId)
+        && (isAnalysisMetaUpdateOnly() || isAnalysisOwnerSyncUpdateOnly());
+
+      allow delete: if isAnalysisOwnerByResource()
+        && isAnalysisCountDecrementSynced(request.auth.uid, analysisId);
+    }
+
+    match /analysisRecords/{analysisId} {
+      allow get: if canReadAnalysisRecordsByAnalysisDoc(analysisId);
+      allow list: if false;
+
+      allow create: if isSignedIn()
+        && isValidAnalysisRecordsDocument(request.resource.data, analysisId)
+        && request.resource.data.ownerUid == request.auth.uid
+        && linkedAnalysisAfter(analysisId).data != null
+        && linkedAnalysisAfter(analysisId).data.ownerUid == request.auth.uid;
+
+      allow update: if isSignedIn()
+        && isValidAnalysisRecordsDocument(request.resource.data, analysisId)
+        && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.ownerUid == request.auth.uid
+        && linkedAnalysisAfter(analysisId).data != null
+        && linkedAnalysisAfter(analysisId).data.ownerUid == request.auth.uid;
+
+      allow delete: if isSignedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

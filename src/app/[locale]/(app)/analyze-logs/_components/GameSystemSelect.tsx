@@ -18,7 +18,7 @@ export const GameSystemSelect: FC = () => {
     <div>
       {/** biome-ignore lint/a11y/noLabelWithoutControl: aria-labelledby に紐づいてる */}
       <label id="gamesystem-select-label" className="text-sm mb-1 font-bold block">
-        ゲームシステム
+        {t('analyze-logs:game-system-select.label')}
       </label>
       <Select
         value={system ?? undefined}

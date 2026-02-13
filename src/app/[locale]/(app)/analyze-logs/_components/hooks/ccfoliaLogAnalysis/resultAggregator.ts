@@ -1,7 +1,8 @@
-import type { DiceResultForCharacter, System } from '.';
+import type { System } from '.';
+import type { MessageParserResult } from './messageParser';
 import { systemStats } from './messageParser';
 
-export const aggregateResults = (results: DiceResultForCharacter['results'], system: System) => {
+export const aggregateResults = (results: MessageParserResult[], system: System) => {
   const stats = systemStats[system];
   const labels = stats.pivots.slice(1).map((pivot, i) => {
     const min = stats.pivots[i];

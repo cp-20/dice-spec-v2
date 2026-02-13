@@ -28,6 +28,8 @@ export const CoC7thSystemStats = {
     { label: 'ファンブル', status: 'failure' },
     { label: '失敗', status: 'failure' },
     { label: 'レギュラー成功', status: 'success' },
+    // CCでは「成功」は出ないが、1d100<=??では出る可能性がある
+    { label: '成功', status: 'success' },
     { label: 'ハード成功', status: 'success' },
     { label: 'イクストリーム成功', status: 'success' },
     { label: 'クリティカル', status: 'success' },

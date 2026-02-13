@@ -1,0 +1,42 @@
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
+import { atom, useAtomValue } from 'jotai';
+import { withAtomEffect } from 'jotai-effect';
+import { useCallback } from 'react';
+import { useFirebase } from './useFirebase';
+
+const internalAuthUserLoadingAtom = atom(true);
+
+const internalAuthUserAtom = withAtomEffect(atom<User | null>(null), (_, set) => {
+  const { auth } = useFirebase();
+
+  const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
+    set(internalAuthUserAtom, nextUser);
+    set(internalAuthUserLoadingAtom, false);
+  });
+
+  return unsubscribe;
+});
+export const authUserAtom = atom((get) => get(internalAuthUserAtom));
+export const authUserLoadingAtom = atom((get) => get(internalAuthUserLoadingAtom));
+
+export const useFirebaseAuth = () => {
+  const { auth } = useFirebase();
+  const authUser = useAtomValue(internalAuthUserAtom);
+  const loading = useAtomValue(internalAuthUserLoadingAtom);
+
+  const signInWithGoogle = useCallback(async () => {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+  }, [auth]);
+
+  const signOutUser = useCallback(async () => {
+    await signOut(auth);
+  }, [auth]);
+
+  return {
+    authUser,
+    loading,
+    signInWithGoogle,
+    signOut: signOutUser,
+  };
+};

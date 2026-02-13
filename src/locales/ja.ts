@@ -1,10 +1,10 @@
 export const ja = {
   translation: {
     lang: 'ja',
+    'date-locale': 'ja-JP',
     link: '{{- href}}',
   },
   'landing-page': {
-    title: 'ダイススペック',
     description:
       'ダイススペックはTRPGのちょっとしたツールを集めたサービスです。ダイス予測、ダイスロール、ログ解析といったツールが用意されており、それらを全て無料で使うことができます。',
     catchphrase: 'ダイススペックはTRPGのちょっとしたツールを集めたサービスです。',
@@ -29,11 +29,6 @@ export const ja = {
       },
     },
     credit: 'クレジット',
-    'privacy-policy': {
-      label: 'プライバシーポリシー',
-      description:
-        '当サイトでは、Googleによるアクセス解析ツール「Googleアナリティクス」を使用しています。このGoogleアナリティクスはデータの収集のためにCookieを使用しています。このデータは匿名で収集されており、個人を特定するものではありません。この機能はCookieを無効にすることで収集を拒否することが出来ますので、お使いのブラウザの設定をご確認ください。この規約に関しての詳細はGoogleアナリティクスサービス利用規約のページやGoogleポリシーと規約ページをご覧ください。',
-    },
   },
   expect: {
     usage1:
@@ -101,6 +96,92 @@ export const ja = {
   },
   'analyze-logs': {
     usage1: 'ココフォリアのログを解析してダイスの期待値などを計算します。',
+    list: {
+      'sign-in-required': 'この機能を利用するにはログインが必要です',
+      'tab-mine': '自分の解析結果',
+      'tab-public': '公開されている解析結果',
+      filters: {
+        'system-placeholder': 'ゲームシステム',
+        'character-placeholder': 'キャラクター',
+        'sort-placeholder': '並び替え',
+        'all-systems': 'すべてのシステム',
+      },
+      sort: {
+        newest: '新しい順',
+        oldest: '古い順',
+        deviationScoreDesc: '偏差値が高い順',
+        deviationScoreAsc: '偏差値が低い順',
+      },
+      state: {
+        loading: '読み込み中...',
+        'no-results': '検索結果が見つかりませんでした',
+        empty: '解析結果がありません',
+      },
+      'load-more': 'もっと見る',
+      card: {
+        'deviation-score': 'ダイス偏差値',
+      },
+    },
+    save: {
+      title: '保存と公開',
+      'sign-in-required': '保存するにはログインが必要です',
+      'title-label': 'タイトル',
+      'title-placeholder': 'シナリオ名など',
+      'session-date-label': 'セッション日',
+      visibility: {
+        label: '公開範囲',
+        private: '非公開',
+        unlisted: '限定公開',
+        public: '公開',
+      },
+      'show-record-details-label': 'ダイスログを公開する',
+      'limit-free': 'フリープランでは最大{{limit}}件まで保存できます (現在{{count}}件保存中)',
+      'limit-reached-message': '保存件数の上限に達しました',
+      'upgrade-to-pro': 'プロプランにアップグレードすると無制限に保存できるようになります',
+      'upgrade-button': 'プロプランにアップグレード',
+      'save-button': '保存する',
+      saving: '保存中',
+      failed: {
+        title: '保存に失敗しました',
+        description: '保存中にエラーが発生しました。時間をおいて再度お試しください。',
+      },
+      'go-to-list': '保存した解析結果の一覧を見る',
+    },
+    detail: {
+      title: 'ログ解析結果',
+      'not-found': 'この解析は見つかりませんでした',
+      'not-found-description': '指定された解析が存在しないか、削除された可能性があります',
+      'back-to-list': '解析一覧に戻る',
+      edit: '編集',
+      delete: '削除',
+      private: 'この解析は非公開です',
+      'records-owner-only': 'このログは所有者のみ閲覧できます',
+      'no-logs': 'ログは保存されていません',
+    },
+    'edit-dialog': {
+      title: '解析結果を編集',
+      description: 'タイトルと公開設定を変更できます',
+      'title-label': 'タイトル',
+      'title-placeholder': 'タイトルを入力',
+      'visibility-label': '公開設定',
+      visibility: {
+        private: '非公開 (自分のみ)',
+        unlisted: '限定公開 (リンクを知っている人のみ)',
+        public: '公開 (一覧に表示)',
+      },
+      'session-date-label': 'セッション日',
+      'show-record-details-label': 'ダイスログを公開する',
+      cancel: 'キャンセル',
+      save: '保存',
+      saving: '保存中',
+    },
+    'delete-dialog': {
+      title: '解析結果を削除',
+      description: 'この操作は取り消せません。本当に削除しますか？',
+      cancel: 'キャンセル',
+      delete: '削除',
+      deleting: '削除中',
+    },
     'game-system-request': {
       label: '他ゲームシステム対応をリクエスト',
       system: 'ゲームシステム名',
@@ -138,6 +219,9 @@ export const ja = {
       'scenario-name': 'シナリオ名 (任意)',
       'scenario-name-description': '画像のタイトル部分に表示されます',
       'share-image': '画像をシェア',
+      'image-alt': '解析結果シェア画像のプレビュー',
+      'share-text':
+        '▼あなたのダイス結果を分析した結果▼\n\n平均: {{average}}\nダイス偏差値: {{deviationScore}}\n成功率: {{successRate}}\nダイスを振った回数: {{diceRollCount}}回\n\n#ダイススペック\n',
     },
     chart: {
       top: '上位',
@@ -242,10 +326,205 @@ export const ja = {
       description:
         'ココフォリアのログを分析してダイスの平均値や偏差値を計算します。「このセッションはダイス運悪かった気がするけど実際どうなんだろう？」と思っているあなた、ぜひ一度使ってみてください！　クトゥルフ神話TRPG、新クトゥルフTRPG、エモクロア、シノビガミに対応しています。',
     },
+    'analysis-list': {
+      title: '解析一覧',
+      description: '自分が保存したログや他の人が公開しているログを確認できます。',
+    },
+    'blog-callout': {
+      title: '「TRPGプレイヤーのための確率統計」好評連載中！',
+      points: {
+        0: '確率・統計をTRPGプレイヤー向けに全6回でふわっと解説！',
+        1: '読みやすさ第一で書かれてるからサクッと読めちゃう！',
+        2: 'なのに今日から役立つ知識がたくさん手に入るかも！',
+      },
+    },
     ccfolia: { title: 'ココフォリア出力' },
     error: {
       message: '予期せぬエラーが発生しました',
       reload: '再読み込み',
+    },
+  },
+  legal: {
+    'back-to-top': 'トップページに戻る',
+    terms: {
+      metadata: {
+        title: '利用規約',
+        description: 'ダイススペックを利用するための利用規約です。',
+      },
+      title: '利用規約',
+      updatedAt: '最終更新日: 2026-03-18',
+      description:
+        '本規約は、ダイススペックが提供するサービスの利用条件を定めるものです。ユーザーは、本サービスを利用することで本規約に同意したものとみなされます。',
+      sections: {
+        0: {
+          title: '第1条（適用）',
+          body: '本規約は、ユーザーと運営者との間の本サービス利用に関わる一切の関係に適用されます。',
+        },
+        1: {
+          title: '第2条（アカウント）',
+          body: 'ユーザーはGoogle認証を通じてアカウントを作成できます。登録情報に虚偽があった場合、運営者は利用を停止できるものとします。',
+        },
+        2: {
+          title: '第3条（禁止事項）',
+          body: '法令違反、公序良俗違反、不正アクセス、サービス運営の妨害、第三者の権利侵害を禁止します。',
+        },
+        3: {
+          title: '第4条（サービス内容の変更）',
+          body: '運営者は、ユーザーへの事前通知なく、サービス内容の変更・追加・停止を行うことがあります。',
+        },
+        4: {
+          title: '第5条（免責）',
+          body: '運営者は、本サービスに事実上または法律上の瑕疵がないことを保証しません。ユーザーに生じた損害について、運営者に故意または重過失がある場合を除き責任を負いません。',
+        },
+        5: {
+          title: '第6条（規約の変更）',
+          body: '運営者は必要と判断した場合、本規約を変更できます。変更後の規約は本ページに掲載した時点で効力を生じます。',
+        },
+        6: {
+          title: '第7条（準拠法・管轄）',
+          body: '本規約の解釈には日本法を準拠法とし、本サービスに関して紛争が生じた場合は運営者所在地を管轄する裁判所を専属的合意管轄とします。',
+        },
+      },
+    },
+    privacy: {
+      metadata: {
+        title: 'プライバシーポリシー',
+        description: 'DiceSpecにおける個人情報の取扱いに関するポリシーです。',
+      },
+      title: 'プライバシーポリシー',
+      updatedAt: '最終更新日: 2026-03-18',
+      description: '本ポリシーは、ダイススペックにおける個人情報および利用情報の取扱いを定めるものです。',
+      sections: {
+        0: {
+          title: '1. 取得する情報',
+          body: 'Google認証で取得するプロフィール情報（表示名、メールアドレス、アイコンURL）および、サービス利用時に保存されたデータ（解析ログ等）を取得します。',
+        },
+        1: {
+          title: '2. 利用目的',
+          body: '認証、アカウント管理、サービス提供、品質改善、不正利用防止、お問い合わせ対応のために利用します。',
+        },
+        2: {
+          title: '3. 第三者提供',
+          body: '法令に基づく場合を除き、本人の同意なく個人情報を第三者に提供しません。決済に関する情報は決済事業者（Stripe）が管理します。',
+        },
+        3: {
+          title: '4. アクセス解析・Cookie',
+          body: '本サービスでは利用状況分析のためCookie等を使用する場合があります。ブラウザ設定によりCookieを無効化できます。',
+        },
+        4: {
+          title: '5. 保存期間と削除',
+          body: '取得情報は利用目的に必要な期間保管し、不要になった情報は適切な方法で削除または匿名化します。',
+        },
+        5: {
+          title: '6. 開示・訂正・削除等の請求',
+          body: '本人からの請求があった場合、法令に従い合理的な範囲で対応します。',
+        },
+        6: {
+          title: '7. 改定',
+          body: '本ポリシーは必要に応じて改定されます。改定後は本ページへの掲載時点で効力を生じます。',
+        },
+      },
+    },
+    commerce: {
+      metadata: {
+        title: '特定商取引法に基づく表記',
+        description: 'DiceSpecの課金に関する特定商取引法に基づく表記です。',
+      },
+      title: '特定商取引法に基づく表記',
+      updatedAt: '最終更新日: 2026-03-18',
+      rows: {
+        0: { label: '販売事業者', value: 'cp20' },
+        1: { label: '運営責任者', value: 'cp20' },
+        2: { label: '所在地', value: '請求があった場合、遅滞なく開示します。' },
+        3: { label: '連絡先', value: 'お問い合わせフォームよりご連絡ください。' },
+        4: { label: '販売価格', value: '各プランの購入画面に表示された金額（消費税込）' },
+        5: {
+          label: '商品代金以外の必要料金',
+          value: 'インターネット接続に必要な通信料金等はお客様の負担となります。',
+        },
+        6: { label: '支払方法', value: 'クレジットカード（Stripe決済）' },
+        7: { label: '支払時期', value: '初回購入時および更新時に課金されます。' },
+        8: { label: '提供時期', value: '決済完了後、ただちに利用可能となります。' },
+        9: {
+          label: '返品・キャンセル',
+          value: 'デジタルサービスの性質上、購入後の返金は原則として対応していません。解約は次回更新日前まで可能です。',
+        },
+        10: {
+          label: '動作環境',
+          value: '最新の主要ブラウザ（Chrome / Firefox / Safari / Edge）での利用を推奨します。',
+        },
+      },
+    },
+  },
+  profile: {
+    title: 'アカウント情報',
+    description: 'ユーザープロフィールページ',
+    'sign-in-prompt': 'ログインしてプロフィールを表示してください',
+    'display-name': {
+      label: '表示名',
+      placeholder: '表示名を入力',
+    },
+    'google-sign-in': 'Google でログイン',
+    agreement: {
+      prefix: 'アカウントを作成すると、',
+      terms: '利用規約',
+      conjunction: 'および',
+      privacy: 'プライバシーポリシー',
+      suffix: 'に同意したものとみなされます。',
+    },
+    menu: {
+      'aria-label': 'ユーザーメニュー',
+      profile: 'プロフィール',
+      'sign-out': 'ログアウト',
+    },
+    email: {
+      label: 'メールアドレス',
+      hint: 'メールアドレスは変更できません',
+    },
+    avatar: {
+      'aria-label': 'クリックしてアイコンをアップロード',
+    },
+    button: {
+      save: '保存する',
+      saving: '保存中',
+    },
+    toast: {
+      'save-success-title': '保存しました',
+      'save-success-description': '表示名が更新されました',
+      'save-error-title': 'エラーが発生しました',
+      'save-error-description': '表示名の更新に失敗しました',
+      'sign-in-error-title': 'ログインに失敗しました',
+      'sign-in-error-description': 'アカウントの初期化に失敗しました。時間をおいて再度お試しください。',
+      'upgrade-error-title': 'アップグレードに失敗しました',
+      'upgrade-error-description': 'もう一度お試しください',
+      'manage-subscription-error-title': 'サブスクリプション管理に失敗しました',
+      'manage-subscription-error-description': 'もう一度お試しください',
+      'manage-subscription-error-no-customer': '契約情報が見つかりませんでした',
+    },
+    plan: {
+      title: 'プラン管理',
+      'current-plan': '現在のプラン',
+      free: 'フリー',
+      pro: 'プロ',
+      'manage-subscription': 'Stripeでサブスクリプションを管理する',
+      'manage-subscription-note': '外部サイト (Stripe) へ移動します。プラン変更や解約は遷移先で行えます。',
+      loading: '読み込み中',
+    },
+    pricing: {
+      title: 'アップグレードでより便利に',
+      'billing-monthly': '月ごと',
+      'billing-yearly': '年ごと',
+      'plan-name': 'PRO',
+      month: '月',
+      'monthly-payment': '月払い',
+      'yearly-payment': '¥{{price}} 年払い',
+      'feature-unlimited-saves': '解析結果を無制限に保存',
+      'feature-advanced-analytics': '高度な統計分析',
+      'upgrade-button': 'PROプランをはじめる',
+      processing: '処理中',
+      'legal-note-prefix': '課金前に',
+      'legal-link-label': '特定商取引法に基づく表記',
+      'legal-note-suffix': 'をご確認ください。',
     },
   },
 };
