@@ -14,4 +14,19 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - run: bun install
-      - run: STRIPE_SECRET_KEY=sk_test_key bun run build
+      - run: NEXT_PUBLIC_FIREBASE_API_KEY=dummy \
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=dummy \
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID=dummy \
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=dummy \
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=dummy \
+          NEXT_PUBLIC_FIREBASE_APP_ID=dummy \
+          NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID=dummy \
+          FIREBASE_CLIENT_EMAIL=dummy \
+          FIREBASE_PRIVATE_KEY=dummy \
+          NEXT_PUBLIC_DISCORD_WEBHOOK_URL=dummy \
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=dummy \
+          STRIPE_SECRET_KEY=dummy \
+          STRIPE_WEBHOOK_SECRET=dummy \
+          STRIPE_PRICE_ID_PRO_MONTHLY=dummy \
+          STRIPE_PRICE_ID_PRO_YEARLY=dummy \
+          bun run build
