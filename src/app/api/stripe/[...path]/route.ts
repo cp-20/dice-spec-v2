@@ -226,6 +226,7 @@ const app = new Hono()
         success_url: `${appOrigin}/profile?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${appOrigin}/profile`,
         client_reference_id: userId,
+        allow_promotion_codes: true,
         metadata,
         subscription_data: { metadata },
       });
