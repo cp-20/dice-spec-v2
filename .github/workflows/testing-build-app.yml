@@ -14,7 +14,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - run: bun install
-      - run: NEXT_PUBLIC_FIREBASE_API_KEY=dummy \
+      - run: |
+          NEXT_PUBLIC_FIREBASE_API_KEY=dummy \
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=dummy \
           NEXT_PUBLIC_FIREBASE_PROJECT_ID=dummy \
           NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=dummy \
