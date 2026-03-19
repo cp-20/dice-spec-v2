@@ -214,6 +214,20 @@ export const ja = {
       'dice-count-unit': '個',
       share: '解析結果をシェア',
     },
+    'skill-summary': {
+      label: '技能サマリー',
+      skill: '技能',
+      target: '技能値',
+      'roll-count': '振った数',
+      'success-count': '成功した数',
+      'success-rate': '成功率',
+      'no-data': 'サマリー可能な技能ロールがありません',
+      untagged: '不明な技能',
+      paywall: {
+        title: '技能サマリーの詳細はプロプラン限定です',
+        cta: 'PROプランをはじめる',
+      },
+    },
     'share-analysis-result': {
       title: '解析結果をシェア',
       'scenario-name': 'シナリオ名 (任意)',

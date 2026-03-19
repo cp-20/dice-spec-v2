@@ -6,6 +6,27 @@ describe('CoC6thParser', () => {
   });
 
   test('正常なダイス結果をパースする', () => {
+    expect(CoC6thParser('CC<=30 【目星】 (1D100<=30) ＞ 3 ＞ 成功')).toStrictEqual({
+      evaluation: '成功',
+      results: [3],
+      target: 30,
+      skillName: '目星',
+    });
+
+    expect(CoC6thParser('CC<=30 目星 (1D100<=30) ＞ 3 ＞ 成功')).toStrictEqual({
+      evaluation: '成功',
+      results: [3],
+      target: 30,
+      skillName: '目星',
+    });
+
+    expect(CoC6thParser('CC<=30 目星 （1D100<=30） ＞ 3 ＞ 成功')).toStrictEqual({
+      evaluation: '成功',
+      results: [3],
+      target: 30,
+      skillName: '目星',
+    });
+
     expect(CoC6thParser('CCB<=30 (1D100<=30) ＞ 3 ＞ 決定的成功/スペシャル')).toStrictEqual({
       evaluation: 'スペシャル',
       results: [3],

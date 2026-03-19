@@ -6,6 +6,27 @@ describe('emokloreParser', () => {
   });
 
   test('正常なダイス結果をパースする (BCDice <3.5.0)', () => {
+    expect(emokloreParser('2DM<=7 【調査】 (2DM<=7) ＞ [1, 10] ＞ 1 ＞ 成功!')).toStrictEqual({
+      evaluation: '成功',
+      results: [1, 10],
+      target: 7,
+      skillName: '調査',
+    });
+
+    expect(emokloreParser('2DM<=7 調査 (2DM<=7) ＞ [1, 10] ＞ 1 ＞ 成功!')).toStrictEqual({
+      evaluation: '成功',
+      results: [1, 10],
+      target: 7,
+      skillName: '調査',
+    });
+
+    expect(emokloreParser('2DM<=7 調査 （2DM<=7） ＞ [1, 10] ＞ 1 ＞ 成功!')).toStrictEqual({
+      evaluation: '成功',
+      results: [1, 10],
+      target: 7,
+      skillName: '調査',
+    });
+
     expect(emokloreParser('1DM<=5 (1DM<=5) ＞ [10] ＞ -1 ＞ ファンブル!')).toStrictEqual({
       evaluation: 'ファンブル',
       results: [10],
@@ -38,6 +59,27 @@ describe('emokloreParser', () => {
   });
 
   test('正常なダイス結果をパースする (BCDice >=3.5.0)', () => {
+    expect(emokloreParser('2DM<=7 【調査】 (2DM<=7) ＞ [1, 10] ＞ 1 ＞ 成功数1 成功!')).toStrictEqual({
+      evaluation: '成功',
+      results: [1, 10],
+      target: 7,
+      skillName: '調査',
+    });
+
+    expect(emokloreParser('2DM<=7 調査 (2DM<=7) ＞ [1, 10] ＞ 1 ＞ 成功数1 成功!')).toStrictEqual({
+      evaluation: '成功',
+      results: [1, 10],
+      target: 7,
+      skillName: '調査',
+    });
+
+    expect(emokloreParser('2DM<=7 調査 （2DM<=7） ＞ [1, 10] ＞ 1 ＞ 成功数1 成功!')).toStrictEqual({
+      evaluation: '成功',
+      results: [1, 10],
+      target: 7,
+      skillName: '調査',
+    });
+
     expect(emokloreParser('1DM<=5 (1DM<=5) ＞ [10] ＞ -1 ＞ 成功数-1 ファンブル!')).toStrictEqual({
       evaluation: 'ファンブル',
       results: [10],

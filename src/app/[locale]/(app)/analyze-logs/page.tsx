@@ -15,6 +15,7 @@ import { AnalysisSavePanel } from './_components/AnalysisSavePanel';
 import { AnalyzeLogsErrorAlert } from './_components/AnalyzeLogsErrorAlert';
 import { CharacterSelect } from './_components/CharacterSelect';
 import { DiceLogList } from './_components/DiceLogList';
+import { DiceLogSummary } from './_components/DiceLogSummary';
 import { GameSystemSelect } from './_components/GameSystemSelect';
 import { LogAnalysisCharts } from './_components/LogAnalysisCharts';
 import { LogAnalysisRankingChart } from './_components/LogAnalysisRankingChart';
@@ -83,11 +84,13 @@ const AnalyzeLogsPage: NextPage = () => (
       <LogAnalysisCharts />
     </div>
 
+    <DiceLogSummary />
+
+    <DiceLogList />
+
     <div className="my-16">
       <BlogCallout />
     </div>
-
-    <DiceLogList />
   </div>
 );
 

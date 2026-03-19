@@ -1,4 +1,6 @@
 import type { SystemMessageParser, SystemStats } from '.';
+import { normalizeParentheses } from './normalize';
+import { extractSkillNameFromMessage } from './skillName';
 
 // match[1]: 目標値
 // match[2]: ダイス結果
@@ -12,14 +14,21 @@ const normalizeEvaluation = (evaluation: string): string => {
 };
 
 export const CoC6thParser: SystemMessageParser = (message) => {
-  const match = message.match(CoC6thBDiceRollRegex);
+  const normalizedMessage = normalizeParentheses(message);
+  const match = normalizedMessage.match(CoC6thBDiceRollRegex);
   if (match === null) return null;
 
   const target = Number.parseInt(match[1], 10);
   const result = Number.parseInt(match[2], 10);
   const evaluation = normalizeEvaluation(match[3]);
+  const skillName = extractSkillNameFromMessage(normalizedMessage);
 
-  return { evaluation, results: [result], target };
+  return {
+    evaluation,
+    results: [result],
+    target,
+    ...(skillName ? { skillName } : {}),
+  };
 };
 
 export const CoC6thSystemStats = {

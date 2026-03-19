@@ -52,6 +52,7 @@ export const useSaveAnalysis = () => {
               evaluation: record.evaluation,
               results: record.results,
               target: record.target,
+              skillName: record.skillName,
               evaluationStatus: record.evaluationStatus,
             })),
           })),

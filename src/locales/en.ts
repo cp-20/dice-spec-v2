@@ -212,6 +212,20 @@ export const en = {
       'dice-count-unit': '',
       share: 'Share analysis results',
     },
+    'skill-summary': {
+      label: 'Skill Summary',
+      skill: 'Skill',
+      target: 'Target',
+      'roll-count': 'Rolls',
+      'success-count': 'Successes',
+      'success-rate': 'Success Rate',
+      'no-data': 'No skill rolls available for summary.',
+      untagged: 'Unknown Skill',
+      paywall: {
+        title: 'Detailed skill summary is available on PRO plan',
+        cta: 'Start PRO Plan',
+      },
+    },
     'share-analysis-result': {
       title: 'Share analysis results',
       'scenario-name': 'Scenario name (optional)',

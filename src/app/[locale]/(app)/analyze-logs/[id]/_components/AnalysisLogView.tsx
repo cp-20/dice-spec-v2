@@ -3,6 +3,7 @@ import { useAtomValue } from 'jotai';
 import type { FC } from 'react';
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { DiceLogListView } from '@/app/[locale]/(app)/analyze-logs/_components/DiceLogListView';
+import { DiceLogSummaryView } from '@/app/[locale]/(app)/analyze-logs/_components/DiceLogSummary';
 import { canViewRecordsAtom, currentAnalysisRecordsAtom } from './atoms';
 
 export const AnalysisRecordsView: FC = () => {
@@ -22,5 +23,10 @@ export const AnalysisRecordsView: FC = () => {
 const AnalysisRecordsViewMain: FC = () => {
   const records = useAtomValue(currentAnalysisRecordsAtom);
 
-  return <DiceLogListView results={records ?? undefined} />;
+  return (
+    <div className="space-y-4">
+      <DiceLogSummaryView results={records ?? undefined} />
+      <DiceLogListView results={records ?? undefined} />
+    </div>
+  );
 };

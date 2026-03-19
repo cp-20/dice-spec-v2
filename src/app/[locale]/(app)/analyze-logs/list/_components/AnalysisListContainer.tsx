@@ -11,10 +11,8 @@ import { AnalysisFilters } from './AnalysisFilters';
 import { activeTabAtom } from './atoms';
 import { MyAnalysisList } from './MyAnalysisList';
 import { PublicAnalysisList } from './PublicAnalysisList';
-import { useSeedAnalyses } from './seed';
 
 export const AnalysisListContainer: FC = () => {
-  useSeedAnalyses();
   const { authUser } = useFirebaseAuth();
 
   const [activeTab, setActiveTab] = useAtom(activeTabAtom);

@@ -11,6 +11,8 @@ export type SystemMessageParserResult = {
   results: number[];
   // 目標値
   target: number;
+  // 技能名
+  skillName?: string;
 };
 
 export type SystemMessageParser = (message: string) => SystemMessageParserResult | null;

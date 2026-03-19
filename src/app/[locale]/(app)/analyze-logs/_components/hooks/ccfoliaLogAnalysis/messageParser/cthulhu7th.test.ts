@@ -7,6 +7,33 @@ describe('CoC7thParser', () => {
 
   test('正常なダイス結果をパースする', () => {
     expect(
+      CoC7thParser('CC<=60 【聞き耳】 (1D100<=60) ボーナス・ペナルティダイス[0] ＞ 45 ＞ 45 ＞ レギュラー成功'),
+    ).toStrictEqual({
+      evaluation: 'レギュラー成功',
+      results: [45],
+      target: 60,
+      skillName: '聞き耳',
+    });
+
+    expect(
+      CoC7thParser('CC<=60 聞き耳 (1D100<=60) ボーナス・ペナルティダイス[0] ＞ 45 ＞ 45 ＞ レギュラー成功'),
+    ).toStrictEqual({
+      evaluation: 'レギュラー成功',
+      results: [45],
+      target: 60,
+      skillName: '聞き耳',
+    });
+
+    expect(
+      CoC7thParser('CC<=60 聞き耳 （1D100<=60） ボーナス・ペナルティダイス[0] ＞ 45 ＞ 45 ＞ レギュラー成功'),
+    ).toStrictEqual({
+      evaluation: 'レギュラー成功',
+      results: [45],
+      target: 60,
+      skillName: '聞き耳',
+    });
+
+    expect(
       CoC7thParser('CC(-2)<=60 (1D100<=60) ボーナス・ペナルティダイス[-2] ＞ 80, 100, 50 ＞ 100 ＞ ファンブル'),
     ).toStrictEqual({
       evaluation: 'ファンブル',

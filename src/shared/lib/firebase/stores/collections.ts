@@ -56,6 +56,7 @@ const characterResultSummaryRecordSchema = v.object({
   evaluation: v.string(),
   results: v.array(v.number()),
   target: v.number(),
+  skillName: v.optional(v.string()),
   evaluationStatus: v.union([v.literal('success'), v.literal('failure'), v.literal('other')]),
 });
 
