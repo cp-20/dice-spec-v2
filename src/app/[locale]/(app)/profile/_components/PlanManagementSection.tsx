@@ -29,7 +29,7 @@ export const PlanManagementSection = () => {
 
     setManagingSubscription(true);
     try {
-      const data = await createPortalSession({ customerId: me.stripeCustomerId });
+      const data = await createPortalSession();
 
       if (!data.url) {
         throw new Error('Stripe portal URL not found');
@@ -96,7 +96,7 @@ export const PlanManagementSection = () => {
           )}
         </div>
 
-        {me.plan === 'free' && <>{authUser && <PricingCards userId={authUser.uid} />}</>}
+        {me.plan === 'free' && <>{authUser && <PricingCards />}</>}
       </div>
     </ContainerSection>
   );

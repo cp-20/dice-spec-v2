@@ -1,5 +1,6 @@
 import { vValidator } from '@hono/valibot-validator';
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { Hono } from 'hono';
 import { handle } from 'hono/vercel';
@@ -14,14 +15,13 @@ const stripe = new Stripe(stripeConfig.secretKey, {
   apiVersion: '2026-01-28.clover',
 });
 
-const getFirestoreInstance = () => {
+const getFirebaseAdminApp = () => {
   try {
     const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
     const privateKey = process.env.FIREBASE_PRIVATE_KEY;
-    const databaseId = process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID;
 
-    if (!projectId || !clientEmail || !privateKey || !databaseId) {
+    if (!projectId || !clientEmail || !privateKey) {
       const error = new Error('Missing Firebase Admin configuration in environment variables');
       console.error(error.message);
       throw error;
@@ -39,12 +39,32 @@ const getFirestoreInstance = () => {
             }),
           });
 
+    return app;
+  } catch (error) {
+    console.error('Failed to initialize Firebase Admin app:', error);
+    throw error;
+  }
+};
+
+const getFirestoreInstance = () => {
+  try {
+    const databaseId = process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID;
+
+    if (!databaseId) {
+      const error = new Error('Missing Firestore database ID in environment variables');
+      console.error(error.message);
+      throw error;
+    }
+
+    const app = getFirebaseAdminApp();
     return getFirestore(app, databaseId);
   } catch (error) {
     console.error('Failed to initialize Firestore:', error);
     throw error;
   }
 };
+
+const getFirebaseAuthInstance = () => getAuth(getFirebaseAdminApp());
 
 const { handleCheckoutCompleted, handleSubscriptionUpdated, handleSubscriptionDeleted, handleCustomerCreated } =
   createStripeHandlers({
@@ -89,8 +109,54 @@ const constructStripeEvent = async (body: string, signature: string) => {
   }
 };
 
+const getBearerToken = (authorizationHeader: string | undefined) => {
+  if (!authorizationHeader) {
+    return null;
+  }
+
+  const [scheme, token] = authorizationHeader.split(' ');
+  if (!scheme || !token || scheme.toLowerCase() !== 'bearer') {
+    return null;
+  }
+
+  return token;
+};
+
+const getAuthenticatedUserId = async (authorizationHeader: string | undefined, eventType: string) => {
+  const idToken = getBearerToken(authorizationHeader);
+  if (!idToken) {
+    await sendStripeLog({
+      level: 'warning',
+      eventType,
+      message: 'Missing or invalid authorization header',
+    });
+    return null;
+  }
+
+  try {
+    const decodedToken = await getFirebaseAuthInstance().verifyIdToken(idToken);
+    return decodedToken.uid;
+  } catch (error) {
+    console.error('Failed to verify Firebase ID token:', error);
+    await sendStripeLog({
+      level: 'warning',
+      eventType,
+      message: 'Firebase ID token verification failed',
+      error,
+    });
+    return null;
+  }
+};
+
+const getStripeCustomerIdByUserId = async (userId: string) => {
+  const firestore = getFirestoreInstance();
+  const userDoc = await firestore.collection('users').doc(userId).get();
+  const userData = userDoc.data();
+
+  return userData?.stripeCustomerId as string | undefined;
+};
+
 const createCustomerSchema = v.object({
-  userId: v.pipe(v.string(), v.minLength(1)),
   email: v.pipe(v.string(), v.email()),
   name: v.pipe(v.string(), v.minLength(1)),
 });
@@ -98,17 +164,19 @@ const createCustomerSchema = v.object({
 const checkoutSchema = v.object({
   type: v.literal('subscription.pro'),
   interval: v.picklist(['monthly', 'yearly']),
-  userId: v.pipe(v.string(), v.minLength(1)),
 });
 
-const portalSchema = v.object({
-  customerId: v.pipe(v.string(), v.minLength(1)),
-});
+const portalSchema = v.object({});
 
 const app = new Hono()
   .basePath('/api/stripe')
   .post('/create-customer', vValidator('json', createCustomerSchema), async (c) => {
-    const { userId, email, name } = c.req.valid('json');
+    const { email, name } = c.req.valid('json');
+    const userId = await getAuthenticatedUserId(c.req.header('authorization'), 'create-customer');
+    if (!userId) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
     try {
       const customer = await stripe.customers.create({
         email,
@@ -132,15 +200,17 @@ const app = new Hono()
   })
   .post('/create-checkout-session', vValidator('json', checkoutSchema), async (c) => {
     const payload = c.req.valid('json');
-    const { type, interval, userId } = payload;
+    const { type, interval } = payload;
+    const userId = await getAuthenticatedUserId(c.req.header('authorization'), 'create-checkout-session');
+    if (!userId) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
     try {
       const priceId = getPriceId(interval);
       const origin = c.req.header('origin') || 'http://localhost:3000';
 
-      const firestore = getFirestoreInstance();
-      const userDoc = await firestore.collection('users').doc(userId).get();
-      const userData = userDoc.data();
-      const customerId = userData?.stripeCustomerId;
+      const customerId = await getStripeCustomerIdByUserId(userId);
 
       if (!customerId) {
         return c.json({ error: 'Stripe customer not found' }, 400);
@@ -179,9 +249,19 @@ const app = new Hono()
     }
   })
   .post('/create-portal-session', vValidator('json', portalSchema), async (c) => {
-    const { customerId } = c.req.valid('json');
+    c.req.valid('json');
+    const userId = await getAuthenticatedUserId(c.req.header('authorization'), 'create-portal-session');
+    if (!userId) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
     try {
       const origin = c.req.header('origin') || 'http://localhost:3000';
+      const customerId = await getStripeCustomerIdByUserId(userId);
+
+      if (!customerId) {
+        return c.json({ error: 'Stripe customer not found' }, 400);
+      }
 
       const session = await stripe.billingPortal.sessions.create({
         customer: customerId,
@@ -195,7 +275,8 @@ const app = new Hono()
         level: 'error',
         eventType: 'create-portal-session',
         message: 'Failed to create portal session',
-        details: { customerId },
+        userId,
+        details: { userId },
         error,
       });
       return c.json({ error: 'Failed to create portal session' }, 500);

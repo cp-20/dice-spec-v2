@@ -10,10 +10,6 @@ import { useToast } from '@/shared/components/ui/use-toast';
 import { cn } from '@/shared/lib/shadcn-utils';
 import type { BillingInterval } from '@/shared/lib/stripe/config';
 
-interface PricingCardsProps {
-  userId: string;
-}
-
 const MONTHLY_PRICE = 300;
 const YEARLY_PRICE = 3000;
 const yearlyMonthlyEquivalent = Math.floor(YEARLY_PRICE / 12);
@@ -21,7 +17,7 @@ const yearlyDiscountPercentage = Math.floor(((MONTHLY_PRICE - yearlyMonthlyEquiv
 const yearlyOriginalPrice = MONTHLY_PRICE * 12;
 const yearlySaving = yearlyOriginalPrice - YEARLY_PRICE;
 
-export const PricingCards = ({ userId }: PricingCardsProps) => {
+export const PricingCards = () => {
   const { toast } = useToast();
   const [interval, setInterval] = useState<BillingInterval>('yearly');
   const [loading, setLoading] = useState(false);
@@ -29,7 +25,7 @@ export const PricingCards = ({ userId }: PricingCardsProps) => {
   const handleUpgrade = async () => {
     setLoading(true);
     try {
-      const data = await createCheckoutSession({ interval, userId });
+      const data = await createCheckoutSession({ interval });
 
       if (data.url) {
         window.location.href = data.url;

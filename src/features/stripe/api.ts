@@ -1,11 +1,11 @@
 import { hc } from 'hono/client';
 import type { AppType } from '@/app/api/stripe/[...path]/route';
+import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import type { BillingInterval } from '@/shared/lib/stripe/config';
 
 // -------------------------------
 
 interface CreateCustomerParams {
-  userId: string;
   email: string;
   name: string;
 }
@@ -16,9 +16,20 @@ interface CreateCustomerResponse {
 
 const getClient = () => hc<AppType>(typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
 
+const getAuthHeader = async () => {
+  const { auth } = useFirebase();
+  const idToken = await auth.currentUser?.getIdToken();
+
+  if (!idToken) {
+    throw new Error('Missing Firebase authentication token');
+  }
+
+  return { authorization: `Bearer ${idToken}` };
+};
+
 export async function createCustomer(params: CreateCustomerParams): Promise<CreateCustomerResponse> {
   const client = getClient();
-  const res = await client.api.stripe['create-customer'].$post({ json: params });
+  const res = await client.api.stripe['create-customer'].$post({ json: params }, { headers: await getAuthHeader() });
   if (!res.ok) {
     throw new Error('Failed to create customer', { cause: await res.json() });
   }
@@ -31,7 +42,6 @@ export async function createCustomer(params: CreateCustomerParams): Promise<Crea
 
 interface CreateCheckoutSessionParams {
   interval: BillingInterval;
-  userId: string;
 }
 
 interface CreateCheckoutSessionResponse {
@@ -43,9 +53,10 @@ export async function createCheckoutSession(
   params: CreateCheckoutSessionParams,
 ): Promise<CreateCheckoutSessionResponse> {
   const client = getClient();
-  const res = await client.api.stripe['create-checkout-session'].$post({
-    json: { ...params, type: 'subscription.pro' },
-  });
+  const res = await client.api.stripe['create-checkout-session'].$post(
+    { json: { ...params, type: 'subscription.pro' } },
+    { headers: await getAuthHeader() },
+  );
 
   if (!res.ok) {
     throw new Error('Failed to create checkout session', { cause: await res.json() });
@@ -57,17 +68,13 @@ export async function createCheckoutSession(
 
 // -------------------------------
 
-interface CreatePortalSessionParams {
-  customerId: string;
-}
-
 interface CreatePortalSessionResponse {
   url: string;
 }
 
-export async function createPortalSession(params: CreatePortalSessionParams): Promise<CreatePortalSessionResponse> {
+export async function createPortalSession(): Promise<CreatePortalSessionResponse> {
   const client = getClient();
-  const res = await client.api.stripe['create-portal-session'].$post({ json: params });
+  const res = await client.api.stripe['create-portal-session'].$post({ json: {} }, { headers: await getAuthHeader() });
 
   if (!res.ok) {
     throw new Error('Failed to create portal session', { cause: await res.json() });

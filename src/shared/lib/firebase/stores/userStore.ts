@@ -42,7 +42,6 @@ const internalMeAtom = withAtomEffect(atom<UserDocument>(anonymousUserDocument),
     if (!snap.exists()) {
       try {
         const { customerId } = await createCustomer({
-          userId: authUser.uid,
           email: authUser.email ?? '',
           name: authUser.displayName ?? 'ユーザー',
         });
