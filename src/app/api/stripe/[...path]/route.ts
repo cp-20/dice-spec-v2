@@ -11,6 +11,8 @@ import { createStripeHandlers } from './_handlers';
 import { type HandlerResult, StripeWebhookHandlerError } from './_handlers/types';
 import { sendStripeLog } from './logger';
 
+const appOrigin = process.env.NEXT_PUBLIC_APP_ORIGIN || 'http://localhost:3000';
+
 const stripe = new Stripe(stripeConfig.secretKey, {
   apiVersion: '2026-01-28.clover',
 });
@@ -208,8 +210,6 @@ const app = new Hono()
 
     try {
       const priceId = getPriceId(interval);
-      const origin = c.req.header('origin') || 'http://localhost:3000';
-
       const customerId = await getStripeCustomerIdByUserId(userId);
 
       if (!customerId) {
@@ -223,8 +223,8 @@ const app = new Hono()
         payment_method_types: ['card'],
         customer: customerId,
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: `${origin}/profile?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/profile`,
+        success_url: `${appOrigin}/profile?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${appOrigin}/profile`,
         client_reference_id: userId,
         metadata,
         subscription_data: { metadata },
@@ -256,7 +256,6 @@ const app = new Hono()
     }
 
     try {
-      const origin = c.req.header('origin') || 'http://localhost:3000';
       const customerId = await getStripeCustomerIdByUserId(userId);
 
       if (!customerId) {
@@ -265,7 +264,7 @@ const app = new Hono()
 
       const session = await stripe.billingPortal.sessions.create({
         customer: customerId,
-        return_url: `${origin}/profile`,
+        return_url: `${appOrigin}/profile`,
       });
 
       return c.json({ url: session.url });
