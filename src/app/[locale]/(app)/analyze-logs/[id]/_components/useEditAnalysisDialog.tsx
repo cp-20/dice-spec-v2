@@ -63,7 +63,7 @@ export const useEditAnalysisDialog = () => {
       title: title.trim(),
       visibilityLevel: visibility,
       showRecordDetails: showRecordDetails,
-      sessionDate: sessionDate ? Timestamp.fromDate(new Date(sessionDate)) : null,
+      sessionDate: Timestamp.fromDate(new Date(sessionDate)),
     });
     setIsOpen(false);
   };

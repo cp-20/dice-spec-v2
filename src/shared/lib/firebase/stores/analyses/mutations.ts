@@ -97,7 +97,7 @@ export type UpdateAnalysisPayload = Partial<{
   title: string;
   visibilityLevel: AnalysisVisibilityLevel;
   showRecordDetails: boolean;
-  sessionDate: Timestamp | null;
+  sessionDate: Timestamp;
 }>;
 
 export const useUpdateAnalysis = () => {

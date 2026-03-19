@@ -1,10 +1,9 @@
-import { IconChevronsRight, IconList, IconTimeline } from '@tabler/icons-react';
+import { IconChevronsRight, IconTimeline } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
 import { BlogCallout } from '@/app/[locale]/(app)/_components/BlogCallout';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
-import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { wrapPage } from '@/shared/i18n/page-layout';
 import {
   localeHelper,

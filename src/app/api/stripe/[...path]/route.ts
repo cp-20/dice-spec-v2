@@ -127,7 +127,7 @@ const app = new Hono()
         details: { email, name },
         error,
       });
-      return c.json({ error: 'Failed to create customer' }, 500);
+      return c.json({ error: 'Failed to create customer ' }, 500);
     }
   })
   .post('/create-checkout-session', vValidator('json', checkoutSchema), async (c) => {
