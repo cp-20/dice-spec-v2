@@ -172,7 +172,7 @@ describe('Firestore セキュリティルール', () => {
       const firebaseCli = resolve(process.cwd(), 'node_modules/.bin/firebase');
       emulatorProcess = spawn(
         firebaseCli,
-        ['emulators:start', '--only', 'firestore', '--project', PROJECT_ID, '--config', 'firebase.json'],
+        ['emulators:start', '--only', 'firestore', '--project', PROJECT_ID, '--config', 'firebase/firebase.json'],
         {
           cwd: process.cwd(),
           env: { ...process.env, FIRESTORE_EMULATOR_HOST: `${FIRESTORE_EMULATOR_HOST}:${FIRESTORE_EMULATOR_PORT}` },
