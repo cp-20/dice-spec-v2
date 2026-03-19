@@ -1,4 +1,4 @@
-import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 
 export const storagePaths = {
