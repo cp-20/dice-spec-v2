@@ -1,4 +1,12 @@
-import { collection, doc, increment, serverTimestamp, type Timestamp, updateDoc, writeBatch } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  increment,
+  runTransaction,
+  serverTimestamp,
+  type Timestamp,
+  writeBatch,
+} from 'firebase/firestore';
 import { useCallback, useState } from 'react';
 import { ALL_CHARACTER_ID } from '@/app/[locale]/(app)/analyze-logs/_components/constants';
 import type { DiceResultForCharacter } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/ccfoliaLogAnalysis';
@@ -109,9 +117,45 @@ export const useUpdateAnalysis = () => {
       setUpdating(true);
       try {
         const analysisRef = doc(firestore, COLLECTIONS.analyses, id);
-        await updateDoc(analysisRef, {
-          ...updates,
-          updatedAt: serverTimestamp(),
+        const analysisRecordsRef = doc(firestore, COLLECTIONS.analysisRecords, id);
+
+        await runTransaction(firestore, async (transaction) => {
+          const hasVisibilityLevel = updates.visibilityLevel !== undefined;
+          const hasShowRecordDetails = updates.showRecordDetails !== undefined;
+
+          let visibilityLevel = updates.visibilityLevel;
+          let showRecordDetails = updates.showRecordDetails;
+
+          if (!hasVisibilityLevel || !hasShowRecordDetails) {
+            const analysisSnapshot = await transaction.get(analysisRef);
+            if (!analysisSnapshot.exists()) {
+              throw new Error('Analysis not found');
+            }
+
+            const currentAnalysis = analysisSnapshot.data() as Pick<
+              NewAnalysisDocument,
+              'visibilityLevel' | 'showRecordDetails'
+            >;
+
+            if (!hasVisibilityLevel) {
+              visibilityLevel = currentAnalysis.visibilityLevel;
+            }
+
+            if (!hasShowRecordDetails) {
+              showRecordDetails = currentAnalysis.showRecordDetails;
+            }
+          }
+
+          const newIsPublic = visibilityLevel !== 'private' && Boolean(showRecordDetails);
+
+          transaction.update(analysisRef, {
+            ...updates,
+            updatedAt: serverTimestamp(),
+          });
+
+          transaction.update(analysisRecordsRef, {
+            isPublic: newIsPublic,
+          });
         });
       } finally {
         setUpdating(false);
