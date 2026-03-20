@@ -9,6 +9,7 @@ import { createCustomer } from '@/features/stripe/api';
 import { toast } from '@/shared/components/ui/use-toast';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { authUserAtom, authUserLoadingAtom, useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+import { storagePaths, uploadBufferFromUrlToStorage } from '@/shared/lib/firebase/useStorage';
 import { myAnalysesAtom } from './analyses/userAnalyses';
 import { COLLECTIONS, type NewUserDocument, type PublicUser, type UserDocument, userStoreSchema } from './collections';
 
@@ -25,7 +26,7 @@ const anonymousUserDocument: UserDocument = {
 const internalMeLoadingAtom = atom(true);
 
 const internalMeAtom = withAtomEffect(atom<UserDocument>(anonymousUserDocument), (get, set) => {
-  const { auth, firestore } = useFirebase();
+  const { auth, firestore, storage } = useFirebase();
 
   const authUserLoading = get(authUserLoadingAtom);
   if (authUserLoading) return;
@@ -46,9 +47,22 @@ const internalMeAtom = withAtomEffect(atom<UserDocument>(anonymousUserDocument),
           name: authUser.displayName ?? 'ユーザー',
         });
 
+        let avatarUrl: string | undefined;
+        if (authUser.photoURL) {
+          try {
+            avatarUrl = await uploadBufferFromUrlToStorage(
+              storage,
+              storagePaths.getAvatarPath(authUser.uid),
+              authUser.photoURL,
+            );
+          } catch (uploadError) {
+            console.error('Failed to upload Google avatar to Storage:', uploadError);
+          }
+        }
+
         const newUserDocument: NewUserDocument = {
           name: authUser.displayName ?? 'ユーザー',
-          avatarUrl: authUser.photoURL ?? undefined,
+          avatarUrl,
           plan: 'free',
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
