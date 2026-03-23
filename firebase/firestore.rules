@@ -252,6 +252,7 @@ service cloud.firestore {
         && isValidUserDocument(request.resource.data)
         && request.resource.data.plan == 'free'
         && request.resource.data.analysisCount == 0
+        && request.resource.data.stripeCustomerId == ''
         && (request.resource.data.analysisCountSyncAnalysisId == ''
           || request.resource.data.analysisCountSyncAnalysisId == null);
 

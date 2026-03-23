@@ -84,7 +84,7 @@ const userDoc = (overrides: Record<string, unknown> = {}) => ({
   plan: 'free',
   createdAt: now,
   updatedAt: now,
-  stripeCustomerId: 'cus_test_123',
+  stripeCustomerId: '',
   analysisCount: 0,
   analysisCountSyncAnalysisId: null,
   ...overrides,
@@ -229,6 +229,14 @@ describe('Firestore セキュリティルール', () => {
         name: 'Mallory',
         updatedAt: Timestamp.fromDate(new Date('2026-03-18T01:00:00.000Z')),
       }),
+    );
+  });
+
+  test('users: 悪意のあるクライアントが任意の stripeCustomerId でユーザードキュメントを作成できない', async () => {
+    const maliciousDb = testEnv.authenticatedContext('user_malicious').firestore();
+
+    await assertFails(
+      setDoc(doc(maliciousDb, 'users/user_malicious'), userDoc({ stripeCustomerId: 'cus_stolen_id_123' })),
     );
   });
 

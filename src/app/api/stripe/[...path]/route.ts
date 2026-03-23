@@ -124,7 +124,7 @@ const getBearerToken = (authorizationHeader: string | undefined) => {
   return token;
 };
 
-const getAuthenticatedUserId = async (authorizationHeader: string | undefined, eventType: string) => {
+const getAuthenticatedUser = async (authorizationHeader: string | undefined, eventType: string) => {
   const idToken = getBearerToken(authorizationHeader);
   if (!idToken) {
     await sendStripeLog({
@@ -137,7 +137,20 @@ const getAuthenticatedUserId = async (authorizationHeader: string | undefined, e
 
   try {
     const decodedToken = await getFirebaseAuthInstance().verifyIdToken(idToken);
-    return decodedToken.uid;
+
+    if (!decodedToken.email || !decodedToken.name) {
+      await sendStripeLog({
+        level: 'warning',
+        eventType,
+        message: 'Authenticated user is missing email or name',
+      });
+    }
+
+    const uid = decodedToken.uid;
+    const email = decodedToken.email ?? 'unknown@dicespec.app';
+    const name = decodedToken.name ?? 'unknown';
+
+    return { uid, email, name };
   } catch (error) {
     console.error('Failed to verify Firebase ID token:', error);
     await sendStripeLog({
@@ -158,11 +171,6 @@ const getStripeCustomerIdByUserId = async (userId: string) => {
   return userData?.stripeCustomerId as string | undefined;
 };
 
-const createCustomerSchema = v.object({
-  email: v.pipe(v.string(), v.email()),
-  name: v.pipe(v.string(), v.minLength(1)),
-});
-
 const checkoutSchema = v.object({
   type: v.literal('subscription.pro'),
   interval: v.picklist(['monthly', 'yearly']),
@@ -172,18 +180,26 @@ const portalSchema = v.object({});
 
 const app = new Hono()
   .basePath('/api/stripe')
-  .post('/create-customer', vValidator('json', createCustomerSchema), async (c) => {
-    const { email, name } = c.req.valid('json');
-    const userId = await getAuthenticatedUserId(c.req.header('authorization'), 'create-customer');
-    if (!userId) {
+  .post('/create-customer', async (c) => {
+    const user = await getAuthenticatedUser(c.req.header('authorization'), 'create-customer');
+    if (!user) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
+    const userId = user.uid;
+    const name = user.name;
+    const email = user.email;
 
     try {
       const customer = await stripe.customers.create({
         email,
         name,
         metadata: { userId },
+      });
+
+      const firestore = getFirestoreInstance();
+      const userRef = firestore.collection('users').doc(userId);
+      await userRef.update({
+        stripeCustomerId: customer.id,
       });
 
       return c.json({ customerId: customer.id });
@@ -197,16 +213,17 @@ const app = new Hono()
         details: { email, name },
         error,
       });
-      return c.json({ error: 'Failed to create customer ' }, 500);
+      return c.json({ error: 'Failed to create customer' }, 500);
     }
   })
   .post('/create-checkout-session', vValidator('json', checkoutSchema), async (c) => {
     const payload = c.req.valid('json');
     const { type, interval } = payload;
-    const userId = await getAuthenticatedUserId(c.req.header('authorization'), 'create-checkout-session');
-    if (!userId) {
+    const user = await getAuthenticatedUser(c.req.header('authorization'), 'create-checkout-session');
+    if (!user) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
+    const userId = user.uid;
 
     try {
       const priceId = getPriceId(interval);
@@ -251,10 +268,11 @@ const app = new Hono()
   })
   .post('/create-portal-session', vValidator('json', portalSchema), async (c) => {
     c.req.valid('json');
-    const userId = await getAuthenticatedUserId(c.req.header('authorization'), 'create-portal-session');
-    if (!userId) {
+    const user = await getAuthenticatedUser(c.req.header('authorization'), 'create-portal-session');
+    if (!user) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
+    const userId = user.uid;
 
     try {
       const customerId = await getStripeCustomerIdByUserId(userId);
@@ -355,4 +373,5 @@ const app = new Hono()
 
 export const POST = handle(app);
 
+export const stripeApp = app;
 export type AppType = typeof app;

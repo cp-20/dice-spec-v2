@@ -42,11 +42,6 @@ const internalMeAtom = withAtomEffect(atom<UserDocument>(anonymousUserDocument),
   const unsubscribe = onSnapshot(userRef, async (snap) => {
     if (!snap.exists()) {
       try {
-        const { customerId } = await createCustomer({
-          email: authUser.email ?? '',
-          name: authUser.displayName ?? 'ユーザー',
-        });
-
         let avatarUrl: string | undefined;
         if (authUser.photoURL) {
           try {
@@ -66,11 +61,13 @@ const internalMeAtom = withAtomEffect(atom<UserDocument>(anonymousUserDocument),
           plan: 'free',
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
-          stripeCustomerId: customerId,
+          stripeCustomerId: '',
           analysisCount: 0,
           analysisCountSyncAnalysisId: '',
         };
         await setDoc(userRef, newUserDocument);
+
+        await createCustomer();
       } catch (error) {
         console.error('Failed to create Stripe customer:', error);
         toast({

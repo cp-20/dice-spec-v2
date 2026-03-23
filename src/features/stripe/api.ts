@@ -5,11 +5,6 @@ import type { BillingInterval } from '@/shared/lib/stripe/config';
 
 // -------------------------------
 
-interface CreateCustomerParams {
-  email: string;
-  name: string;
-}
-
 interface CreateCustomerResponse {
   customerId: string;
 }
@@ -27,9 +22,9 @@ const getAuthHeader = async () => {
   return { authorization: `Bearer ${idToken}` };
 };
 
-export async function createCustomer(params: CreateCustomerParams): Promise<CreateCustomerResponse> {
+export async function createCustomer(): Promise<CreateCustomerResponse> {
   const client = getClient();
-  const res = await client.api.stripe['create-customer'].$post({ json: params }, { headers: await getAuthHeader() });
+  const res = await client.api.stripe['create-customer'].$post({ json: {} }, { headers: await getAuthHeader() });
   if (!res.ok) {
     throw new Error('Failed to create customer', { cause: await res.json() });
   }
