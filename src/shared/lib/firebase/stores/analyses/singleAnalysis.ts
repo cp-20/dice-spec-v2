@@ -5,6 +5,7 @@ import { atomFamily } from 'jotai-family';
 import * as v from 'valibot';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { type AnalysisDocument, analysesStoreSchema, COLLECTIONS } from '../collections';
+import { internalUserFamilyAtom } from '../userStore';
 
 type AnalysisAtom = {
   analysis: AnalysisDocument | null;
@@ -29,6 +30,7 @@ const internalAnalysisAtomFamily = atomFamily((id: string | undefined) =>
 
       const analysisDocument = v.parse(analysesStoreSchema, snap.data({ serverTimestamps: 'estimate' }));
       set(internalAnalysisAtomFamily(id), { analysis: analysisDocument, loading: false });
+      set(internalUserFamilyAtom(analysisDocument.ownerUid), analysisDocument.owner);
     });
   }),
 );

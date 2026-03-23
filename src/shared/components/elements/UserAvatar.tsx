@@ -29,6 +29,8 @@ interface PresentialUserAvatarProps {
 }
 
 const PresentialUserAvatar: FC<PresentialUserAvatarProps> = ({ avatarUrl, size }) => {
+  const iconSize = Math.max(12, Math.floor(size / 1.5));
+
   return (
     <div
       className="relative overflow-hidden rounded-full border-2 border-slate-300 bg-slate-200"
@@ -39,7 +41,7 @@ const PresentialUserAvatar: FC<PresentialUserAvatarProps> = ({ avatarUrl, size }
         <img src={avatarUrl} alt="" className="size-full object-cover" width={size * 4} height={size * 4} />
       ) : (
         <div className="flex size-full items-center justify-center bg-slate-200">
-          <IconUserFilled className={`size-${Math.floor(size / 1.5)} text-slate-500`} />
+          <IconUserFilled className="text-slate-500" style={{ width: iconSize, height: iconSize }} />
         </div>
       )}
     </div>
