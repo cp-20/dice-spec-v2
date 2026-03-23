@@ -124,17 +124,12 @@ service cloud.firestore {
       return isAnalysisOwnerByResource() || resource.data.visibilityLevel == 'public' || resource.data.visibilityLevel == 'unlisted';
     }
 
-    function changedKeys() {
-      return request.resource.data.diff(resource.data).changedKeys();
+    function affectedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
     }
 
     function isUserProfileUpdateOnly() {
-      return changedKeys().hasOnly(['name', 'avatarUrl', 'updatedAt'])
-        && request.resource.data.plan == resource.data.plan
-        && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.stripeCustomerId == resource.data.stripeCustomerId
-        && request.resource.data.analysisCount == resource.data.analysisCount
-        && request.resource.data.analysisCountSyncAnalysisId == resource.data.analysisCountSyncAnalysisId
+      return affectedKeys().hasOnly(['name', 'avatarUrl', 'updatedAt'])
         && request.resource.data.name is string
         && (!('avatarUrl' in request.resource.data) || request.resource.data.avatarUrl == null || request.resource.data.avatarUrl is string)
         && request.resource.data.updatedAt is timestamp;
@@ -149,13 +144,7 @@ service cloud.firestore {
           ? request.resource.data.analysisCountSyncAnalysisId
           : '';
 
-      return changedKeys().hasOnly(['analysisCount', 'analysisCountSyncAnalysisId', 'updatedAt'])
-        && request.resource.data.name == resource.data.name
-        && request.resource.data.avatarUrl == resource.data.avatarUrl
-        && request.resource.data.plan == resource.data.plan
-        && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.stripeCustomerId == resource.data.stripeCustomerId
-        && isValidAnalysisCount(prevCount)
+      return affectedKeys().hasOnly(['analysisCount', 'analysisCountSyncAnalysisId', 'updatedAt'])
         && isValidAnalysisCount(nextCount)
         && syncAnalysisId is string
         && syncAnalysisId.size() > 0
@@ -164,14 +153,7 @@ service cloud.firestore {
     }
 
     function isAnalysisMetaUpdateOnly() {
-      return changedKeys().hasOnly(['title', 'visibilityLevel', 'showRecordDetails', 'sessionDate', 'updatedAt'])
-        && request.resource.data.id == resource.data.id
-        && request.resource.data.ownerUid == resource.data.ownerUid
-        && request.resource.data.systemId == resource.data.systemId
-        && request.resource.data.characterResults == resource.data.characterResults
-        && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.primaryDeviationScore == resource.data.primaryDeviationScore
-        && request.resource.data.owner == resource.data.owner
+      return affectedKeys().hasOnly(['title', 'visibilityLevel', 'showRecordDetails', 'sessionDate', 'updatedAt'])
         && request.resource.data.title is string
         && isVisibilityLevel(request.resource.data.visibilityLevel)
         && request.resource.data.showRecordDetails is bool
@@ -180,17 +162,7 @@ service cloud.firestore {
     }
 
     function isAnalysisOwnerSyncUpdateOnly() {
-      return changedKeys().hasOnly(['owner'])
-        && request.resource.data.id == resource.data.id
-        && request.resource.data.ownerUid == resource.data.ownerUid
-        && request.resource.data.systemId == resource.data.systemId
-        && request.resource.data.visibilityLevel == resource.data.visibilityLevel
-        && request.resource.data.showRecordDetails == resource.data.showRecordDetails
-        && request.resource.data.characterResults == resource.data.characterResults
-        && request.resource.data.sessionDate == resource.data.sessionDate
-        && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.updatedAt == resource.data.updatedAt
-        && request.resource.data.primaryDeviationScore == resource.data.primaryDeviationScore
+      return affectedKeys().hasOnly(['owner'])
         && request.resource.data.owner is map
         && isValidPublicOwner(request.resource.data.owner)
         && isValidPublicOwnerByUserDoc(request.resource.data.owner, request.resource.data.ownerUid);
