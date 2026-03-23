@@ -18,10 +18,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/shared/components/ui/use-toast';
 import { type SaveAnalysisPayload, useSaveAnalysis } from '@/shared/lib/firebase/stores/analyses/mutations';
 import { myAnalysesAtom, useUserAnalyses } from '@/shared/lib/firebase/stores/analyses/userAnalyses';
-import {
-  type SaveAnalysisRecordsPayload,
-  useSaveAnalysisRecords,
-} from '@/shared/lib/firebase/stores/analysisRecordsStore';
 import type { AnalysisVisibilityLevel } from '@/shared/lib/firebase/stores/collections';
 import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
@@ -47,8 +43,7 @@ export const AnalysisSavePanel: FC = () => {
   const { toast } = useToast();
   const { authUser } = useFirebaseAuth();
   const { system, result } = useLogAnalysis();
-  const { saveAnalysis, saving: savingAnalysis } = useSaveAnalysis();
-  const { saveAnalysisRecords, saving: savingRecords } = useSaveAnalysisRecords();
+  const { saveAnalysis, saving } = useSaveAnalysis();
   useUserAnalyses(authUser?.uid);
   const analyses = useAtomValue(myAnalysesAtom);
   const { me } = useMeStore();
@@ -60,7 +55,6 @@ export const AnalysisSavePanel: FC = () => {
 
   const isPro = me.plan === 'pro';
   const limitReached = !isPro && analyses.length >= SAVE_ANALYSIS_LIMIT_FREE;
-  const saving = savingAnalysis || savingRecords;
 
   const canSave =
     authUser !== null &&
@@ -92,20 +86,9 @@ export const AnalysisSavePanel: FC = () => {
       };
 
       const analysisId = await saveAnalysis(payload);
-
-      const recordsPayload: SaveAnalysisRecordsPayload = {
-        analysisId,
-        ownerUid: authUser.uid,
-        isPublic: visibility === 'public' && showRecordDetails,
-        characterRecords: result.results.map((result) => ({
-          characterId: result.id,
-          records: result.results,
-        })),
-      };
-
-      await saveAnalysisRecords(recordsPayload);
       router.push(t('link', { href: `/analyze-logs/${analysisId}` }));
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast({
         title: t('analyze-logs:save.failed.title'),
         description: t('analyze-logs:save.failed.description'),

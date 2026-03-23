@@ -14,7 +14,7 @@ import { sendStripeLog } from './logger';
 const appOrigin = process.env.NEXT_PUBLIC_APP_ORIGIN || 'http://localhost:3000';
 
 const stripe = new Stripe(stripeConfig.secretKey, {
-  apiVersion: '2026-01-28.clover',
+  apiVersion: '2026-02-25.clover',
 });
 
 const getFirebaseAdminApp = () => {

@@ -2,7 +2,7 @@ import { normalizeParentheses } from './normalize';
 
 const skillNameRegex = /(?:【([^】]+)】)|(?:［([^］]+)］)|(?:《([^》]+)》)|(?:〈([^〉]+)〉)/u;
 
-export const extractSkillNameFromMessage = (message: string): string | undefined => {
+export const extractSkillNameFromMessage = (message: string): string | null => {
   const normalizedMessage = normalizeParentheses(message);
 
   // ダイス結果本文側の注釈を避けるため、コマンド部のみから技能名を抽出する
@@ -12,7 +12,7 @@ export const extractSkillNameFromMessage = (message: string): string | undefined
   if (wrappedSkillName) return wrappedSkillName;
 
   const tokens = commandPart.trim().split(/\s+/u);
-  if (tokens.length < 2) return undefined;
+  if (tokens.length < 2) return null;
 
-  return tokens.at(-1);
+  return tokens.at(-1) ?? null;
 };

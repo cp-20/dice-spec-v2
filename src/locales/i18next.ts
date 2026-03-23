@@ -7,4 +7,5 @@ export const i18nextInitOptions: InitOptions = {
   fallbackLng: 'ja',
   defaultNS: 'translation',
   resources: { en, ja },
+  showSupportNotice: false,
 };

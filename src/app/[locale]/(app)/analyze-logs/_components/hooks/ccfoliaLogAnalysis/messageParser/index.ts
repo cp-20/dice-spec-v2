@@ -12,7 +12,7 @@ export type SystemMessageParserResult = {
   // 目標値
   target: number;
   // 技能名
-  skillName?: string;
+  skillName: string | null;
 };
 
 export type SystemMessageParser = (message: string) => SystemMessageParserResult | null;

@@ -31,12 +31,14 @@ describe('shinobigamiParser', () => {
       evaluation: '失敗',
       results: [3],
       target: 5,
+      skillName: null,
     });
 
     expect(shinobigamiParser('SG (SG@12#2) ＞ 11[5,6] ＞ 11')).toStrictEqual({
       evaluation: '',
       results: [11],
       target: -1,
+      skillName: null,
     });
 
     expect(
@@ -47,12 +49,14 @@ describe('shinobigamiParser', () => {
       evaluation: 'スペシャル',
       results: [12],
       target: 6,
+      skillName: null,
     });
 
     expect(shinobigamiParser('SG>=6 (SG@12#2>=6) ＞ 8[2,6] ＞ 8 ＞ 成功')).toStrictEqual({
       evaluation: '成功',
       results: [8],
       target: 6,
+      skillName: null,
     });
   });
 });

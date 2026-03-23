@@ -23,7 +23,7 @@ export const emokloreParser: SystemMessageParser = (message) => {
     evaluation,
     results,
     target,
-    ...(skillName ? { skillName } : {}),
+    skillName,
   };
 };
 

@@ -28,7 +28,7 @@ export const shinobigamiParser: SystemMessageParser = (message) => {
     evaluation,
     results,
     target,
-    ...(skillName ? { skillName } : {}),
+    skillName,
   };
 };
 

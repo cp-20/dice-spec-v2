@@ -15,7 +15,7 @@ const PREVIEW_ROW_COUNT = 4;
 
 type LogResult = {
   evaluationStatus: 'success' | 'failure' | 'other';
-  skillName?: string;
+  skillName: string | null;
   target: number;
 };
 

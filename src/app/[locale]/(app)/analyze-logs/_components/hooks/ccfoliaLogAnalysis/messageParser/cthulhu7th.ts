@@ -24,7 +24,7 @@ export const CoC7thParser: SystemMessageParser = (message) => {
     evaluation,
     results: [result],
     target,
-    ...(skillName ? { skillName } : {}),
+    skillName,
   };
 };
 
