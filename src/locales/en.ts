@@ -363,39 +363,6 @@ export const en = {
         description: 'Terms of Service for using DiceSpec.',
       },
       title: 'Terms of Service',
-      updatedAt: 'Last updated: 2026-03-18',
-      description:
-        'These Terms define the conditions for using DiceSpec. By using this service, users are deemed to have agreed to these Terms.',
-      sections: {
-        0: {
-          title: '1. Scope',
-          body: 'These Terms apply to all relationships between users and the operator regarding use of this service.',
-        },
-        1: {
-          title: '2. Accounts',
-          body: 'Users can create an account through Google authentication. The operator may suspend use if registration information is false.',
-        },
-        2: {
-          title: '3. Prohibited Conduct',
-          body: 'Violation of laws, unauthorized access, interference with operation, and infringement of third-party rights are prohibited.',
-        },
-        3: {
-          title: '4. Service Changes',
-          body: 'The operator may change, add, or discontinue service features without prior notice.',
-        },
-        4: {
-          title: '5. Disclaimer',
-          body: 'The operator does not guarantee that the service is free from factual or legal defects. Except in cases of willful misconduct or gross negligence, the operator is not liable for user damages.',
-        },
-        5: {
-          title: '6. Changes to Terms',
-          body: 'The operator may revise these Terms when necessary. Revised Terms become effective when posted on this page.',
-        },
-        6: {
-          title: '7. Governing Law and Jurisdiction',
-          body: 'These Terms are governed by Japanese law. Disputes shall be subject to the exclusive jurisdiction of the court with authority over the operator location.',
-        },
-      },
     },
     privacy: {
       metadata: {
@@ -403,38 +370,6 @@ export const en = {
         description: 'Privacy Policy for DiceSpec users.',
       },
       title: 'Privacy Policy',
-      updatedAt: 'Last updated: 2026-03-18',
-      description: 'This policy defines how DiceSpec handles personal and usage information.',
-      sections: {
-        0: {
-          title: '1. Information We Collect',
-          body: 'We collect profile information from Google authentication (display name, email, avatar URL) and data saved while using the service (such as analysis logs).',
-        },
-        1: {
-          title: '2. Purpose of Use',
-          body: 'Information is used for authentication, account management, service delivery, quality improvement, abuse prevention, and user support.',
-        },
-        2: {
-          title: '3. Third-Party Sharing',
-          body: 'Except as required by law, we do not provide personal information to third parties without user consent. Payment-related data is managed by Stripe.',
-        },
-        3: {
-          title: '4. Analytics and Cookies',
-          body: 'We may use cookies or similar technologies for usage analytics. Users can disable cookies in browser settings.',
-        },
-        4: {
-          title: '5. Retention and Deletion',
-          body: 'Collected information is retained only as long as necessary and then deleted or anonymized appropriately.',
-        },
-        5: {
-          title: '6. Access, Correction, and Deletion Requests',
-          body: 'When users request disclosure, correction, or deletion, we respond within a reasonable scope in accordance with applicable laws.',
-        },
-        6: {
-          title: '7. Revisions',
-          body: 'This policy may be revised as needed. Revised content becomes effective when posted on this page.',
-        },
-      },
     },
     commerce: {
       metadata: {
@@ -442,30 +377,6 @@ export const en = {
         description: 'Legal notice for subscription purchases on DiceSpec.',
       },
       title: 'Legal Notice Based on the Specified Commercial Transactions Act',
-      updatedAt: 'Last updated: 2026-03-18',
-      rows: {
-        0: { label: 'Seller', value: 'cp20' },
-        1: { label: 'Representative', value: 'cp20' },
-        2: { label: 'Address', value: 'Disclosed without delay upon request.' },
-        3: { label: 'Contact', value: 'Please contact us via the inquiry form.' },
-        4: { label: 'Price', value: 'Displayed on each plan purchase screen (tax included).' },
-        5: {
-          label: 'Additional Fees',
-          value: 'Internet connection charges and other communication fees are borne by the customer.',
-        },
-        6: { label: 'Payment Method', value: 'Credit card (processed by Stripe).' },
-        7: { label: 'Payment Timing', value: 'Charged at initial purchase and each renewal.' },
-        8: { label: 'Service Delivery', value: 'Available immediately after successful payment.' },
-        9: {
-          label: 'Refund / Cancellation',
-          value:
-            'Due to the nature of digital services, refunds are generally not available after purchase. Cancellation is possible before the next renewal date.',
-        },
-        10: {
-          label: 'Recommended Environment',
-          value: 'Latest major browsers (Chrome / Firefox / Safari / Edge).',
-        },
-      },
     },
   },
   profile: {
