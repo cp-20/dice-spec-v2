@@ -230,6 +230,7 @@ export const en = {
       title: 'Share analysis results',
       'scenario-name': 'Scenario name (optional)',
       'scenario-name-description': 'Displayed in the title section of the image',
+      'scenario-name-default': 'Analysis Results',
       'share-image': 'Share image',
       'image-alt': 'Preview of the share image for analysis results',
       'share-text':

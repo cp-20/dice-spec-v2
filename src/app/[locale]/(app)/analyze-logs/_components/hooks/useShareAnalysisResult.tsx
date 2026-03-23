@@ -178,7 +178,9 @@ const SharingAnalysisResult: FC<SharingAnalysisResultProps> = ({ className }) =>
       ref={imageRefCallback}
       className={clsx('p-12 pl-24 bg-white aspect-1200/630 relative flex flex-col gap-20', className)}
     >
-      <div className="text-4xl font-bold text-slate-900">{scenarioName || t('analyze-logs:detail.title')}</div>
+      <div className="text-4xl font-bold text-slate-900">
+        {scenarioName || t('analyze-logs:share-analysis-result.scenario-name-default')}
+      </div>
 
       <div className="flex gap-12 min-h-0 flex-1">
         <div className="space-y-8">

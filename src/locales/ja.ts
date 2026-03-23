@@ -232,6 +232,7 @@ export const ja = {
       title: '解析結果をシェア',
       'scenario-name': 'シナリオ名 (任意)',
       'scenario-name-description': '画像のタイトル部分に表示されます',
+      'scenario-name-default': 'ログ解析結果',
       'share-image': '画像をシェア',
       'image-alt': '解析結果シェア画像のプレビュー',
       'share-text':
