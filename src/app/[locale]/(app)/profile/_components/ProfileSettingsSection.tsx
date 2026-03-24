@@ -58,7 +58,8 @@ export const ProfileSettingsSection = () => {
         title: t('profile:toast.save-success-title'),
         description: t('profile:toast.save-success-description'),
       });
-    } catch (_error) {
+    } catch (err) {
+      console.error('Failed to save profile', err);
       toast({
         title: t('profile:toast.save-error-title'),
         description: t('profile:toast.save-error-description'),

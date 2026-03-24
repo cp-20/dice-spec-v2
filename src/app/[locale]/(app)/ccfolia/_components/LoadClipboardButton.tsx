@@ -55,7 +55,8 @@ export const LoadClipboardButton: FC = () => {
         setDone(false);
         clearTimeout(timeout);
       };
-    } catch (_err) {
+    } catch (err) {
+      console.error('Failed to load from clipboard', err);
       toast({
         title: t('ccfolia:load-clipboard.error'),
         description: t('ccfolia:load-clipboard.error-description'),

@@ -26,7 +26,8 @@ export const FeedbackForm = () => {
         description: t('common:header.feedback.submitted-description'),
         variant: 'default',
       });
-    } catch (_err) {
+    } catch (err) {
+      console.error('Failed to send feedback', err);
       toast({
         title: t('common:header.feedback.error'),
         variant: 'destructive',
