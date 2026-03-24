@@ -1,7 +1,5 @@
-import { FieldValue } from 'firebase-admin/firestore';
 import type { Stripe } from 'stripe';
 import * as v from 'valibot';
-import { COLLECTIONS } from '@/shared/lib/firebase/stores/collections';
 import type { HandlerDeps, HandlerResult, SubscriptionPayload } from './types';
 import { StripeWebhookHandlerError } from './types';
 
@@ -41,7 +39,7 @@ const calcRemainingDays = (unixTime: number | null | undefined): number | null =
   return Math.max(0, Math.ceil(remainingMillis / millisPerDay));
 };
 
-export const createSubscriptionUpdatedHandler = ({ getFirestoreInstance }: HandlerDeps) => {
+export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById }: HandlerDeps) => {
   return async (subscription: Stripe.Subscription): Promise<HandlerResult> => {
     const metadata = v.safeParse(subscriptionMetadataSchema, subscription.metadata);
     if (!metadata.success) {
@@ -59,13 +57,11 @@ export const createSubscriptionUpdatedHandler = ({ getFirestoreInstance }: Handl
     const { userId } = metadata.output;
 
     try {
-      const firestore = getFirestoreInstance();
-      const userRef = firestore.collection(COLLECTIONS.users).doc(userId);
       const status = subscription.status;
       const isActive = status === 'active';
       const nextPlan = isActive ? 'pro' : 'free';
-      const userSnapshot = await userRef.get();
-      const previousPlan = normalizePlan(userSnapshot.get('plan'));
+      const userDoc = await getUserById(userId);
+      const previousPlan = normalizePlan(userDoc?.plan);
       const remainingDays = calcRemainingDays(subscription.cancel_at);
       const cancelAt = formatUnixTimeToIso(subscription.cancel_at);
       const canceledAt = formatUnixTimeToIso(subscription.canceled_at);
@@ -74,9 +70,9 @@ export const createSubscriptionUpdatedHandler = ({ getFirestoreInstance }: Handl
         ? `サブスクリプションは解約予約されました（あと${remainingDays ?? '-'}日で終了予定）`
         : 'サブスクリプションが更新されました';
 
-      await userRef.update({
+      await updateUserById(userId, {
         plan: nextPlan,
-        updatedAt: FieldValue.serverTimestamp(),
+        updatedAt: new Date(),
       });
 
       return {
@@ -117,7 +113,7 @@ export const createSubscriptionUpdatedHandler = ({ getFirestoreInstance }: Handl
   };
 };
 
-export const createSubscriptionDeletedHandler = ({ getFirestoreInstance }: HandlerDeps) => {
+export const createSubscriptionDeletedHandler = ({ getUserById, updateUserById }: HandlerDeps) => {
   return async (subscription: SubscriptionPayload): Promise<HandlerResult> => {
     const metadata = v.safeParse(subscriptionMetadataSchema, subscription.metadata);
     if (!metadata.success) {
@@ -135,16 +131,14 @@ export const createSubscriptionDeletedHandler = ({ getFirestoreInstance }: Handl
     const { userId } = metadata.output;
 
     try {
-      const firestore = getFirestoreInstance();
-      const userRef = firestore.collection(COLLECTIONS.users).doc(userId);
-      const userSnapshot = await userRef.get();
-      const previousPlan = normalizePlan(userSnapshot.get('plan'));
+      const userDoc = await getUserById(userId);
+      const previousPlan = normalizePlan(userDoc?.plan);
       const endedAt = formatUnixTimeToIso(subscription.ended_at);
       const canceledAt = formatUnixTimeToIso(subscription.canceled_at);
 
-      await userRef.update({
+      await updateUserById(userId, {
         plan: 'free',
-        updatedAt: FieldValue.serverTimestamp(),
+        updatedAt: new Date(),
       });
 
       return {

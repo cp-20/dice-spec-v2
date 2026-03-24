@@ -1,6 +1,10 @@
 import type Stripe from 'stripe';
 
-type FirestoreGetter = () => FirebaseFirestore.Firestore;
+type UserDocument = Record<string, unknown>;
+
+type GetUserById = (userId: string) => Promise<UserDocument | null>;
+
+type UpdateUserById = (userId: string, data: Record<string, unknown>) => Promise<void>;
 
 export type CheckoutSessionPayload = Stripe.Checkout.Session;
 
@@ -10,7 +14,8 @@ export type InvoicePayload = Stripe.Invoice;
 
 export type HandlerDeps = {
   stripe: Stripe;
-  getFirestoreInstance: FirestoreGetter;
+  getUserById: GetUserById;
+  updateUserById: UpdateUserById;
 };
 
 type HandlerLogLevel = 'info' | 'success' | 'warning';

@@ -1,7 +1,5 @@
 import { vValidator } from '@hono/valibot-validator';
-import { cert, getApps, initializeApp } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+import { createFirestoreClient } from 'firebase-rest-firestore';
 import { Hono } from 'hono';
 import { handle } from 'hono/vercel';
 import Stripe from 'stripe';
@@ -17,61 +15,82 @@ const stripe = new Stripe(stripeConfig.secretKey, {
   apiVersion: '2026-02-25.clover',
 });
 
-const getFirebaseAdminApp = () => {
-  try {
-    const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-    const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+let firestoreClient: ReturnType<typeof createFirestoreClient> | null = null;
 
-    if (!projectId || !clientEmail || !privateKey) {
-      const error = new Error('Missing Firebase Admin configuration in environment variables');
-      console.error(error.message);
-      throw error;
-    }
+const getFirestoreClient = () => {
+  if (firestoreClient) {
+    return firestoreClient;
+  }
 
-    const existingApps = getApps();
-    const app =
-      existingApps.length > 0 && existingApps[0]
-        ? existingApps[0]
-        : initializeApp({
-            credential: cert({
-              projectId,
-              clientEmail,
-              privateKey: privateKey.replace(/\\n/g, '\n'),
-            }),
-          });
+  const projectId = process.env.FIREBASE_PROJECT_ID ?? process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const databaseId =
+    process.env.FIREBASE_FIRESTORE_DATABASE_ID ?? process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
-    return app;
-  } catch (error) {
-    console.error('Failed to initialize Firebase Admin app:', error);
+  if (!projectId || !clientEmail || !privateKey) {
+    const error = new Error('Missing Firestore REST configuration in environment variables');
+    console.error(error.message);
     throw error;
   }
+
+  firestoreClient = createFirestoreClient({
+    projectId,
+    databaseId,
+    clientEmail,
+    privateKey: privateKey.replace(/\\n/g, '\n'),
+  });
+
+  return firestoreClient;
 };
 
-const getFirestoreInstance = () => {
-  try {
-    const databaseId = process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID;
+const getUserById = async (userId: string) => {
+  return getFirestoreClient().get('users', userId);
+};
 
-    if (!databaseId) {
-      const error = new Error('Missing Firestore database ID in environment variables');
-      console.error(error.message);
-      throw error;
-    }
+const updateUserById = async (userId: string, data: Record<string, unknown>) => {
+  await getFirestoreClient().update('users', userId, data);
+};
 
-    const app = getFirebaseAdminApp();
-    return getFirestore(app, databaseId);
-  } catch (error) {
-    console.error('Failed to initialize Firestore:', error);
+type IdentityToolkitLookupResponse = {
+  users?: Array<{
+    localId?: string;
+    email?: string;
+    displayName?: string;
+  }>;
+};
+
+const lookupFirebaseUserByIdToken = async (idToken: string) => {
+  const apiKey = process.env.FIREBASE_WEB_API_KEY ?? process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+
+  if (!apiKey) {
+    const error = new Error('Missing Firebase API key in environment variables');
+    console.error(error.message);
     throw error;
   }
-};
 
-const getFirebaseAuthInstance = () => getAuth(getFirebaseAdminApp());
+  const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({ idToken }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Firebase ID token verification failed with status ${response.status}: ${body}`);
+  }
+
+  const payload = (await response.json()) as IdentityToolkitLookupResponse;
+  return payload.users?.[0] ?? null;
+};
 
 const { handleCheckoutCompleted, handleSubscriptionUpdated, handleSubscriptionDeleted, handleCustomerCreated } =
   createStripeHandlers({
     stripe,
-    getFirestoreInstance,
+    getUserById,
+    updateUserById,
   });
 
 const processHandlerResult = async (result: HandlerResult) => {
@@ -136,9 +155,18 @@ const getAuthenticatedUser = async (authorizationHeader: string | undefined, eve
   }
 
   try {
-    const decodedToken = await getFirebaseAuthInstance().verifyIdToken(idToken);
+    const user = await lookupFirebaseUserByIdToken(idToken);
 
-    if (!decodedToken.email || !decodedToken.name) {
+    if (!user?.localId) {
+      await sendStripeLog({
+        level: 'warning',
+        eventType,
+        message: 'No Firebase user was resolved from ID token',
+      });
+      return null;
+    }
+
+    if (!user.email || !user.displayName) {
       await sendStripeLog({
         level: 'warning',
         eventType,
@@ -146,9 +174,9 @@ const getAuthenticatedUser = async (authorizationHeader: string | undefined, eve
       });
     }
 
-    const uid = decodedToken.uid;
-    const email = decodedToken.email ?? 'unknown@dicespec.app';
-    const name = decodedToken.name ?? 'unknown';
+    const uid = user.localId;
+    const email = user.email ?? 'unknown@dicespec.app';
+    const name = user.displayName ?? 'unknown';
 
     return { uid, email, name };
   } catch (error) {
@@ -164,11 +192,10 @@ const getAuthenticatedUser = async (authorizationHeader: string | undefined, eve
 };
 
 const getStripeCustomerIdByUserId = async (userId: string) => {
-  const firestore = getFirestoreInstance();
-  const userDoc = await firestore.collection('users').doc(userId).get();
-  const userData = userDoc.data();
+  const userDoc = await getUserById(userId);
+  const stripeCustomerId = userDoc?.stripeCustomerId;
 
-  return userData?.stripeCustomerId as string | undefined;
+  return typeof stripeCustomerId === 'string' ? stripeCustomerId : undefined;
 };
 
 const checkoutSchema = v.object({
@@ -196,9 +223,7 @@ const app = new Hono()
         metadata: { userId },
       });
 
-      const firestore = getFirestoreInstance();
-      const userRef = firestore.collection('users').doc(userId);
-      await userRef.update({
+      await updateUserById(userId, {
         stripeCustomerId: customer.id,
       });
 

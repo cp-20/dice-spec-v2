@@ -1,7 +1,5 @@
-import { FieldValue } from 'firebase-admin/firestore';
 import type { Stripe } from 'stripe';
 import * as v from 'valibot';
-import { COLLECTIONS } from '@/shared/lib/firebase/stores/collections';
 import type { HandlerDeps, HandlerResult } from './types';
 import { StripeWebhookHandlerError } from './types';
 
@@ -10,7 +8,7 @@ const checkoutMetadataSchema = v.object({
   userId: v.string(),
 });
 
-export const createCheckoutHandler = ({ getFirestoreInstance }: HandlerDeps) => {
+export const createCheckoutHandler = ({ updateUserById }: HandlerDeps) => {
   return async (session: Stripe.Checkout.Session): Promise<HandlerResult> => {
     const metadata = v.safeParse(checkoutMetadataSchema, session.metadata);
     if (!metadata.success) {
@@ -40,12 +38,9 @@ export const createCheckoutHandler = ({ getFirestoreInstance }: HandlerDeps) => 
     }
 
     try {
-      const firestore = getFirestoreInstance();
-      const userRef = firestore.collection(COLLECTIONS.users).doc(userId);
-
-      await userRef.update({
+      await updateUserById(userId, {
         plan: 'pro',
-        updatedAt: FieldValue.serverTimestamp(),
+        updatedAt: new Date(),
       });
     } catch (error) {
       return {
