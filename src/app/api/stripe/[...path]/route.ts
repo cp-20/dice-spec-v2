@@ -12,6 +12,7 @@ import { sendStripeLog } from './logger';
 const appOrigin = process.env.NEXT_PUBLIC_APP_ORIGIN || 'http://localhost:3000';
 
 const stripe = new Stripe(stripeConfig.secretKey, {
+  httpClient: Stripe.createFetchHttpClient(),
   apiVersion: '2026-02-25.clover',
 });
 
@@ -39,6 +40,7 @@ const getFirestoreClient = () => {
     databaseId,
     clientEmail,
     privateKey: privateKey.replace(/\\n/g, '\n'),
+    debug: true,
   });
 
   return firestoreClient;
