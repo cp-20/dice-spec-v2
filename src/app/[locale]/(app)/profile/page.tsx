@@ -13,18 +13,14 @@ import { ProfileContent } from './_components/ProfileContent';
 
 export const generateMetadata: MetadataGenerator = async (props) => {
   const locale = await localeHelper(props);
-  return {
-    ...metadataHelper({
-      title: t('profile:title'),
-      description: t('profile:description'),
-      path: '/profile',
-      locale,
-    }),
-    robots: {
-      index: false,
-      follow: false,
-    },
-  };
+  return metadataHelper({
+    title: t('profile:title'),
+    description: t('profile:description'),
+    path: '/profile',
+    locale,
+    noIndex: true,
+    noFollow: true,
+  });
 };
 
 export const viewport = viewportGenerator();

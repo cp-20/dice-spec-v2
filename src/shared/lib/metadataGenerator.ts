@@ -7,6 +7,8 @@ type Option = {
   path: string;
   locale: Locale;
   ogp?: string;
+  noIndex?: boolean;
+  noFollow?: boolean;
 };
 
 export const appBaseUrl = 'https://dicespec.app';
@@ -32,7 +34,7 @@ export const constructAlternateUrls = (path: string, locale: Locale): Record<Loc
     );
 };
 
-export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp }: Option) => {
+export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp, noIndex, noFollow }: Option) => {
   const appName = {
     en: 'DiceSpec',
     ja: 'ダイススペック',
@@ -45,6 +47,7 @@ export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp
 
   const appUrl = constructLocaleUrl(path, locale);
   const alternates = constructAlternateUrls(path, locale);
+  const robots = noIndex || noFollow ? { index: !noIndex, follow: !noFollow } : undefined;
 
   return {
     title,
@@ -90,6 +93,7 @@ export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp
     verification: {
       google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? '',
     },
+    ...(robots ? { robots } : {}),
   } satisfies Metadata;
 };
 

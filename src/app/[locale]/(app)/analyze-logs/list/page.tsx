@@ -18,20 +18,14 @@ export const generateMetadata: MetadataGenerator = async (props) => {
 
   const locale = await localeHelper(props);
 
-  const metadata = metadataHelper({
+  return metadataHelper({
     title,
     description,
     path: '/analyze-logs/list',
     locale,
+    noIndex: true,
+    noFollow: true,
   });
-
-  return {
-    ...metadata,
-    robots: {
-      index: false,
-      follow: false,
-    },
-  };
 };
 
 export const viewport = viewportGenerator();
