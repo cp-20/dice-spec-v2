@@ -2,8 +2,8 @@
   "name": "dice-spec-v2",
   "version": "2.4.2",
   "private": true,
-  "author": "cp20",
   "license": "MIT",
+  "author": "cp20",
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @plugin "tailwindcss-animate";
 
@@ -446,6 +446,5 @@
 
 :root {
   --font-main:
-    "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Hiragino Sans",
-    "Noto Sans JP", "meiryo", "arial", sans-serif;
+    'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', 'meiryo', 'arial', sans-serif;
 }

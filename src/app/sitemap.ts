@@ -18,12 +18,14 @@ const blogPaths = contents.flatMap((category) =>
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    ...i18nConfig.locales.flatMap((locale) => appPaths.map((path) => ({
+    ...i18nConfig.locales.flatMap((locale) =>
+      appPaths.map((path) => ({
         url: constructLocaleUrl(path, locale),
         alternates: {
           languages: constructAlternateUrls(path, locale),
         },
-      }))),
+      })),
+    ),
     ...blogPaths.map((path) => ({
       url: constructLocaleUrl(path, 'ja'),
     })),

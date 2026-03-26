@@ -49,7 +49,11 @@ import { WithCaption } from '@/mdx-components';
 
 例えば1d12を考えてみるね。
 
-<div className="grid place-items-center my-6 grid-cols-6 md:grid-cols-12">{new Array(12).fill(0).map((_, i) => <DiceD12 key={i} count={i + 1} />)}</div>
+<div className="grid place-items-center my-6 grid-cols-6 md:grid-cols-12">
+  {new Array(12).fill(0).map((_, i) => (
+    <DiceD12 key={i} count={i + 1} />
+  ))}
+</div>
 
 1d12は1～12が同じ確率で出るから、この場合は (1+2+3+...+12) を12で割った値、つまり **6.5** になるね！
 
@@ -84,9 +88,13 @@ import { WithCaption } from '@/mdx-components';
 
 折れ線グラフみたいなものを思い浮かべてもらって、横軸にダイスの出目、縦軸にその出目がどれぐらいの確率で出るかでグラフを描いたものが確率分布のグラフ！　これを見るとダイスの特性が一目で分かっちゃう！
 
-<WithCaption caption="2d6の分布"><PreDefinedExpectResultDistributionChart result={diceExpecter('2d6')} /></WithCaption>
+<WithCaption caption="2d6の分布">
+  <PreDefinedExpectResultDistributionChart result={diceExpecter('2d6')} />
+</WithCaption>
 
-<WithCaption caption="1d13の分布"><PreDefinedExpectResultDistributionChart result={diceExpecter('1d13')} /></WithCaption>
+<WithCaption caption="1d13の分布">
+  <PreDefinedExpectResultDistributionChart result={diceExpecter('1d13')} />
+</WithCaption>
 
 見ただけで違いが分かっちゃうね！！　どっちも確かに7を中心に分布してるけど、2d6は7の周りが高い (=出やすい) のに対して、1d13は全体がぺったんこ (=どの目も同じ確率) だね！
 
@@ -108,7 +116,9 @@ import { WithCaption } from '@/mdx-components';
 
 試しに10d6の分布を見てみよう！
 
-<WithCaption caption="10d6の分布"><PreDefinedExpectResultDistributionChart result={diceExpecter('10d6')} /></WithCaption>
+<WithCaption caption="10d6の分布">
+  <PreDefinedExpectResultDistributionChart result={diceExpecter('10d6')} />
+</WithCaption>
 
 すっごい中央に寄ってる！　これなら50以上の確率が0.3%ぐらいなのも納得だね！
 

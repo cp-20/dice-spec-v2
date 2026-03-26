@@ -35,15 +35,23 @@ import { WithCaption } from '@/mdx-components';
 このときAさんが成功する or しない、Bさんが成功する or しない、で表を書いてみると、、、？
 
 <div className="grid grid-cols-3 my-6">
-    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border"></div>
-    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aが成功 (約41.7%)</div>
-    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aが失敗 (約58.3%)</div>
-    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bが成功 (約58.3%)</div>
-    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約24.3%</div>
-    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約34.0%</div>
-    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bが失敗 (約41.7%)</div>
-    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約17.4%</div>
-    <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約24.3%</div>
+  <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border"></div>
+  <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    Aが成功 (約41.7%)
+  </div>
+  <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    Aが失敗 (約58.3%)
+  </div>
+  <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">
+    Bが成功 (約58.3%)
+  </div>
+  <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約24.3%</div>
+  <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約34.0%</div>
+  <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">
+    Bが失敗 (約41.7%)
+  </div>
+  <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約17.4%</div>
+  <div className="px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">約24.3%</div>
 </div>
 
 この計算をする上で重要なのが **独立** っていう概念だよ！
@@ -80,7 +88,9 @@ import { WithCaption } from '@/mdx-components';
 
 確率分布のグラフを見てみるとこんな感じ！　0を中心としてるのは確かだけど、色んな値を取り得ることが分かるね！
 
-<WithCaption caption="2d6-2d6の分布"><PreDefinedExpectResultDistributionChart result={diceExpecter('2d6-2d6')} /></WithCaption>
+<WithCaption caption="2d6-2d6の分布">
+  <PreDefinedExpectResultDistributionChart result={diceExpecter('2d6-2d6')} />
+</WithCaption>
 
 実際にこの値を計算してみると、**約33.6%** の確率でAさんが勝つことが分かるよ！　逆にBさんが勝つ確率は **約55.6%** で、引き分けの確率は **約10.8%** だね！
 
@@ -97,42 +107,62 @@ import { WithCaption } from '@/mdx-components';
 例えば新クトゥルフ神話TRPGでAさんが技能値80、Bさんが技能値60の状況を考えてみよう！　あとここではクリティカルは1だけってことにするね！
 
 <div className="grid grid-cols-6 my-6">
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border"></div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aがクリティカル(1%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aがイクストリーム(15%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aがハード成功(24%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aがレギュラー成功(40%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">Aが失敗(20%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bがクリティカル(1%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">0.01%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.15%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.24%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.40%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.20%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bがイクストリーム(11%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.11%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">1.65%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">2.64%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">4.40%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">2.20%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bがハード成功(18%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.18%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">2.70%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">4.32%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">7.20%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">3.60%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bがレギュラー成功(30%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.30%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">4.50%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">7.20%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">12.00%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">6.00%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">Bが失敗(40%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.40%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">6.00%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">9.60%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">16.00%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">8.00%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border"></div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    Aがクリティカル(1%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    Aがイクストリーム(15%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    Aがハード成功(24%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    Aがレギュラー成功(40%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    Aが失敗(20%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">
+    Bがクリティカル(1%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">0.01%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.15%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.24%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.40%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.20%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">
+    Bがイクストリーム(11%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.11%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">1.65%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">2.64%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">4.40%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">2.20%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">
+    Bがハード成功(18%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.18%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">2.70%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">4.32%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">7.20%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">3.60%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">
+    Bがレギュラー成功(30%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.30%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">4.50%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">7.20%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">12.00%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">6.00%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">
+    Bが失敗(40%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.40%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">6.00%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">9.60%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">16.00%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">8.00%</div>
 </div>
 
 オレンジ色の背景がAが勝ったところ、青色の背景のところがBが勝ったところ、何も色がついてないのが引き分けのところだから、それぞれ足し合わせると、、、？
@@ -154,46 +184,68 @@ import { WithCaption } from '@/mdx-components';
 今回は例としてエモクロアTRPGを考えてみよう♪　Aさんはダイス2個で判定値3、Bさんはダイス1個で判定値6という設定にするね！
 
 <div className="grid grid-cols-8 my-6">
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border"></div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=4 (1%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=3 (4%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=2 (16%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=1 (26%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=0 (40%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=-1 (12%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">A=-2 (1%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">B=2 (10%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.1%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.4%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">1.6%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">2.6%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">4.0%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">1.2%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.1%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">B=1 (50%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.5%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">2.0%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">8.0%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">13.0%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">20.0%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">6.0%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.5%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">B=0 (30%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.3%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">1.2%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">4.8%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">7.8%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">12.0%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">3.6%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.3%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">B=-1 (10%)</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.1%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.4%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">1.6%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">2.6%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">4.0%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">1.2%</div>
-    <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.1%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border"></div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    A=4 (1%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    A=3 (4%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    A=2 (16%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    A=1 (26%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    A=0 (40%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    A=-1 (12%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-l-0 text-orange-400 font-semibold">
+    A=-2 (1%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">
+    B=2 (10%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.1%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.4%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">1.6%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">2.6%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">4.0%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">1.2%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.1%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">
+    B=1 (50%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.5%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">2.0%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">8.0%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">13.0%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">20.0%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">6.0%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.5%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">
+    B=0 (30%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.3%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">1.2%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">4.8%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">7.8%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">12.0%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">3.6%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.3%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 text-blue-400 font-semibold">
+    B=-1 (10%)
+  </div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.1%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">0.4%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">1.6%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">2.6%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-orange-100">4.0%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0">1.2%</div>
+  <div className="text-sm px-4 py-2 max-sm:px-2 max-sm:py-1 border border-t-0 border-l-0 bg-blue-100">0.1%</div>
 </div>
 
 オレンジ色の背景がAが勝ったところ、青色の背景のところがBが勝ったところ、何も色がついてないのが引き分けのところだから、それぞれ足し合わせると、、、？

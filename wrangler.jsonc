@@ -6,20 +6,20 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "directory": ".open-next/assets",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
   },
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "dice-spec-v2-beta"
-    }
+      "service": "dice-spec-v2-beta",
+    },
   ],
   "images": {
     // Enable image optimization
     // see https://opennext.js.org/cloudflare/howtos/image
-    "binding": "IMAGES"
+    "binding": "IMAGES",
   },
   "observability": {
-    "enabled": true
-  }
+    "enabled": true,
+  },
 }
