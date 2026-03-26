@@ -146,7 +146,7 @@ service cloud.firestore {
         ('analysisCountSyncAnalysisId' in request.resource.data
           && request.resource.data.analysisCountSyncAnalysisId is string)
           ? request.resource.data.analysisCountSyncAnalysisId
-          : null;
+          : '';
 
       return affectedKeys().hasOnly(['analysisCount', 'analysisCountSyncAnalysisId', 'updatedAt'])
         && isValidAnalysisCount(nextCount)
