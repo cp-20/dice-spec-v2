@@ -1,0 +1,8 @@
+{
+  "firestore": {
+    "database": "dice-spec-v2-dev",
+    "location": "asia-northeast1",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}
