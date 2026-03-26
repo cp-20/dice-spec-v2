@@ -1,5 +1,5 @@
 import { signOut } from 'firebase/auth';
-import { doc, onSnapshot, serverTimestamp, setDoc, Timestamp, writeBatch } from 'firebase/firestore';
+import { doc, onSnapshot, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore';
 import { t } from 'i18next';
 import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
@@ -13,31 +13,26 @@ import { storagePaths, uploadBufferFromUrlToStorage } from '@/shared/lib/firebas
 import { myAnalysesAtom } from './analyses/userAnalyses';
 import { COLLECTIONS, type NewUserDocument, type PublicUser, type UserDocument, userStoreSchema } from './collections';
 
-const anonymousUserDocument: UserDocument = {
-  id: 'anonymous',
-  name: '匿名ユーザー',
-  plan: 'free',
-  updatedAt: Timestamp.now(),
-  createdAt: Timestamp.now(),
-  stripeCustomerId: '',
-  analysisCount: 0,
-  analysisCountSyncAnalysisId: null,
-};
-
 const internalMeLoadingAtom = atom(true);
 
-const internalMeAtom = withAtomEffect(atom<UserDocument>(anonymousUserDocument), (get, set) => {
+const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set) => {
   const { auth, firestore, storage } = useFirebase();
 
   const authUserLoading = get(authUserLoadingAtom);
-  if (authUserLoading) return;
+  if (authUserLoading) {
+    set(internalMeLoadingAtom, true);
+    set(internalMeAtom, null);
+    return;
+  }
 
   const authUser = get(authUserAtom);
   if (authUser === null) {
-    set(internalMeAtom, anonymousUserDocument);
+    set(internalMeAtom, null);
     set(internalMeLoadingAtom, false);
     return;
   }
+
+  set(internalMeLoadingAtom, true);
 
   const userRef = doc(firestore, COLLECTIONS.users, authUser.uid);
   const unsubscribe = onSnapshot(userRef, async (snap) => {
@@ -84,7 +79,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument>(anonymousUserDocument),
           console.error('Failed to sign out after Stripe customer creation failure:', signOutError);
         }
 
-        set(internalMeAtom, anonymousUserDocument);
+        set(internalMeAtom, null);
         set(internalMeLoadingAtom, false);
       }
       return;
@@ -105,6 +100,7 @@ export const useMeStore = () => {
   const { authUser } = useFirebaseAuth();
   const { firestore } = useFirebase();
   const me = useAtomValue(meAtom);
+  const meLoading = useAtomValue(meLoadingAtom);
   const analyses = useAtomValue(myAnalysesAtom);
 
   const updateName = async (newName: string) => {
@@ -147,7 +143,7 @@ export const useMeStore = () => {
     await batch.commit();
   };
 
-  return { me, updateName, updateAvatarUrl };
+  return { me, meLoading, updateName, updateAvatarUrl };
 };
 
 // analyses.owner から取得される

@@ -1,5 +1,6 @@
 import { IconUserFilled } from '@tabler/icons-react';
 import type { FC } from 'react';
+import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useMeStore, useUserStore } from '@/shared/lib/firebase/stores/userStore';
 
 interface MyAvatarProps {
@@ -8,6 +9,10 @@ interface MyAvatarProps {
 
 export const MyAvatar: FC<MyAvatarProps> = ({ size }) => {
   const { me } = useMeStore();
+
+  if (me === null) {
+    return <Skeleton className="rounded-full" style={{ width: size, height: size }} />;
+  }
 
   return <PresentialUserAvatar avatarUrl={me.avatarUrl} size={size} />;
 };

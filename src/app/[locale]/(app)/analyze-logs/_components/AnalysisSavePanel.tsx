@@ -53,11 +53,12 @@ export const AnalysisSavePanel: FC = () => {
   const [showRecordDetails, setShowRecordDetails] = useState(true);
   const [sessionDate, setSessionDate] = useState(formatDate(new Date()));
 
-  const isPro = me.plan === 'pro';
+  const isPro = me?.plan === 'pro';
   const limitReached = !isPro && analyses.length >= SAVE_ANALYSIS_LIMIT_FREE;
 
   const canSave =
     authUser !== null &&
+    me !== null &&
     result?.type === 'success' &&
     system !== null &&
     !limitReached &&
@@ -65,7 +66,7 @@ export const AnalysisSavePanel: FC = () => {
     title.trim() !== '';
 
   const handleSave = async () => {
-    if (!canSave) return;
+    if (!canSave || me === null || authUser === null) return;
 
     try {
       const payload: SaveAnalysisPayload = {

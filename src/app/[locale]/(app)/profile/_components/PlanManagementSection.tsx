@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { createPortalSession } from '@/features/stripe/api';
 import { Button } from '@/shared/components/ui/button';
+import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
@@ -18,6 +19,8 @@ export const PlanManagementSection = () => {
   const [managingSubscription, setManagingSubscription] = useState(false);
 
   const handleOpenPortal = async () => {
+    if (me === null) return;
+
     if (!me.stripeCustomerId) {
       toast({
         title: t('profile:toast.manage-subscription-error-title'),
@@ -56,7 +59,9 @@ export const PlanManagementSection = () => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">{t('profile:plan.current-plan')}</span>
-                {me.plan === 'pro' ? (
+                {me === null ? (
+                  <Skeleton className="h-6 w-20 rounded-full" />
+                ) : me.plan === 'pro' ? (
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 bg-indigo-100 px-2 py-1 rounded-full">
                     <IconSparkles className="size-3" />
                     {t('profile:plan.pro')}
@@ -70,7 +75,7 @@ export const PlanManagementSection = () => {
             </div>
           </div>
 
-          {me.plan === 'pro' && (
+          {me?.plan === 'pro' && (
             <div className="flex flex-col items-end gap-2">
               <Button
                 onClick={handleOpenPortal}
@@ -96,7 +101,7 @@ export const PlanManagementSection = () => {
           )}
         </div>
 
-        {me.plan === 'free' && <>{authUser && <PricingCards />}</>}
+        {me !== null && me.plan === 'free' && <>{authUser && <PricingCards />}</>}
       </div>
     </ContainerSection>
   );

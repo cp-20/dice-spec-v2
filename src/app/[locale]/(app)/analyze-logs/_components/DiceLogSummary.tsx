@@ -83,7 +83,7 @@ interface DiceLogSummaryViewProps {
 
 export const DiceLogSummaryView: FC<DiceLogSummaryViewProps> = ({ results }) => {
   const { me } = useMeStore();
-  const isPro = me.plan === 'pro';
+  const isPro = me?.plan === 'pro';
 
   const summaries = results ? summarizeBySkill(results) : [];
   const visibleSummaries = isPro ? summaries : summaries.slice(0, PREVIEW_ROW_COUNT);

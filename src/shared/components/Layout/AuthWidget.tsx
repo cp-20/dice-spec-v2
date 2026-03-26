@@ -6,22 +6,23 @@ import type { FC } from 'react';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
+import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 export const AuthWidget: FC = () => {
   const { authUser, loading, signOut } = useFirebaseAuth();
-  const { me } = useMeStore();
+  const { me, meLoading } = useMeStore();
 
-  if (loading) {
+  if (loading || (authUser && meLoading)) {
     return (
       <div className="flex items-center gap-2">
-        <div className="size-8 animate-pulse rounded-full bg-slate-200" />
+        <Skeleton className="size-8 rounded-full" />
       </div>
     );
   }
 
-  if (!authUser) {
+  if (!authUser || !me) {
     return null;
   }
 

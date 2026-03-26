@@ -17,15 +17,15 @@ import { storagePaths, useStorage } from '@/shared/lib/firebase/useStorage';
 export const ProfileSettingsSection = () => {
   const { authUser } = useFirebaseAuth();
   const { me, updateName, updateAvatarUrl } = useMeStore();
-  const [displayName, setDisplayName] = useState(me.name);
+  const [displayName, setDisplayName] = useState('');
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
   const { uploadBuffer } = useStorage();
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    setDisplayName(me.name);
-  }, [me.name]);
+    setDisplayName(me?.name ?? '');
+  }, [me?.name]);
 
   const dropHandler = useCallback(
     (file: File) => {
@@ -59,7 +59,7 @@ export const ProfileSettingsSection = () => {
   const { containerProps, inputProps } = useDropzone(dropHandler);
 
   const handleSave = async () => {
-    if (!authUser) return;
+    if (!authUser || !me) return;
 
     setSaving(true);
     try {
@@ -123,7 +123,7 @@ export const ProfileSettingsSection = () => {
           </div>
 
           <div className="flex justify-end">
-            <Button onClick={handleSave} disabled={saving || displayName === me.name}>
+            <Button onClick={handleSave} disabled={me === null || saving || displayName === me?.name}>
               {saving ? (
                 <>
                   <IconLoader2 className="size-4 animate-spin" />
