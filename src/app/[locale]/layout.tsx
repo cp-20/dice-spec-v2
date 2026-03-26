@@ -31,3 +31,7 @@ const RootLayout: FC<{ children: ReactNode; locale: string }> = ({ children, loc
 };
 
 export default wrapRootLayout(RootLayout);
+
+export const generateStaticParams = () => {
+  return [{ locale: 'ja' }, { locale: 'en' }];
+};

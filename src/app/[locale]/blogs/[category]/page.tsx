@@ -44,3 +44,10 @@ const CategoryPage = async ({ params }: { params: Promise<Params> }) => {
 };
 
 export default CategoryPage;
+
+export const generateStaticParams = async () => {
+  const categories = [...new Set(contents.map((c) => c.category))];
+  return categories.map((category) => ({ category }));
+};
+
+export const dynamicParams = false;
