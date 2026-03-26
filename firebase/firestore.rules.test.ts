@@ -17,7 +17,6 @@ import {
   getDocs,
   increment,
   query,
-  runTransaction,
   setDoc,
   setLogLevel,
   Timestamp,
@@ -494,7 +493,7 @@ describe('Firestore セキュリティルール', () => {
     await assertSucceeds(deleteDoc(doc(ownerDb, 'analysisRecords/a1')));
   });
 
-  test('users+analyses: name/avatarUrl 更新後に analyses.owner を transaction で同期更新できる', async () => {
+  test('users+analyses: name/avatarUrl 更新後に analyses.owner を batch で同期更新できる', async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const adminDb = context.firestore();
       await setDoc(doc(adminDb, 'users/user_1'), userDoc());
@@ -505,39 +504,35 @@ describe('Firestore セキュリティルール', () => {
     const ownerDb = testEnv.authenticatedContext('user_1').firestore();
     const updatedAt = Timestamp.fromDate(new Date('2026-03-18T04:00:00.000Z'));
 
-    await assertSucceeds(
-      runTransaction(ownerDb, async (tx) => {
-        tx.update(doc(ownerDb, 'users/user_1'), {
-          name: 'Alice Updated',
-          avatarUrl: 'https://example.com/avatar-updated.png',
-          updatedAt,
-        });
-      }),
-    );
+    const userBatch = writeBatch(ownerDb);
+    userBatch.update(doc(ownerDb, 'users/user_1'), {
+      name: 'Alice Updated',
+      avatarUrl: 'https://example.com/avatar-updated.png',
+      updatedAt,
+    });
+    await assertSucceeds(userBatch.commit());
 
-    await assertSucceeds(
-      runTransaction(ownerDb, async (tx) => {
-        tx.update(doc(ownerDb, 'analyses/a1'), {
-          owner: ownerSnapshot({
-            name: 'Alice Updated',
-            avatarUrl: 'https://example.com/avatar-updated.png',
-            updatedAt,
-          }),
-          updatedAt,
-        });
-        tx.update(doc(ownerDb, 'analyses/a2'), {
-          owner: ownerSnapshot({
-            name: 'Alice Updated',
-            avatarUrl: 'https://example.com/avatar-updated.png',
-            updatedAt,
-          }),
-          updatedAt,
-        });
+    const analysesBatch = writeBatch(ownerDb);
+    analysesBatch.update(doc(ownerDb, 'analyses/a1'), {
+      owner: ownerSnapshot({
+        name: 'Alice Updated',
+        avatarUrl: 'https://example.com/avatar-updated.png',
+        updatedAt,
       }),
-    );
+      updatedAt,
+    });
+    analysesBatch.update(doc(ownerDb, 'analyses/a2'), {
+      owner: ownerSnapshot({
+        name: 'Alice Updated',
+        avatarUrl: 'https://example.com/avatar-updated.png',
+        updatedAt,
+      }),
+      updatedAt,
+    });
+    await assertSucceeds(analysesBatch.commit());
   });
 
-  test('users+analyses: users のみ更新する transaction は許可される', async () => {
+  test('users+analyses: users のみ更新する batch は許可される', async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const adminDb = context.firestore();
       await setDoc(doc(adminDb, 'users/user_1'), userDoc());
@@ -546,18 +541,16 @@ describe('Firestore セキュリティルール', () => {
 
     const ownerDb = testEnv.authenticatedContext('user_1').firestore();
 
-    await assertSucceeds(
-      runTransaction(ownerDb, async (tx) => {
-        tx.update(doc(ownerDb, 'users/user_1'), {
-          name: 'Alice Updated',
-          avatarUrl: 'https://example.com/avatar-updated.png',
-          updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:10:00.000Z')),
-        });
-      }),
-    );
+    const batch = writeBatch(ownerDb);
+    batch.update(doc(ownerDb, 'users/user_1'), {
+      name: 'Alice Updated',
+      avatarUrl: 'https://example.com/avatar-updated.png',
+      updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:10:00.000Z')),
+    });
+    await assertSucceeds(batch.commit());
   });
 
-  test('users+analyses: analyses.owner のみ更新して users 同期がない transaction は拒否される', async () => {
+  test('users+analyses: analyses.owner のみ更新して users 同期がない batch は拒否される', async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const adminDb = context.firestore();
       await setDoc(doc(adminDb, 'users/user_1'), userDoc());
@@ -566,17 +559,15 @@ describe('Firestore セキュリティルール', () => {
 
     const ownerDb = testEnv.authenticatedContext('user_1').firestore();
 
-    await assertFails(
-      runTransaction(ownerDb, async (tx) => {
-        tx.update(doc(ownerDb, 'analyses/a1'), {
-          owner: ownerSnapshot({
-            name: 'Alice Updated',
-            avatarUrl: 'https://example.com/avatar-updated.png',
-            updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:20:00.000Z')),
-          }),
-          updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:20:00.000Z')),
-        });
+    const batch = writeBatch(ownerDb);
+    batch.update(doc(ownerDb, 'analyses/a1'), {
+      owner: ownerSnapshot({
+        name: 'Alice Updated',
+        avatarUrl: 'https://example.com/avatar-updated.png',
+        updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:20:00.000Z')),
       }),
-    );
+      updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:20:00.000Z')),
+    });
+    await assertFails(batch.commit());
   });
 });
