@@ -10,6 +10,7 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
+import { wrapPage } from '@/shared/i18n/page-layout';
 
 export const generateMetadata: MetadataGenerator = async (props) => {
   const title = t('common:analysis-list.title');
@@ -35,7 +36,7 @@ export const generateMetadata: MetadataGenerator = async (props) => {
 
 export const viewport = viewportGenerator();
 
-const AnalysisListPage: NextPage = () => {
+const AnalysisListPage: NextPage = async () => {
   return (
     <div className="space-y-12">
       <div>
@@ -50,4 +51,4 @@ const AnalysisListPage: NextPage = () => {
   );
 };
 
-export default AnalysisListPage;
+export default wrapPage(AnalysisListPage);
