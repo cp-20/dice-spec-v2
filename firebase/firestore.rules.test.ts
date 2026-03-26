@@ -17,7 +17,9 @@ import {
   getDocs,
   increment,
   query,
+  runTransaction,
   setDoc,
+  setLogLevel,
   Timestamp,
   updateDoc,
   where,
@@ -167,6 +169,9 @@ describe('Firestore セキュリティルール', () => {
 
   beforeAll(async () => {
     const alreadyRunning = await isPortOpen(FIRESTORE_EMULATOR_HOST, FIRESTORE_EMULATOR_PORT);
+
+    // assertFails のテスト実行時にもエラーログが出るので、抑制
+    setLogLevel('silent');
 
     if (!alreadyRunning) {
       const firebaseCli = resolve(process.cwd(), 'node_modules/.bin/firebase');
@@ -487,5 +492,91 @@ describe('Firestore セキュリティルール', () => {
 
     const ownerDb = testEnv.authenticatedContext('owner').firestore();
     await assertSucceeds(deleteDoc(doc(ownerDb, 'analysisRecords/a1')));
+  });
+
+  test('users+analyses: name/avatarUrl 更新後に analyses.owner を transaction で同期更新できる', async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const adminDb = context.firestore();
+      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
+      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
+      await setDoc(doc(adminDb, 'analyses/a2'), analysisDoc('a2', 'user_1', { title: 'Session 2' }));
+    });
+
+    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
+    const updatedAt = Timestamp.fromDate(new Date('2026-03-18T04:00:00.000Z'));
+
+    await assertSucceeds(
+      runTransaction(ownerDb, async (tx) => {
+        tx.update(doc(ownerDb, 'users/user_1'), {
+          name: 'Alice Updated',
+          avatarUrl: 'https://example.com/avatar-updated.png',
+          updatedAt,
+        });
+      }),
+    );
+
+    await assertSucceeds(
+      runTransaction(ownerDb, async (tx) => {
+        tx.update(doc(ownerDb, 'analyses/a1'), {
+          owner: ownerSnapshot({
+            name: 'Alice Updated',
+            avatarUrl: 'https://example.com/avatar-updated.png',
+            updatedAt,
+          }),
+          updatedAt,
+        });
+        tx.update(doc(ownerDb, 'analyses/a2'), {
+          owner: ownerSnapshot({
+            name: 'Alice Updated',
+            avatarUrl: 'https://example.com/avatar-updated.png',
+            updatedAt,
+          }),
+          updatedAt,
+        });
+      }),
+    );
+  });
+
+  test('users+analyses: users のみ更新する transaction は許可される', async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const adminDb = context.firestore();
+      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
+      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
+    });
+
+    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
+
+    await assertSucceeds(
+      runTransaction(ownerDb, async (tx) => {
+        tx.update(doc(ownerDb, 'users/user_1'), {
+          name: 'Alice Updated',
+          avatarUrl: 'https://example.com/avatar-updated.png',
+          updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:10:00.000Z')),
+        });
+      }),
+    );
+  });
+
+  test('users+analyses: analyses.owner のみ更新して users 同期がない transaction は拒否される', async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const adminDb = context.firestore();
+      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
+      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
+    });
+
+    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
+
+    await assertFails(
+      runTransaction(ownerDb, async (tx) => {
+        tx.update(doc(ownerDb, 'analyses/a1'), {
+          owner: ownerSnapshot({
+            name: 'Alice Updated',
+            avatarUrl: 'https://example.com/avatar-updated.png',
+            updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:20:00.000Z')),
+          }),
+          updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:20:00.000Z')),
+        });
+      }),
+    );
   });
 });

@@ -67,7 +67,7 @@ service cloud.firestore {
 
     function isValidPublicOwnerByUserDoc(owner, uid) {
       let userPath = /databases/$(database)/documents/users/$(uid);
-      let userDoc = get(userPath);
+      let userDoc = getAfter(userPath);
       return userDoc.data != null
         && owner.name == userDoc.data.name
         && owner.avatarUrl == userDoc.data.avatarUrl
@@ -162,9 +162,10 @@ service cloud.firestore {
     }
 
     function isAnalysisOwnerSyncUpdateOnly() {
-      return affectedKeys().hasOnly(['owner'])
+      return affectedKeys().hasOnly(['owner', 'updatedAt'])
         && request.resource.data.owner is map
         && isValidPublicOwner(request.resource.data.owner)
+        && request.resource.data.updatedAt is timestamp
         && isValidPublicOwnerByUserDoc(request.resource.data.owner, request.resource.data.ownerUid);
     }
 
