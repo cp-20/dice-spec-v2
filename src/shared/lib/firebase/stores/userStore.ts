@@ -20,7 +20,7 @@ const anonymousUserDocument: UserDocument = {
   createdAt: Timestamp.now(),
   stripeCustomerId: '',
   analysisCount: 0,
-  analysisCountSyncAnalysisId: '',
+  analysisCountSyncAnalysisId: null,
 };
 
 const internalMeLoadingAtom = atom(true);
@@ -63,7 +63,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument>(anonymousUserDocument),
           updatedAt: serverTimestamp(),
           stripeCustomerId: '',
           analysisCount: 0,
-          analysisCountSyncAnalysisId: '',
+          analysisCountSyncAnalysisId: null,
         };
         await setDoc(userRef, newUserDocument);
 

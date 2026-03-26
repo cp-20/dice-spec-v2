@@ -142,7 +142,7 @@ service cloud.firestore {
         ('analysisCountSyncAnalysisId' in request.resource.data
           && request.resource.data.analysisCountSyncAnalysisId is string)
           ? request.resource.data.analysisCountSyncAnalysisId
-          : '';
+          : null;
 
       return affectedKeys().hasOnly(['analysisCount', 'analysisCountSyncAnalysisId', 'updatedAt'])
         && isValidAnalysisCount(nextCount)
@@ -253,8 +253,7 @@ service cloud.firestore {
         && request.resource.data.plan == 'free'
         && request.resource.data.analysisCount == 0
         && request.resource.data.stripeCustomerId == ''
-        && (request.resource.data.analysisCountSyncAnalysisId == ''
-          || request.resource.data.analysisCountSyncAnalysisId == null);
+        && request.resource.data.analysisCountSyncAnalysisId == null;
 
       allow update: if isSelf(userId)
         && isValidUserDocument(request.resource.data)
