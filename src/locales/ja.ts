@@ -420,6 +420,8 @@ export const ja = {
       'save-success-description': '表示名が更新されました',
       'save-error-title': 'エラーが発生しました',
       'save-error-description': '表示名の更新に失敗しました',
+      'avatar-upload-error-title': 'アバターのアップロードに失敗しました',
+      'avatar-upload-error-description': '時間をおいて再度お試しください。',
       'sign-in-error-title': 'ログインに失敗しました',
       'sign-in-error-description': 'アカウントの初期化に失敗しました。時間をおいて再度お試しください。',
       'upgrade-error-title': 'アップグレードに失敗しました',

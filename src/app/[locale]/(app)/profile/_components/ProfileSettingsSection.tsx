@@ -36,9 +36,19 @@ export const ProfileSettingsSection = () => {
           const buffer = e.target.result;
           if (!(buffer instanceof ArrayBuffer)) return;
           setUploading(true);
-          const url = await uploadBuffer(storagePaths.getAvatarPath(authUser?.uid), buffer);
-          await updateAvatarUrl(url);
-          setUploading(false);
+          try {
+            const url = await uploadBuffer(storagePaths.getAvatarPath(authUser?.uid), buffer);
+            await updateAvatarUrl(url);
+          } catch (err) {
+            console.error('Failed to upload avatar', err);
+            toast({
+              title: t('profile:toast.avatar-upload-error-title'),
+              description: t('profile:toast.avatar-upload-error-description'),
+              variant: 'destructive',
+            });
+          } finally {
+            setUploading(false);
+          }
         }
       });
       reader.readAsArrayBuffer(file);

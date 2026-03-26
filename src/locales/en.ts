@@ -417,6 +417,8 @@ export const en = {
       'save-success-description': 'Display name updated',
       'save-error-title': 'An error occurred',
       'save-error-description': 'Failed to update display name',
+      'avatar-upload-error-title': 'Failed to upload avatar',
+      'avatar-upload-error-description': 'Please try again later.',
       'sign-in-error-title': 'Sign-in failed',
       'sign-in-error-description': 'Failed to initialize your account. Please try again later.',
       'upgrade-error-title': 'Upgrade failed',
