@@ -72,6 +72,7 @@ export const AnalysisSavePanel: FC = () => {
         title: title.trim(),
         ownerUid: authUser.uid,
         owner: {
+          id: me.id,
           name: me.name,
           avatarUrl: me.avatarUrl,
           plan: me.plan,

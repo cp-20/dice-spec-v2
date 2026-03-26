@@ -23,6 +23,7 @@ service cloud.firestore {
 
     function requiredUserKeys() {
       return [
+        'id',
         'name',
         'avatarUrl',
         'plan',
@@ -44,6 +45,7 @@ service cloud.firestore {
 
     function isValidUserDocument(data) {
       return hasOnlyKeys(data, requiredUserKeys())
+        && data.id is string
         && data.name is string
         && (!('avatarUrl' in data) || data.avatarUrl == null || data.avatarUrl is string)
         && isUserPlan(data.plan)
@@ -57,7 +59,8 @@ service cloud.firestore {
     }
 
     function isValidPublicOwner(owner) {
-      return hasOnlyKeys(owner, ['name', 'avatarUrl', 'plan', 'createdAt', 'updatedAt'])
+      return hasOnlyKeys(owner, ['id', 'name', 'avatarUrl', 'plan', 'createdAt', 'updatedAt'])
+        && owner.id is string
         && owner.name is string
         && (!('avatarUrl' in owner) || owner.avatarUrl == null || owner.avatarUrl is string)
         && isUserPlan(owner.plan)
@@ -69,6 +72,7 @@ service cloud.firestore {
       let userPath = /databases/$(database)/documents/users/$(uid);
       let userDoc = getAfter(userPath);
       return userDoc.data != null
+        && owner.id == uid
         && owner.name == userDoc.data.name
         && owner.avatarUrl == userDoc.data.avatarUrl
         && owner.plan == userDoc.data.plan

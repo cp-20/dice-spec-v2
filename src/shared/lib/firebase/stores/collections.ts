@@ -19,6 +19,7 @@ export const userPlanSchema = v.union([v.literal('free'), v.literal('pro')]);
 export type UserPlan = v.InferOutput<typeof userPlanSchema>;
 
 export const publicUserSchema = v.object({
+  id: v.string(),
   name: v.string(),
   avatarUrl: v.optional(v.string()),
   plan: userPlanSchema,

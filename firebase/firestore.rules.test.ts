@@ -80,6 +80,7 @@ const stopEmulator = async (processRef: ChildProcessWithoutNullStreams) => {
 };
 
 const userDoc = (overrides: Record<string, unknown> = {}) => ({
+  id: 'user_1',
   name: 'Alice',
   avatarUrl: 'https://example.com/avatar.png',
   plan: 'free',
@@ -92,6 +93,7 @@ const userDoc = (overrides: Record<string, unknown> = {}) => ({
 });
 
 const ownerSnapshot = (overrides: Record<string, unknown> = {}) => ({
+  id: 'user_1',
   name: 'Alice',
   avatarUrl: 'https://example.com/avatar.png',
   plan: 'free',
@@ -112,7 +114,7 @@ const analysisDoc = (analysisId: string, ownerUid: string, overrides: Record<str
   createdAt: now,
   updatedAt: now,
   primaryDeviationScore: 0,
-  owner: ownerSnapshot(),
+  owner: ownerSnapshot({ id: ownerUid }),
   ...overrides,
 });
 
@@ -569,5 +571,90 @@ describe('Firestore セキュリティルール', () => {
       updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:20:00.000Z')),
     });
     await assertFails(batch.commit());
+  });
+
+  test('users+analyses: updateName 相当(users.name + analyses.owner.name 同時更新)は許可される', async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const adminDb = context.firestore();
+      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
+      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
+      await setDoc(doc(adminDb, 'analyses/a2'), analysisDoc('a2', 'user_1', { title: 'Session 2' }));
+    });
+
+    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
+    const updatedAt = Timestamp.fromDate(new Date('2026-03-18T04:30:00.000Z'));
+
+    const batch = writeBatch(ownerDb);
+    batch.set(doc(ownerDb, 'users'), { name: 'Alice Updated', updatedAt }, { merge: true });
+    batch.set(
+      doc(ownerDb, 'analyses/a1'),
+      {
+        owner: ownerSnapshot({
+          name: 'Alice Updated',
+          updatedAt,
+        }),
+        updatedAt,
+      },
+      { merge: true },
+    );
+    batch.set(
+      doc(ownerDb, 'analyses/a2'),
+      {
+        owner: ownerSnapshot({
+          name: 'Alice Updated',
+          updatedAt,
+        }),
+        updatedAt,
+      },
+      { merge: true },
+    );
+
+    await assertSucceeds(batch.commit());
+  });
+
+  test('users+analyses: updateAvatarUrl 相当(users.avatarUrl + analyses.owner.avatarUrl 同時更新)は許可される', async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const adminDb = context.firestore();
+      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
+      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
+      await setDoc(doc(adminDb, 'analyses/a2'), analysisDoc('a2', 'user_1', { title: 'Session 2' }));
+    });
+
+    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
+    const updatedAt = Timestamp.fromDate(new Date('2026-03-18T04:40:00.000Z'));
+
+    const batch = writeBatch(ownerDb);
+    batch.set(
+      doc(ownerDb, 'users/user_1'),
+      {
+        avatarUrl: 'https://example.com/avatar-updated.png',
+        updatedAt,
+      },
+      { merge: true },
+    );
+    batch.set(
+      doc(ownerDb, 'analyses/a1'),
+      {
+        owner: ownerSnapshot({
+          avatarUrl: 'https://example.com/avatar-updated.png',
+          updatedAt,
+        }),
+        updatedAt,
+      },
+      { merge: true },
+    );
+    batch.set(
+      doc(ownerDb, 'analyses/a2'),
+      {
+        owner: ownerSnapshot({
+          avatarUrl: 'https://example.com/avatar-updated.png',
+          updatedAt,
+        }),
+        updatedAt,
+      },
+      { merge: true },
+    );
+
+    await assertSucceeds(batch.commit());
   });
 });

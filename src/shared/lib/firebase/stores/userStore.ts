@@ -14,6 +14,7 @@ import { myAnalysesAtom } from './analyses/userAnalyses';
 import { COLLECTIONS, type NewUserDocument, type PublicUser, type UserDocument, userStoreSchema } from './collections';
 
 const anonymousUserDocument: UserDocument = {
+  id: 'anonymous',
   name: '匿名ユーザー',
   plan: 'free',
   updatedAt: Timestamp.now(),
@@ -56,6 +57,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument>(anonymousUserDocument),
         }
 
         const newUserDocument: NewUserDocument = {
+          id: authUser.uid,
           name: authUser.displayName ?? 'ユーザー',
           avatarUrl,
           plan: 'free',
