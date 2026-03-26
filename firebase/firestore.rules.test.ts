@@ -312,11 +312,11 @@ describe('Firestore セキュリティルール', () => {
   test('analyses: pro プランは3件を超えても作成できる', async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/pro_user'), userDoc({ plan: 'pro', analysisCount: 0 }));
+      await setDoc(doc(adminDb, 'users/pro_user'), userDoc({ id: 'pro_user', plan: 'pro', analysisCount: 0 }));
     });
 
     const proUserDb = testEnv.authenticatedContext('pro_user').firestore();
-    const proOwner = { owner: ownerSnapshot({ plan: 'pro' }) };
+    const proOwner = { owner: ownerSnapshot({ id: 'pro_user', plan: 'pro' }) };
 
     await assertSucceeds(saveAnalysisWithCountSync(proUserDb, 'pro_user', 'a1', proOwner));
     await assertSucceeds(saveAnalysisWithCountSync(proUserDb, 'pro_user', 'a2', proOwner));
@@ -585,7 +585,7 @@ describe('Firestore セキュリティルール', () => {
     const updatedAt = Timestamp.fromDate(new Date('2026-03-18T04:30:00.000Z'));
 
     const batch = writeBatch(ownerDb);
-    batch.set(doc(ownerDb, 'users'), { name: 'Alice Updated', updatedAt }, { merge: true });
+    batch.set(doc(ownerDb, 'users/user_1'), { name: 'Alice Updated', updatedAt }, { merge: true });
     batch.set(
       doc(ownerDb, 'analyses/a1'),
       {
