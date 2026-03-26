@@ -40,7 +40,6 @@ const getFirestoreClient = () => {
     databaseId,
     clientEmail,
     privateKey: privateKey.replace(/\\n/g, '\n'),
-    debug: true,
   });
 
   return firestoreClient;
