@@ -24,7 +24,7 @@ export const generateMetadata: MetadataGenerator = async (props) => {
 
 export const viewport = viewportGenerator();
 
-const LEGAL_LAST_UPDATED = '2026-03-23';
+const LEGAL_LAST_UPDATED = '2026-03-27';
 
 const SpecifiedCommercialTransactionsPage: NextPage = () => {
   return (
@@ -37,35 +37,57 @@ const SpecifiedCommercialTransactionsPage: NextPage = () => {
 
         <section className="space-y-8">
           <Section>
-            <H2>事業者氏名</H2>
+            <H2>販売事業者の名称</H2>
             <P>永田直希</P>
           </Section>
 
           <Section>
-            <H2>お問合せ先</H2>
-            <P>メールアドレス: contact@dicespec.app</P>
+            <H2>運営統括責任者</H2>
+            <P>永田直希</P>
+          </Section>
+
+          <Section>
+            <H2>所在地</H2>
             <P className="text-xs">
-              開示されていない情報に関しては、上記お問い合わせ先までご連絡いただければ遅滞なく開示いたします。
+              請求があった場合には、遅滞なく開示いたします。
             </P>
           </Section>
 
           <Section>
-            <H2>販売価格と手数料</H2>
-            <P>販売ページおよび購入手続きの画面において、消費税・手数料を含む価格で表示されています。</P>
-            <P>本サービスの利用に必要となるインターネット通信料金はお客様のご負担となります。</P>
-            <P>デジタルコンテンツ（役務）のため送料や返品送料は発生しません。</P>
+            <H2>電話番号</H2>
+            <P className="text-xs">請求があった場合には、遅滞なく開示いたします。</P>
+          </Section>
+
+          <Section>
+            <H2>メールアドレス</H2>
+            <P>contact@dicespec.app</P>
+          </Section>
+
+          <Section>
+            <H2>お問い合わせ受付時間</H2>
+            <P>10:00～19:00（返信は通常3営業日以内）</P>
+          </Section>
+
+          <Section>
+            <H2>販売価格</H2>
+            <P>販売ページおよび購入手続き画面に、消費税を含む価格を表示します。</P>
+          </Section>
+
+          <Section>
+            <H2>商品代金以外の必要料金</H2>
+            <P>本サービスの利用に必要となるインターネット接続料金・通信料金はお客様のご負担となります。</P>
+            <P>デジタルコンテンツ（役務）のため、送料は発生しません。</P>
           </Section>
 
           <Section>
             <H2>提供時期</H2>
-            <P>お支払いが確認でき次第、すぐに利用できるようになります。</P>
+            <P>決済完了後、直ちにサービスをご利用いただけます。</P>
           </Section>
 
           <Section>
             <H2>お支払方法</H2>
             <P>
-              クレジットカード、またはその他当社が定める方法（Apple Pay、Google Pay、Stripe
-              Link）によりお支払いいただきます。
+              クレジットカード、またはその他当社が定める方法によりお支払いいただきます。
             </P>
           </Section>
 
@@ -78,11 +100,14 @@ const SpecifiedCommercialTransactionsPage: NextPage = () => {
           </Section>
 
           <Section>
-            <H2>返品・キャンセル・解約について</H2>
-            <P>デジタルサービスという性質上、お客様都合による返金・キャンセルはお受けしておりません。</P>
+            <H2>返品・交換・キャンセル等</H2>
+            <P className="font-semibold text-slate-700">お客様都合による返品・交換・キャンセル</P>
+            <P>デジタルサービスの性質上、決済完了後のお客様都合による返金・キャンセルはお受けしておりません。</P>
+            <P className="font-semibold text-slate-700">不具合がある場合の返品・交換</P>
             <P>
-              弊社の責による長期システム停止等、当社利用規約で定める場合に限り、未提供日数を日割り計算の上で返金いたします。
+              当社の責に帰すべき不具合（長期システム停止等）が発生した場合は、利用規約に基づき未提供日数を日割り計算のうえ返金いたします。
             </P>
+            <P className="font-semibold text-slate-700">解約方法</P>
             <P>
               マイページから次回更新日の24時間前までに解約いただけます。解約後も当該請求期間の終了日まではサービスをご利用いただけます。
             </P>
