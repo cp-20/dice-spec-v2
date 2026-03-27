@@ -87,7 +87,7 @@ const SpecifiedCommercialTransactionsPage: NextPage = () => {
           <Section>
             <H2>お支払方法</H2>
             <P>
-              クレジットカード、またはその他当社が定める方法によりお支払いいただきます。
+              クレジットカード、またはその他運営が定める方法によりお支払いいただきます。
             </P>
           </Section>
 
@@ -105,7 +105,7 @@ const SpecifiedCommercialTransactionsPage: NextPage = () => {
             <P>デジタルサービスの性質上、決済完了後のお客様都合による返金・キャンセルはお受けしておりません。</P>
             <P className="font-semibold text-slate-700">不具合がある場合の返品・交換</P>
             <P>
-              当社の責に帰すべき不具合（長期システム停止等）が発生した場合は、利用規約に基づき未提供日数を日割り計算のうえ返金いたします。
+              運営の責に帰すべき不具合（長期システム停止等）が発生した場合は、利用規約に基づき未提供日数を日割り計算のうえ返金いたします。
             </P>
             <P className="font-semibold text-slate-700">解約方法</P>
             <P>
