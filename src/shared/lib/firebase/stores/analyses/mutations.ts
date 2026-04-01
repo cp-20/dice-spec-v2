@@ -62,8 +62,6 @@ export const useSaveAnalysis = () => {
           updatedAt: serverTimestamp(),
         };
 
-        console.log('newDocData', newDocData);
-
         batch.set(newDoc, newDocData);
 
         const analysisRecordsRef = doc(firestore, COLLECTIONS.analysisRecords, newDoc.id);
