@@ -48,9 +48,7 @@ const SpecifiedCommercialTransactionsPage: NextPage = () => {
 
           <Section>
             <H2>所在地</H2>
-            <P className="text-xs">
-              請求があった場合には、遅滞なく開示いたします。
-            </P>
+            <P className="text-xs">請求があった場合には、遅滞なく開示いたします。</P>
           </Section>
 
           <Section>
@@ -86,9 +84,7 @@ const SpecifiedCommercialTransactionsPage: NextPage = () => {
 
           <Section>
             <H2>お支払方法</H2>
-            <P>
-              クレジットカード、またはその他運営が定める方法によりお支払いいただきます。
-            </P>
+            <P>クレジットカード、またはその他運営が定める方法によりお支払いいただきます。</P>
           </Section>
 
           <Section>
