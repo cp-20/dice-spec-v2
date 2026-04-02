@@ -15,6 +15,7 @@ import { AnalysisRecordsView } from './_components/AnalysisLogView';
 import { currentAnalysisAtom, useAnalysisIdSync } from './_components/atoms';
 import { CharacterSelector } from './_components/CharacterSelector';
 import { CharacterStats } from './_components/CharacterStats';
+import { wrapPage } from '@/shared/i18n/page-layout';
 
 const AnalyzeLogDetailPage: FC = () => {
   useAnalysisIdSync();
@@ -82,4 +83,4 @@ const AnalyzeLogDetailPage: FC = () => {
   );
 };
 
-export default AnalyzeLogDetailPage;
+export default wrapPage(AnalyzeLogDetailPage);
