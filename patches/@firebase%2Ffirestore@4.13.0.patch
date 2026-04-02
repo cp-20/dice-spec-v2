@@ -10,6 +10,10 @@ index f00c6213a5c9afbdec61a068a594e7184e606d7e..6f3592be4d2a386852becc37e33e226c
 -        "require": "./dist/index.node.cjs.js",
 -        "import": "./dist/index.node.mjs"
 -      },
++      "bun": {
++        "require": "./dist/index.node.cjs.js",
++        "import": "./dist/index.node.mjs"
++      },
        "react-native": "./dist/index.rn.js",
        "browser": {
          "require": "./dist/index.cjs.js",
