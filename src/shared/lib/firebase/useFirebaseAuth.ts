@@ -1,8 +1,16 @@
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth';
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+  type User,
+  AuthErrorCodes,
+} from 'firebase/auth';
 import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { useCallback } from 'react';
 import { useFirebase } from './useFirebase';
+import { FirebaseError } from 'firebase/app';
 
 const internalAuthUserLoadingAtom = atom(true);
 
@@ -26,7 +34,14 @@ export const useFirebaseAuth = () => {
 
   const signInWithGoogle = useCallback(async () => {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (err) {
+      if (err instanceof FirebaseError) {
+        if (err.code === AuthErrorCodes.POPUP_CLOSED_BY_USER) return;
+      }
+      throw err;
+    }
   }, [auth]);
 
   const signOutUser = useCallback(async () => {
