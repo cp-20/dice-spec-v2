@@ -32,7 +32,8 @@ const AnalyzeLogDetailPage: FC = () => {
     );
   }
 
-  if (!analysis) {
+  // ログが見つからない or アクセス権限がない場合
+  if (analysis === null) {
     return (
       <div className="space-y-8">
         <ContainerSection>

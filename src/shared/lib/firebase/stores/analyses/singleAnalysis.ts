@@ -22,16 +22,26 @@ const internalAnalysisAtomFamily = atomFamily((id: string | undefined) =>
     }
 
     const analysisRef = doc(firestore, COLLECTIONS.analyses, id);
-    return onSnapshot(analysisRef, (snap) => {
-      if (!snap.exists()) {
-        set(internalAnalysisAtomFamily(id), { analysis: null, loading: false });
-        return;
-      }
+    return onSnapshot(
+      analysisRef,
+      (snap) => {
+        if (!snap.exists()) {
+          set(internalAnalysisAtomFamily(id), { analysis: null, loading: false });
+          return;
+        }
 
-      const analysisDocument = v.parse(analysesStoreSchema, snap.data({ serverTimestamps: 'estimate' }));
-      set(internalAnalysisAtomFamily(id), { analysis: analysisDocument, loading: false });
-      set(internalUserFamilyAtom(analysisDocument.ownerUid), analysisDocument.owner);
-    });
+        const analysisDocument = v.parse(analysesStoreSchema, snap.data({ serverTimestamps: 'estimate' }));
+        set(internalAnalysisAtomFamily(id), { analysis: analysisDocument, loading: false });
+        set(internalUserFamilyAtom(analysisDocument.ownerUid), analysisDocument.owner);
+      },
+      (err) => {
+        if (err.code === 'permission-denied' || err.code === 'not-found') {
+          set(internalAnalysisAtomFamily(id), { analysis: null, loading: false });
+        } else {
+          throw err;
+        }
+      },
+    );
   }),
 );
 
