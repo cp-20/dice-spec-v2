@@ -107,5 +107,8 @@
     "typescript": "^5.9.3",
     "vite": "^8.0.1",
     "wrangler": "^4.76.0"
+  },
+  "patchedDependencies": {
+    "@firebase/firestore@4.13.0": "patches/@firebase%2Ffirestore@4.13.0.patch"
   }
 }

@@ -1,7 +1,7 @@
 import type { FirebaseOptions } from 'firebase/app';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import type { Firestore } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 import { getDownloadURL, getStorage, ref, uploadString } from 'firebase/storage';
 import { nanoid } from 'nanoid';
 
@@ -19,12 +19,10 @@ if (!databaseId) {
   throw new Error('Missing FIREBASE_FIRESTORE_DATABASE_ID in environment variables');
 }
 
-const firestoreModule = typeof window !== 'undefined' ? await import('firebase/firestore') : null;
-
 export const useFirebase = () => {
   const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const firestore = firestoreModule?.getFirestore(app, databaseId) as Firestore;
+  const firestore = getFirestore(app, databaseId);
   const storage = getStorage(app);
 
   const uploadImage = async (url: string) => {

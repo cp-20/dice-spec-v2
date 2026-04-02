@@ -1,0 +1,15 @@
+diff --git a/package.json b/package.json
+index f00c6213a5c9afbdec61a068a594e7184e606d7e..6f3592be4d2a386852becc37e33e226ce7a2238a 100644
+--- a/package.json
++++ b/package.json
+@@ -66,10 +66,6 @@
+   "exports": {
+     ".": {
+       "types": "./dist/index.d.ts",
+-      "node": {
+-        "require": "./dist/index.node.cjs.js",
+-        "import": "./dist/index.node.mjs"
+-      },
+       "react-native": "./dist/index.rn.js",
+       "browser": {
+         "require": "./dist/index.cjs.js",
