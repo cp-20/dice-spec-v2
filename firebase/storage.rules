@@ -19,12 +19,54 @@ service firebase.storage {
       return isOwner || isPublicOrUnlisted;
     }
 
+    function isValidVisibilityLevel(value) {
+      return value == 'private' || value == 'unlisted' || value == 'public';
+    }
+
+    function analysisOgImageMetadata() {
+      return resource.metadata;
+    }
+
+    function requestAnalysisOgImageMetadata() {
+      return request.resource.metadata;
+    }
+
+    function isAnalysisOgImageOwner(metadata) {
+      return isSignedIn() && metadata.ownerUid == request.auth.uid;
+    }
+
+    function canReadAnalysisOgImage() {
+      let metadata = analysisOgImageMetadata();
+      let visibilityLevel = metadata.visibilityLevel;
+      let isPublicOrUnlisted = visibilityLevel == 'public' || visibilityLevel == 'unlisted';
+      return isAnalysisOgImageOwner(metadata) || isPublicOrUnlisted;
+    }
+
+    function canCreateAnalysisOgImage() {
+      let metadata = requestAnalysisOgImageMetadata();
+      return isAnalysisOgImageOwner(metadata)
+        && isValidVisibilityLevel(metadata.visibilityLevel)
+        && request.resource.size < 1 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    function canUpdateAnalysisOgImage() {
+      let currentMetadata = analysisOgImageMetadata();
+      let nextMetadata = requestAnalysisOgImageMetadata();
+      return isAnalysisOgImageOwner(currentMetadata)
+        && currentMetadata.ownerUid == nextMetadata.ownerUid
+        && isValidVisibilityLevel(nextMetadata.visibilityLevel)
+        && request.resource.size < 1 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
     match /avatars/{uid}/{allPaths=**} {
       allow get: if true;
       allow list: if false;
-      allow write: if isSelf(uid)
+      allow create, update: if isSelf(uid)
         && request.resource.size <= 1 * 1024 * 1024
         && request.resource.contentType.matches('^image/(jpeg|jpg|png|webp)$');
+      allow delete: if isSelf(uid);
     }
 
     match /shared-images/{scope}/{imageId} {
@@ -38,9 +80,18 @@ service firebase.storage {
     match /analysis-records/{ownerUid}/{analysisId} {
       allow get: if canReadAnalysisRecords(ownerUid);
       allow list: if false;
-      allow write: if isSelf(ownerUid)
+      allow create, update: if isSelf(ownerUid)
         && request.resource.size < 50 * 1024 * 1024
         && request.resource.contentType.matches('application/json.*');
+      allow delete: if isSelf(ownerUid);
+    }
+
+    match /analysis-og-images/{analysisId} {
+      allow get: if canReadAnalysisOgImage();
+      allow list: if false;
+      allow create: if canCreateAnalysisOgImage();
+      allow update: if canUpdateAnalysisOgImage();
+      allow delete: if isAnalysisOgImageOwner(analysisOgImageMetadata());
     }
 
     match /{allPaths=**} {

@@ -740,6 +740,82 @@ describe('Firestore セキュリティルール', () => {
     await assertFails(anonStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
   });
 
+  test('storage/analysis-og-images: 所有者は ownerUid metadata を持つ画像を書き込める', async () => {
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertSucceeds(
+      ownerStorage
+        .ref('analysis-og-images/a1')
+        .putString('data:image/png;base64,AA==', 'data_url', {
+          contentType: 'image/png',
+          customMetadata: {
+            ownerUid: 'owner',
+            visibilityLevel: 'private',
+          },
+        })
+        .then(() => undefined),
+    );
+  });
+
+  test('storage/analysis-og-images: ownerUid metadata が認証ユーザーと不一致なら拒否される', async () => {
+    const otherStorage = testEnv.authenticatedContext('other').storage(STORAGE_BUCKET);
+
+    await assertFails(
+      otherStorage
+        .ref('analysis-og-images/a1')
+        .putString('data:image/png;base64,AA==', 'data_url', {
+          contentType: 'image/png',
+          customMetadata: {
+            ownerUid: 'owner',
+            visibilityLevel: 'private',
+          },
+        })
+        .then(() => undefined),
+    );
+  });
+
+  test('storage/analysis-og-images: visibilityLevel=public なら他ユーザーが読み取りできる', async () => {
+    const analysisId = 'og_public';
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertSucceeds(
+      ownerStorage
+        .ref(`analysis-og-images/${analysisId}`)
+        .putString('data:image/png;base64,AA==', 'data_url', {
+          contentType: 'image/png',
+          customMetadata: {
+            ownerUid: 'owner',
+            visibilityLevel: 'public',
+          },
+        })
+        .then(() => undefined),
+    );
+
+    const otherStorage = testEnv.authenticatedContext('other').storage(STORAGE_BUCKET);
+    await assertSucceeds(otherStorage.ref(`analysis-og-images/${analysisId}`).getMetadata());
+  });
+
+  test('storage/analysis-og-images: visibilityLevel=private なら他ユーザーは読み取りできない', async () => {
+    const analysisId = 'og_private';
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertSucceeds(
+      ownerStorage
+        .ref(`analysis-og-images/${analysisId}`)
+        .putString('data:image/png;base64,AA==', 'data_url', {
+          contentType: 'image/png',
+          customMetadata: {
+            ownerUid: 'owner',
+            visibilityLevel: 'private',
+          },
+        })
+        .then(() => undefined),
+    );
+
+    const anonStorage = testEnv.unauthenticatedContext().storage(STORAGE_BUCKET);
+    await assertFails(anonStorage.ref(`analysis-og-images/${analysisId}`).getMetadata());
+  });
+
   test('storage/avatars: 所有者は 1MiB 以下の JPEG/PNG/WebP を書き込める', async () => {
     const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
 
@@ -779,7 +855,7 @@ describe('Firestore セキュリティルール', () => {
     );
   });
 
-  test('storage: avatars と analysis-records の list 操作は拒否される', async () => {
+  test('storage: avatars と analysis-records と analysis-og-images の list 操作は拒否される', async () => {
     const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
 
     await assertSucceeds(
@@ -802,8 +878,21 @@ describe('Firestore セキュリティルール', () => {
         })
         .then(() => undefined),
     );
+    await assertSucceeds(
+      ownerStorage
+        .ref('analysis-og-images/a1')
+        .putString('data:image/png;base64,AA==', 'data_url', {
+          contentType: 'image/png',
+          customMetadata: {
+            ownerUid: 'owner',
+            visibilityLevel: 'private',
+          },
+        })
+        .then(() => undefined),
+    );
 
     await assertFails(storageList(storageRef(ownerStorage, 'avatars')));
     await assertFails(storageList(storageRef(ownerStorage, 'analysis-records/owner')));
+    await assertFails(storageList(storageRef(ownerStorage, 'analysis-og-images')));
   });
 });

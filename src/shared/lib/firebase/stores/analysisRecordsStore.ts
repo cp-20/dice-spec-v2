@@ -4,7 +4,6 @@ import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 import * as v from 'valibot';
 import { downloadAnalysisRecordsFromStorage } from '@/shared/lib/firebase/storage/analysisRecords';
-import { storagePaths } from '@/shared/lib/firebase/storage/paths';
 import { useFirebase } from '../useFirebase';
 import { authUserAtom } from '../useFirebaseAuth';
 import { type AnalysisRecordsDocument, analysesStoreSchema, COLLECTIONS } from './collections';
@@ -41,15 +40,15 @@ const internalAnalysisRecordsAtomFamily = atomFamily((id: string | undefined) =>
 
         const analysis = v.parse(analysesStoreSchema, snap.data({ serverTimestamps: 'estimate' }));
         const isOwner = authUser !== null && authUser.uid === analysis.ownerUid;
-        if (!analysis.showRecordDetails && !isOwner) {
+
+        const canViewRecords = (analysis.visibilityLevel !== 'private' && analysis.showRecordDetails) || isOwner;
+        if (!canViewRecords) {
           set(internalAnalysisRecordsAtomFamily(id), { records: null, loading: false });
           return;
         }
 
-        const storagePath = storagePaths.getAnalysisRecordsPath(analysis.ownerUid, analysis.id);
-
         set(internalAnalysisRecordsAtomFamily(id), (prev) => ({ ...prev, loading: true }));
-        const recordsDocument = await downloadAnalysisRecordsFromStorage(storage, storagePath);
+        const recordsDocument = await downloadAnalysisRecordsFromStorage(storage, analysis.ownerUid, analysis.id);
 
         if (currentSequence !== sequence) return;
         set(internalAnalysisRecordsAtomFamily(id), { records: recordsDocument, loading: false });

@@ -39,11 +39,12 @@ export const AnalysisSavePanel: FC = () => {
     { value: 'public', label: t('analyze-logs:save.visibility.public'), icon: IconLockOpen },
   ];
 
+  const [saving, setSaving] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const { authUser } = useFirebaseAuth();
   const { system, result } = useLogAnalysis();
-  const { saveAnalysis, saving } = useSaveAnalysis();
+  const { saveAnalysis } = useSaveAnalysis();
   useUserAnalyses(authUser?.uid);
   const analyses = useAtomValue(myAnalysesAtom);
   const { me } = useMeStore();
@@ -66,7 +67,9 @@ export const AnalysisSavePanel: FC = () => {
     title.trim() !== '';
 
   const handleSave = async () => {
-    if (!canSave || me === null || authUser === null) return;
+    if (!canSave) return;
+
+    setSaving(true);
 
     try {
       const payload: SaveAnalysisPayload = {
@@ -96,6 +99,8 @@ export const AnalysisSavePanel: FC = () => {
         description: t('analyze-logs:save.failed.description'),
         variant: 'destructive',
       });
+    } finally {
+      setSaving(false);
     }
   };
 

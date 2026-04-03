@@ -1,41 +1,17 @@
 import { IconLoader } from '@tabler/icons-react';
-import clsx from 'clsx';
 import { toPng } from 'html-to-image';
 import { t } from 'i18next';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
-import { type FC, type ReactNode, useCallback, useEffect, useState } from 'react';
-import { TitleLogo } from '@/shared/components/elements/TitleLogo';
+import { type FC, useCallback, useEffect, useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { atomWithDebounce } from '@/shared/lib/jotai/atomWithDebounce';
-import { round } from '@/shared/lib/round';
-import LogoIcon from '/public/icon.svg';
-import { LogAnalysisRankingChart } from '../LogAnalysisRankingChart';
 import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
 import { useCharacterSelect } from './useCharacterSelect';
 import { useShareAnalysisResultImage } from './useShareAnalysisResultImage';
-
-interface StatsProps {
-  label: ReactNode;
-  number: ReactNode;
-  unit?: ReactNode;
-  small?: ReactNode;
-}
-
-const Stats: FC<StatsProps> = ({ label, number, unit, small }) => {
-  return (
-    <div>
-      <div className="text-slate-500 mb-1 font-bold text-xl">{label}</div>
-      <div className="flex items-baseline">
-        <span className="text-6xl font-bold text-slate-900">{number}</span>
-        {unit && <span className="ml-1 text-2xl text-slate-700 font-bold">{unit}</span>}
-        {small && <div className="text-xl text-slate-400 font-bold ml-2">{`/ ${small}`}</div>}
-      </div>
-    </div>
-  );
-};
+import { SharingAnalysisResultScreen } from '../SharingAnalysisResultScreen';
 
 const imageRefAtom = atom<React.RefObject<HTMLDivElement | null> | undefined>(undefined);
 const { currentValueAtom: scenarioNameAtom, debouncedValueAtom: debouncedScenarioNameAtom } = atomWithDebounce(
@@ -66,6 +42,17 @@ export const sharingImageDataUrlAtom = atom(async (get) => {
   return dataUrl;
 });
 
+export const useGenerateShareAnalysisImageDataUrl = () => {
+  const imageRef = useAtomValue(imageRefAtom);
+
+  const generateShareImageDataUrl = useCallback(async () => {
+    if (imageRef?.current === null || imageRef?.current === undefined) return null;
+    return await toPng(imageRef.current);
+  }, [imageRef]);
+
+  return { generateShareImageDataUrl };
+};
+
 const SharingImagePreview: FC = () => {
   const sharingImageDataUrl = useAtomValue(sharingImageDataUrlAtom);
 
@@ -74,7 +61,7 @@ const SharingImagePreview: FC = () => {
   }
 
   return (
-    /** biome-ignore lint/performance/noImgElement: dynamically generated image */
+    // oxlint-disable-next-line nextjs/no-img-element dynamically generated image
     <img
       src={sharingImageDataUrl}
       alt={t('analyze-logs:share-analysis-result:image-alt')}
@@ -127,8 +114,8 @@ export const useShareAnalysisResult = () => {
             </div>
           </DialogContent>
         </Dialog>
-        <div className="fixed -left-1 -top-1 -translate-full">
-          <SharingAnalysisResult className="w-[1200px]" />
+        <div className="fixed -left-1 -top-1 -translate-full w-300">
+          <SharingAnalysisResult />
         </div>
       </>
     );
@@ -146,14 +133,9 @@ export const useShareAnalysisResult = () => {
   };
 };
 
-interface SharingAnalysisResultProps {
-  className?: string;
-}
-
-const SharingAnalysisResult: FC<SharingAnalysisResultProps> = ({ className }) => {
+const SharingAnalysisResult: FC = () => {
   const { character } = useCharacterSelect();
   const analysisResult = useCharacterLogAnalysis(character);
-  const numberWrapper = (number: ReactNode) => analysisResult && number;
 
   const scenarioName = useAtomValue(scenarioNameAtom);
   const setImageRef = useSetAtom(imageRefAtom);
@@ -173,45 +155,11 @@ const SharingAnalysisResult: FC<SharingAnalysisResultProps> = ({ className }) =>
     regenerateImage();
   }, [regenerateImage, analysisResult, scenarioName]);
 
+  if (analysisResult === undefined) {
+    return null;
+  }
+
   return (
-    <div
-      ref={imageRefCallback}
-      className={clsx('p-12 pl-24 bg-white aspect-1200/630 relative flex flex-col gap-20', className)}
-    >
-      <div className="text-4xl font-bold text-slate-900">
-        {scenarioName || t('analyze-logs:share-analysis-result.scenario-name-default')}
-      </div>
-
-      <div className="flex gap-12 min-h-0 flex-1">
-        <div className="space-y-8">
-          <Stats
-            label={t('analyze-logs:stats.mean')}
-            number={numberWrapper(analysisResult && round(analysisResult.summary.average, 2))}
-          />
-          <Stats
-            label={t('analyze-logs:stats.success-rate')}
-            number={numberWrapper(analysisResult && round(analysisResult.summary.successRate, 2))}
-            unit="%"
-          />
-          <Stats
-            label={t('analyze-logs:stats.roll-count')}
-            number={numberWrapper(analysisResult?.summary.diceRollCount)}
-            unit={t('analyze-logs:stats.roll-count-unit')}
-            small={
-              analysisResult?.summary.diceCount !== analysisResult?.summary.diceRollCount &&
-              `${analysisResult?.summary.diceCount}${t('analyze-logs:stats.dice-count-unit')}`
-            }
-          />
-        </div>
-
-        <div className="flex-1 space-y-4">
-          <LogAnalysisRankingChart className="-mt-16" />
-        </div>
-      </div>
-      <div className="flex items-center gap-1 justify-end absolute bottom-4 right-4">
-        <LogoIcon className="size-8" />
-        <TitleLogo className="h-6" />
-      </div>
-    </div>
+    <SharingAnalysisResultScreen ref={imageRefCallback} scenarioName={scenarioName} analysisResult={analysisResult} />
   );
 };

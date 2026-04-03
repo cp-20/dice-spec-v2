@@ -17,7 +17,11 @@ import {
   updateAnalysisRecordsMetadataInStorage,
   uploadAnalysisRecordsToStorage,
 } from '@/shared/lib/firebase/storage/analysisRecords';
-import { storagePaths } from '@/shared/lib/firebase/storage/paths';
+import {
+  deleteAnalysisOgImageFromStorage,
+  updateAnalysisOgImageMetadataInStorage,
+  uploadAnalysisOgImageToStorage,
+} from '@/shared/lib/firebase/storage/analysisOgImages';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 import {
@@ -26,6 +30,7 @@ import {
   COLLECTIONS,
   type NewAnalysisDocument,
 } from '../collections';
+import { useAnalysisOgImage } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/useAnalysisOgImage';
 
 export type SaveAnalysisPayload = Omit<
   NewAnalysisDocument,
@@ -34,9 +39,48 @@ export type SaveAnalysisPayload = Omit<
   characterResults: DiceResultForCharacter[];
 };
 
+type SyncAnalysisOgImageParams = {
+  id: string;
+  title: string;
+  ownerUid: string;
+  visibilityLevel: AnalysisVisibilityLevel;
+  allCharacterResult?: Pick<DiceResultForCharacter, 'summary'>;
+};
+
+const useSyncAnalysisOgImageInBackground = () => {
+  const { storage } = useFirebase();
+  const { generateOgImage } = useAnalysisOgImage();
+
+  return useCallback(
+    (params: SyncAnalysisOgImageParams) => {
+      void (async () => {
+        try {
+          if (params.allCharacterResult) {
+            const ogImageDataUrl = await generateOgImage(params.allCharacterResult, params.title);
+            await uploadAnalysisOgImageToStorage(storage, params.id, ogImageDataUrl, {
+              ownerUid: params.ownerUid,
+              visibilityLevel: params.visibilityLevel,
+            });
+            return;
+          }
+
+          await updateAnalysisOgImageMetadataInStorage(storage, params.id, {
+            ownerUid: params.ownerUid,
+            visibilityLevel: params.visibilityLevel,
+          });
+        } catch (error) {
+          console.error('Failed to sync analysis OG image in background', error);
+        }
+      })();
+    },
+    [generateOgImage, storage],
+  );
+};
+
 export const useSaveAnalysis = () => {
   const { firestore, storage } = useFirebase();
   const [saving, setSaving] = useState(false);
+  const syncAnalysisOgImageInBackground = useSyncAnalysisOgImageInBackground();
 
   const saveAnalysis = useCallback(
     async (payload: SaveAnalysisPayload) => {
@@ -47,8 +91,11 @@ export const useSaveAnalysis = () => {
 
         const { characterResults, ...restPayload } = payload;
 
-        const primaryCharacter = characterResults.find((result) => result.id === ALL_CHARACTER_ID);
-        const primaryDeviationScore = primaryCharacter?.summary.deviationScore ?? 0;
+        const allCharacterResult = characterResults.find((result) => result.id === ALL_CHARACTER_ID);
+        if (allCharacterResult === undefined) {
+          throw new Error('All character result is required to save analysis');
+        }
+        const primaryDeviationScore = allCharacterResult.summary.deviationScore;
 
         const newDocData: NewAnalysisDocument = {
           ...restPayload,
@@ -79,16 +126,10 @@ export const useSaveAnalysis = () => {
           })),
         };
 
-        const storagePath = await uploadAnalysisRecordsToStorage(
-          storage,
-          payload.ownerUid,
-          newDoc.id,
-          analysisRecordsContent,
-          {
-            visibilityLevel: payload.visibilityLevel,
-            showRecordDetails: payload.showRecordDetails,
-          },
-        );
+        await uploadAnalysisRecordsToStorage(storage, payload.ownerUid, newDoc.id, analysisRecordsContent, {
+          visibilityLevel: payload.visibilityLevel,
+          showRecordDetails: payload.showRecordDetails,
+        });
 
         const userRef = doc(firestore, COLLECTIONS.users, payload.ownerUid);
         batch.set(
@@ -105,16 +146,26 @@ export const useSaveAnalysis = () => {
           await batch.commit();
         } catch (error) {
           // なるべく storage と firestore で同期を取る
-          await deleteAnalysisRecordsFromStorage(storage, storagePath).catch(() => undefined);
+          Promise.allSettled([deleteAnalysisRecordsFromStorage(storage, payload.ownerUid, newDoc.id)]).catch((err) => {
+            console.error('Failed to delete analysis assets from storage', err);
+          });
           throw error;
         }
+
+        syncAnalysisOgImageInBackground({
+          id: newDoc.id,
+          title: payload.title,
+          ownerUid: payload.ownerUid,
+          visibilityLevel: payload.visibilityLevel,
+          allCharacterResult,
+        });
 
         return newDoc.id;
       } finally {
         setSaving(false);
       }
     },
-    [firestore, storage],
+    [firestore, storage, syncAnalysisOgImageInBackground],
   );
 
   return { saveAnalysis, saving };
@@ -130,16 +181,18 @@ export type UpdateAnalysisPayload = Partial<{
 export const useUpdateAnalysis = () => {
   const { firestore, storage } = useFirebase();
   const [updating, setUpdating] = useState(false);
+  const syncAnalysisOgImageInBackground = useSyncAnalysisOgImageInBackground();
 
   const updateAnalysis = useCallback(
     async (id: string, updates: UpdateAnalysisPayload) => {
       setUpdating(true);
       try {
         const analysisRef = doc(firestore, COLLECTIONS.analyses, id);
-        const shouldSyncStorageMetadata =
+        const shouldSyncAnalysisRecordsMetadata =
           updates.visibilityLevel !== undefined || updates.showRecordDetails !== undefined;
+        const shouldSyncAnalysisOgImage = updates.title !== undefined || updates.visibilityLevel !== undefined;
 
-        if (!shouldSyncStorageMetadata) {
+        if (!shouldSyncAnalysisRecordsMetadata && !shouldSyncAnalysisOgImage) {
           await updateDoc(analysisRef, {
             ...updates,
             updatedAt: serverTimestamp(),
@@ -161,8 +214,9 @@ export const useUpdateAnalysis = () => {
           showRecordDetails: updates.showRecordDetails ?? previousMetadata.showRecordDetails,
         };
 
-        const storagePath = storagePaths.getAnalysisRecordsPath(beforeAnalysis.ownerUid, id);
-        await updateAnalysisRecordsMetadataInStorage(storage, storagePath, nextMetadata);
+        if (shouldSyncAnalysisRecordsMetadata) {
+          await updateAnalysisRecordsMetadataInStorage(storage, beforeAnalysis.ownerUid, id, nextMetadata);
+        }
 
         try {
           await updateDoc(analysisRef, {
@@ -170,14 +224,34 @@ export const useUpdateAnalysis = () => {
             updatedAt: serverTimestamp(),
           });
         } catch (error) {
-          await updateAnalysisRecordsMetadataInStorage(storage, storagePath, previousMetadata).catch(() => undefined);
+          if (shouldSyncAnalysisRecordsMetadata) {
+            await updateAnalysisRecordsMetadataInStorage(storage, beforeAnalysis.ownerUid, id, previousMetadata);
+          }
+
           throw error;
+        }
+
+        if (shouldSyncAnalysisOgImage) {
+          const allCharacterResult = beforeAnalysis.characterResults.find((result) => result.id === ALL_CHARACTER_ID);
+          if (allCharacterResult === undefined) {
+            console.error('All character result not found, skipping OG image sync');
+            return;
+          }
+          const shouldRegenerateOgImage = updates.title !== undefined && updates.title.trim() !== beforeAnalysis.title;
+
+          syncAnalysisOgImageInBackground({
+            id,
+            title: updates.title ?? beforeAnalysis.title,
+            ownerUid: beforeAnalysis.ownerUid,
+            visibilityLevel: nextMetadata.visibilityLevel,
+            allCharacterResult: shouldRegenerateOgImage ? allCharacterResult : undefined,
+          });
         }
       } finally {
         setUpdating(false);
       }
     },
-    [firestore, storage],
+    [firestore, storage, syncAnalysisOgImageInBackground],
   );
 
   return { updateAnalysis, updating };
@@ -211,8 +285,12 @@ export const useDeleteAnalysis = () => {
 
         await batch.commit();
 
-        const storagePath = storagePaths.getAnalysisRecordsPath(authUser.uid, id);
-        await deleteAnalysisRecordsFromStorage(storage, storagePath).catch(() => undefined);
+        await Promise.allSettled([
+          deleteAnalysisRecordsFromStorage(storage, authUser.uid, id),
+          deleteAnalysisOgImageFromStorage(storage, id),
+        ]).catch((err) => {
+          console.error('Failed to delete analysis assets from storage', err);
+        });
       } finally {
         setDeleting(false);
       }
