@@ -419,6 +419,10 @@ export const en = {
       'save-error-description': 'Failed to update display name',
       'avatar-upload-error-title': 'Failed to upload avatar',
       'avatar-upload-error-description': 'Please try again later.',
+      'avatar-upload-error-unsupported-format-description': 'Unsupported image format. Please use JPEG, PNG, or WebP.',
+      'avatar-upload-error-too-large-description':
+        'The image is still larger than 1 MiB after optimization. Please choose another image.',
+      'avatar-upload-error-invalid-image-description': 'Failed to decode image. Please try another file.',
       'sign-in-error-title': 'Sign-in failed',
       'sign-in-error-description': 'Failed to initialize your account. Please try again later.',
       'upgrade-error-title': 'Upgrade failed',

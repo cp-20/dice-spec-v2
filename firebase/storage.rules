@@ -23,8 +23,8 @@ service firebase.storage {
       allow get: if true;
       allow list: if false;
       allow write: if isSelf(uid)
-        && request.resource.size < 1 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+        && request.resource.size <= 1 * 1024 * 1024
+        && request.resource.contentType.matches('^image/(jpeg|jpg|png|webp)$');
     }
 
     match /shared-images/{scope}/{imageId} {

@@ -422,6 +422,10 @@ export const ja = {
       'save-error-description': '表示名の更新に失敗しました',
       'avatar-upload-error-title': 'アバターのアップロードに失敗しました',
       'avatar-upload-error-description': '時間をおいて再度お試しください。',
+      'avatar-upload-error-unsupported-format-description':
+        '対応していない画像形式です。JPEG / PNG / WebP の画像を選択してください。',
+      'avatar-upload-error-too-large-description': '画像の最適化後も 1MiB を超えています。別の画像を選択してください。',
+      'avatar-upload-error-invalid-image-description': '画像の読み込みに失敗しました。別の画像をお試しください。',
       'sign-in-error-title': 'ログインに失敗しました',
       'sign-in-error-description': 'アカウントの初期化に失敗しました。時間をおいて再度お試しください。',
       'upgrade-error-title': 'アップグレードに失敗しました',

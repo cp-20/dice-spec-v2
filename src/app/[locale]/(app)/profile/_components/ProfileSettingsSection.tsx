@@ -12,7 +12,7 @@ import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
-import { uploadAvatarFromFileToStorage } from '@/shared/lib/firebase/storage/avatars';
+import { AvatarPreparationError, uploadAvatarFromFileToStorage } from '@/shared/lib/firebase/storage/avatars';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 
 export const ProfileSettingsSection = () => {
@@ -31,21 +31,35 @@ export const ProfileSettingsSection = () => {
   const dropHandler = useCallback(
     async (file: File) => {
       if (authUser?.uid === undefined) return;
+      setUploading(true);
+
       try {
         const avatarUrl = await uploadAvatarFromFileToStorage(storage, authUser.uid, file);
         await updateAvatarUrl(avatarUrl);
       } catch (err) {
         console.error('Failed to upload avatar', err);
+
+        let description = t('profile:toast.avatar-upload-error-description');
+        if (err instanceof AvatarPreparationError) {
+          if (err.code === 'UNSUPPORTED_FILE_TYPE') {
+            description = t('profile:toast.avatar-upload-error-unsupported-format-description');
+          } else if (err.code === 'FILE_TOO_LARGE_AFTER_COMPRESSION') {
+            description = t('profile:toast.avatar-upload-error-too-large-description');
+          } else if (err.code === 'INVALID_IMAGE') {
+            description = t('profile:toast.avatar-upload-error-invalid-image-description');
+          }
+        }
+
         toast({
           title: t('profile:toast.avatar-upload-error-title'),
-          description: t('profile:toast.avatar-upload-error-description'),
+          description,
           variant: 'destructive',
         });
       } finally {
         setUploading(false);
       }
     },
-    [updateAvatarUrl, authUser?.uid],
+    [authUser?.uid, storage, updateAvatarUrl, toast],
   );
 
   const { containerProps, inputProps } = useDropzone(dropHandler);

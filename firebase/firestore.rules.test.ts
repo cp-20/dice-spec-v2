@@ -740,6 +740,45 @@ describe('Firestore セキュリティルール', () => {
     await assertFails(anonStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
   });
 
+  test('storage/avatars: 所有者は 1MiB 以下の JPEG/PNG/WebP を書き込める', async () => {
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertSucceeds(
+      ownerStorage
+        .ref('avatars/owner/profile.png')
+        .put(new Uint8Array(1 * 1024 * 1024), {
+          contentType: 'image/png',
+        })
+        .then(() => undefined),
+    );
+  });
+
+  test('storage/avatars: 1MiB を超える書き込みは拒否される', async () => {
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertFails(
+      ownerStorage
+        .ref('avatars/owner/too-large.png')
+        .put(new Uint8Array(1 * 1024 * 1024 + 1), {
+          contentType: 'image/png',
+        })
+        .then(() => undefined),
+    );
+  });
+
+  test('storage/avatars: 非対応のファイル形式は拒否される', async () => {
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertFails(
+      ownerStorage
+        .ref('avatars/owner/unsupported.gif')
+        .putString('gif-data', 'raw', {
+          contentType: 'image/gif',
+        })
+        .then(() => undefined),
+    );
+  });
+
   test('storage: avatars と analysis-records の list 操作は拒否される', async () => {
     const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
 
