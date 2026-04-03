@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, describe, setDefaultTimeout, test } from 'bun:test';
+import { describe, test, afterAll, afterEach, beforeAll, setDefaultTimeout, spyOn } from 'bun:test';
 import { type ChildProcessWithoutNullStreams, spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import net from 'node:net';
@@ -24,10 +24,14 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
+import { list as storageList, ref as storageRef } from 'firebase/storage';
 
-const PROJECT_ID = 'demo-dice-spec-v2';
+const PROJECT_ID = 'test-dice-spec-v2';
 const FIRESTORE_EMULATOR_HOST = '127.0.0.1';
 const FIRESTORE_EMULATOR_PORT = 8080;
+const STORAGE_EMULATOR_HOST = '127.0.0.1';
+const STORAGE_EMULATOR_PORT = 9199;
+const STORAGE_BUCKET = `gs://${PROJECT_ID}.appspot.com`;
 
 setDefaultTimeout(60000);
 
@@ -118,14 +122,6 @@ const analysisDoc = (analysisId: string, ownerUid: string, overrides: Record<str
   ...overrides,
 });
 
-const analysisRecordsDoc = (analysisId: string, ownerUid: string, overrides: Record<string, unknown> = {}) => ({
-  analysisId,
-  ownerUid,
-  isPublic: false,
-  characterRecords: [],
-  ...overrides,
-});
-
 type TestFirestore = ReturnType<ReturnType<RulesTestEnvironment['authenticatedContext']>['firestore']>;
 
 const saveAnalysisWithCountSync = async (
@@ -168,24 +164,49 @@ describe('Firestore セキュリティルール', () => {
   let emulatorProcess: ChildProcessWithoutNullStreams | null = null;
   let startedByTest = false;
 
+  const errorSpy = spyOn(console, 'error');
+
   beforeAll(async () => {
-    const alreadyRunning = await isPortOpen(FIRESTORE_EMULATOR_HOST, FIRESTORE_EMULATOR_PORT);
+    errorSpy.mockImplementation(() => {});
+    const firestoreRunning = await isPortOpen(FIRESTORE_EMULATOR_HOST, FIRESTORE_EMULATOR_PORT);
+    const storageRunning = await isPortOpen(STORAGE_EMULATOR_HOST, STORAGE_EMULATOR_PORT);
 
     // assertFails のテスト実行時にもエラーログが出るので、抑制
     setLogLevel('silent');
 
-    if (!alreadyRunning) {
+    if (!firestoreRunning || !storageRunning) {
+      const emulators: string[] = [];
+      if (!firestoreRunning) emulators.push('firestore');
+      if (!storageRunning) emulators.push('storage');
+
       const firebaseCli = resolve(process.cwd(), 'node_modules/.bin/firebase');
       emulatorProcess = spawn(
         firebaseCli,
-        ['emulators:start', '--only', 'firestore', '--project', PROJECT_ID, '--config', 'firebase/firebase.json'],
+        [
+          'emulators:start',
+          '--only',
+          emulators.join(','),
+          '--project',
+          PROJECT_ID,
+          '--config',
+          'firebase/firebase.json',
+        ],
         {
           cwd: process.cwd(),
-          env: { ...process.env, FIRESTORE_EMULATOR_HOST: `${FIRESTORE_EMULATOR_HOST}:${FIRESTORE_EMULATOR_PORT}` },
+          env: {
+            ...process.env,
+            FIRESTORE_EMULATOR_HOST: `${FIRESTORE_EMULATOR_HOST}:${FIRESTORE_EMULATOR_PORT}`,
+            FIREBASE_STORAGE_EMULATOR_HOST: `${STORAGE_EMULATOR_HOST}:${STORAGE_EMULATOR_PORT}`,
+          },
         },
       );
       startedByTest = true;
-      await waitForPortOpen(FIRESTORE_EMULATOR_HOST, FIRESTORE_EMULATOR_PORT, 30000);
+      if (!firestoreRunning) {
+        await waitForPortOpen(FIRESTORE_EMULATOR_HOST, FIRESTORE_EMULATOR_PORT, 30000);
+      }
+      if (!storageRunning) {
+        await waitForPortOpen(STORAGE_EMULATOR_HOST, STORAGE_EMULATOR_PORT, 30000);
+      }
     }
 
     testEnv = await initializeTestEnvironment({
@@ -195,15 +216,23 @@ describe('Firestore セキュリティルール', () => {
         port: FIRESTORE_EMULATOR_PORT,
         rules: readFileSync(resolve(process.cwd(), 'firebase/firestore.rules'), 'utf8'),
       },
+      storage: {
+        host: STORAGE_EMULATOR_HOST,
+        port: STORAGE_EMULATOR_PORT,
+        rules: readFileSync(resolve(process.cwd(), 'firebase/storage.rules'), 'utf8'),
+      },
     });
   });
 
   afterEach(async () => {
     if (!testEnv) return;
     await testEnv.clearFirestore();
+    await testEnv.clearStorage();
   });
 
   afterAll(async () => {
+    errorSpy.mockRestore();
+
     if (testEnv) {
       await testEnv.cleanup();
     }
@@ -410,89 +439,24 @@ describe('Firestore セキュリティルール', () => {
     );
   });
 
-  test('analysisRecords: 所有者は作成・取得でき、他人は private な記録を取得できない', async () => {
+  test('analysisRecords: Firestore コレクションへのアクセスはすべて拒否される', async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/owner'), userDoc());
-      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'owner', { visibilityLevel: 'private' }));
+      await setDoc(doc(adminDb, 'users/owner'), userDoc({ id: 'owner' }));
+      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'owner', { owner: ownerSnapshot({ id: 'owner' }) }));
     });
 
     const ownerDb = testEnv.authenticatedContext('owner').firestore();
-    const otherDb = testEnv.authenticatedContext('other').firestore();
 
-    await assertSucceeds(setDoc(doc(ownerDb, 'analysisRecords/a1'), analysisRecordsDoc('a1', 'owner')));
-    await assertSucceeds(getDoc(doc(ownerDb, 'analysisRecords/a1')));
-    await assertFails(getDoc(doc(otherDb, 'analysisRecords/a1')));
-  });
-
-  test('analysisRecords: 紐づく analysis が public かつ showRecordDetails=true のときだけ公開読み取りできる', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/owner'), userDoc());
-      await setDoc(
-        doc(adminDb, 'analyses/a1'),
-        analysisDoc('a1', 'owner', { visibilityLevel: 'public', showRecordDetails: true }),
-      );
-      await setDoc(doc(adminDb, 'analysisRecords/a1'), analysisRecordsDoc('a1', 'owner', { isPublic: true }));
-    });
-
-    const anonDb = testEnv.unauthenticatedContext().firestore();
-    await assertSucceeds(getDoc(doc(anonDb, 'analysisRecords/a1')));
-  });
-
-  test('analysisRecords: 紐づく analysis が unlisted かつ showRecordDetails=true でも読み取りできる', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/owner'), userDoc());
-      await setDoc(
-        doc(adminDb, 'analyses/a1'),
-        analysisDoc('a1', 'owner', { visibilityLevel: 'unlisted', showRecordDetails: true }),
-      );
-      await setDoc(doc(adminDb, 'analysisRecords/a1'), analysisRecordsDoc('a1', 'owner', { isPublic: true }));
-    });
-
-    const anonDb = testEnv.unauthenticatedContext().firestore();
-    await assertSucceeds(getDoc(doc(anonDb, 'analysisRecords/a1')));
-  });
-
-  test('analysisRecords: 紐づく analysis が unlisted でも showRecordDetails=false なら読み取りできない', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/owner'), userDoc());
-      await setDoc(
-        doc(adminDb, 'analyses/a1'),
-        analysisDoc('a1', 'owner', { visibilityLevel: 'unlisted', showRecordDetails: false }),
-      );
-      await setDoc(doc(adminDb, 'analysisRecords/a1'), analysisRecordsDoc('a1', 'owner', { isPublic: true }));
-    });
-
-    const anonDb = testEnv.unauthenticatedContext().firestore();
-    await assertFails(getDoc(doc(anonDb, 'analysisRecords/a1')));
-  });
-
-  test('analysisRecords: 他人の analysis に対して記録を紐づけて作成できない', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/owner_1'), userDoc());
-      await setDoc(doc(adminDb, 'users/owner_2'), userDoc({ name: 'Bob', stripeCustomerId: 'cus_test_456' }));
-      await setDoc(doc(adminDb, 'analyses/a2'), analysisDoc('a2', 'owner_2'));
-    });
-
-    const owner1Db = testEnv.authenticatedContext('owner_1').firestore();
-
-    await assertFails(setDoc(doc(owner1Db, 'analysisRecords/a2'), analysisRecordsDoc('a2', 'owner_1')));
-  });
-
-  test('analysisRecords: 所有者は自分の記録を削除できる', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/owner'), userDoc());
-      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'owner'));
-      await setDoc(doc(adminDb, 'analysisRecords/a1'), analysisRecordsDoc('a1', 'owner'));
-    });
-
-    const ownerDb = testEnv.authenticatedContext('owner').firestore();
-    await assertSucceeds(deleteDoc(doc(ownerDb, 'analysisRecords/a1')));
+    await assertFails(
+      setDoc(doc(ownerDb, 'analysisRecords/a1'), {
+        analysisId: 'a1',
+        ownerUid: 'owner',
+        isPublic: false,
+      }),
+    );
+    await assertFails(getDoc(doc(ownerDb, 'analysisRecords/a1')));
+    await assertFails(deleteDoc(doc(ownerDb, 'analysisRecords/a1')));
   });
 
   test('users+analyses: name/avatarUrl 更新後に analyses.owner を batch で同期更新できる', async () => {
@@ -656,5 +620,151 @@ describe('Firestore セキュリティルール', () => {
     );
 
     await assertSucceeds(batch.commit());
+  });
+
+  test('storage/analysis-records: 所有者は自分のパスへ JSON を書き込める', async () => {
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertSucceeds(
+      ownerStorage
+        .ref('analysis-records/owner/a1')
+        .putString('{"characterRecords":[]}', 'raw', {
+          contentType: 'application/json; charset=utf-8',
+          customMetadata: {
+            visibilityLevel: 'private',
+            showRecordDetails: 'false',
+          },
+        })
+        .then(() => undefined),
+    );
+  });
+
+  test('storage/analysis-records: 他人のパスへの書き込みは拒否される', async () => {
+    const otherStorage = testEnv.authenticatedContext('other').storage(STORAGE_BUCKET);
+
+    await assertFails(
+      otherStorage
+        .ref('analysis-records/owner/a1')
+        .putString('{"characterRecords":[]}', 'raw', {
+          contentType: 'application/json; charset=utf-8',
+          customMetadata: {
+            visibilityLevel: 'private',
+            showRecordDetails: 'false',
+          },
+        })
+        .then(() => undefined),
+    );
+  });
+
+  test('storage/analysis-records: metadata に visibilityLevel=public + showRecordDetails=true が埋め込まれている場合、他ユーザーも読み取りできる', async () => {
+    const analysisId = 'storage_public_detail_true';
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertSucceeds(
+      ownerStorage
+        .ref(`analysis-records/owner/${analysisId}`)
+        .putString('{"characterRecords":[]}', 'raw', {
+          contentType: 'application/json; charset=utf-8',
+          customMetadata: {
+            visibilityLevel: 'public',
+            showRecordDetails: 'true',
+          },
+        })
+        .then(() => undefined),
+    );
+
+    const otherStorage = testEnv.authenticatedContext('other').storage(STORAGE_BUCKET);
+    await assertSucceeds(otherStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
+  });
+
+  test('storage/analysis-records: metadata に visibilityLevel=public + showRecordDetails=false が埋め込まれている場合、他ユーザーは読み取りできない', async () => {
+    const analysisId = 'storage_public_detail_false';
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertSucceeds(
+      ownerStorage
+        .ref(`analysis-records/owner/${analysisId}`)
+        .putString('{"characterRecords":[]}', 'raw', {
+          contentType: 'application/json; charset=utf-8',
+          customMetadata: {
+            visibilityLevel: 'public',
+            showRecordDetails: 'false',
+          },
+        })
+        .then(() => undefined),
+    );
+
+    const anonStorage = testEnv.unauthenticatedContext().storage(STORAGE_BUCKET);
+    await assertFails(anonStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
+  });
+
+  test('storage/analysis-records: metadata に visibilityLevel=unlisted + showRecordDetails=true が埋め込まれている場合、他ユーザーも読み取りできる', async () => {
+    const analysisId = 'storage_unlisted_detail_true';
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertSucceeds(
+      ownerStorage
+        .ref(`analysis-records/owner/${analysisId}`)
+        .putString('{"characterRecords":[]}', 'raw', {
+          contentType: 'application/json; charset=utf-8',
+          customMetadata: {
+            visibilityLevel: 'unlisted',
+            showRecordDetails: 'true',
+          },
+        })
+        .then(() => undefined),
+    );
+
+    const otherStorage = testEnv.authenticatedContext('other').storage(STORAGE_BUCKET);
+    await assertSucceeds(otherStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
+  });
+
+  test('storage/analysis-records: metadata に visibilityLevel=private + showRecordDetails=true が埋め込まれている場合、他ユーザーは読み取りできない', async () => {
+    const analysisId = 'storage_private_detail_true';
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertSucceeds(
+      ownerStorage
+        .ref(`analysis-records/owner/${analysisId}`)
+        .putString('{"characterRecords":[]}', 'raw', {
+          contentType: 'application/json; charset=utf-8',
+          customMetadata: {
+            visibilityLevel: 'private',
+            showRecordDetails: 'true',
+          },
+        })
+        .then(() => undefined),
+    );
+
+    const anonStorage = testEnv.unauthenticatedContext().storage(STORAGE_BUCKET);
+    await assertFails(anonStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
+  });
+
+  test('storage: avatars と analysis-records の list 操作は拒否される', async () => {
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertSucceeds(
+      ownerStorage
+        .ref('avatars/owner')
+        .putString('avatar', 'raw', {
+          contentType: 'image/png',
+        })
+        .then(() => undefined),
+    );
+    await assertSucceeds(
+      ownerStorage
+        .ref('analysis-records/owner/a1')
+        .putString('{"characterRecords":[]}', 'raw', {
+          contentType: 'application/json; charset=utf-8',
+          customMetadata: {
+            visibilityLevel: 'private',
+            showRecordDetails: 'false',
+          },
+        })
+        .then(() => undefined),
+    );
+
+    await assertFails(storageList(storageRef(ownerStorage, 'avatars')));
+    await assertFails(storageList(storageRef(ownerStorage, 'analysis-records/owner')));
   });
 });

@@ -1,0 +1,16 @@
+{
+  "projects": {},
+  "targets": {
+    "dicespec-fd392": {
+      "storage": {
+        "dice-spec-v2": [
+          "dice-spec-v2"
+        ],
+        "dice-spec-v2-dev": [
+          "dice-spec-v2-dev"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

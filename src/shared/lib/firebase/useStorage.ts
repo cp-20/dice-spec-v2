@@ -1,34 +1,8 @@
-import { type FirebaseStorage, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { storagePaths } from './storage/paths';
+import { uploadBufferFromUrlToStorage, uploadBufferToStorage } from './storage/upload';
 
-export const storagePaths = {
-  getAvatarPath: (uid: string) => `avatars/${uid}`,
-};
-
-export const uploadBufferToStorage = async (
-  storage: FirebaseStorage,
-  path: string,
-  content: ArrayBuffer,
-): Promise<string> => {
-  const storageRef = ref(storage, path);
-  const result = await uploadBytes(storageRef, content);
-  const downloadUrl = await getDownloadURL(result.ref);
-  return downloadUrl;
-};
-
-export const uploadBufferFromUrlToStorage = async (
-  storage: FirebaseStorage,
-  path: string,
-  sourceUrl: string,
-): Promise<string> => {
-  const response = await fetch(sourceUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch avatar image: ${response.status}`);
-  }
-
-  const buffer = await response.arrayBuffer();
-  return uploadBufferToStorage(storage, path, buffer);
-};
+export { storagePaths, uploadBufferFromUrlToStorage, uploadBufferToStorage };
 
 export const useStorage = () => {
   const { storage } = useFirebase();

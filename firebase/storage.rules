@@ -1,0 +1,40 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function canReadAnalysisRecords(ownerUid) {
+      let isOwner = isSelf(ownerUid);
+      let metadata = resource.metadata;
+      let visibilityLevel = metadata.visibilityLevel;
+      let showRecordDetails = metadata.showRecordDetails;
+      let isPublicOrUnlisted = (visibilityLevel == 'public' || visibilityLevel == 'unlisted') && (showRecordDetails == 'true' || showRecordDetails == true);
+
+      return isOwner || isPublicOrUnlisted;
+    }
+
+    match /avatars/{uid} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isSelf(uid);
+    }
+
+    match /analysis-records/{ownerUid}/{analysisId} {
+      allow get: if canReadAnalysisRecords(ownerUid);
+      allow list: if false;
+      allow write: if isSelf(ownerUid)
+        && request.resource.size < 50 * 1024 * 1024
+        && request.resource.contentType.matches('application/json.*');
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

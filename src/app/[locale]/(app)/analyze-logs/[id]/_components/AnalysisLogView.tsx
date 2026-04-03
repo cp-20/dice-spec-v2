@@ -11,9 +11,15 @@ export const AnalysisRecordsView: FC = () => {
 
   if (!canViewRecords) {
     return (
-      <ContainerSection label={t('analyze-logs:log')}>
-        <div className="text-sm text-slate-500">{t('analyze-logs:detail.records-owner-only')}</div>
-      </ContainerSection>
+      <div className="space-y-4">
+        <ContainerSection label={t('analyze-logs:skill-summary.label')}>
+          <div className="text-sm text-slate-500">{t('analyze-logs:detail.records-owner-only')}</div>
+        </ContainerSection>
+
+        <ContainerSection label={t('analyze-logs:log')}>
+          <div className="text-sm text-slate-500">{t('analyze-logs:detail.records-owner-only')}</div>
+        </ContainerSection>
+      </div>
     );
   }
 

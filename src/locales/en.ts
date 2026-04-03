@@ -154,7 +154,7 @@ export const en = {
       edit: 'Edit',
       delete: 'Delete',
       private: 'This analysis is private.',
-      'records-owner-only': 'Only the owner can view these logs.',
+      'records-owner-only': 'This section is private.',
       'no-logs': 'No logs were saved.',
     },
     'edit-dialog': {

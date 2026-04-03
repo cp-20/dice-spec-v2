@@ -173,27 +173,6 @@ service cloud.firestore {
         && isValidPublicOwnerByUserDoc(request.resource.data.owner, request.resource.data.ownerUid);
     }
 
-    function isValidAnalysisRecordsDocument(data, analysisId) {
-      return hasOnlyKeys(data, ['analysisId', 'ownerUid', 'isPublic', 'characterRecords'])
-        && data.analysisId is string
-        && data.analysisId == analysisId
-        && data.ownerUid is string
-        && data.isPublic is bool
-        && data.characterRecords is list;
-    }
-
-    function analysisRefById(analysisId) {
-      return /databases/$(database)/documents/analyses/$(analysisId);
-    }
-
-    function linkedAnalysis(analysisId) {
-      return get(analysisRefById(analysisId));
-    }
-
-    function linkedAnalysisAfter(analysisId) {
-      return getAfter(analysisRefById(analysisId));
-    }
-
     function linkedUser(uid) {
       return get(/databases/$(database)/documents/users/$(uid));
     }
@@ -237,18 +216,6 @@ service cloud.firestore {
         );
     }
 
-    function canReadAnalysisRecordsByAnalysisDoc(analysisId) {
-      let analysis = linkedAnalysis(analysisId);
-      return analysis.data != null
-        && (
-          (isSignedIn() && analysis.data.ownerUid == request.auth.uid)
-          || (
-            (analysis.data.visibilityLevel == 'public' || analysis.data.visibilityLevel == 'unlisted')
-            && analysis.data.showRecordDetails == true
-          )
-        );
-    }
-
     match /users/{userId} {
       allow get: if isSelf(userId);
       allow list: if false;
@@ -282,26 +249,6 @@ service cloud.firestore {
 
       allow delete: if isAnalysisOwnerByResource()
         && isAnalysisCountDecrementSynced(request.auth.uid, analysisId);
-    }
-
-    match /analysisRecords/{analysisId} {
-      allow get: if canReadAnalysisRecordsByAnalysisDoc(analysisId);
-      allow list: if false;
-
-      allow create: if isSignedIn()
-        && isValidAnalysisRecordsDocument(request.resource.data, analysisId)
-        && request.resource.data.ownerUid == request.auth.uid
-        && linkedAnalysisAfter(analysisId).data != null
-        && linkedAnalysisAfter(analysisId).data.ownerUid == request.auth.uid;
-
-      allow update: if isSignedIn()
-        && isValidAnalysisRecordsDocument(request.resource.data, analysisId)
-        && resource.data.ownerUid == request.auth.uid
-        && request.resource.data.ownerUid == request.auth.uid
-        && linkedAnalysisAfter(analysisId).data != null
-        && linkedAnalysisAfter(analysisId).data.ownerUid == request.auth.uid;
-
-      allow delete: if isSignedIn() && resource.data.ownerUid == request.auth.uid;
     }
 
     match /{document=**} {

@@ -1,19 +1,27 @@
 import {
   collection,
   doc,
+  getDoc,
   increment,
-  runTransaction,
   serverTimestamp,
   type Timestamp,
+  updateDoc,
   writeBatch,
 } from 'firebase/firestore';
 import { useCallback, useState } from 'react';
+import * as v from 'valibot';
 import { ALL_CHARACTER_ID } from '@/app/[locale]/(app)/analyze-logs/_components/constants';
 import type { DiceResultForCharacter } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/ccfoliaLogAnalysis';
+import {
+  deleteAnalysisRecordsFromStorage,
+  updateAnalysisRecordsMetadataInStorage,
+  uploadAnalysisRecordsToStorage,
+} from '@/shared/lib/firebase/storage/analysisRecords';
+import { storagePaths } from '@/shared/lib/firebase/storage/paths';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 import {
-  type AnalysisRecordsDocument,
+  analysesStoreSchema,
   type AnalysisVisibilityLevel,
   COLLECTIONS,
   type NewAnalysisDocument,
@@ -27,7 +35,7 @@ export type SaveAnalysisPayload = Omit<
 };
 
 export const useSaveAnalysis = () => {
-  const { firestore } = useFirebase();
+  const { firestore, storage } = useFirebase();
   const [saving, setSaving] = useState(false);
 
   const saveAnalysis = useCallback(
@@ -64,19 +72,23 @@ export const useSaveAnalysis = () => {
 
         batch.set(newDoc, newDocData);
 
-        const analysisRecordsRef = doc(firestore, COLLECTIONS.analysisRecords, newDoc.id);
-
-        const newAnalysisRecords: AnalysisRecordsDocument = {
-          analysisId: newDoc.id,
-          ownerUid: payload.ownerUid,
-          isPublic: payload.visibilityLevel !== 'private' && payload.showRecordDetails,
+        const analysisRecordsContent = {
           characterRecords: payload.characterResults.map((result) => ({
             characterId: result.id,
             records: result.results,
           })),
         };
 
-        batch.set(analysisRecordsRef, newAnalysisRecords);
+        const storagePath = await uploadAnalysisRecordsToStorage(
+          storage,
+          payload.ownerUid,
+          newDoc.id,
+          analysisRecordsContent,
+          {
+            visibilityLevel: payload.visibilityLevel,
+            showRecordDetails: payload.showRecordDetails,
+          },
+        );
 
         const userRef = doc(firestore, COLLECTIONS.users, payload.ownerUid);
         batch.set(
@@ -89,14 +101,20 @@ export const useSaveAnalysis = () => {
           { merge: true },
         );
 
-        await batch.commit();
+        try {
+          await batch.commit();
+        } catch (error) {
+          // なるべく storage と firestore で同期を取る
+          await deleteAnalysisRecordsFromStorage(storage, storagePath).catch(() => undefined);
+          throw error;
+        }
 
         return newDoc.id;
       } finally {
         setSaving(false);
       }
     },
-    [firestore],
+    [firestore, storage],
   );
 
   return { saveAnalysis, saving };
@@ -110,7 +128,7 @@ export type UpdateAnalysisPayload = Partial<{
 }>;
 
 export const useUpdateAnalysis = () => {
-  const { firestore } = useFirebase();
+  const { firestore, storage } = useFirebase();
   const [updating, setUpdating] = useState(false);
 
   const updateAnalysis = useCallback(
@@ -118,58 +136,55 @@ export const useUpdateAnalysis = () => {
       setUpdating(true);
       try {
         const analysisRef = doc(firestore, COLLECTIONS.analyses, id);
-        const analysisRecordsRef = doc(firestore, COLLECTIONS.analysisRecords, id);
+        const shouldSyncStorageMetadata =
+          updates.visibilityLevel !== undefined || updates.showRecordDetails !== undefined;
 
-        await runTransaction(firestore, async (transaction) => {
-          const hasVisibilityLevel = updates.visibilityLevel !== undefined;
-          const hasShowRecordDetails = updates.showRecordDetails !== undefined;
-
-          let visibilityLevel = updates.visibilityLevel;
-          let showRecordDetails = updates.showRecordDetails;
-
-          if (!hasVisibilityLevel || !hasShowRecordDetails) {
-            const analysisSnapshot = await transaction.get(analysisRef);
-            if (!analysisSnapshot.exists()) {
-              throw new Error('Analysis not found');
-            }
-
-            const currentAnalysis = analysisSnapshot.data() as Pick<
-              NewAnalysisDocument,
-              'visibilityLevel' | 'showRecordDetails'
-            >;
-
-            if (!hasVisibilityLevel) {
-              visibilityLevel = currentAnalysis.visibilityLevel;
-            }
-
-            if (!hasShowRecordDetails) {
-              showRecordDetails = currentAnalysis.showRecordDetails;
-            }
-          }
-
-          const newIsPublic = visibilityLevel !== 'private' && Boolean(showRecordDetails);
-
-          transaction.update(analysisRef, {
+        if (!shouldSyncStorageMetadata) {
+          await updateDoc(analysisRef, {
             ...updates,
             updatedAt: serverTimestamp(),
           });
+          return;
+        }
 
-          transaction.update(analysisRecordsRef, {
-            isPublic: newIsPublic,
+        const beforeSnap = await getDoc(analysisRef);
+        if (!beforeSnap.exists()) {
+          throw new Error('Analysis not found');
+        }
+        const beforeAnalysis = v.parse(analysesStoreSchema, beforeSnap.data({ serverTimestamps: 'estimate' }));
+        const previousMetadata = {
+          visibilityLevel: beforeAnalysis.visibilityLevel,
+          showRecordDetails: beforeAnalysis.showRecordDetails,
+        };
+        const nextMetadata = {
+          visibilityLevel: updates.visibilityLevel ?? previousMetadata.visibilityLevel,
+          showRecordDetails: updates.showRecordDetails ?? previousMetadata.showRecordDetails,
+        };
+
+        const storagePath = storagePaths.getAnalysisRecordsPath(beforeAnalysis.ownerUid, id);
+        await updateAnalysisRecordsMetadataInStorage(storage, storagePath, nextMetadata);
+
+        try {
+          await updateDoc(analysisRef, {
+            ...updates,
+            updatedAt: serverTimestamp(),
           });
-        });
+        } catch (error) {
+          await updateAnalysisRecordsMetadataInStorage(storage, storagePath, previousMetadata).catch(() => undefined);
+          throw error;
+        }
       } finally {
         setUpdating(false);
       }
     },
-    [firestore],
+    [firestore, storage],
   );
 
   return { updateAnalysis, updating };
 };
 
 export const useDeleteAnalysis = () => {
-  const { firestore } = useFirebase();
+  const { firestore, storage } = useFirebase();
   const { authUser } = useFirebaseAuth();
   const [deleting, setDeleting] = useState(false);
 
@@ -182,8 +197,6 @@ export const useDeleteAnalysis = () => {
         const batch = writeBatch(firestore);
         const analysisRef = doc(firestore, COLLECTIONS.analyses, id);
         batch.delete(analysisRef);
-        const analysisRecordsRef = doc(firestore, COLLECTIONS.analysisRecords, id);
-        batch.delete(analysisRecordsRef);
 
         const userRef = doc(firestore, COLLECTIONS.users, authUser.uid);
         batch.set(
@@ -197,11 +210,14 @@ export const useDeleteAnalysis = () => {
         );
 
         await batch.commit();
+
+        const storagePath = storagePaths.getAnalysisRecordsPath(authUser.uid, id);
+        await deleteAnalysisRecordsFromStorage(storage, storagePath).catch(() => undefined);
       } finally {
         setDeleting(false);
       }
     },
-    [authUser, firestore],
+    [authUser, firestore, storage],
   );
 
   return { deleteAnalysis, deleting };

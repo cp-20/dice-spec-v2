@@ -155,7 +155,7 @@ export const ja = {
       edit: '編集',
       delete: '削除',
       private: 'この解析は非公開です',
-      'records-owner-only': 'このログは所有者のみ閲覧できます',
+      'records-owner-only': '非公開になっています',
       'no-logs': 'ログは保存されていません',
     },
     'edit-dialog': {

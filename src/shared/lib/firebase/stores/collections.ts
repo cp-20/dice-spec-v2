@@ -9,7 +9,6 @@ import type { MessageParserResult } from '@/app/[locale]/(app)/analyze-logs/_com
 export const COLLECTIONS = {
   users: 'users',
   analyses: 'analyses',
-  analysisRecords: 'analysisRecords',
 } as const;
 
 // userStore
@@ -116,17 +115,14 @@ const _testAnalysisResultsType: AssertEqual<
   Omit<DiceResultForCharacter, 'results'> & { summaryRecords: MessageParserResult[] }
 > = true;
 
-// analysisRecordsStore
+// analysisRecordsStore (実体は storage に保管される)
 
 const characterResultRecordSchema = v.object({
   ...characterResultSummaryRecordSchema.entries,
   fullStr: v.string(),
 });
 
-export const analysisRecordsSchema = v.object({
-  analysisId: v.string(),
-  ownerUid: v.string(),
-  isPublic: v.boolean(),
+export const analysisRecordsContentSchema = v.object({
   characterRecords: v.array(
     v.object({
       characterId: v.string(),
@@ -135,9 +131,9 @@ export const analysisRecordsSchema = v.object({
   ),
 });
 
-export type AnalysisRecordsDocument = v.InferOutput<typeof analysisRecordsSchema>;
+export type AnalysisRecordsDocument = v.InferOutput<typeof analysisRecordsContentSchema>;
 
 const _testAnalysisRecordType: AssertEqual<
-  v.InferOutput<typeof analysisRecordsSchema>['characterRecords'][number]['records'][number],
+  v.InferOutput<typeof analysisRecordsContentSchema>['characterRecords'][number]['records'][number],
   DiceResultForCharacter['results'][number]
 > = true;

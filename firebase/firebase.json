@@ -4,5 +4,9 @@
     "location": "asia-northeast1",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "target": "dice-spec-v2",
+    "rules": "storage.rules"
   }
 }
