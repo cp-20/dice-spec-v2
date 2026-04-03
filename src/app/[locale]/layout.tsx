@@ -16,14 +16,14 @@ const RootLayout: FC<{ children: ReactNode; locale: string }> = ({ children, loc
   return (
     <I18nProvider>
       <html lang={locale} className="h-full">
-        <body className={clsx('h-full text-slate-700 font-(family-name:--font-main)')}>
+        <body className={clsx('h-full flex flex-col text-slate-700 font-(family-name:--font-main)')}>
           <GoogleTagManager />
           <WebVitals />
           <Next13NProgress color="#334155" options={{ showSpinner: false }} />
 
           {isOldApp ? <OldAppMigrationAnnouncementBanner /> : <MigrationAnnouncementBanner />}
 
-          {children}
+          <div className="flex-1">{children}</div>
         </body>
       </html>
     </I18nProvider>
