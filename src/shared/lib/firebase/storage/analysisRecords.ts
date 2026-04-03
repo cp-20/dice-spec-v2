@@ -23,7 +23,7 @@ export const uploadAnalysisRecordsToStorage = async (
   metadata: AnalysisRecordsMetadata,
 ) => {
   const storagePath = storagePaths.getAnalysisRecordsPath(ownerUid, analysisId);
-  await uploadTextToStorage(storage, storagePath, JSON.stringify(content), 'application/json; charset=utf-8', {
+  await uploadTextToStorage(storage, storagePath, JSON.stringify(content), {
     customMetadata: {
       visibilityLevel: metadata.visibilityLevel,
       showRecordDetails: String(metadata.showRecordDetails),

@@ -19,10 +19,20 @@ service firebase.storage {
       return isOwner || isPublicOrUnlisted;
     }
 
-    match /avatars/{uid} {
+    match /avatars/{uid}/{allPaths=**} {
       allow get: if true;
       allow list: if false;
-      allow write: if isSelf(uid);
+      allow write: if isSelf(uid)
+        && request.resource.size < 1 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    match /shared-images/{scope}/{imageId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if request.resource.size < 1 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow update, delete: if false;
     }
 
     match /analysis-records/{ownerUid}/{analysisId} {

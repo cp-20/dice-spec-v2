@@ -1,13 +1,13 @@
 import {
   deleteObject,
   type FirebaseStorage,
-  getDownloadURL,
   getBytes,
   ref,
   type SettableMetadata,
   updateMetadata,
   uploadBytes,
   uploadString,
+  UploadResult,
 } from 'firebase/storage';
 
 export const uploadBufferToStorage = async (
@@ -15,11 +15,35 @@ export const uploadBufferToStorage = async (
   path: string,
   content: ArrayBuffer,
   metadata?: SettableMetadata,
-): Promise<string> => {
+): Promise<UploadResult> => {
   const storageRef = ref(storage, path);
   const result = await uploadBytes(storageRef, content, metadata);
-  const downloadUrl = await getDownloadURL(result.ref);
-  return downloadUrl;
+  return result;
+};
+
+export const uploadDataUrlToStorage = async (
+  storage: FirebaseStorage,
+  path: string,
+  dataUrl: string,
+  metadata?: SettableMetadata,
+): Promise<UploadResult> => {
+  const storageRef = ref(storage, path);
+  const result = await uploadString(storageRef, dataUrl, 'data_url', metadata);
+  return result;
+};
+
+export const uploadTextToStorage = async (
+  storage: FirebaseStorage,
+  path: string,
+  content: string,
+  metadata?: SettableMetadata,
+): Promise<UploadResult> => {
+  const storageRef = ref(storage, path);
+  const result = await uploadString(storageRef, content, 'raw', {
+    contentType: 'text/plain; charset=utf-8',
+    ...metadata,
+  });
+  return result;
 };
 
 export const uploadBufferFromUrlToStorage = async (
@@ -27,25 +51,20 @@ export const uploadBufferFromUrlToStorage = async (
   path: string,
   sourceUrl: string,
   metadata?: SettableMetadata,
-): Promise<string> => {
+): Promise<UploadResult> => {
   const response = await fetch(sourceUrl);
   if (!response.ok) {
-    throw new Error(`Failed to fetch avatar image: ${response.status}`);
+    throw new Error(`Failed to fetch buffer: ${response.status}`);
   }
 
   const buffer = await response.arrayBuffer();
-  return uploadBufferToStorage(storage, path, buffer, metadata);
-};
+  const metadataWithContentType = {
+    contentType: response.headers.get('Content-Type') || undefined,
+    ...metadata,
+  };
+  const result = await uploadBufferToStorage(storage, path, buffer, metadataWithContentType);
 
-export const uploadTextToStorage = async (
-  storage: FirebaseStorage,
-  path: string,
-  content: string,
-  contentType = 'text/plain; charset=utf-8',
-  metadata?: SettableMetadata,
-) => {
-  const storageRef = ref(storage, path);
-  await uploadString(storageRef, content, 'raw', { ...metadata, contentType });
+  return result;
 };
 
 export const downloadTextFromStorage = async (storage: FirebaseStorage, path: string): Promise<string> => {

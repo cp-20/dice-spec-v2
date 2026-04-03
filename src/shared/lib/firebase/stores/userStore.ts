@@ -9,9 +9,9 @@ import { createCustomer } from '@/features/stripe/api';
 import { toast } from '@/shared/components/ui/use-toast';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { authUserAtom, authUserLoadingAtom, useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
-import { storagePaths, uploadBufferFromUrlToStorage } from '@/shared/lib/firebase/useStorage';
 import { myAnalysesAtom } from './analyses/userAnalyses';
 import { COLLECTIONS, type NewUserDocument, type PublicUser, type UserDocument, userStoreSchema } from './collections';
+import { uploadAvatarFromUrlToStorage } from '../storage/avatars';
 
 const internalMeLoadingAtom = atom(true);
 
@@ -41,13 +41,9 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
         let avatarUrl: string | undefined;
         if (authUser.photoURL) {
           try {
-            avatarUrl = await uploadBufferFromUrlToStorage(
-              storage,
-              storagePaths.getAvatarPath(authUser.uid),
-              authUser.photoURL,
-            );
-          } catch (uploadError) {
-            console.error('Failed to upload Google avatar to Storage:', uploadError);
+            avatarUrl = await uploadAvatarFromUrlToStorage(storage, authUser.uid, authUser.photoURL);
+          } catch (err) {
+            console.error('Failed to upload Google avatar to Storage:', err);
           }
         }
 

@@ -12,15 +12,16 @@ import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
-import { storagePaths, useStorage } from '@/shared/lib/firebase/useStorage';
+import { uploadAvatarFromFileToStorage } from '@/shared/lib/firebase/storage/avatars';
+import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 
 export const ProfileSettingsSection = () => {
+  const { storage } = useFirebase();
   const { authUser } = useFirebaseAuth();
   const { me, updateName, updateAvatarUrl } = useMeStore();
   const [displayName, setDisplayName] = useState('');
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
-  const { uploadBuffer } = useStorage();
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -28,32 +29,23 @@ export const ProfileSettingsSection = () => {
   }, [me?.name]);
 
   const dropHandler = useCallback(
-    (file: File) => {
+    async (file: File) => {
       if (authUser?.uid === undefined) return;
-      const reader = new FileReader();
-      reader.addEventListener('load', async (e) => {
-        if (e.target?.result) {
-          const buffer = e.target.result;
-          if (!(buffer instanceof ArrayBuffer)) return;
-          setUploading(true);
-          try {
-            const url = await uploadBuffer(storagePaths.getAvatarPath(authUser?.uid), buffer);
-            await updateAvatarUrl(url);
-          } catch (err) {
-            console.error('Failed to upload avatar', err);
-            toast({
-              title: t('profile:toast.avatar-upload-error-title'),
-              description: t('profile:toast.avatar-upload-error-description'),
-              variant: 'destructive',
-            });
-          } finally {
-            setUploading(false);
-          }
-        }
-      });
-      reader.readAsArrayBuffer(file);
+      try {
+        const avatarUrl = await uploadAvatarFromFileToStorage(storage, authUser.uid, file);
+        await updateAvatarUrl(avatarUrl);
+      } catch (err) {
+        console.error('Failed to upload avatar', err);
+        toast({
+          title: t('profile:toast.avatar-upload-error-title'),
+          description: t('profile:toast.avatar-upload-error-description'),
+          variant: 'destructive',
+        });
+      } finally {
+        setUploading(false);
+      }
     },
-    [updateAvatarUrl, uploadBuffer, authUser?.uid],
+    [updateAvatarUrl, authUser?.uid],
   );
 
   const { containerProps, inputProps } = useDropzone(dropHandler);

@@ -2,8 +2,7 @@ import type { FirebaseOptions } from 'firebase/app';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getDownloadURL, getStorage, ref, uploadString } from 'firebase/storage';
-import { nanoid } from 'nanoid';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -25,15 +24,5 @@ export const useFirebase = () => {
   const firestore = getFirestore(app, databaseId);
   const storage = getStorage(app);
 
-  const uploadImage = async (url: string) => {
-    const imagePath = `${nanoid(32)}.png`;
-
-    const storageRef = ref(storage, imagePath);
-    const snapshot = await uploadString(storageRef, url, 'data_url');
-    const imageUrl = await getDownloadURL(snapshot.ref);
-
-    return imageUrl;
-  };
-
-  return { app, auth, firestore, storage, uploadImage };
+  return { app, auth, firestore, storage };
 };

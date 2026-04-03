@@ -1,7 +1,9 @@
 import { t } from 'i18next';
+import { nanoid } from 'nanoid';
 import { useAtomValue } from 'jotai';
 import { useCallback, useTransition } from 'react';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { uploadSharedImageToStorage } from '@/shared/lib/firebase/storage/sharedImages';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
@@ -10,7 +12,7 @@ import { sharingImageDataUrlAtom } from './useShareAnalysisResult';
 
 export const useShareAnalysisResultImage = () => {
   const [isSharingImage, startTransition] = useTransition();
-  const { uploadImage } = useFirebase();
+  const { storage } = useFirebase();
   const { character } = useCharacterSelect();
   const result = useCharacterLogAnalysis(character);
   const sharingImageDataUrl = useAtomValue(sharingImageDataUrlAtom);
@@ -43,7 +45,8 @@ export const useShareAnalysisResultImage = () => {
 
     startTransition(async () => {
       try {
-        const imageUrl = await uploadImage(sharingImageDataUrl);
+        const imageId = nanoid(32);
+        const imageUrl = await uploadSharedImageToStorage(storage, 'analyze-logs', imageId, sharingImageDataUrl);
         sendEvent('shareImage', imageUrl);
         const ogp = encodeURIComponent(imageUrl);
         const url = encodeURIComponent(`https://dicespec.app/analyze-logs?ogp=${ogp}`);
@@ -54,7 +57,7 @@ export const useShareAnalysisResultImage = () => {
         console.error(err);
       }
     });
-  }, [result, sendEvent, uploadImage, sharingImageDataUrl]);
+  }, [result, sendEvent, sharingImageDataUrl, storage]);
 
   return { isSharingImage, shareImage };
 };
