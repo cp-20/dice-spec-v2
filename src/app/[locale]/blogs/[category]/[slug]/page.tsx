@@ -53,7 +53,13 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         <BlogBreadCrumb category={category} slug={slug} />
       </div>
       <div className="relative w-full aspect-1200/630 mb-8 border border-slate-50">
-        <Image src={`/assets/blog-images/og/${category}/${slug}.png`} alt="" fill objectFit="contain" />
+        <Image
+          src={`/assets/blog-images/og/${category}/${slug}.png`}
+          alt=""
+          fill
+          sizes="(max-width: 768px) calc(100vw - 2rem), 672px"
+          objectFit="contain"
+        />
       </div>
       <div className="text-slate-500 flex flex-col gap-1 items-end mb-8">
         <div>投稿日: {article.isPublished ? formatDate(article.publishedAt) : '未公開'}</div>

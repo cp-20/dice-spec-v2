@@ -18,7 +18,7 @@ export const BlogLink: React.FC<Props> = ({ category, slug }) => {
     return (
       <div className="w-full flex flex-col border rounded-md overflow-hidden">
         <div className="w-full aspect-1200/630 relative">
-          <Image src={`/assets/blog-images/og/${category}/${slug}.png`} alt={article.title} fill />
+          <Image src={`/assets/blog-images/og/${category}/${slug}.png`} alt={article.title} fill sizes="100vw" />
         </div>
         <div className="flex justify-end items-center px-4 py-2 bg-slate-50">
           <span className="text-gray-600 font-semibold flex items-center gap-1">
@@ -35,7 +35,7 @@ export const BlogLink: React.FC<Props> = ({ category, slug }) => {
       className="w-full flex flex-col border rounded-md overflow-hidden group hover:opacity-70 transition"
     >
       <div className="w-full aspect-1200/630 relative">
-        <Image src={`/assets/blog-images/og/${category}/${slug}.png`} alt={article.title} fill />
+        <Image src={`/assets/blog-images/og/${category}/${slug}.png`} alt={article.title} fill sizes="100vw" />
       </div>
       <div className="flex justify-end items-center px-4 py-2 bg-slate-50">
         <span className="text-blue-600 font-semibold group-hover:underline flex items-center gap-1">
