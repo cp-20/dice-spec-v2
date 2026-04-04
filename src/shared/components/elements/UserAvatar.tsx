@@ -42,7 +42,7 @@ const PresentationalUserAvatar: FC<PresentationalUserAvatarProps> = ({ avatarUrl
       style={{ width: size, height: size }}
     >
       {avatarUrl ? (
-        // biome-ignore lint/performance/noImgElement: external image
+        // oxlint-disable-next-line nextjs/no-img-element 外部URLの画像を表示するため、imgタグを使用 (そしてアップロード時に圧縮されているはず)
         <img src={avatarUrl} alt="" className="size-full object-cover" width={size * 4} height={size * 4} />
       ) : (
         <div className="flex size-full items-center justify-center bg-slate-200">
