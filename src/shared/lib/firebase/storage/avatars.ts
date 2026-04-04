@@ -127,6 +127,12 @@ export const uploadAvatarFromUrlToStorage = async (
 ): Promise<string> => {
   const path = storagePaths.getAvatarPath(uid);
   const res = await fetch(imageUrl);
+  if (!res.ok) {
+    throw new AvatarPreparationError(
+      'INVALID_IMAGE',
+      `Failed to fetch image from URL: ${res.status} ${res.statusText}`,
+    );
+  }
   const blob = await res.blob();
   const file = new File([blob], 'avatar', { type: blob.type });
   const preparedFile = await prepareAvatarFileForUpload(file);
