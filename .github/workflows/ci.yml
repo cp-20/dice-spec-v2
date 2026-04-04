@@ -13,7 +13,7 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup
 
       - run: bun run lint
       - run: bun run stylelint
@@ -22,13 +22,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup
       - run: bun test
 
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/setup-bun
+      - uses: ./.github/actions/setup
       - run: |
           NEXT_PUBLIC_FIREBASE_API_KEY=dummy \
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=dummy \
