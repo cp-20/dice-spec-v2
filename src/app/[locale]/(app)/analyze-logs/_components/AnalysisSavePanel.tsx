@@ -195,7 +195,7 @@ export const AnalysisSavePanel: FC = () => {
                 <p className="text-sm font-semibold text-blue-800">{t('analyze-logs:save.limit-reached-message')}</p>
                 <p className="text-xs text-blue-800">{t('analyze-logs:save.upgrade-to-pro')}</p>
               </div>
-              <CustomLink href="/profile">
+              <CustomLink href={t('link', { href: '/profile' })}>
                 <Button
                   variant="default"
                   className="w-full border border-blue-400 bg-blue-100 text-blue-700 hover:border-blue-500 hover:bg-blue-200 hover:text-blue-800"
