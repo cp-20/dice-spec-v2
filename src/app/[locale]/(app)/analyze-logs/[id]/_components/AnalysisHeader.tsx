@@ -31,46 +31,42 @@ export const AnalysisHeader: FC = () => {
           </span>
         </CustomLink>
       </div>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 space-y-2">
-          {loading ? (
+      <div className="flex items-center justify-between gap-4">
+        {loading ? (
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-10 w-3/4" />
+            <Skeleton className="h-5 w-1/2" />
+          </div>
+        ) : (
+          analysis && (
             <>
-              <Skeleton className="h-10 w-3/4" />
-              <Skeleton className="h-5 w-1/2" />
-            </>
-          ) : (
-            <>
-              <PageTitle icon={IconTimeline}>{analysis?.title}</PageTitle>
-              <div className="text-sm text-slate-600">
-                {systemName}
-                {analysis?.visibilityLevel === 'public' && analysis?.owner?.name && (
-                  <span className="ml-2 text-sm text-slate-600">• {analysis.owner.name}</span>
-                )}
+              <div className="flex-1 space-y-2">
+                <PageTitle icon={IconTimeline}>{analysis.title}</PageTitle>
+                <div className="text-sm text-slate-600">{systemName}</div>
               </div>
-            </>
-          )}
-        </div>
-        <div className="flex items-center gap-4">
-          {analysis?.owner?.name && (
-            <div className="flex items-center gap-2 text-sm text-slate-600 pt-2">
-              <UserAvatar uid={analysis.ownerUid} size={24} />
-              <span>{analysis.owner.name}</span>
-            </div>
-          )}
 
-          {isOwner && !loading && (
-            <div className="flex gap-2 pt-2">
-              <Button variant="outline" size="sm" onClick={editDialog.open}>
-                <IconEdit className="size-4" />
-                {t('analyze-logs:detail.edit')}
-              </Button>
-              <Button variant="outline" size="sm" onClick={deleteDialog.open}>
-                <IconTrash className="size-4" />
-                {t('analyze-logs:detail.delete')}
-              </Button>
-            </div>
-          )}
-        </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 text-sm text-slate-600 pt-2">
+                  <UserAvatar uid={analysis.ownerUid} size={24} />
+                  <span>{analysis.owner.name}</span>
+                </div>
+              </div>
+
+              {isOwner && (
+                <div className="flex gap-2 pt-2">
+                  <Button variant="outline" size="sm" onClick={editDialog.open}>
+                    <IconEdit className="size-4" />
+                    {t('analyze-logs:detail.edit')}
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={deleteDialog.open}>
+                    <IconTrash className="size-4" />
+                    {t('analyze-logs:detail.delete')}
+                  </Button>
+                </div>
+              )}
+            </>
+          )
+        )}
       </div>
     </div>
   );
