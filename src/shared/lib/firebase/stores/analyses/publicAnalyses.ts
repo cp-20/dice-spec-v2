@@ -113,21 +113,27 @@ export const publicAnalysesAtom = atomFamily(
         set(stateAtom, (prev) => ({ ...prev, loading: true }));
 
         const q = buildQuery(firestore, params, state.lastDoc);
-        getDocs(q).then((snap) => {
-          const data = snap.docs.map((docSnap) =>
-            v.parse(analysesStoreSchema, docSnap.data({ serverTimestamps: 'estimate' })),
-          );
-          set(stateAtom, (prev) => ({
-            analyses: prev.analyses.concat(data),
-            requestedTotalSize: prev.requestedTotalSize,
-            loading: false,
-            hasMore: snap.docs.length === params.pageSize,
-            lastDoc: snap.docs.slice(-1)[0] ?? state.lastDoc,
-          }));
-          for (const analysis of data) {
-            set(internalUserFamilyAtom(analysis.ownerUid), analysis.owner);
-          }
-        });
+        getDocs(q)
+          .then((snap) => {
+            const data = snap.docs.map((docSnap) =>
+              v.parse(analysesStoreSchema, docSnap.data({ serverTimestamps: 'estimate' })),
+            );
+            set(stateAtom, (prev) => ({
+              analyses: prev.analyses.concat(data),
+              requestedTotalSize: prev.requestedTotalSize,
+              loading: false,
+              hasMore: snap.docs.length === params.pageSize,
+              lastDoc: snap.docs.slice(-1)[0] ?? state.lastDoc,
+            }));
+            for (const analysis of data) {
+              set(internalUserFamilyAtom(analysis.ownerUid), analysis.owner);
+            }
+          })
+          .catch((error) => {
+            // FIXME: ユーザーにも分かるようにエラーを出す
+            console.error('Error fetching public analyses:', error);
+            set(stateAtom, (prev) => ({ ...prev, loading: false }));
+          });
       },
     ),
   (a, b) => queryKey(a) === queryKey(b),
