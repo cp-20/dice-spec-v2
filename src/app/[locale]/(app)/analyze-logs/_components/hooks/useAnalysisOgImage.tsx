@@ -46,7 +46,10 @@ export const useAnalysisOgImage = () => {
     const root = createRoot(inner);
 
     try {
-      await new Promise<void>((resolve) => {
+      await new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+          reject(new Error('Rendering timed out'));
+        }, 3000);
         root.render(
           <RenderNotifier
             Component={() => <SharingAnalysisResultScreen scenarioName={scenarioName} analysisResult={result} />}
