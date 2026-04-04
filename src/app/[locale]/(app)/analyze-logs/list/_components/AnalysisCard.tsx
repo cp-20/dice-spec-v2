@@ -6,8 +6,8 @@ import { UserAvatar } from '@/shared/components/elements/UserAvatar';
 import type { AnalysisDocument } from '@/shared/lib/firebase/stores/collections';
 import { round } from '@/shared/lib/round';
 import { ALL_CHARACTER_ID } from '../../_components/constants';
-import { systemNameAtom } from '../../[id]/_components/atoms';
 import { selectedCharacterIdAtom } from './atoms';
+import { systems } from '../../_components/hooks/ccfoliaLogAnalysis/messageParser';
 
 interface AnalysisCardProps {
   analysis: AnalysisDocument;
@@ -15,8 +15,8 @@ interface AnalysisCardProps {
 
 export const AnalysisCard: FC<AnalysisCardProps> = ({ analysis }) => {
   const selectedCharacterId = useAtomValue(selectedCharacterIdAtom);
-  const systemName = useAtomValue(systemNameAtom);
 
+  const systemName = systems[analysis.systemId].name;
   const results = analysis.characterResults;
   const selectedCharacter =
     results.find((c) => c.id === selectedCharacterId) ?? results.find((c) => c.id === ALL_CHARACTER_ID) ?? results[0];
