@@ -200,7 +200,7 @@ const getStripeCustomerIdByUserId = async (userId: string) => {
   const userDoc = await getUserById(userId);
   const stripeCustomerId = userDoc?.stripeCustomerId;
 
-  return typeof stripeCustomerId === 'string' ? stripeCustomerId : undefined;
+  return typeof stripeCustomerId === 'string' && stripeCustomerId.length > 0 ? stripeCustomerId : undefined;
 };
 
 const checkoutSchema = v.object({
