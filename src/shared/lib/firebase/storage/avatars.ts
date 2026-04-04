@@ -1,6 +1,6 @@
 import { FirebaseStorage, getDownloadURL } from 'firebase/storage';
 import { storagePaths } from './paths';
-import { uploadBufferFromUrlToStorage, uploadBufferToStorage } from './upload';
+import { uploadBufferToStorage } from './upload';
 
 const AVATAR_MAX_BYTES = 1 * 1024 * 1024;
 const AVATAR_TARGET_SIZE = 512;
