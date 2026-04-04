@@ -1,7 +1,4 @@
-const webhookUrl = process.env.STRIPE_DISCORD_WEBHOOK_URL;
-if (webhookUrl === undefined) {
-  throw new Error('STRIPE_DISCORD_WEBHOOK_URL is not set.');
-}
+import { runtimeEnv } from '@/shared/lib/env';
 
 type StripeLogLevel = 'info' | 'success' | 'error' | 'warning';
 
@@ -115,7 +112,7 @@ export const sendStripeLog = async (log: StripeLog) => {
   };
 
   try {
-    const res = await fetch(webhookUrl, {
+    const res = await fetch(runtimeEnv.stripe.discordWebhookUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { i18nConfig, type Locale } from '@/shared/i18n/config';
+import { clientEnv } from '@/shared/lib/env';
 
 type Option = {
   title?: string;
@@ -90,7 +91,7 @@ export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp
       site: '@__cp20__',
     },
     verification: {
-      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? '',
+      google: clientEnv.googleSiteVerification,
     },
     robots: {
       index: !noIndex,

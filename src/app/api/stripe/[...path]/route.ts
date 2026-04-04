@@ -4,17 +4,23 @@ import { Hono } from 'hono';
 import { handle } from 'hono/vercel';
 import Stripe from 'stripe';
 import * as v from 'valibot';
-import { getPriceId, stripeConfig } from './config';
 import { createStripeHandlers } from './_handlers';
 import { type HandlerResult, StripeWebhookHandlerError } from './_handlers/types';
 import { sendStripeLog } from './logger';
+import { runtimeEnv } from '@/shared/lib/env';
+import type { BillingInterval } from '@/shared/lib/stripe/config';
 
-const appOrigin = process.env.NEXT_PUBLIC_APP_ORIGIN || 'http://localhost:3000';
+let stripe: Stripe | null = null;
 
-const stripe = new Stripe(stripeConfig.secretKey, {
-  httpClient: Stripe.createFetchHttpClient(),
-  apiVersion: '2026-02-25.clover',
-});
+const getStripeClient = () => {
+  if (!stripe) {
+    stripe = new Stripe(runtimeEnv.stripe.secretKey, {
+      httpClient: Stripe.createFetchHttpClient(),
+      apiVersion: '2026-02-25.clover',
+    });
+  }
+  return stripe;
+};
 
 let firestoreClient: ReturnType<typeof createFirestoreClient> | null = null;
 
@@ -23,11 +29,10 @@ const getFirestoreClient = () => {
     return firestoreClient;
   }
 
-  const projectId = process.env.FIREBASE_PROJECT_ID ?? process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-  const databaseId =
-    process.env.FIREBASE_FIRESTORE_DATABASE_ID ?? process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+  const projectId = runtimeEnv.firebase.projectId;
+  const databaseId = runtimeEnv.firebase.firestoreDatabaseId;
+  const clientEmail = runtimeEnv.firebase.clientEmail;
+  const privateKey = runtimeEnv.firebase.privateKey;
 
   if (!projectId || !clientEmail || !privateKey) {
     const error = new Error('Missing Firestore REST configuration in environment variables');
@@ -62,7 +67,7 @@ type IdentityToolkitLookupResponse = {
 };
 
 const lookupFirebaseUserByIdToken = async (idToken: string) => {
-  const apiKey = process.env.FIREBASE_WEB_API_KEY ?? process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+  const apiKey = runtimeEnv.firebase.webApiKey;
 
   if (!apiKey) {
     const error = new Error('Missing Firebase API key in environment variables');
@@ -88,11 +93,7 @@ const lookupFirebaseUserByIdToken = async (idToken: string) => {
 };
 
 const { handleCheckoutCompleted, handleSubscriptionUpdated, handleSubscriptionDeleted, handleCustomerCreated } =
-  createStripeHandlers({
-    stripe,
-    getUserById,
-    updateUserById,
-  });
+  createStripeHandlers({ getUserById, updateUserById });
 
 const processHandlerResult = async (result: HandlerResult) => {
   if (result.ok) {
@@ -122,7 +123,7 @@ const processHandlerResult = async (result: HandlerResult) => {
 
 const constructStripeEvent = async (body: string, signature: string) => {
   try {
-    return stripe.webhooks.constructEvent(body, signature, stripeConfig.webhookSecret);
+    return getStripeClient().webhooks.constructEvent(body, signature, runtimeEnv.stripe.webhookSecret);
   } catch (error) {
     console.error('Webhook signature verification failed:', error);
     await sendStripeLog({
@@ -203,6 +204,18 @@ const getStripeCustomerIdByUserId = async (userId: string) => {
   return typeof stripeCustomerId === 'string' && stripeCustomerId.length > 0 ? stripeCustomerId : undefined;
 };
 
+const getPriceId = (interval: BillingInterval) => {
+  switch (interval) {
+    case 'monthly':
+      return runtimeEnv.stripe.priceIdProMonthly;
+    case 'yearly':
+      return runtimeEnv.stripe.priceIdProYearly;
+    default:
+      const _: never = interval;
+      throw new Error(`Invalid interval: ${interval}`);
+  }
+};
+
 const checkoutSchema = v.object({
   type: v.literal('subscription.pro'),
   interval: v.picklist(['monthly', 'yearly']),
@@ -212,6 +225,7 @@ const portalSchema = v.object({});
 
 const app = new Hono()
   .basePath('/api/stripe')
+  // FIXME: レースコンディションで複数の stripe customer を作成できる
   .post('/create-customer', async (c) => {
     const user = await getAuthenticatedUser(c.req.header('authorization'), 'create-customer');
     if (!user) {
@@ -227,7 +241,7 @@ const app = new Hono()
         return c.json({ customerId });
       }
 
-      const customer = await stripe.customers.create({
+      const customer = await getStripeClient().customers.create({
         email,
         name,
         metadata: { userId },
@@ -270,12 +284,12 @@ const app = new Hono()
 
       const metadata = { type, userId };
 
-      const session = await stripe.checkout.sessions.create({
+      const session = await getStripeClient().checkout.sessions.create({
         mode: 'subscription',
         customer: customerId,
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: `${appOrigin}/profile?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${appOrigin}/profile`,
+        success_url: `${runtimeEnv.appOrigin}/profile?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${runtimeEnv.appOrigin}/profile`,
         client_reference_id: userId,
         allow_promotion_codes: true,
         metadata,
@@ -315,9 +329,9 @@ const app = new Hono()
         return c.json({ error: 'Stripe customer not found' }, 400);
       }
 
-      const session = await stripe.billingPortal.sessions.create({
+      const session = await getStripeClient().billingPortal.sessions.create({
         customer: customerId,
-        return_url: `${appOrigin}/profile`,
+        return_url: `${runtimeEnv.appOrigin}/profile`,
       });
 
       return c.json({ url: session.url });

@@ -13,7 +13,6 @@ export type SubscriptionPayload = Stripe.Subscription;
 export type InvoicePayload = Stripe.Invoice;
 
 export type HandlerDeps = {
-  stripe: Stripe;
   getUserById: GetUserById;
   updateUserById: UpdateUserById;
 };

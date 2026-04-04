@@ -11,6 +11,7 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
+import { mixedEnv } from '@/shared/lib/env';
 import { AnalysisSavePanel } from './_components/AnalysisSavePanel';
 import { AnalyzeLogsErrorAlert } from './_components/AnalyzeLogsErrorAlert';
 import { CharacterSelect } from './_components/CharacterSelect';
@@ -23,11 +24,11 @@ import { LogAnalysisShareButton } from './_components/LogAnalysisShareButton';
 import { LogAnalysisStats } from './_components/LogAnalysisStats';
 import { UploadLogFileButton } from './_components/UploadLogFileButton';
 
-const ogpImageRegex = new RegExp(
-  `^https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/.+.png`,
-);
-
 export const generateMetadata: MetadataGenerator = async (props) => {
+  const ogpImageRegex = new RegExp(
+    `^https://firebasestorage.googleapis.com/v0/b/${mixedEnv.firebaseStorageBucket}/o/.+.png`,
+  );
+
   const searchParams = await props.searchParams;
   const title = t('common:analyze-logs.title');
   const description = t('analyze-logs:usage1');

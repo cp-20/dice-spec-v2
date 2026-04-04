@@ -3,6 +3,7 @@ import { type ChildProcessWithoutNullStreams, spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import net from 'node:net';
 import { resolve } from 'node:path';
+import { getAllProcessEnv } from '../src/shared/lib/env';
 import {
   assertFails,
   assertSucceeds,
@@ -194,7 +195,7 @@ describe('Firestore セキュリティルール', () => {
         {
           cwd: process.cwd(),
           env: {
-            ...process.env,
+            ...getAllProcessEnv(),
             FIRESTORE_EMULATOR_HOST: `${FIRESTORE_EMULATOR_HOST}:${FIRESTORE_EMULATOR_PORT}`,
             FIREBASE_STORAGE_EMULATOR_HOST: `${STORAGE_EMULATOR_HOST}:${STORAGE_EMULATOR_PORT}`,
           },

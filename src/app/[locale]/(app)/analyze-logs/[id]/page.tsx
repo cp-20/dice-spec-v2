@@ -11,12 +11,13 @@ import {
 } from '@/shared/lib/metadataGenerator';
 import AnalyzeLogDetailPageClient from './_components/AnalyzeLogDetailPageClient';
 import { wrapPage } from '@/shared/i18n/page-layout';
-
-const firebaseConfig: FirebaseOptions = {
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-};
+import { mixedEnv } from '@/shared/lib/env';
 
 const getAnalysisOgpUrl = async (analysisId: string) => {
+  const firebaseConfig: FirebaseOptions = {
+    storageBucket: mixedEnv.firebaseStorageBucket,
+  };
+
   try {
     const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
     const storage = getStorage(app);

@@ -2,8 +2,8 @@ import withBundleAnalyzerFn from '@next/bundle-analyzer';
 import withMDXFn from '@next/mdx';
 import { withSentryConfig } from '@sentry/nextjs';
 import withPWAFn from 'next-pwa';
+import { buildEnv } from './src/shared/lib/env';
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
@@ -92,14 +92,14 @@ const nextConfig = {
 };
 
 const withBundleAnalyzer = withBundleAnalyzerFn({
-  enabled: process.env.ANALYZE === 'true',
+  enabled: buildEnv.analyzeEnabled,
 });
 
 const withPWA = withPWAFn({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
+  disable: buildEnv.nodeEnv === 'development',
 });
 
 const withMDX = withMDXFn({});
@@ -110,7 +110,7 @@ const sentryConfig = {
 
   org: 'cp20',
   project: 'javascript-nextjs',
-  authToken: process.env.SENTRY_AUTH_TOKEN,
+  authToken: buildEnv.sentryAuthToken,
 
   sourcemaps: {
     disable: true, // Source maps are enabled by default
@@ -120,7 +120,7 @@ const sentryConfig = {
   },
 
   // Only print logs for uploading source maps in CI
-  silent: !process.env.CI,
+  silent: !buildEnv.ci,
 
   // For all available options, see:
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
@@ -138,9 +138,10 @@ const sentryConfig = {
   disableLogger: true,
 };
 
+// @ts-expect-error
 let config = withMDX(withBundleAnalyzer(withPWA(nextConfig)));
 
-if (process.env.SENTRY_AUTH_TOKEN) {
+if (buildEnv.sentryAuthToken) {
   config = withSentryConfig(config, sentryConfig);
 }
 

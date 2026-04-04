@@ -1,21 +1,17 @@
-import { headers } from 'next/headers';
-import Script from 'next/script';
 import type { FC } from 'react';
+import Script from 'next/script';
+import { clientEnv } from '../lib/env';
 
-const id = process.env.NEXT_PUBLIC_GTM_ID;
+export const GoogleTagManager: FC = () => {
+  const id = clientEnv.gtmId;
 
-export const GoogleTagManager: FC = async () => {
   if (!id) return null;
-
-  const nonce = (await headers()).get('X-CSP-Nonce') ?? '';
 
   return (
     <>
       <Script
-        nonce={nonce}
         id="gtm"
         strategy="lazyOnload"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: for GTM script
         dangerouslySetInnerHTML={{
           __html: `
       (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
