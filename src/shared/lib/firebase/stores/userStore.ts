@@ -116,6 +116,7 @@ export const useMeStore = () => {
 
     for (const analysis of analyses) {
       const analysisRef = doc(firestore, COLLECTIONS.analyses, analysis.id);
+      // FIXME: batchの上限は500件なので、それを超えるときにエラーになる
       batch.set(
         analysisRef,
         { owner: { ...analysis.owner, name: newName, updatedAt: serverTimestamp() } },
