@@ -1,4 +1,7 @@
-const webhookUrl = process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL as string;
+const webhookUrl = process.env.STRIPE_DISCORD_WEBHOOK_URL;
+if (webhookUrl === undefined) {
+  throw new Error('STRIPE_DISCORD_WEBHOOK_URL is not set.');
+}
 
 type StripeLogLevel = 'info' | 'success' | 'error' | 'warning';
 

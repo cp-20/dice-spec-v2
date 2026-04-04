@@ -4,7 +4,7 @@ import { Hono } from 'hono';
 import { handle } from 'hono/vercel';
 import Stripe from 'stripe';
 import * as v from 'valibot';
-import { getPriceId, stripeConfig } from '@/shared/lib/stripe/config';
+import { getPriceId, stripeConfig } from './config';
 import { createStripeHandlers } from './_handlers';
 import { type HandlerResult, StripeWebhookHandlerError } from './_handlers/types';
 import { sendStripeLog } from './logger';
