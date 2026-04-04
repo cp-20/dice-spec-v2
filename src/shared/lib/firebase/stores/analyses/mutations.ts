@@ -146,7 +146,7 @@ export const useSaveAnalysis = () => {
           await batch.commit();
         } catch (error) {
           // なるべく storage と firestore で同期を取る
-          Promise.allSettled([deleteAnalysisRecordsFromStorage(storage, payload.ownerUid, newDoc.id)]).catch((err) => {
+          deleteAnalysisRecordsFromStorage(storage, payload.ownerUid, newDoc.id).catch((err) => {
             console.error('Failed to delete analysis assets from storage', err);
           });
           throw error;
