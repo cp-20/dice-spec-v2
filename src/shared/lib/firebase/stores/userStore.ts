@@ -82,6 +82,13 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
     }
 
     const data = v.parse(userStoreSchema, snap.data({ serverTimestamps: 'estimate' }));
+
+    if (data.stripeCustomerId === '') {
+      createCustomer().catch((error) => {
+        console.error('Failed to create Stripe customer for existing user:', error);
+      });
+    }
+
     set(internalMeAtom, data);
     set(internalMeLoadingAtom, false);
   });
