@@ -44,7 +44,9 @@ const AnalyzeLogDetailPageClient: FC = () => {
               <p className="text-sm text-slate-500">{t('analyze-logs:detail.not-found-description')}</p>
             </div>
             <Button asChild variant="outline">
-              <CustomLink href="/analyze-logs/list">{t('analyze-logs:detail.back-to-list')}</CustomLink>
+              <CustomLink href={t('link', { href: '/analyze-logs/list' })}>
+                {t('analyze-logs:detail.back-to-list')}
+              </CustomLink>
             </Button>
           </div>
         </ContainerSection>
