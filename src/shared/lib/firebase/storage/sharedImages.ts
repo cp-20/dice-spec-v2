@@ -10,7 +10,7 @@ export const uploadSharedImageToStorage = async (
   dataUrl: string,
 ) => {
   const storagePath = storagePaths.getSharedImagePath(scope, imageId);
-  const contentType = dataUrl.match(/^data:(image\/[a-zA-Z]+);base64,/)?.[1] ?? 'image/png';
+  const contentType = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,/)?.[1] ?? 'image/png';
   const result = await uploadDataUrlToStorage(storage, storagePath, dataUrl, { contentType });
   const imageUrl = await getDownloadURL(result.ref);
   return imageUrl;
