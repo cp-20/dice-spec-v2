@@ -26,7 +26,7 @@ import { UploadLogFileButton } from './_components/UploadLogFileButton';
 
 export const generateMetadata: MetadataGenerator = async (props) => {
   const ogpImageRegex = new RegExp(
-    `^https://firebasestorage.googleapis.com/v0/b/${mixedEnv.firebaseStorageBucket}/o/.+.png`,
+    `^https://firebasestorage.googleapis.com/v0/b/${mixedEnv.firebaseStorageBucket}/o/.+`,
   );
 
   const searchParams = await props.searchParams;
