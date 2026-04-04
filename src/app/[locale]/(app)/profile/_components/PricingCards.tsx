@@ -26,10 +26,7 @@ export const PricingCards = () => {
     setLoading(true);
     try {
       const data = await createCheckoutSession({ interval });
-
-      if (data.url) {
-        window.location.href = data.url;
-      }
+      window.location.href = data.url;
     } catch (error) {
       console.error('Error upgrading:', error);
       toast({
