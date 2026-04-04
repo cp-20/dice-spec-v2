@@ -15,7 +15,7 @@ const firebaseConfig: FirebaseOptions = {
 
 const databaseId = process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID;
 if (!databaseId) {
-  throw new Error('Missing FIREBASE_FIRESTORE_DATABASE_ID in environment variables');
+  throw new Error('Missing NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID in environment variables');
 }
 
 export const useFirebase = () => {
