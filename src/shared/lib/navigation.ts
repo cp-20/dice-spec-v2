@@ -20,7 +20,7 @@ const navLinksRegex = new RegExp(`^(${navLinks.map((link) => link.href).join('|'
 
 export const isNavPath = (path: string): path is NavPaths => navLinksRegex.test(path);
 
-export const specialPageLinks = ['/profile'] as const;
+export const specialPageLinks = ['/profile', '/analyze-logs/[a-zA-Z0-9]+'] as const;
 
 export type SpecialPagePaths = (typeof specialPageLinks)[number];
 
