@@ -286,11 +286,13 @@ export const useDeleteAnalysis = () => {
         await batch.commit();
 
         await Promise.allSettled([
-          deleteAnalysisRecordsFromStorage(storage, authUser.uid, id),
-          deleteAnalysisOgImageFromStorage(storage, id),
-        ]).catch((err) => {
-          console.error('Failed to delete analysis assets from storage', err);
-        });
+          deleteAnalysisRecordsFromStorage(storage, authUser.uid, id).catch((err) => {
+            console.error('Failed to delete analysis records from storage', err);
+          }),
+          deleteAnalysisOgImageFromStorage(storage, id).catch((err) => {
+            console.error('Failed to delete analysis OG image from storage', err);
+          }),
+        ]);
       } finally {
         setDeleting(false);
       }
