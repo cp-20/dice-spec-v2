@@ -31,6 +31,7 @@ import {
   type NewAnalysisDocument,
 } from '../collections';
 import { useAnalysisOgImage } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/useAnalysisOgImage';
+import { useInvalidatePublicAnalysesCache } from './publicAnalyses';
 
 export type SaveAnalysisPayload = Omit<
   NewAnalysisDocument,
@@ -81,6 +82,7 @@ export const useSaveAnalysis = () => {
   const { firestore, storage } = useFirebase();
   const [saving, setSaving] = useState(false);
   const syncAnalysisOgImageInBackground = useSyncAnalysisOgImageInBackground();
+  const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();
 
   const saveAnalysis = useCallback(
     async (payload: SaveAnalysisPayload) => {
@@ -160,12 +162,14 @@ export const useSaveAnalysis = () => {
           allCharacterResult,
         });
 
+        invalidatePublicAnalysesCache();
+
         return newDoc.id;
       } finally {
         setSaving(false);
       }
     },
-    [firestore, storage, syncAnalysisOgImageInBackground],
+    [firestore, invalidatePublicAnalysesCache, storage, syncAnalysisOgImageInBackground],
   );
 
   return { saveAnalysis, saving };
@@ -182,6 +186,7 @@ export const useUpdateAnalysis = () => {
   const { firestore, storage } = useFirebase();
   const [updating, setUpdating] = useState(false);
   const syncAnalysisOgImageInBackground = useSyncAnalysisOgImageInBackground();
+  const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();
 
   const updateAnalysis = useCallback(
     async (id: string, updates: UpdateAnalysisPayload) => {
@@ -197,6 +202,7 @@ export const useUpdateAnalysis = () => {
             ...updates,
             updatedAt: serverTimestamp(),
           });
+          invalidatePublicAnalysesCache();
           return;
         }
 
@@ -231,6 +237,8 @@ export const useUpdateAnalysis = () => {
           throw error;
         }
 
+        invalidatePublicAnalysesCache();
+
         if (shouldSyncAnalysisOgImage) {
           const allCharacterResult = beforeAnalysis.characterResults.find((result) => result.id === ALL_CHARACTER_ID);
           if (allCharacterResult === undefined) {
@@ -251,7 +259,7 @@ export const useUpdateAnalysis = () => {
         setUpdating(false);
       }
     },
-    [firestore, storage, syncAnalysisOgImageInBackground],
+    [firestore, invalidatePublicAnalysesCache, storage, syncAnalysisOgImageInBackground],
   );
 
   return { updateAnalysis, updating };
@@ -261,6 +269,7 @@ export const useDeleteAnalysis = () => {
   const { firestore, storage } = useFirebase();
   const { authUser } = useFirebaseAuth();
   const [deleting, setDeleting] = useState(false);
+  const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();
 
   const deleteAnalysis = useCallback(
     async (id: string) => {
@@ -293,11 +302,13 @@ export const useDeleteAnalysis = () => {
             console.error('Failed to delete analysis OG image from storage', err);
           }),
         ]);
+
+        invalidatePublicAnalysesCache();
       } finally {
         setDeleting(false);
       }
     },
-    [authUser, firestore, storage],
+    [authUser, firestore, invalidatePublicAnalysesCache, storage],
   );
 
   return { deleteAnalysis, deleting };
