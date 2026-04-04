@@ -84,7 +84,7 @@ const createCoveredSquareBlob = async (file: File, outputType: string): Promise<
   return blob;
 };
 
-export const prepareAvatarFileForUpload = async (file: File): Promise<File> => {
+const prepareAvatarFileForUpload = async (file: File): Promise<File> => {
   if (!SUPPORTED_AVATAR_MIME_TYPES.has(file.type)) {
     throw new AvatarPreparationError('UNSUPPORTED_FILE_TYPE', `Unsupported file type: ${file.type}`);
   }
@@ -126,7 +126,12 @@ export const uploadAvatarFromUrlToStorage = async (
   imageUrl: string,
 ): Promise<string> => {
   const path = storagePaths.getAvatarPath(uid);
-  const result = await uploadBufferFromUrlToStorage(storage, path, imageUrl);
+  const res = await fetch(imageUrl);
+  const blob = await res.blob();
+  const file = new File([blob], 'avatar', { type: blob.type });
+  const preparedFile = await prepareAvatarFileForUpload(file);
+  const arrayBuffer = await preparedFile.arrayBuffer();
+  const result = await uploadBufferToStorage(storage, path, arrayBuffer, { contentType: preparedFile.type });
   const downloadUrl = await getDownloadURL(result.ref);
   return downloadUrl;
 };
