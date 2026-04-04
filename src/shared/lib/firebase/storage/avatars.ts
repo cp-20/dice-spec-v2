@@ -10,7 +10,13 @@ let imageCompressionPromise: Promise<typeof import('browser-image-compression').
 
 const loadImageCompression = async () => {
   if (imageCompressionPromise === null) {
-    imageCompressionPromise = import('browser-image-compression').then((mod) => mod.default);
+    imageCompressionPromise = import('browser-image-compression')
+      .then((mod) => mod.default)
+      .catch((err) => {
+        console.error('Failed to load image compression library', err);
+        imageCompressionPromise = null;
+        throw new AvatarPreparationError('INVALID_IMAGE', 'Failed to load image compression library');
+      });
   }
 
   return imageCompressionPromise;
