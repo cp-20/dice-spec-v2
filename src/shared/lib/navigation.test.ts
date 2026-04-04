@@ -1,4 +1,4 @@
-import { isNavPath, normalizePathname } from './navigation';
+import { normalizePathname } from './navigation';
 
 describe('normalizePathname', () => {
   test('/en prefix を取り除く', () => {

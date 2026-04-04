@@ -35,7 +35,7 @@ export const AuthWidget: FC = () => {
           aria-label={t('profile:menu.aria-label')}
         >
           {me.avatarUrl ? (
-            // biome-ignore lint/performance/noImgElement: external image
+            // oxlint-disable-next-line nextjs/no-img-element 外部URLの画像を表示するため、imgタグを使用 (そしてアップロード時に圧縮されているはず)
             <img src={me.avatarUrl} alt="" className="size-full object-cover" width={32} height={32} />
           ) : (
             <div className="flex size-full items-center justify-center bg-slate-200">
@@ -49,7 +49,7 @@ export const AuthWidget: FC = () => {
           <div className="flex items-center gap-3 border-b pb-3 px-2">
             <div className="relative size-10 overflow-hidden rounded-full">
               {me.avatarUrl ? (
-                // biome-ignore lint/performance/noImgElement: external image
+                // oxlint-disable-next-line nextjs/no-img-element 外部URLの画像を表示するため、imgタグを使用 (そしてアップロード時に圧縮されているはず)
                 <img src={me.avatarUrl} alt="" className="size-full object-cover" width={40} height={40} />
               ) : (
                 <div className="flex size-full items-center justify-center bg-slate-200">

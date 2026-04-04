@@ -22,7 +22,9 @@ const logAnalysisSystemAtom = withAtomEffect(atom<System | null>(null), (get, se
   try {
     const detectedSystem = detectSystem(fileContent);
     set(logAnalysisSystemAtom, detectedSystem);
-  } catch (_) {}
+  } catch (err) {
+    console.error('Failed to detect system:', err);
+  }
 });
 
 type LogAnalysisResult = LogAnalysisSuccess | LogAnalysisError | null;
@@ -44,7 +46,8 @@ const logAnalysisResultAtom = atom<LogAnalysisResult>((get) => {
   try {
     const result = analyzeCcfoliaLog(system, fileContent);
     return { type: 'success', results: result };
-  } catch (_) {
+  } catch (err) {
+    console.error('Failed to analyze log:', err);
     return { type: 'error' };
   }
 });

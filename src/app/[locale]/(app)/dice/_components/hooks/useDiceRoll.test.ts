@@ -1,13 +1,14 @@
+import { describe, beforeEach, test, expect, mock, spyOn } from 'bun:test';
 import { act, renderHook } from '@testing-library/react';
 import * as useBcdiceApi from './useBcdiceApi';
 import { useDiceRollCore } from './useDiceRoll';
 
 describe('useDiceRollCore', () => {
-  beforeEach(() => {
-    const spy = vi.spyOn(useBcdiceApi, 'useBcdiceApi');
+  const spy = spyOn(useBcdiceApi, 'useBcdiceApi');
 
+  beforeEach(() => {
     spy.mockReturnValue({
-      getDiceRoll: vi.fn(async () => ({
+      getDiceRoll: mock(async () => ({
         ok: true as const,
         text: '(1D6) ＞ 5',
         critical: false,
@@ -23,13 +24,9 @@ describe('useDiceRollCore', () => {
           },
         ],
       })),
-      getGameSystemInfo: vi.fn(),
-      getGameSystemList: vi.fn(),
+      getGameSystemInfo: mock(),
+      getGameSystemList: mock(),
     });
-  });
-
-  afterEach(() => {
-    vi.resetAllMocks();
   });
 
   test('正しくダイスを振れる', async () => {

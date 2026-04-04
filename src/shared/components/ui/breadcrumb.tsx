@@ -45,6 +45,7 @@ BreadcrumbLink.displayName = 'BreadcrumbLink';
 
 const BreadcrumbPage = React.forwardRef<HTMLAnchorElement, React.ComponentProps<'a'>>(
   ({ className, ...props }, ref) => (
+    // oxlint-disable-next-line jsx_a11y/anchor-has-content
     <a
       ref={ref}
       data-slot="breadcrumb-page"

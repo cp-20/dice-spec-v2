@@ -13,10 +13,13 @@ export const aggregateResults = (results: MessageParserResult[], system: System)
 
   const data: number[] = results
     .flatMap(({ results }) => results)
-    .reduce((acc, result) => {
-      const pivot = stats.pivots.findIndex((pivot) => result < pivot) - 1;
-      return acc.map((value, i) => (i === pivot ? value + 1 : value));
-    }, new Array(labels.length).fill(0));
+    .reduce(
+      (acc, result) => {
+        const pivot = stats.pivots.findIndex((pivot) => result < pivot) - 1;
+        return acc.map((value, i) => (i === pivot ? value + 1 : value));
+      },
+      Array.from<number>({ length: labels.length }).fill(0),
+    );
 
   return { labels, data };
 };
