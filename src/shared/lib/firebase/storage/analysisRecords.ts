@@ -67,6 +67,7 @@ export const deleteAnalysisRecordsFromStorage = async (
 ) => {
   const storagePath = storagePaths.getAnalysisRecordsPath(ownerUid, analysisId);
   await deleteFromStorage(storage, storagePath);
+  analysisRecordsCache.delete(storagePath);
 };
 
 export const updateAnalysisRecordsMetadataInStorage = async (
