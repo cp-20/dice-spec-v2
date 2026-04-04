@@ -8,6 +8,7 @@ import { round } from '@/shared/lib/round';
 import { ALL_CHARACTER_ID } from '../../_components/constants';
 import { selectedCharacterIdAtom } from './atoms';
 import { systems } from '../../_components/hooks/ccfoliaLogAnalysis/messageParser';
+import { invariant } from '@/shared/lib/invariant';
 
 interface AnalysisCardProps {
   analysis: AnalysisDocument;
@@ -19,7 +20,8 @@ export const AnalysisCard: FC<AnalysisCardProps> = ({ analysis }) => {
   const systemName = systems[analysis.systemId].name;
   const results = analysis.characterResults;
   const selectedCharacter =
-    results.find((c) => c.id === selectedCharacterId) ?? results.find((c) => c.id === ALL_CHARACTER_ID) ?? results[0];
+    results.find((c) => c.id === selectedCharacterId) ?? results.find((c) => c.id === ALL_CHARACTER_ID);
+  invariant(selectedCharacter !== undefined, 'Selected character not found in analysis results');
 
   const deviationScore = round(selectedCharacter.summary.deviationScore, 1);
 
