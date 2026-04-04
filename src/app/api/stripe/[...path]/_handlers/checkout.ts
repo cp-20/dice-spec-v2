@@ -25,18 +25,6 @@ export const createCheckoutHandler = ({ updateUserById }: HandlerDeps) => {
 
     const { userId } = metadata.output;
 
-    if (userId === null) {
-      return {
-        ok: false,
-        error: new StripeWebhookHandlerError({
-          message: 'Missing userId',
-          eventType: 'checkout.session.completed',
-          details: { sessionId: session.id },
-          fatal: false,
-        }),
-      };
-    }
-
     try {
       await updateUserById(userId, {
         plan: 'pro',
