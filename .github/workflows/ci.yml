@@ -63,4 +63,5 @@ jobs:
           STRIPE_WEBHOOK_SECRET=dummy \
           STRIPE_PRICE_ID_PRO_MONTHLY=dummy \
           STRIPE_PRICE_ID_PRO_YEARLY=dummy \
+          STRIPE_DISCORD_WEBHOOK_URL=dummy \
           bun run build
