@@ -7,7 +7,7 @@ import { Footer } from '@/shared/components/Layout/Footer';
 import { Header } from '@/shared/components/Layout/Header';
 import { SideNavigation } from '@/shared/components/Layout/SideNavigation';
 import { Toaster } from '@/shared/components/ui/toaster';
-import { isNavPath, isSpecialPagePath } from '@/shared/lib/navigation';
+import { normalizePathname, isNavPath, isSpecialPagePath } from '@/shared/lib/navigation';
 
 type AppLayout = {
   children?: ReactNode;
@@ -15,12 +15,13 @@ type AppLayout = {
 
 const AppLayout: FC<AppLayout> = ({ children }) => {
   const pathname = usePathname();
+  const normalized = normalizePathname(pathname);
 
-  if (!isNavPath(pathname) && !isSpecialPagePath(pathname)) {
+  if (!isNavPath(normalized) && !isSpecialPagePath(normalized)) {
     return <>{children}</>;
   }
 
-  const active = isNavPath(pathname) ? pathname : null;
+  const active = isNavPath(normalized) ? normalized : null;
 
   return (
     <div className="flex h-full flex-col">

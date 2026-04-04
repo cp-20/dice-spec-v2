@@ -1,4 +1,5 @@
 import { IconDice5, IconFileExport, IconList, IconSearch, IconTimeline } from '@tabler/icons-react';
+import { i18nConfig } from '../i18n/config';
 
 export const navLinks = [
   { key: 'expect', href: '/expect', icon: IconSearch, sideNavOnly: false },
@@ -8,9 +9,14 @@ export const navLinks = [
   { key: 'ccfolia', href: '/ccfolia', icon: IconFileExport, sideNavOnly: false },
 ] as const;
 
+const normalizePathnameRegex = new RegExp(`^(?:/(?:${i18nConfig.locales.join('|')}))?((?:/[^/]+)*)(?:/)?$`);
+export const normalizePathname = (pathname: string): string => {
+  return pathname.replace(normalizePathnameRegex, '$1');
+};
+
 export type NavPaths = (typeof navLinks)[number]['href'];
 
-const navLinksRegex = new RegExp(`(/en)?${navLinks.map((link) => link.href).join('|')}`);
+const navLinksRegex = new RegExp(`^(${navLinks.map((link) => link.href).join('|')})$`);
 
 export const isNavPath = (path: string): path is NavPaths => navLinksRegex.test(path);
 
@@ -18,6 +24,6 @@ export const specialPageLinks = ['/profile'] as const;
 
 export type SpecialPagePaths = (typeof specialPageLinks)[number];
 
-const specialPageLinksRegex = new RegExp(`(/en)?${specialPageLinks.join('|')}`);
+const specialPageLinksRegex = new RegExp(`^(${specialPageLinks.join('|')})$`);
 
 export const isSpecialPagePath = (path: string): path is SpecialPagePaths => specialPageLinksRegex.test(path);
