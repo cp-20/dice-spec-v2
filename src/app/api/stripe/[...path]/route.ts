@@ -222,6 +222,11 @@ const app = new Hono()
     const email = user.email;
 
     try {
+      const customerId = await getStripeCustomerIdByUserId(userId);
+      if (customerId) {
+        return c.json({ customerId });
+      }
+
       const customer = await stripe.customers.create({
         email,
         name,
