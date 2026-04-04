@@ -14,7 +14,7 @@ export const MyAvatar: FC<MyAvatarProps> = ({ size }) => {
     return <Skeleton className="rounded-full" style={{ width: size, height: size }} />;
   }
 
-  return <PresentialUserAvatar avatarUrl={me.avatarUrl} size={size} />;
+  return <PresentationalUserAvatar avatarUrl={me.avatarUrl} size={size} />;
 };
 
 interface UserAvatarProps {
@@ -25,15 +25,15 @@ interface UserAvatarProps {
 export const UserAvatar: FC<UserAvatarProps> = ({ uid, size }) => {
   const user = useUserStore(uid);
 
-  return <PresentialUserAvatar avatarUrl={user?.avatarUrl} size={size} />;
+  return <PresentationalUserAvatar avatarUrl={user?.avatarUrl} size={size} />;
 };
 
-interface PresentialUserAvatarProps {
+interface PresentationalUserAvatarProps {
   avatarUrl: string | undefined;
   size: number;
 }
 
-const PresentialUserAvatar: FC<PresentialUserAvatarProps> = ({ avatarUrl, size }) => {
+const PresentationalUserAvatar: FC<PresentationalUserAvatarProps> = ({ avatarUrl, size }) => {
   const iconSize = Math.max(12, Math.floor(size / 1.5));
 
   return (
