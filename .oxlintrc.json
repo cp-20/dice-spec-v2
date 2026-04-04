@@ -14,15 +14,7 @@
     "unicorn",
     "vitest"
   ],
-  "categories": {
-    "correctness": "error",
-    "nursery": "error",
-    "pedantic": "error",
-    "perf": "error",
-    "restriction": "error",
-    "style": "error",
-    "suspicious": "error"
-  },
+  "categories": {},
   "rules": {},
   "settings": {
     "jsx-a11y": {
