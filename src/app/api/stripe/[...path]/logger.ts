@@ -45,6 +45,9 @@ const getLevelEmoji = (level: StripeLogLevel): string => {
   }
 };
 
+/**
+ * never throw error from this function to avoid blocking the main process. Log any error internally instead.
+ */
 export const sendStripeLog = async (log: StripeLog) => {
   if (log.level === 'info') {
     console.log('[Stripe][info]', {

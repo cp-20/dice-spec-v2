@@ -98,9 +98,7 @@ const { handleCheckoutCompleted, handleSubscriptionUpdated, handleSubscriptionDe
 const processHandlerResult = async (result: HandlerResult) => {
   if (result.ok) {
     if (result.log) {
-      await sendStripeLog(result.log).catch((error) => {
-        console.error('Failed to send handler log:', error);
-      });
+      await sendStripeLog(result.log);
     }
     return;
   }
@@ -112,8 +110,6 @@ const processHandlerResult = async (result: HandlerResult) => {
     userId: result.error.userId,
     details: result.error.details,
     error: result.error.cause ?? result.error,
-  }).catch((error) => {
-    console.error('Failed to send error log:', error);
   });
 
   if (result.error.fatal) {
