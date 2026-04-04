@@ -399,7 +399,7 @@ const app = new Hono()
             level: 'info',
             eventType: event.type,
             message: 'Unhandled webhook event type',
-            details: { eventId: event.id, payload: event.data.object },
+            details: { eventId: event.id },
           });
       }
 
