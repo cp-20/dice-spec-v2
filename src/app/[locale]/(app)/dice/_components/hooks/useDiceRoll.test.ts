@@ -29,6 +29,10 @@ describe('useDiceRollCore', () => {
     });
   });
 
+  afterEach(() => {
+    spy.mockReset();
+  });
+
   test('正しくダイスを振れる', async () => {
     const { result } = renderHook(() => useDiceRollCore());
 
