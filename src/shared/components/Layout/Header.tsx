@@ -1,6 +1,6 @@
 import { IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
-import { type ComponentProps, type FC, useState } from 'react';
+import { type ComponentProps, type FC, type SubmitEvent, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { AuthWidget } from '@/shared/components/Layout/AuthWidget';
@@ -30,10 +30,10 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
   const [feedback, setFeedback] = useState('');
   const { toast } = useToast();
 
-  const feedbackSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+  const feedbackSubmitHandler = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      sendFeedback({
+      await sendFeedback({
         name: e.currentTarget['feedback-form-name'].value,
         feedback: e.currentTarget['feedback-form-feedback'].value,
       });
