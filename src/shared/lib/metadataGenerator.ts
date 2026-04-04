@@ -47,7 +47,6 @@ export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp
 
   const appUrl = constructLocaleUrl(path, locale);
   const alternates = constructAlternateUrls(path, locale);
-  const robots = noIndex || noFollow ? { index: !noIndex, follow: !noFollow } : undefined;
 
   return {
     title,
@@ -93,7 +92,10 @@ export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp
     verification: {
       google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? '',
     },
-    ...(robots ? { robots } : {}),
+    robots: {
+      index: !noIndex,
+      follow: !noFollow,
+    },
   } satisfies Metadata;
 };
 
