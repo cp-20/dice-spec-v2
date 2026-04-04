@@ -210,9 +210,10 @@ const getPriceId = (interval: BillingInterval) => {
       return runtimeEnv.stripe.priceIdProMonthly;
     case 'yearly':
       return runtimeEnv.stripe.priceIdProYearly;
-    default:
+    default: {
       const _: never = interval;
       throw new Error(`Invalid interval: ${interval}`);
+    }
   }
 };
 
@@ -393,7 +394,7 @@ const app = new Hono()
         case 'billing_portal.session.created':
           break;
 
-        default:
+        default: {
           console.log(`Unhandled event type: ${event.type}`);
           await sendStripeLog({
             level: 'info',
@@ -401,6 +402,7 @@ const app = new Hono()
             message: 'Unhandled webhook event type',
             details: { eventId: event.id },
           });
+        }
       }
 
       return c.json({ received: true });
