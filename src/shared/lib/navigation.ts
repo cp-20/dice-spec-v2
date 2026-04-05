@@ -27,4 +27,4 @@ export type SpecialPagePaths = (typeof specialPageLinks)[number];
 
 const specialPageLinksRegex = new RegExp(`^(${specialPageLinks.join('|')})$`);
 
-export const isSpecialPagePath = (path: string): path is SpecialPagePaths => specialPageLinksRegex.test(path);
+export const isSpecialPagePath = (path: string) => specialPageLinksRegex.test(path);
