@@ -1,6 +1,7 @@
 'use client';
 
 import type { FC } from 'react';
+
 import { CharacterSelectView } from './CharacterSelectView';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
 import { useLogAnalysis } from './hooks/useLogAnalysis';

@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import type { FC } from 'react';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
+
 import { contents } from '../[category]/[slug]/_contents/contents';
 
 type BlogCardProps = {

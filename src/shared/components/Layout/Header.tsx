@@ -1,7 +1,10 @@
+import TitleLogoEN from '/public/title-logo-en.svg';
+import TitleLogoJP from '/public/title-logo.svg';
 import { IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { type ComponentProps, type FC, type SubmitEvent, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { AuthWidget } from '@/shared/components/Layout/AuthWidget';
 import { Button } from '@/shared/components/ui/button';
@@ -20,8 +23,6 @@ import { Textarea } from '@/shared/components/ui/textarea';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { appVersion } from '@/shared/lib/const';
 import { sendFeedback } from '@/shared/lib/webhook';
-import TitleLogoJP from '/public/title-logo.svg';
-import TitleLogoEN from '/public/title-logo-en.svg';
 
 export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) => {
   const TitleLogo = t('lang') === 'en' ? TitleLogoEN : TitleLogoJP;

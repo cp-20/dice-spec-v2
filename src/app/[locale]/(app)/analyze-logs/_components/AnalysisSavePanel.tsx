@@ -7,6 +7,7 @@ import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import type { FC } from 'react';
 import { useState } from 'react';
+
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { GoogleSignInAgreement } from '@/shared/components/elements/GoogleSignInAgreement';
@@ -21,6 +22,7 @@ import { myAnalysesAtom, useUserAnalyses } from '@/shared/lib/firebase/stores/an
 import type { AnalysisVisibilityLevel } from '@/shared/lib/firebase/stores/collections';
 import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+
 import { useLogAnalysis } from './hooks/useLogAnalysis';
 
 export const SAVE_ANALYSIS_LIMIT_FREE = 3;

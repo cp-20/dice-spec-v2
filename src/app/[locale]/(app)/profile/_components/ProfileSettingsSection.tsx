@@ -3,6 +3,7 @@
 import { IconLoader2, IconPhotoUp } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
+
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { useDropzone } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/useDropzone';
 import { MyAvatar } from '@/shared/components/elements/UserAvatar';
@@ -10,10 +11,10 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
-import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 import { AvatarPreparationError, uploadAvatarFromFileToStorage } from '@/shared/lib/firebase/storage/avatars';
+import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 export const ProfileSettingsSection = () => {
   const { storage } = useFirebase();

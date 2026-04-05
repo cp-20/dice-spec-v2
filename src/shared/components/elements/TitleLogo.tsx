@@ -1,7 +1,7 @@
+import TitleLogoEN from '/public/title-logo-en.svg';
+import TitleLogoJP from '/public/title-logo.svg';
 import { t } from 'i18next';
 import type { FC } from 'react';
-import TitleLogoJP from '/public/title-logo.svg';
-import TitleLogoEN from '/public/title-logo-en.svg';
 
 interface TitleLogoProps {
   className?: string;

@@ -3,7 +3,7 @@ import { type ChildProcessWithoutNullStreams, spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import net from 'node:net';
 import { resolve } from 'node:path';
-import { getAllProcessEnv } from '../src/shared/lib/env';
+
 import {
   assertFails,
   assertSucceeds,
@@ -26,6 +26,8 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { list as storageList, ref as storageRef } from 'firebase/storage';
+
+import { getAllProcessEnv } from '../src/shared/lib/env';
 
 const PROJECT_ID = 'test-dice-spec-v2';
 const FIRESTORE_EMULATOR_HOST = '127.0.0.1';

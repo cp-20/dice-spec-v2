@@ -1,6 +1,7 @@
 import { IconChevronsRight, IconFileExport } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
+
 import { BlogCallout } from '@/app/[locale]/(app)/_components/BlogCallout';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
@@ -11,6 +12,7 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
+
 import { InputForm } from './_components/InputForm';
 import { LoadClipboardButton } from './_components/LoadClipboardButton';
 import { ResultView } from './_components/ResultView';

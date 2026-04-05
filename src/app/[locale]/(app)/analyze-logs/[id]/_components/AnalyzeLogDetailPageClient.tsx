@@ -4,12 +4,14 @@ import { IconFileOff, IconLoader2 } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { useAtomValue } from 'jotai';
 import type { FC } from 'react';
+
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { GoogleSignInAgreement } from '@/shared/components/elements/GoogleSignInAgreement';
 import { GoogleSignInButton } from '@/shared/components/elements/GoogleSignInButton';
 import { Button } from '@/shared/components/ui/button';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+
 import { AnalysisHeader } from './AnalysisHeader';
 import { AnalysisRecordsView } from './AnalysisLogView';
 import { currentAnalysisAtom, useAnalysisIdSync } from './atoms';

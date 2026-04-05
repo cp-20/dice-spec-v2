@@ -1,8 +1,10 @@
 import { clsx } from 'clsx';
 import { t } from 'i18next';
 import type { FC } from 'react';
+
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+
 import { ALL_CHARACTER_ID } from './constants';
 
 export type CharacterSelectViewProps = {

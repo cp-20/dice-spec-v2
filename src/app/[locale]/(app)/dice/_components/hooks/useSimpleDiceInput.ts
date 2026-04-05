@@ -1,5 +1,6 @@
 import { atom, useAtom } from 'jotai';
 import { useCallback } from 'react';
+
 import { useSimpleDiceRoll } from './useSimpleDiceRoll';
 
 const availableDice = ['3', '4', '6', '8', '10', '12', '20', '100'] as const;

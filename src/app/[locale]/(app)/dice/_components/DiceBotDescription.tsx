@@ -2,8 +2,10 @@
 
 import { t } from 'i18next';
 import type { FC } from 'react';
+
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { RichText } from '@/shared/components/elements/RichText';
+
 import { useAdvancedSettings } from './hooks/useAdvancedSettings';
 import { useDiceRollOption } from './hooks/useDiceRollOption';
 

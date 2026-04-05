@@ -1,5 +1,6 @@
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
+
 import { Text } from '@/shared/components/Typography/Text';
 
 export const PageDescriptionContainer: FC<ComponentProps<'div'>> = ({ className, children, ...props }) => (

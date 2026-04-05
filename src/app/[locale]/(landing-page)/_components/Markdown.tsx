@@ -1,4 +1,5 @@
 import type { FC, ReactNode } from 'react';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { cn } from '@/shared/lib/shadcn-utils';
 

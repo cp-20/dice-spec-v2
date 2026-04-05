@@ -3,7 +3,9 @@ import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 import * as v from 'valibot';
+
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+
 import { type AnalysisDocument, analysesStoreSchema, COLLECTIONS } from '../collections';
 import { internalUserFamilyAtom } from '../userStore';
 

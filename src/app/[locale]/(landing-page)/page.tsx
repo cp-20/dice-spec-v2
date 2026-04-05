@@ -1,8 +1,10 @@
+import LogoIcon from '/public/icon.svg';
 import type { IconProps } from '@tabler/icons-react';
 import { IconDice5, IconSearch, IconTimeline } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
 import type { FC } from 'react';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { Footer } from '@/shared/components/Layout/Footer';
@@ -16,7 +18,7 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
-import LogoIcon from '/public/icon.svg';
+
 import { LinkableIconPanel } from './_components/LinkableIconPanel';
 import { Panel } from './_components/Panel';
 

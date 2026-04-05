@@ -2,9 +2,11 @@
 
 import { t } from 'i18next';
 import type { FC } from 'react';
+
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
+
 import { ColorInput } from './ColorInput';
 import { useInputForm } from './hooks/useInputForm';
 import { ParameterInput } from './ParameterInput';

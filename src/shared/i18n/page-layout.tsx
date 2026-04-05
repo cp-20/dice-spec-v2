@@ -1,5 +1,6 @@
 import * as i18n from 'i18next';
 import type { NextPage } from 'next';
+
 import { i18nConfig, type Locale } from '@/shared/i18n/config';
 
 export const wrapPage = (Page: NextPage) => {

@@ -3,8 +3,10 @@
 import { t } from 'i18next';
 import type { FC, FormEventHandler } from 'react';
 import { useEffect, useState } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
+
 import { useDiceRoll } from './hooks/useDiceRoll';
 import { useDiceRollValidation } from './hooks/useDiceRollOption';
 

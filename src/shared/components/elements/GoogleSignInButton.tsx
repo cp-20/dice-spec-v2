@@ -2,6 +2,7 @@
 
 import { t } from 'i18next';
 import type { FC } from 'react';
+
 import { GoogleLogo } from '@/shared/components/elements/GoogleIcon';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 import { cn } from '@/shared/lib/shadcn-utils';

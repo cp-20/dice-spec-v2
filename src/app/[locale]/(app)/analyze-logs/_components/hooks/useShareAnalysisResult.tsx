@@ -3,15 +3,17 @@ import { toPng } from 'html-to-image';
 import { t } from 'i18next';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { type FC, useCallback, useEffect, useState } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { atomWithDebounce } from '@/shared/lib/jotai/atomWithDebounce';
+
+import { SharingAnalysisResultScreen } from '../SharingAnalysisResultScreen';
 import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
 import { useCharacterSelect } from './useCharacterSelect';
 import { useShareAnalysisResultImage } from './useShareAnalysisResultImage';
-import { SharingAnalysisResultScreen } from '../SharingAnalysisResultScreen';
 
 const imageRefAtom = atom<React.RefObject<HTMLDivElement | null> | undefined>(undefined);
 const { currentValueAtom: scenarioNameAtom, debouncedValueAtom: debouncedScenarioNameAtom } = atomWithDebounce(

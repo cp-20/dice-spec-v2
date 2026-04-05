@@ -5,13 +5,15 @@ import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 import * as v from 'valibot';
+
 import { createCustomer } from '@/features/stripe/api';
 import { toast } from '@/shared/components/ui/use-toast';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { authUserAtom, authUserLoadingAtom, useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+
+import { uploadAvatarFromUrlToStorage } from '../storage/avatars';
 import { myAnalysesAtom } from './analyses/userAnalyses';
 import { COLLECTIONS, type NewUserDocument, type PublicUser, type UserDocument, userStoreSchema } from './collections';
-import { uploadAvatarFromUrlToStorage } from '../storage/avatars';
 
 const internalMeLoadingAtom = atom(true);
 

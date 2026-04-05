@@ -1,5 +1,6 @@
 import type { Stripe } from 'stripe';
 import * as v from 'valibot';
+
 import { type HandlerDeps, type HandlerResult, StripeWebhookHandlerError } from './types';
 
 const subscriptionMetadataSchema = v.object({

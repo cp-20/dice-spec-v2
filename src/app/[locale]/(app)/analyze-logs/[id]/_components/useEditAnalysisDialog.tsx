@@ -5,6 +5,7 @@ import { Timestamp } from 'firebase/firestore';
 import { t } from 'i18next';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import {
@@ -20,6 +21,7 @@ import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { useUpdateAnalysis } from '@/shared/lib/firebase/stores/analyses/mutations';
 import type { AnalysisVisibilityLevel } from '@/shared/lib/firebase/stores/collections';
+
 import { analysisIdAtom, currentAnalysisAtom } from './atoms';
 
 interface VisibilityOption {

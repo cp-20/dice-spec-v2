@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { t } from 'i18next';
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
+
 import type { CustomLinkProps } from '@/shared/components/elements/CustomLink';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import type { NavPaths } from '@/shared/lib/navigation';

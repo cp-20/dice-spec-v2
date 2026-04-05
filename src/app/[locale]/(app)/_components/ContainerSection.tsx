@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import type { ComponentProps, FC, ReactNode } from 'react';
+
 import styles from '@/shared/styles/pretty-scrollbar.module.css';
 
 type ContainerSectionProps = {

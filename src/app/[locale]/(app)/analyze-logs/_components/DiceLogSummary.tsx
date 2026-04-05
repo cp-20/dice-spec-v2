@@ -3,11 +3,13 @@
 import { t } from 'i18next';
 import { CheckCircle2, ChevronRight, Lock, Sparkles } from 'lucide-react';
 import type { FC } from 'react';
+
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
 import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
 import { round } from '@/shared/lib/round';
+
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
 

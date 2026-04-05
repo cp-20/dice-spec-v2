@@ -1,5 +1,6 @@
 import type { FirebaseStorage } from 'firebase/storage';
 import { getDownloadURL } from 'firebase/storage';
+
 import { storagePaths, type SharedImageScope } from './paths';
 import { uploadDataUrlToStorage } from './upload';
 

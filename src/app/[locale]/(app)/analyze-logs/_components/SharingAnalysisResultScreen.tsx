@@ -1,9 +1,11 @@
-import { FC, forwardRef, ReactNode } from 'react';
-import { DiceResultForCharacter } from './hooks/ccfoliaLogAnalysis';
-import { t } from 'i18next';
-import { round } from '@/shared/lib/round';
 import LogoIcon from '/public/icon.svg';
+import { t } from 'i18next';
+import { FC, forwardRef, ReactNode } from 'react';
+
 import { TitleLogo } from '@/shared/components/elements/TitleLogo';
+import { round } from '@/shared/lib/round';
+
+import { DiceResultForCharacter } from './hooks/ccfoliaLogAnalysis';
 import { LogAnalysisRankingChartView } from './LogAnalysisRankingChartView';
 
 interface StatsProps {

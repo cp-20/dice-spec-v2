@@ -1,4 +1,5 @@
 import type { ImageLoaderProps } from 'next/image';
+
 import { buildEnv } from '@/shared/lib/env';
 
 const normalizeSrc = (src: string) => {

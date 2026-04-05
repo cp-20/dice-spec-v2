@@ -1,9 +1,11 @@
 import { atom, useSetAtom } from 'jotai';
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
+
 import { analysisAtomFamily } from '@/shared/lib/firebase/stores/analyses/singleAnalysis';
 import { analysisRecordsAtomFamily } from '@/shared/lib/firebase/stores/analysisRecordsStore';
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
+
 import { ALL_CHARACTER_ID } from '../../_components/constants';
 import { systems } from '../../_components/hooks/ccfoliaLogAnalysis/messageParser';
 

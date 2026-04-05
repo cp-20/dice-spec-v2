@@ -1,4 +1,5 @@
 import { IconDice5, IconFileExport, IconList, IconSearch, IconTimeline } from '@tabler/icons-react';
+
 import { i18nConfig } from '../i18n/config';
 
 export const navLinks = [

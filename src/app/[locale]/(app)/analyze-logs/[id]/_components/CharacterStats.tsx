@@ -1,7 +1,9 @@
 import { useAtomValue } from 'jotai';
 import type { FC } from 'react';
+
 import { LogAnalysisChartsView } from '@/app/[locale]/(app)/analyze-logs/_components/LogAnalysisChartsView';
 import { LogAnalysisRankingChartView } from '@/app/[locale]/(app)/analyze-logs/_components/LogAnalysisRankingChartView';
+
 import { LogAnalysisStatsView } from '../../_components/LogAnalysisStatsView';
 import { currentAnalysisAtom, selectedCharacterResultAtom } from './atoms';
 

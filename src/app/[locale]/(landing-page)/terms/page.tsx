@@ -1,6 +1,7 @@
 import { t } from 'i18next';
 import type { NextPage } from 'next';
 import Link from 'next/link';
+
 import { Footer } from '@/shared/components/Layout/Footer';
 import { wrapPage } from '@/shared/i18n/page-layout';
 import {
@@ -9,6 +10,7 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
+
 import { H1, H2, Li, Link as MarkdownLink, P, Section, Ul } from '../_components/Markdown';
 
 export const generateMetadata: MetadataGenerator = async (props) => {

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+
 import { i18nConfig, type Locale } from '@/shared/i18n/config';
 import { clientEnv } from '@/shared/lib/env';
 

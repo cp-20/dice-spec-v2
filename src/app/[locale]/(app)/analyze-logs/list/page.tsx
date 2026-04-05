@@ -1,16 +1,17 @@
 import { IconList } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
+
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { AnalysisListContainer } from '@/app/[locale]/(app)/analyze-logs/list/_components/AnalysisListContainer';
+import { wrapPage } from '@/shared/i18n/page-layout';
 import {
   localeHelper,
   type MetadataGenerator,
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
-import { wrapPage } from '@/shared/i18n/page-layout';
 
 export const generateMetadata: MetadataGenerator = async (props) => {
   const title = t('common:analysis-list.title');

@@ -1,7 +1,8 @@
 import type { FirebaseStorage } from 'firebase/storage';
+
+import type { AnalysisVisibilityLevel } from '../stores/collections';
 import { storagePaths } from './paths';
 import { deleteFromStorage, updateStorageMetadata, uploadDataUrlToStorage } from './upload';
-import type { AnalysisVisibilityLevel } from '../stores/collections';
 
 interface AnalysisOgImageMetadata {
   ownerUid: string;

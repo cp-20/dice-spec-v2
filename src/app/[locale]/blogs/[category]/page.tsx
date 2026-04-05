@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+
 import { metadataHelper } from '@/shared/lib/metadataGenerator';
+
 import { CategoryBreadCrumb } from '../_components/BlogBreadCrumb';
 import { BlogCard } from '../_components/BlogCard';
 import { contents } from './[slug]/_contents/contents';

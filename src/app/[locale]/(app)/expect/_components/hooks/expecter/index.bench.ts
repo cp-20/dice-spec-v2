@@ -1,4 +1,5 @@
 import { bench, run } from 'mitata';
+
 import { diceExpecter } from '.';
 
 bench('1d6', () => void diceExpecter('1d6'));

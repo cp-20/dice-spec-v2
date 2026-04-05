@@ -2,6 +2,7 @@
 
 import { t } from 'i18next';
 import type { FC } from 'react';
+
 import { calcNormalCDF, calcNormalDistribution } from '@/shared/lib/normalDistribution';
 
 const mean = 50;

@@ -1,14 +1,16 @@
 import { t } from 'i18next';
 import { useAtomValue } from 'jotai';
 import type { FC } from 'react';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { UserAvatar } from '@/shared/components/elements/UserAvatar';
 import type { AnalysisDocument } from '@/shared/lib/firebase/stores/collections';
-import { round } from '@/shared/lib/round';
-import { ALL_CHARACTER_ID } from '../../_components/constants';
-import { selectedCharacterIdAtom } from './atoms';
-import { systems } from '../../_components/hooks/ccfoliaLogAnalysis/messageParser';
 import { invariant } from '@/shared/lib/invariant';
+import { round } from '@/shared/lib/round';
+
+import { ALL_CHARACTER_ID } from '../../_components/constants';
+import { systems } from '../../_components/hooks/ccfoliaLogAnalysis/messageParser';
+import { selectedCharacterIdAtom } from './atoms';
 
 interface AnalysisCardProps {
   analysis: AnalysisDocument;

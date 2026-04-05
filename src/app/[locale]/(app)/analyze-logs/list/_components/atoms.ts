@@ -1,8 +1,10 @@
 import { IconSortAscending, IconSortAscendingNumbers } from '@tabler/icons-react';
 import { atom } from 'jotai';
+
 import { ALL_CHARACTER_ID, ALL_CHARACTER_NAME } from '@/app/[locale]/(app)/analyze-logs/_components/constants';
 import { myAnalysesAtom } from '@/shared/lib/firebase/stores/analyses/userAnalyses';
 import type { AnalysisDocument } from '@/shared/lib/firebase/stores/collections';
+
 import { systems } from '../../_components/hooks/ccfoliaLogAnalysis/messageParser';
 
 interface SortOptionItem {

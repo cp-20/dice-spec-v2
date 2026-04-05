@@ -2,7 +2,9 @@ import { IconUser } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { useAtom, useAtomValue } from 'jotai';
 import type { FC } from 'react';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+
 import {
   ALL_SYSTEM_ID,
   activeTabAtom,

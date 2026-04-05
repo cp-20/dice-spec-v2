@@ -1,6 +1,7 @@
 import { IconUser } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
+
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { wrapPage } from '@/shared/i18n/page-layout';
 import {
@@ -9,6 +10,7 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
+
 import { ProfileContent } from './_components/ProfileContent';
 
 export const generateMetadata: MetadataGenerator = async (props) => {

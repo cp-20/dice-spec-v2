@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
+
 import { useQuickInput } from './useQuickInput';
 
 describe('useQuickInput', () => {

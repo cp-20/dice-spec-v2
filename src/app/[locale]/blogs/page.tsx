@@ -1,8 +1,10 @@
 import { IconChevronRight } from '@tabler/icons-react';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { type MetadataGenerator, metadataHelper, viewportGenerator } from '@/shared/lib/metadataGenerator';
-import { BlogCard } from './_components/BlogCard';
+
 import { contents } from './[category]/[slug]/_contents/contents';
+import { BlogCard } from './_components/BlogCard';
 
 export const generateMetadata: MetadataGenerator = async () => {
   return metadataHelper({

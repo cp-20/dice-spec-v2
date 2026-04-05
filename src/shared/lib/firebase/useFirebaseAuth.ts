@@ -1,3 +1,4 @@
+import { FirebaseError } from 'firebase/app';
 import {
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -9,8 +10,8 @@ import {
 import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { useCallback } from 'react';
+
 import { useFirebase } from './useFirebase';
-import { FirebaseError } from 'firebase/app';
 
 const internalAuthUserLoadingAtom = atom(true);
 

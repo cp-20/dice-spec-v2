@@ -3,8 +3,10 @@
 import { IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { FC } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+
 import { useGameSystemRequestDialog } from './GameSystemRequest';
 import type { System } from './hooks/ccfoliaLogAnalysis';
 import { systems } from './hooks/ccfoliaLogAnalysis/messageParser';

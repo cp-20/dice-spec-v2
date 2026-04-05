@@ -2,11 +2,13 @@ import { IconChevronLeft, IconEdit, IconTimeline, IconTrash } from '@tabler/icon
 import { t } from 'i18next';
 import { useAtomValue } from 'jotai';
 import type { FC } from 'react';
+
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { UserAvatar } from '@/shared/components/elements/UserAvatar';
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+
 import { currentAnalysisAtom, isOwnerAtom, systemNameAtom } from './atoms';
 import { useDeleteAnalysisDialog } from './useDeleteAnalysisDialog';
 import { useEditAnalysisDialog } from './useEditAnalysisDialog';

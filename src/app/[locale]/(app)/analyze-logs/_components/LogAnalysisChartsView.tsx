@@ -4,8 +4,10 @@ import type { ChartOptions, Plugin } from 'chart.js';
 import merge from 'deepmerge';
 import { type FC, useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
+
 import { commonChartOption } from '@/shared/lib/commonChartOption';
 import { groupBy } from '@/shared/lib/groupBy';
+
 import type { System } from './hooks/ccfoliaLogAnalysis';
 import type { MessageParserResult } from './hooks/ccfoliaLogAnalysis/messageParser';
 import { systemStats as allSystemStats } from './hooks/ccfoliaLogAnalysis/messageParser';

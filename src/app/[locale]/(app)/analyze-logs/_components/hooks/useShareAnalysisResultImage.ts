@@ -1,17 +1,19 @@
 import { t } from 'i18next';
-import { nanoid } from 'nanoid';
 import { useAtomValue } from 'jotai';
+import { nanoid } from 'nanoid';
 import { useCallback, useTransition } from 'react';
-import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+
+import { useToast } from '@/shared/components/ui/use-toast';
+import { SHARED_IMAGE_SCOPES } from '@/shared/lib/firebase/storage/paths';
 import { uploadSharedImageToStorage } from '@/shared/lib/firebase/storage/sharedImages';
+import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
+
+import { encodeOgImageId } from '../og';
 import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
 import { useCharacterSelect } from './useCharacterSelect';
 import { sharingImageDataUrlAtom } from './useShareAnalysisResult';
-import { SHARED_IMAGE_SCOPES } from '@/shared/lib/firebase/storage/paths';
-import { encodeOgImageId } from '../og';
-import { useToast } from '@/shared/components/ui/use-toast';
 
 export const useShareAnalysisResultImage = () => {
   const [isSharingImage, startTransition] = useTransition();

@@ -1,9 +1,10 @@
 import { toPng } from 'html-to-image';
 import { useCallback, useLayoutEffect } from 'react';
 import type { ComponentType } from 'react';
-import { DiceResultForCharacter } from './ccfoliaLogAnalysis';
-import { SharingAnalysisResultScreen } from '../SharingAnalysisResultScreen';
 import { createRoot } from 'react-dom/client';
+
+import { SharingAnalysisResultScreen } from '../SharingAnalysisResultScreen';
+import { DiceResultForCharacter } from './ccfoliaLogAnalysis';
 
 type RenderNotifierProps<Props extends object = object> = {
   Component: ComponentType<Props>;

@@ -2,6 +2,9 @@ import type { FirebaseOptions } from 'firebase/app';
 import { FirebaseError, getApp, getApps, initializeApp } from 'firebase/app';
 import { getDownloadURL, getStorage, ref } from 'firebase/storage';
 import { t } from 'i18next';
+
+import { wrapPage } from '@/shared/i18n/page-layout';
+import { mixedEnv } from '@/shared/lib/env';
 import { storagePaths } from '@/shared/lib/firebase/storage/paths';
 import {
   localeHelper,
@@ -9,9 +12,8 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
+
 import AnalyzeLogDetailPageClient from './_components/AnalyzeLogDetailPageClient';
-import { wrapPage } from '@/shared/i18n/page-layout';
-import { mixedEnv } from '@/shared/lib/env';
 
 const getAnalysisOgpUrl = async (analysisId: string) => {
   const firebaseConfig: FirebaseOptions = {

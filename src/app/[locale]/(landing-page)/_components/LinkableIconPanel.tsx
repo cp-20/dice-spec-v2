@@ -1,6 +1,7 @@
 import type { IconProps } from '@tabler/icons-react';
 import type { FC, ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
+
 import type { CustomLinkProps } from '@/shared/components/elements/CustomLink';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 

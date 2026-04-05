@@ -1,5 +1,6 @@
 import { type FieldValue, Timestamp } from 'firebase/firestore';
 import * as v from 'valibot';
+
 import type {
   DiceResultForCharacter,
   System,

@@ -1,4 +1,5 @@
 import { hc } from 'hono/client';
+
 import type { AppType } from '@/app/api/stripe/[...path]/route';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import type { BillingInterval } from '@/shared/lib/stripe/config';

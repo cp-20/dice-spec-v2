@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+
 import { BlogBreadCrumb } from '@/app/[locale]/blogs/_components/BlogBreadCrumb';
 import { appBaseUrl, metadataHelper } from '@/shared/lib/metadataGenerator';
+
 import { contents } from './_contents/contents';
 
 type Params = {

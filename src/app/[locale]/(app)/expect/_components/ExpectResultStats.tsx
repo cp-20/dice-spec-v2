@@ -2,8 +2,10 @@
 
 import { t } from 'i18next';
 import type { FC, ReactNode } from 'react';
+
 import { Stats } from '@/shared/components/elements/Stats';
 import { round } from '@/shared/lib/round';
+
 import type { DiceExpecterResult, SuccessExpectResult } from './hooks/expecter';
 import { useDiceExpecterResult } from './hooks/useDiceExpecter';
 

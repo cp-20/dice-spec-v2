@@ -1,4 +1,5 @@
 import type { InitOptions } from 'i18next';
+
 import { en } from './en';
 import { ja } from './ja';
 

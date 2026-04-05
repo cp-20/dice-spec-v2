@@ -1,6 +1,8 @@
 import { IconChevronRight } from '@tabler/icons-react';
 import Image from 'next/image';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
+
 import { contents } from '../_contents/contents';
 
 type Props = {

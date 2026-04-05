@@ -5,6 +5,7 @@ import { t } from 'i18next';
 import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
@@ -15,6 +16,7 @@ import {
   DialogTitle,
 } from '@/shared/components/ui/dialog';
 import { useDeleteAnalysis } from '@/shared/lib/firebase/stores/analyses/mutations';
+
 import { analysisIdAtom } from './atoms';
 
 export const useDeleteAnalysisDialog = () => {

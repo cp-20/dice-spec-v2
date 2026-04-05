@@ -1,6 +1,7 @@
 import { t } from 'i18next';
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
+
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 
 interface LogResult {

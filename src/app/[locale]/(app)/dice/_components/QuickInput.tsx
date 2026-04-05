@@ -5,11 +5,14 @@ import clsx from 'clsx';
 import { t } from 'i18next';
 import type { FC } from 'react';
 import { Trans } from 'react-i18next';
+
 import { Button } from '@/shared/components/ui/button';
 import { isOldApp } from '@/shared/lib/const';
-import styles from '@/shared/styles/pretty-scrollbar.module.css';
+
 import { useDiceRoll } from './hooks/useDiceRoll';
 import { useQuickInput } from './hooks/useQuickInput';
+
+import styles from '@/shared/styles/pretty-scrollbar.module.css';
 
 export const QuickInput: FC = () => {
   const { items, updateItem } = useQuickInput();

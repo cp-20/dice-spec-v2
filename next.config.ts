@@ -2,6 +2,7 @@ import withBundleAnalyzerFn from '@next/bundle-analyzer';
 import withMDXFn from '@next/mdx';
 import { withSentryConfig } from '@sentry/nextjs';
 import withPWAFn from 'next-pwa';
+
 import { buildEnv } from './src/shared/lib/env';
 
 const nextConfig = {

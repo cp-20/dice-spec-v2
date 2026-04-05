@@ -1,5 +1,6 @@
-import type { FC } from 'react';
 import Script from 'next/script';
+import type { FC } from 'react';
+
 import { clientEnv } from '../lib/env';
 
 export const GoogleTagManager: FC = () => {

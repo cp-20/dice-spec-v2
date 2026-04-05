@@ -1,8 +1,10 @@
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { useEffect } from 'react';
+
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
+
 import { ALL_CHARACTER_ID } from '../constants';
 import { analyzeCcfoliaLog, type DiceResultForCharacter, type System } from './ccfoliaLogAnalysis';
 import { detectSystem } from './ccfoliaLogAnalysis/detector';

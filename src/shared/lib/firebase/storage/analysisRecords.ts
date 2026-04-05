@@ -1,12 +1,13 @@
 import type { FirebaseStorage } from 'firebase/storage';
-import { storagePaths } from './paths';
-import { deleteFromStorage, downloadTextFromStorage, updateStorageMetadata, uploadTextToStorage } from './upload';
 import * as v from 'valibot';
+
 import {
   analysisRecordsContentSchema,
   type AnalysisRecordsDocument,
   type AnalysisVisibilityLevel,
 } from '../stores/collections';
+import { storagePaths } from './paths';
+import { deleteFromStorage, downloadTextFromStorage, updateStorageMetadata, uploadTextToStorage } from './upload';
 
 const analysisRecordsCache = new Map<string, Promise<AnalysisRecordsDocument> | AnalysisRecordsDocument>();
 

@@ -1,6 +1,7 @@
 'use client';
 
 import type { FC } from 'react';
+
 import { DiceLogListView } from './DiceLogListView';
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { useCharacterSelect } from './hooks/useCharacterSelect';

@@ -3,10 +3,12 @@
 import { t } from 'i18next';
 import { useAtom } from 'jotai';
 import type { FC } from 'react';
+
 import { GoogleSignInAgreement } from '@/shared/components/elements/GoogleSignInAgreement';
 import { GoogleSignInButton } from '@/shared/components/elements/GoogleSignInButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+
 import { AnalysisFilters } from './AnalysisFilters';
 import { activeTabAtom } from './atoms';
 import { MyAnalysisList } from './MyAnalysisList';

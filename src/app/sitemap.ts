@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+
 import { contents } from '@/app/[locale]/blogs/[category]/[slug]/_contents/contents';
 import { i18nConfig } from '@/shared/i18n/config';
 import { constructAlternateUrls, constructLocaleUrl } from '@/shared/lib/metadataGenerator';

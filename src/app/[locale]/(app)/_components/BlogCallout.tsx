@@ -1,5 +1,6 @@
 import { t } from 'i18next';
 import type { FC } from 'react';
+
 import { BlogCard } from '@/app/[locale]/blogs/_components/BlogCard';
 
 export const BlogCallout: FC = () => {

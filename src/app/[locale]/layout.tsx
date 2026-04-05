@@ -2,11 +2,13 @@ import '@/shared/styles/globals.css';
 import clsx from 'clsx';
 import { Next13NProgress } from 'nextjs13-progress';
 import type { FC, ReactNode } from 'react';
+
 import { WebVitals } from '@/shared/components/elements/WebVitals';
 import { GoogleTagManager } from '@/shared/components/GoogleTagManager';
 import { I18nProvider } from '@/shared/i18n/client-layout';
 import { wrapRootLayout } from '@/shared/i18n/server-layout';
 import { isOldApp } from '@/shared/lib/const';
+
 import {
   MigrationAnnouncementBanner,
   OldAppMigrationAnnouncementBanner,

@@ -1,5 +1,6 @@
 import type { MDXComponents } from 'mdx/types';
 import type { FC, ReactNode } from 'react';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 
 const components: MDXComponents = {

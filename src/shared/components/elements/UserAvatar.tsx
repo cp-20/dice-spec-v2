@@ -1,5 +1,6 @@
 import { IconUserFilled } from '@tabler/icons-react';
 import type { FC } from 'react';
+
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useMeStore, useUserStore } from '@/shared/lib/firebase/stores/userStore';
 

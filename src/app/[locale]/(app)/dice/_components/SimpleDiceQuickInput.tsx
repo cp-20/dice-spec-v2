@@ -1,7 +1,9 @@
 'use client';
 
 import { type FC, useCallback } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
+
 import type { SimpleDices } from './hooks/useSimpleDiceInput';
 import { formatSimpleDices, useSimpleDiceRoll } from './hooks/useSimpleDiceRoll';
 

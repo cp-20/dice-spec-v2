@@ -1,6 +1,7 @@
 'use client';
 
 import type { FC } from 'react';
+
 import { Header } from '@/shared/components/Layout/Header';
 import { Toaster } from '@/shared/components/ui/toaster';
 

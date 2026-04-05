@@ -1,9 +1,11 @@
 import { t } from 'i18next';
 import { useAtomValue } from 'jotai';
 import type { FC } from 'react';
+
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { DiceLogListView } from '@/app/[locale]/(app)/analyze-logs/_components/DiceLogListView';
 import { DiceLogSummaryView } from '@/app/[locale]/(app)/analyze-logs/_components/DiceLogSummary';
+
 import { canViewRecordsAtom, currentAnalysisRecordsAtom } from './atoms';
 
 export const AnalysisRecordsView: FC = () => {

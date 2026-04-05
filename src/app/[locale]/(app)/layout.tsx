@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import type { FC, ReactNode } from 'react';
+
 import { BottomNavigation } from '@/shared/components/Layout/BottomNavigation';
 import { Footer } from '@/shared/components/Layout/Footer';
 import { Header } from '@/shared/components/Layout/Header';

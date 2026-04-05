@@ -3,6 +3,7 @@
 import { IconCheck, IconLoader2 } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { useState } from 'react';
+
 import { createCheckoutSession } from '@/features/stripe/api';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
