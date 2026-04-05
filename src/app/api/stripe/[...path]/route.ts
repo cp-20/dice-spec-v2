@@ -259,7 +259,7 @@ const app = new Hono()
         eventType: 'create-customer',
         message: 'Failed to create customer',
         userId,
-        details: { email, name },
+        details: { userId },
         error,
       });
       return c.json({ error: 'Failed to create customer' }, 500);
