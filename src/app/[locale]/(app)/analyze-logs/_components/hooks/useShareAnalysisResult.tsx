@@ -141,7 +141,7 @@ const SharingAnalysisResult: FC = () => {
   const { character } = useCharacterSelect();
   const analysisResult = useCharacterLogAnalysis(character);
 
-  const scenarioName = useAtomValue(scenarioNameAtom);
+  const debouncedScenarioName = useAtomValue(debouncedScenarioNameAtom);
   const setImageRef = useSetAtom(imageRefAtom);
   const imageRefCallback = useCallback(
     (node: HTMLDivElement | null) => {
@@ -157,13 +157,17 @@ const SharingAnalysisResult: FC = () => {
   // biome-ignore lint/correctness/useExhaustiveDependencies: regenerate image after every render
   useEffect(() => {
     regenerateImage();
-  }, [regenerateImage, analysisResult, scenarioName]);
+  }, [regenerateImage, analysisResult, debouncedScenarioName]);
 
   if (analysisResult === undefined) {
     return null;
   }
 
   return (
-    <SharingAnalysisResultScreen ref={imageRefCallback} scenarioName={scenarioName} analysisResult={analysisResult} />
+    <SharingAnalysisResultScreen
+      ref={imageRefCallback}
+      scenarioName={debouncedScenarioName}
+      analysisResult={analysisResult}
+    />
   );
 };
