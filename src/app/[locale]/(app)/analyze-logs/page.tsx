@@ -23,18 +23,37 @@ import { LogAnalysisRankingChart } from './_components/LogAnalysisRankingChart';
 import { LogAnalysisShareButton } from './_components/LogAnalysisShareButton';
 import { LogAnalysisStats } from './_components/LogAnalysisStats';
 import { UploadLogFileButton } from './_components/UploadLogFileButton';
+import { SHARED_IMAGE_SCOPES, storagePaths } from '@/shared/lib/firebase/storage/paths';
+import { decodeOgImageId } from './_components/og';
 
-export const generateMetadata: MetadataGenerator = async (props) => {
-  const ogpImageRegex = new RegExp(
+// @opennextjs/aws のバグによって `%2F` のエンコーディングが勝手に `/` に変換されるので、`/` を含むパスだと上手く行かない
+// ので、id だけをエンコードすることで回避する (その方がURLも短くなる)
+// ref: https://github.com/opennextjs/opennextjs-aws/issues/1133
+const getOgImageUrl = (ogp: string | string[] | undefined) => {
+  if (typeof ogp !== 'string') return undefined;
+
+  const legacyOgImageRegex = new RegExp(
     `^https://firebasestorage.googleapis.com/v0/b/${mixedEnv.firebaseStorageBucket}/o/.+`,
   );
 
+  if (legacyOgImageRegex.test(ogp)) {
+    return ogp;
+  }
+
+  const decodedId = decodeOgImageId(ogp);
+  if (decodedId !== null) {
+    const path = storagePaths.getSharedImagePath(SHARED_IMAGE_SCOPES['analyze-logs'], decodedId);
+    return `https://firebasestorage.googleapis.com/v0/b/${mixedEnv.firebaseStorageBucket}/o/${encodeURIComponent(path)}?alt=media`;
+  }
+
+  return undefined;
+};
+
+export const generateMetadata: MetadataGenerator = async (props) => {
   const searchParams = await props.searchParams;
   const title = t('common:analyze-logs.title');
   const description = t('analyze-logs:usage1');
-  const ogp =
-    typeof searchParams.ogp === 'string' && ogpImageRegex.test(searchParams.ogp) ? searchParams.ogp : undefined;
-
+  const ogp = getOgImageUrl(searchParams.ogp);
   const locale = await localeHelper(props);
 
   const metadata = metadataHelper({

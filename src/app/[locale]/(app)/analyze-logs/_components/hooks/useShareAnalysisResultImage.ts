@@ -9,6 +9,8 @@ import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
 import { useCharacterSelect } from './useCharacterSelect';
 import { sharingImageDataUrlAtom } from './useShareAnalysisResult';
+import { SHARED_IMAGE_SCOPES } from '@/shared/lib/firebase/storage/paths';
+import { encodeOgImageId } from '../og';
 
 export const useShareAnalysisResultImage = () => {
   const [isSharingImage, startTransition] = useTransition();
@@ -46,9 +48,14 @@ export const useShareAnalysisResultImage = () => {
     startTransition(async () => {
       try {
         const imageId = nanoid(32);
-        const imageUrl = await uploadSharedImageToStorage(storage, 'analyze-logs', imageId, sharingImageDataUrl);
+        const imageUrl = await uploadSharedImageToStorage(
+          storage,
+          SHARED_IMAGE_SCOPES['analyze-logs'],
+          imageId,
+          sharingImageDataUrl,
+        );
         sendEvent('shareImage', imageUrl);
-        const ogp = encodeURIComponent(imageUrl);
+        const ogp = encodeOgImageId(imageId);
         const url = encodeURIComponent(`https://dicespec.app/analyze-logs?ogp=${ogp}`);
         const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
         window.open(href, '_blank');

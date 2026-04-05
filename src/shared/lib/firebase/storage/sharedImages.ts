@@ -1,11 +1,11 @@
 import type { FirebaseStorage } from 'firebase/storage';
 import { getDownloadURL } from 'firebase/storage';
-import { storagePaths } from './paths';
+import { storagePaths, type SharedImageScope } from './paths';
 import { uploadDataUrlToStorage } from './upload';
 
 export const uploadSharedImageToStorage = async (
   storage: FirebaseStorage,
-  scope: string,
+  scope: SharedImageScope,
   imageId: string,
   dataUrl: string,
 ) => {
