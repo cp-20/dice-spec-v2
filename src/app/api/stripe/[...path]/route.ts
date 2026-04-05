@@ -100,12 +100,12 @@ const { handleCheckoutCompleted, handleSubscriptionUpdated, handleSubscriptionDe
 const processHandlerResult = async (result: HandlerResult) => {
   if (result.ok) {
     if (result.log) {
-      await sendStripeLog(result.log);
+      sendStripeLog(result.log);
     }
     return;
   }
 
-  await sendStripeLog({
+  sendStripeLog({
     level: result.error.fatal ? 'error' : 'warning',
     eventType: result.error.eventType,
     message: result.error.message,
@@ -125,7 +125,7 @@ const constructStripeEvent = async (body: string, signature: string) => {
   } catch (error) {
     // FIXME: Invalid Signature とそれ以外を区別する
     console.error('Webhook signature verification failed:', error);
-    await sendStripeLog({
+    sendStripeLog({
       level: 'warning',
       eventType: 'webhook',
       message: 'Webhook signature verification failed',
@@ -151,7 +151,7 @@ const getBearerToken = (authorizationHeader: string | undefined) => {
 const getAuthenticatedUser = async (authorizationHeader: string | undefined, eventType: string) => {
   const idToken = getBearerToken(authorizationHeader);
   if (!idToken) {
-    await sendStripeLog({
+    sendStripeLog({
       level: 'warning',
       eventType,
       message: 'Missing or invalid authorization header',
@@ -163,7 +163,7 @@ const getAuthenticatedUser = async (authorizationHeader: string | undefined, eve
     const user = await lookupFirebaseUserByIdToken(idToken);
 
     if (!user?.localId) {
-      await sendStripeLog({
+      sendStripeLog({
         level: 'warning',
         eventType,
         message: 'No Firebase user was resolved from ID token',
@@ -172,7 +172,7 @@ const getAuthenticatedUser = async (authorizationHeader: string | undefined, eve
     }
 
     if (!user.email || !user.displayName) {
-      await sendStripeLog({
+      sendStripeLog({
         level: 'warning',
         eventType,
         message: 'Authenticated user is missing email or name',
@@ -186,7 +186,7 @@ const getAuthenticatedUser = async (authorizationHeader: string | undefined, eve
     return { uid, email, name };
   } catch (error) {
     console.error('Failed to verify Firebase ID token:', error);
-    await sendStripeLog({
+    sendStripeLog({
       level: 'warning',
       eventType,
       message: 'Firebase ID token verification failed',
@@ -254,7 +254,7 @@ const app = new Hono()
       return c.json({ customerId: customer.id });
     } catch (error) {
       console.error('Error creating customer:', error);
-      await sendStripeLog({
+      sendStripeLog({
         level: 'error',
         eventType: 'create-customer',
         message: 'Failed to create customer',
@@ -303,7 +303,7 @@ const app = new Hono()
       return c.json({ sessionId: session.id, url: session.url });
     } catch (error) {
       console.error('Error creating checkout session:', error);
-      await sendStripeLog({
+      sendStripeLog({
         level: 'error',
         eventType: 'create-checkout-session',
         message: 'Failed to create checkout session',
@@ -337,7 +337,7 @@ const app = new Hono()
       return c.json({ url: session.url });
     } catch (error) {
       console.error('Error creating portal session:', error);
-      await sendStripeLog({
+      sendStripeLog({
         level: 'error',
         eventType: 'create-portal-session',
         message: 'Failed to create portal session',
@@ -353,7 +353,7 @@ const app = new Hono()
     const signature = c.req.header('stripe-signature');
 
     if (!signature) {
-      await sendStripeLog({
+      sendStripeLog({
         level: 'warning',
         eventType: 'webhook',
         message: 'Missing Stripe signature',
@@ -395,7 +395,7 @@ const app = new Hono()
 
         default: {
           console.log(`Unhandled event type: ${event.type}`);
-          await sendStripeLog({
+          sendStripeLog({
             level: 'info',
             eventType: event.type,
             message: 'Unhandled webhook event type',
@@ -408,7 +408,7 @@ const app = new Hono()
     } catch (error) {
       if (!(error instanceof StripeWebhookHandlerError)) {
         console.error('Error processing webhook:', error);
-        await sendStripeLog({
+        sendStripeLog({
           level: 'error',
           eventType: 'webhook',
           message: 'Webhook processing failed',
