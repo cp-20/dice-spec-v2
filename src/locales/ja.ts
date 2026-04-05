@@ -237,6 +237,8 @@ export const ja = {
       'image-alt': '解析結果シェア画像のプレビュー',
       'share-text':
         '▼あなたのダイス結果を分析した結果▼\n\n平均: {{average}}\nダイス偏差値: {{deviationScore}}\n成功率: {{successRate}}\nダイスを振った回数: {{diceRollCount}}回\n\n#ダイススペック\n',
+      'share-image-failed': '画像のシェアに失敗しました',
+      'share-image-failed-description': '画像の生成またはアップロードに失敗しました。時間をおいて再度お試しください。',
     },
     chart: {
       top: '上位',

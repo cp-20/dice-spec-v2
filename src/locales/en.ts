@@ -235,6 +235,8 @@ export const en = {
       'image-alt': 'Preview of the share image for analysis results',
       'share-text':
         '▼Your analyzed dice results▼\n\nMean: {{average}}\nDice deviation score: {{deviationScore}}\nSuccess rate: {{successRate}}\nDice rolls: {{diceRollCount}}\n\n#DiceSpec\n',
+      'share-image-failed': 'Failed to share image',
+      'share-image-failed-description': 'Failed to generate or upload the image. Please try again later.',
     },
     chart: {
       top: 'Top',

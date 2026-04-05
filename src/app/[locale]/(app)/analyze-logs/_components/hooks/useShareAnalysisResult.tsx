@@ -100,7 +100,11 @@ export const useShareAnalysisResult = () => {
 
                 <SharingImagePreview />
 
-                <Button className="w-full" onClick={shareImage} disabled={isSharingImage}>
+                <Button
+                  className="w-full"
+                  onClick={() => shareImage(() => setDialogOpen(false))}
+                  disabled={isSharingImage}
+                >
                   {isSharingImage ? (
                     <span className="opacity-70 inline-flex gap-2 items-center">
                       <IconLoader className="animate-spin size-5" />
