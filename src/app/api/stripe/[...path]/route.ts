@@ -123,6 +123,7 @@ const constructStripeEvent = async (body: string, signature: string) => {
   try {
     return getStripeClient().webhooks.constructEvent(body, signature, runtimeEnv.stripe.webhookSecret);
   } catch (error) {
+    // FIXME: Invalid Signature とそれ以外を区別する
     console.error('Webhook signature verification failed:', error);
     await sendStripeLog({
       level: 'warning',
