@@ -108,7 +108,7 @@ const buildDiscordFields = (log: StripeLog): { name: string; value: string; inli
   const fields: { name: string; value: string; inline?: boolean }[] = [
     {
       name: 'Event Type',
-      value: formatDetailValue(log.eventType),
+      value: `\`${formatDetailValue(log.eventType)}\``,
       inline: true,
     },
   ];
@@ -116,7 +116,7 @@ const buildDiscordFields = (log: StripeLog): { name: string; value: string; inli
   if (log.userId) {
     fields.push({
       name: 'User ID',
-      value: formatDetailValue(log.userId),
+      value: `\`${formatDetailValue(log.userId)}\``,
       inline: true,
     });
   }
@@ -130,7 +130,7 @@ const buildDiscordFields = (log: StripeLog): { name: string; value: string; inli
       const valueText = formatDetailValue(value);
       fields.push({
         name: formatFieldName(key),
-        value: valueText,
+        value: `\`${valueText}\``,
         inline: valueText.length <= 48,
       });
     }
@@ -139,7 +139,7 @@ const buildDiscordFields = (log: StripeLog): { name: string; value: string; inli
   if (log.error && fields.length < DISCORD_MAX_FIELDS) {
     fields.push({
       name: 'Error',
-      value: formatDetailValue(getErrorSummary(log.error)),
+      value: `\`${formatDetailValue(getErrorSummary(log.error))}\``,
       inline: false,
     });
   }
