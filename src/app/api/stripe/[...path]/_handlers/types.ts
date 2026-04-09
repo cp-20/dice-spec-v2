@@ -6,15 +6,23 @@ type GetUserById = (userId: string) => Promise<UserDocument | null>;
 
 type UpdateUserById = (userId: string, data: Record<string, unknown>) => Promise<void>;
 
+type GetSubscriptionById = (subscriptionId: string) => Promise<Stripe.Subscription>;
+
 export type CheckoutSessionPayload = Stripe.Checkout.Session;
 
 export type SubscriptionPayload = Stripe.Subscription;
 
 export type InvoicePayload = Stripe.Invoice;
 
+export type SubscriptionUpdatedPayload = {
+  subscription: SubscriptionPayload;
+  previousAttributes?: Record<string, unknown>;
+};
+
 export type HandlerDeps = {
   getUserById: GetUserById;
   updateUserById: UpdateUserById;
+  getSubscriptionById: GetSubscriptionById;
 };
 
 type HandlerLogLevel = 'info' | 'success' | 'warning';

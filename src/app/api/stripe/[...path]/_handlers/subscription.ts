@@ -1,12 +1,14 @@
-import type { Stripe } from 'stripe';
 import * as v from 'valibot';
 
-import type { HandlerDeps, HandlerResult, SubscriptionPayload } from './types';
+import type { BillingInterval } from '@/shared/lib/stripe/config';
+
+import type { HandlerDeps, HandlerResult, SubscriptionPayload, SubscriptionUpdatedPayload } from './types';
 import { StripeWebhookHandlerError } from './types';
 
 const subscriptionMetadataSchema = v.object({
   type: v.literal('subscription.pro'),
   userId: v.string(),
+  interval: v.picklist(['monthly', 'yearly']),
 });
 
 const PLAN_VALUES = ['free', 'pro'] as const;
@@ -40,8 +42,114 @@ const calcRemainingDays = (unixTime: number | null | undefined): number | null =
   return Math.max(0, Math.ceil(remainingMillis / millisPerDay));
 };
 
+const readPreviousBoolean = (
+  previousAttributes: Record<string, unknown> | undefined,
+  key: string,
+): boolean | undefined => {
+  if (!previousAttributes) {
+    return undefined;
+  }
+
+  const value = previousAttributes[key];
+  return typeof value === 'boolean' ? value : undefined;
+};
+
+const readPreviousString = (
+  previousAttributes: Record<string, unknown> | undefined,
+  key: string,
+): string | undefined => {
+  if (!previousAttributes) {
+    return undefined;
+  }
+
+  const value = previousAttributes[key];
+  return typeof value === 'string' ? value : undefined;
+};
+
+type SubscriptionUpdateAction =
+  | 'cancellation_scheduled'
+  | 'cancellation_resumed'
+  | 'subscription_status_changed'
+  | 'subscription_updated';
+
+const resolveSubscriptionUpdateMessage = (
+  action: SubscriptionUpdateAction,
+  status: SubscriptionPayload['status'],
+  previousStatus: string | undefined,
+  cancelAt: string | null,
+  remainingDays: number | null,
+) => {
+  switch (action) {
+    case 'cancellation_scheduled': {
+      const daysText = remainingDays === null ? '不明' : `${remainingDays}日`;
+      const cancelAtText = cancelAt ?? '不明';
+      return `サブスクリプションの解約が予約されました (終了予定: ${cancelAtText}, 残り ${daysText})`;
+    }
+    case 'cancellation_resumed':
+      return 'サブスクリプションの解約予約が取り消されました (契約は継続されます)';
+    case 'subscription_status_changed':
+      return `サブスクリプションの状態が ${previousStatus ?? 'unknown'} から ${status} に更新されました`;
+    case 'subscription_updated':
+      return 'サブスクリプション情報が更新されました';
+    default: {
+      const _: never = action;
+      return 'サブスクリプション情報が更新されました';
+    }
+  }
+};
+
+const resolveCreatedMessage = (billingInterval: BillingInterval): string => {
+  switch (billingInterval) {
+    case 'monthly':
+      return 'プロプラン (月額) のサブスクリプションが作成されました';
+    case 'yearly':
+      return 'プロプラン (年額) のサブスクリプションが作成されました';
+    default:
+      const _: never = billingInterval;
+      return 'プロプランのサブスクリプションが作成されました';
+  }
+};
+
+export const createSubscriptionCreatedHandler = (_: HandlerDeps) => {
+  return async (subscription: SubscriptionPayload): Promise<HandlerResult> => {
+    const metadata = v.safeParse(subscriptionMetadataSchema, subscription.metadata);
+    if (!metadata.success) {
+      return {
+        ok: false,
+        error: new StripeWebhookHandlerError({
+          message: 'Invalid subscription metadata',
+          eventType: 'customer.subscription.created',
+          details: { subscriptionId: subscription.id, metadata: subscription.metadata, errors: metadata.issues },
+          fatal: false,
+        }),
+      };
+    }
+
+    const { userId, interval } = metadata.output;
+
+    return {
+      ok: true,
+      log: {
+        level: 'success',
+        eventType: 'customer.subscription.created',
+        message: resolveCreatedMessage(interval),
+        userId,
+        details: {
+          action: 'subscription_created',
+          subscriptionId: subscription.id,
+          status: subscription.status,
+          billingInterval: interval,
+          cancelAtPeriodEnd: subscription.cancel_at_period_end,
+          cancelAt: formatUnixTimeToIso(subscription.cancel_at),
+          canceledAt: formatUnixTimeToIso(subscription.canceled_at),
+        },
+      },
+    };
+  };
+};
+
 export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById }: HandlerDeps) => {
-  return async (subscription: Stripe.Subscription): Promise<HandlerResult> => {
+  return async ({ subscription, previousAttributes }: SubscriptionUpdatedPayload): Promise<HandlerResult> => {
     const metadata = v.safeParse(subscriptionMetadataSchema, subscription.metadata);
     if (!metadata.success) {
       return {
@@ -55,7 +163,7 @@ export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById }
       };
     }
 
-    const { userId } = metadata.output;
+    const { userId, interval } = metadata.output;
 
     try {
       const status = subscription.status;
@@ -66,10 +174,20 @@ export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById }
       const remainingDays = calcRemainingDays(subscription.cancel_at);
       const cancelAt = formatUnixTimeToIso(subscription.cancel_at);
       const canceledAt = formatUnixTimeToIso(subscription.canceled_at);
+      const endedAt = formatUnixTimeToIso(subscription.ended_at);
+      const previousCancelAtPeriodEnd = readPreviousBoolean(previousAttributes, 'cancel_at_period_end');
+      const previousStatus = readPreviousString(previousAttributes, 'status');
 
-      const message = subscription.cancel_at_period_end
-        ? `サブスクリプションは解約予約されました（あと${remainingDays ?? '-'}日で終了予定）`
-        : 'サブスクリプションが更新されました';
+      const action: SubscriptionUpdateAction =
+        previousCancelAtPeriodEnd === false && subscription.cancel_at_period_end
+          ? 'cancellation_scheduled'
+          : previousCancelAtPeriodEnd === true && !subscription.cancel_at_period_end
+            ? 'cancellation_resumed'
+            : previousStatus && previousStatus !== status
+              ? 'subscription_status_changed'
+              : 'subscription_updated';
+
+      const message = resolveSubscriptionUpdateMessage(action, status, previousStatus, cancelAt, remainingDays);
 
       await updateUserById(userId, {
         plan: nextPlan,
@@ -84,8 +202,11 @@ export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById }
           message,
           userId,
           details: {
+            action,
             subscriptionId: subscription.id,
             status,
+            previousStatus,
+            billingInterval: interval,
             changes: {
               plan: {
                 before: previousPlan,
@@ -96,6 +217,10 @@ export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById }
             remainingDays,
             cancelAt,
             canceledAt,
+            endedAt,
+            cancellationReason: subscription.cancellation_details?.reason,
+            cancellationFeedback: subscription.cancellation_details?.feedback,
+            hasCancellationComment: Boolean(subscription.cancellation_details?.comment),
           },
         },
       };
@@ -129,7 +254,7 @@ export const createSubscriptionDeletedHandler = ({ getUserById, updateUserById }
       };
     }
 
-    const { userId } = metadata.output;
+    const { userId, interval } = metadata.output;
 
     try {
       const userDoc = await getUserById(userId);
@@ -147,10 +272,13 @@ export const createSubscriptionDeletedHandler = ({ getUserById, updateUserById }
         log: {
           level: 'success',
           eventType: 'customer.subscription.deleted',
-          message: 'サブスクリプションが解除されました',
+          message: 'サブスクリプションが終了し、無料プランに移行しました',
           userId,
           details: {
+            action: 'subscription_expired',
             subscriptionId: subscription.id,
+            status: subscription.status,
+            billingInterval: interval,
             changes: {
               plan: {
                 before: previousPlan,
@@ -160,6 +288,9 @@ export const createSubscriptionDeletedHandler = ({ getUserById, updateUserById }
             endedAt,
             canceledAt,
             cancelAt: formatUnixTimeToIso(subscription.cancel_at),
+            cancellationReason: subscription.cancellation_details?.reason,
+            cancellationFeedback: subscription.cancellation_details?.feedback,
+            hasCancellationComment: Boolean(subscription.cancellation_details?.comment),
           },
         },
       };

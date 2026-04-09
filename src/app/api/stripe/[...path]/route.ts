@@ -67,6 +67,12 @@ const updateUserById = async (userId: string, data: Record<string, unknown>) => 
   await getFirestoreClient().update('users', userId, data);
 };
 
+const getSubscriptionById = async (subscriptionId: string) => {
+  return getStripeClient().subscriptions.retrieve(subscriptionId, {
+    expand: ['discounts'],
+  });
+};
+
 type IdentityToolkitLookupResponse = {
   users?: Array<{
     localId?: string;
@@ -101,13 +107,36 @@ const lookupFirebaseUserByIdToken = async (idToken: string) => {
   return payload.users?.[0] ?? null;
 };
 
-const { handleCheckoutCompleted, handleSubscriptionUpdated, handleSubscriptionDeleted, handleCustomerCreated } =
-  createStripeHandlers({ getUserById, updateUserById });
+const {
+  handleCheckoutCompleted,
+  handleSubscriptionCreated,
+  handleSubscriptionUpdated,
+  handleSubscriptionDeleted,
+  handleCustomerCreated,
+  handleInvoicePaid,
+  handleInvoicePaymentFailed,
+} = createStripeHandlers({ getUserById, updateUserById, getSubscriptionById });
 
-const processHandlerResult = async (result: HandlerResult) => {
+const appendEventContext = (details: Record<string, unknown> | undefined, event: Stripe.Event | undefined) => {
+  if (!event) {
+    return details;
+  }
+
+  return {
+    ...details,
+    eventId: event.id,
+    eventCreatedAt: new Date(event.created * 1000).toISOString(),
+    livemode: event.livemode,
+  };
+};
+
+const processHandlerResult = async (result: HandlerResult, event: Stripe.Event | undefined) => {
   if (result.ok) {
     if (result.log) {
-      scheduleStripeLog(result.log);
+      scheduleStripeLog({
+        ...result.log,
+        details: appendEventContext(result.log.details, event),
+      });
     }
     return;
   }
@@ -117,7 +146,7 @@ const processHandlerResult = async (result: HandlerResult) => {
     eventType: result.error.eventType,
     message: result.error.message,
     userId: result.error.userId,
-    details: result.error.details,
+    details: appendEventContext(result.error.details, event),
     error: result.error.cause ?? result.error,
   });
 
@@ -289,7 +318,7 @@ const app = new Hono()
         return c.json({ error: 'Stripe customer not found' }, 400);
       }
 
-      const metadata = { type, userId };
+      const metadata = { type, userId, interval };
 
       const session = await getStripeClient().checkout.sessions.create({
         mode: 'subscription',
@@ -377,22 +406,43 @@ const app = new Hono()
     try {
       switch (event.type) {
         case 'checkout.session.completed': {
-          await processHandlerResult(await handleCheckoutCompleted(event.data.object));
+          await processHandlerResult(await handleCheckoutCompleted(event.data.object), event);
+          break;
+        }
+
+        case 'customer.subscription.created': {
+          await processHandlerResult(await handleSubscriptionCreated(event.data.object), event);
           break;
         }
 
         case 'customer.subscription.updated': {
-          await processHandlerResult(await handleSubscriptionUpdated(event.data.object));
+          await processHandlerResult(
+            await handleSubscriptionUpdated({
+              subscription: event.data.object,
+              previousAttributes: event.data.previous_attributes as Record<string, unknown> | undefined,
+            }),
+            event,
+          );
           break;
         }
 
         case 'customer.subscription.deleted': {
-          await processHandlerResult(await handleSubscriptionDeleted(event.data.object));
+          await processHandlerResult(await handleSubscriptionDeleted(event.data.object), event);
           break;
         }
 
         case 'customer.created': {
-          await processHandlerResult(await handleCustomerCreated(event.data.object));
+          await processHandlerResult(await handleCustomerCreated(event.data.object), event);
+          break;
+        }
+
+        case 'invoice.paid': {
+          await processHandlerResult(await handleInvoicePaid(event.data.object), event);
+          break;
+        }
+
+        case 'invoice.payment_failed': {
+          await processHandlerResult(await handleInvoicePaymentFailed(event.data.object), event);
           break;
         }
 
@@ -406,7 +456,7 @@ const app = new Hono()
             level: 'info',
             eventType: event.type,
             message: 'Unhandled webhook event type',
-            details: { eventId: event.id },
+            details: appendEventContext(undefined, event),
           });
         }
       }
@@ -419,7 +469,7 @@ const app = new Hono()
           level: 'error',
           eventType: 'webhook',
           message: 'Webhook processing failed',
-          details: { eventType: event?.type, eventId: event?.id, payload: event?.data?.object },
+          details: appendEventContext({ eventType: event?.type }, event),
           error,
         });
       }

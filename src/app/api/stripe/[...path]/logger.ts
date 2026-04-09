@@ -11,6 +11,11 @@ type StripeLog = {
   error?: Error | unknown;
 };
 
+const DISCORD_MAX_FIELDS = 25;
+const DISCORD_MAX_FIELD_NAME_LENGTH = 256;
+const DISCORD_MAX_FIELD_VALUE_LENGTH = 1024;
+const MAX_ERROR_MESSAGE_LENGTH = 240;
+
 const getLevelColor = (level: StripeLogLevel): number => {
   switch (level) {
     case 'success':
@@ -45,25 +50,65 @@ const getLevelEmoji = (level: StripeLogLevel): string => {
   }
 };
 
-/**
- * never throw error from this function to avoid blocking the main process. Log any error internally instead.
- */
-export const sendStripeLog = async (log: StripeLog) => {
-  if (log.level === 'info') {
-    console.log('[Stripe][info]', {
-      eventType: log.eventType,
-      message: log.message,
-      userId: log.userId,
-      details: log.details,
-      error: log.error,
-    });
-    return;
+const truncate = (value: string, maxLength: number): string => {
+  if (value.length <= maxLength) {
+    return value;
   }
 
+  return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
+};
+
+const formatDetailValue = (value: unknown): string => {
+  if (value === undefined) {
+    return 'undefined';
+  }
+
+  if (value === null) {
+    return 'null';
+  }
+
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  if (typeof value === 'string') {
+    return truncate(value, DISCORD_MAX_FIELD_VALUE_LENGTH);
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+
+  try {
+    return truncate(JSON.stringify(value), DISCORD_MAX_FIELD_VALUE_LENGTH);
+  } catch {
+    return truncate(String(value), DISCORD_MAX_FIELD_VALUE_LENGTH);
+  }
+};
+
+const formatFieldName = (name: string): string => {
+  return truncate(name.replaceAll('_', ' '), DISCORD_MAX_FIELD_NAME_LENGTH);
+};
+
+const getErrorSummary = (error: Error | unknown): Record<string, unknown> => {
+  if (error instanceof Error) {
+    return {
+      name: error.name,
+      message: truncate(error.message, MAX_ERROR_MESSAGE_LENGTH),
+    };
+  }
+
+  return {
+    type: typeof error,
+    message: truncate(formatDetailValue(error), MAX_ERROR_MESSAGE_LENGTH),
+  };
+};
+
+const buildDiscordFields = (log: StripeLog): { name: string; value: string; inline?: boolean }[] => {
   const fields: { name: string; value: string; inline?: boolean }[] = [
     {
       name: 'Event Type',
-      value: `\`${log.eventType}\``,
+      value: formatDetailValue(log.eventType),
       inline: true,
     },
   ];
@@ -71,37 +116,55 @@ export const sendStripeLog = async (log: StripeLog) => {
   if (log.userId) {
     fields.push({
       name: 'User ID',
-      value: `\`${log.userId}\``,
+      value: formatDetailValue(log.userId),
       inline: true,
     });
   }
 
   if (log.details) {
     for (const [key, value] of Object.entries(log.details)) {
-      const valueStr = `${JSON.stringify(value)}`;
-      const inline = valueStr.length < 32;
+      if (fields.length >= DISCORD_MAX_FIELDS) {
+        break;
+      }
+
+      const valueText = formatDetailValue(value);
       fields.push({
-        name: key,
-        value: inline ? `\`${valueStr}\`` : `\`\`\`${valueStr}\`\`\``,
-        inline,
+        name: formatFieldName(key),
+        value: valueText,
+        inline: valueText.length <= 48,
       });
     }
   }
 
-  if (log.error) {
-    const errorMessage = log.error instanceof Error ? log.error.message : JSON.stringify(log.error);
-    const errorStack = log.error instanceof Error ? log.error.stack : undefined;
+  if (log.error && fields.length < DISCORD_MAX_FIELDS) {
     fields.push({
       name: 'Error',
-      value: `\`\`\`${errorMessage}\`\`\``,
+      value: formatDetailValue(getErrorSummary(log.error)),
+      inline: false,
     });
-    if (errorStack) {
-      fields.push({
-        name: 'Stack Trace',
-        value: `\`\`\`${errorStack.slice(0, 1000)}\`\`\``,
-      });
-    }
   }
+
+  return fields;
+};
+
+/**
+ * never throw error from this function to avoid blocking the main process. Log any error internally instead.
+ */
+export const sendStripeLog = async (log: StripeLog) => {
+  const consolePayload = {
+    eventType: log.eventType,
+    message: log.message,
+    userId: log.userId,
+    details: log.details,
+    error: log.error ? getErrorSummary(log.error) : undefined,
+  };
+
+  console.log(`[Stripe][${log.level}]`, consolePayload);
+
+  // Don't send info level logs to Discord to avoid noise, but still log them in the console
+  if (log.level === 'info') return;
+
+  const fields = buildDiscordFields(log);
 
   const body = {
     embeds: [
@@ -124,7 +187,8 @@ export const sendStripeLog = async (log: StripeLog) => {
     });
 
     if (!res.ok) {
-      console.error('Failed to send Discord webhook:', await res.text());
+      const errorText = await res.text();
+      console.error('Failed to send Discord webhook:', truncate(errorText, 500));
     }
   } catch (error) {
     // Don't throw error to avoid blocking the main process

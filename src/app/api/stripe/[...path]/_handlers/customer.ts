@@ -16,7 +16,7 @@ export const createCustomerCreatedHandler = (_: HandlerDeps) => {
         error: new StripeWebhookHandlerError({
           message: 'Invalid customer metadata',
           eventType: 'customer.created',
-          details: { subscriptionId: customer.id, metadata: customer.metadata, errors: metadata.issues },
+          details: { customerId: customer.id, metadata: customer.metadata, errors: metadata.issues },
           fatal: false,
         }),
       };
@@ -31,7 +31,10 @@ export const createCustomerCreatedHandler = (_: HandlerDeps) => {
         eventType: 'customer.created',
         message: 'Stripeユーザーが作成されました',
         userId,
-        details: { customerId: customer.id },
+        details: {
+          action: 'customer_created',
+          customerId: customer.id,
+        },
       },
     };
   };
