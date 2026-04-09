@@ -32,7 +32,7 @@ describe('useDiceRollCore', () => {
   });
 
   afterEach(() => {
-    spy.mockReset();
+    spy.mockRestore();
   });
 
   test('正しくダイスを振れる', async () => {
