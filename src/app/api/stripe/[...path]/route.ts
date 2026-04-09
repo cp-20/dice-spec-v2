@@ -367,6 +367,14 @@ const app = new Hono()
       return c.json({ error: 'Invalid signature' }, 400);
     }
 
+    console.log(`Received Stripe webhook: ${event.type} (id: ${event.id})`);
+    sendStripeLog({
+      level: 'info',
+      eventType: event.type,
+      message: 'Received Stripe webhook',
+      details: { eventId: event.id },
+    });
+
     try {
       switch (event.type) {
         case 'checkout.session.completed': {
