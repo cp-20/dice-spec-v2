@@ -12,6 +12,14 @@ import { createStripeHandlers } from './_handlers';
 import { type HandlerResult, StripeWebhookHandlerError } from './_handlers/types';
 import { sendStripeLog } from './logger';
 
+type WaitUntil = (promise: Promise<unknown>) => void;
+
+const enqueueStripeLog = (waitUntil: WaitUntil | undefined, log: Parameters<typeof sendStripeLog>[0]) => {
+  const promise = sendStripeLog(log);
+  waitUntil?.(promise);
+  return promise;
+};
+
 let stripe: Stripe | null = null;
 
 const getStripeClient = () => {
@@ -97,15 +105,15 @@ const lookupFirebaseUserByIdToken = async (idToken: string) => {
 const { handleCheckoutCompleted, handleSubscriptionUpdated, handleSubscriptionDeleted, handleCustomerCreated } =
   createStripeHandlers({ getUserById, updateUserById });
 
-const processHandlerResult = async (result: HandlerResult) => {
+const processHandlerResult = async (result: HandlerResult, waitUntil?: WaitUntil) => {
   if (result.ok) {
     if (result.log) {
-      sendStripeLog(result.log);
+      enqueueStripeLog(waitUntil, result.log);
     }
     return;
   }
 
-  sendStripeLog({
+  enqueueStripeLog(waitUntil, {
     level: result.error.fatal ? 'error' : 'warning',
     eventType: result.error.eventType,
     message: result.error.message,
@@ -119,13 +127,13 @@ const processHandlerResult = async (result: HandlerResult) => {
   }
 };
 
-const constructStripeEvent = async (body: string, signature: string) => {
+const constructStripeEvent = async (body: string, signature: string, waitUntil?: WaitUntil) => {
   try {
     return getStripeClient().webhooks.constructEvent(body, signature, runtimeEnv.stripe.webhookSecret);
   } catch (error) {
     // FIXME: Invalid Signature とそれ以外を区別する
     console.error('Webhook signature verification failed:', error);
-    sendStripeLog({
+    enqueueStripeLog(waitUntil, {
       level: 'warning',
       eventType: 'webhook',
       message: 'Webhook signature verification failed',
@@ -148,10 +156,14 @@ const getBearerToken = (authorizationHeader: string | undefined) => {
   return token;
 };
 
-const getAuthenticatedUser = async (authorizationHeader: string | undefined, eventType: string) => {
+const getAuthenticatedUser = async (
+  authorizationHeader: string | undefined,
+  eventType: string,
+  waitUntil?: WaitUntil,
+) => {
   const idToken = getBearerToken(authorizationHeader);
   if (!idToken) {
-    sendStripeLog({
+    enqueueStripeLog(waitUntil, {
       level: 'warning',
       eventType,
       message: 'Missing or invalid authorization header',
@@ -163,7 +175,7 @@ const getAuthenticatedUser = async (authorizationHeader: string | undefined, eve
     const user = await lookupFirebaseUserByIdToken(idToken);
 
     if (!user?.localId) {
-      sendStripeLog({
+      enqueueStripeLog(waitUntil, {
         level: 'warning',
         eventType,
         message: 'No Firebase user was resolved from ID token',
@@ -172,7 +184,7 @@ const getAuthenticatedUser = async (authorizationHeader: string | undefined, eve
     }
 
     if (!user.email || !user.displayName) {
-      sendStripeLog({
+      enqueueStripeLog(waitUntil, {
         level: 'warning',
         eventType,
         message: 'Authenticated user is missing email or name',
@@ -186,7 +198,7 @@ const getAuthenticatedUser = async (authorizationHeader: string | undefined, eve
     return { uid, email, name };
   } catch (error) {
     console.error('Failed to verify Firebase ID token:', error);
-    sendStripeLog({
+    enqueueStripeLog(waitUntil, {
       level: 'warning',
       eventType,
       message: 'Firebase ID token verification failed',
@@ -227,7 +239,8 @@ const app = new Hono()
   .basePath('/api/stripe')
   // FIXME: レースコンディションで複数の stripe customer を作成できる
   .post('/create-customer', async (c) => {
-    const user = await getAuthenticatedUser(c.req.header('authorization'), 'create-customer');
+    const waitUntil = (promise: Promise<unknown>) => c.executionCtx.waitUntil(promise);
+    const user = await getAuthenticatedUser(c.req.header('authorization'), 'create-customer', waitUntil);
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
@@ -254,7 +267,7 @@ const app = new Hono()
       return c.json({ customerId: customer.id });
     } catch (error) {
       console.error('Error creating customer:', error);
-      sendStripeLog({
+      enqueueStripeLog(waitUntil, {
         level: 'error',
         eventType: 'create-customer',
         message: 'Failed to create customer',
@@ -268,7 +281,8 @@ const app = new Hono()
   .post('/create-checkout-session', vValidator('json', checkoutSchema), async (c) => {
     const payload = c.req.valid('json');
     const { type, interval } = payload;
-    const user = await getAuthenticatedUser(c.req.header('authorization'), 'create-checkout-session');
+    const waitUntil = (promise: Promise<unknown>) => c.executionCtx.waitUntil(promise);
+    const user = await getAuthenticatedUser(c.req.header('authorization'), 'create-checkout-session', waitUntil);
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
@@ -303,7 +317,7 @@ const app = new Hono()
       return c.json({ sessionId: session.id, url: session.url });
     } catch (error) {
       console.error('Error creating checkout session:', error);
-      sendStripeLog({
+      enqueueStripeLog(waitUntil, {
         level: 'error',
         eventType: 'create-checkout-session',
         message: 'Failed to create checkout session',
@@ -316,7 +330,8 @@ const app = new Hono()
   })
   .post('/create-portal-session', vValidator('json', portalSchema), async (c) => {
     c.req.valid('json');
-    const user = await getAuthenticatedUser(c.req.header('authorization'), 'create-portal-session');
+    const waitUntil = (promise: Promise<unknown>) => c.executionCtx.waitUntil(promise);
+    const user = await getAuthenticatedUser(c.req.header('authorization'), 'create-portal-session', waitUntil);
     if (!user) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
@@ -337,7 +352,7 @@ const app = new Hono()
       return c.json({ url: session.url });
     } catch (error) {
       console.error('Error creating portal session:', error);
-      sendStripeLog({
+      enqueueStripeLog(waitUntil, {
         level: 'error',
         eventType: 'create-portal-session',
         message: 'Failed to create portal session',
@@ -349,11 +364,12 @@ const app = new Hono()
     }
   })
   .post('/webhook', async (c) => {
+    const waitUntil = (promise: Promise<unknown>) => c.executionCtx.waitUntil(promise);
     const body = await c.req.text();
     const signature = c.req.header('stripe-signature');
 
     if (!signature) {
-      sendStripeLog({
+      enqueueStripeLog(waitUntil, {
         level: 'warning',
         eventType: 'webhook',
         message: 'Missing Stripe signature',
@@ -362,38 +378,30 @@ const app = new Hono()
       return c.json({ error: 'Missing signature' }, 400);
     }
 
-    const event = await constructStripeEvent(body, signature);
+    const event = await constructStripeEvent(body, signature, waitUntil);
     if (!event) {
       return c.json({ error: 'Invalid signature' }, 400);
     }
 
-    console.log(`Received Stripe webhook: ${event.type} (id: ${event.id})`);
-    sendStripeLog({
-      level: 'success',
-      eventType: event.type,
-      message: 'Received Stripe webhook',
-      details: { eventId: event.id },
-    });
-
     try {
       switch (event.type) {
         case 'checkout.session.completed': {
-          await processHandlerResult(await handleCheckoutCompleted(event.data.object));
+          await processHandlerResult(await handleCheckoutCompleted(event.data.object), waitUntil);
           break;
         }
 
         case 'customer.subscription.updated': {
-          await processHandlerResult(await handleSubscriptionUpdated(event.data.object));
+          await processHandlerResult(await handleSubscriptionUpdated(event.data.object), waitUntil);
           break;
         }
 
         case 'customer.subscription.deleted': {
-          await processHandlerResult(await handleSubscriptionDeleted(event.data.object));
+          await processHandlerResult(await handleSubscriptionDeleted(event.data.object), waitUntil);
           break;
         }
 
         case 'customer.created': {
-          await processHandlerResult(await handleCustomerCreated(event.data.object));
+          await processHandlerResult(await handleCustomerCreated(event.data.object), waitUntil);
           break;
         }
 
@@ -403,7 +411,7 @@ const app = new Hono()
 
         default: {
           console.log(`Unhandled event type: ${event.type}`);
-          sendStripeLog({
+          enqueueStripeLog(waitUntil, {
             level: 'info',
             eventType: event.type,
             message: 'Unhandled webhook event type',
@@ -416,7 +424,7 @@ const app = new Hono()
     } catch (error) {
       if (!(error instanceof StripeWebhookHandlerError)) {
         console.error('Error processing webhook:', error);
-        sendStripeLog({
+        enqueueStripeLog(waitUntil, {
           level: 'error',
           eventType: 'webhook',
           message: 'Webhook processing failed',
