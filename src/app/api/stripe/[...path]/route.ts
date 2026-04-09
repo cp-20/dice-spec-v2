@@ -369,7 +369,7 @@ const app = new Hono()
 
     console.log(`Received Stripe webhook: ${event.type} (id: ${event.id})`);
     sendStripeLog({
-      level: 'info',
+      level: 'success',
       eventType: event.type,
       message: 'Received Stripe webhook',
       details: { eventId: event.id },

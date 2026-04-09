@@ -27,7 +27,7 @@ export const createCustomerCreatedHandler = (_: HandlerDeps) => {
     return {
       ok: true,
       log: {
-        level: 'info',
+        level: 'success',
         eventType: 'customer.created',
         message: 'Stripeユーザーが作成されました',
         userId,
