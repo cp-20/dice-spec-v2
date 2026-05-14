@@ -1,6 +1,5 @@
 import type { ComponentPropsWithoutRef, FC, ForwardRefRenderFunction } from 'react';
 import { forwardRef } from 'react';
-
 import { twMerge } from 'tailwind-merge';
 
 const unrefText: ForwardRefRenderFunction<HTMLParagraphElement, ComponentPropsWithoutRef<'p'>> = (

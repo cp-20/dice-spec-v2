@@ -5,11 +5,14 @@ import clsx from 'clsx';
 import { t } from 'i18next';
 import type { FC } from 'react';
 import { Trans } from 'react-i18next';
+
 import { Button } from '@/shared/components/ui/button';
 import { isOldApp } from '@/shared/lib/const';
-import styles from '@/shared/styles/pretty-scrollbar.module.css';
+
 import { useDiceRoll } from './hooks/useDiceRoll';
 import { useQuickInput } from './hooks/useQuickInput';
+
+import styles from '@/shared/styles/pretty-scrollbar.module.css';
 
 export const QuickInput: FC = () => {
   const { items, updateItem } = useQuickInput();
@@ -44,7 +47,7 @@ export const QuickInput: FC = () => {
           <Trans
             i18nKey="dice:advanced.quick-input.migration-announcement"
             components={{
-              // biome-ignore lint/a11y/useAnchorContent: 後で children が渡される
+              // oxlint-disable-next-line jsx_a11y/anchor-has-content 後で children が渡される
               l: <a href="https://dicespec.vercel.app/dice?keep-old=true" className="underline hover:opacity-70" />,
             }}
           />

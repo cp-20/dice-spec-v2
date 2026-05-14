@@ -5,8 +5,10 @@ import clsx from 'clsx';
 import { t } from 'i18next';
 import { type FC, useCallback, useState } from 'react';
 import * as v from 'valibot';
+
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
+
 import { InputFormSchema, useInputForm } from './hooks/useInputForm';
 
 const InputFormValueSchema = v.object({
@@ -55,7 +57,8 @@ export const LoadClipboardButton: FC = () => {
         setDone(false);
         clearTimeout(timeout);
       };
-    } catch (_err) {
+    } catch (err) {
+      console.error('Failed to load from clipboard', err);
       toast({
         title: t('ccfolia:load-clipboard.error'),
         description: t('ccfolia:load-clipboard.error-description'),

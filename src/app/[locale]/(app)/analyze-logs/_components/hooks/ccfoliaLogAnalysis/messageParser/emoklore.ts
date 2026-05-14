@@ -1,4 +1,6 @@
 import type { SystemMessageParser, SystemStats } from '.';
+import { normalizeParentheses } from './normalize';
+import { extractSkillNameFromMessage } from './skillName';
 
 // match[1]: 振ったダイスの数
 // match[2]: 目標値
@@ -8,14 +10,21 @@ import type { SystemMessageParser, SystemStats } from '.';
 const emokloreRegex = /\((\d+)DM<=(\d+)\) ＞ \[([0-9, ]+)\] ＞ (-?[0-9]+) ＞ (?:成功数(?:-?[0-9]+) )?(.+?)!?$/;
 
 export const emokloreParser: SystemMessageParser = (message) => {
-  const match = message.match(emokloreRegex);
+  const normalizedMessage = normalizeParentheses(message);
+  const match = normalizedMessage.match(emokloreRegex);
   if (match === null) return null;
 
   const target = Number.parseInt(match[2], 10);
   const results = match[3].split(', ').map((result) => Number.parseInt(result, 10));
   const evaluation = match[5];
+  const skillName = extractSkillNameFromMessage(normalizedMessage);
 
-  return { evaluation, results, target };
+  return {
+    evaluation,
+    results,
+    target,
+    skillName,
+  };
 };
 
 export const emokloreSystemStats = {

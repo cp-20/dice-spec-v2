@@ -4,6 +4,7 @@ import { IconChevronsRight } from '@tabler/icons-react';
 import clsx from 'clsx';
 import { t } from 'i18next';
 import type { FC } from 'react';
+
 import {
   DiceD3,
   DiceD4,
@@ -15,9 +16,11 @@ import {
   DiceD100,
   type DiceProps,
 } from '@/shared/components/elements/Dice';
-import scrollbarStyles from '@/shared/styles/pretty-scrollbar.module.css';
+
 import type { AvailableDice } from './hooks/useSimpleDiceInput';
 import { useSimpleDiceOutput } from './hooks/useSimpleDiceOutput';
+
+import scrollbarStyles from '@/shared/styles/pretty-scrollbar.module.css';
 
 export const SimpleDiceOutput: FC = () => {
   const { latestOutput, history } = useSimpleDiceOutput();

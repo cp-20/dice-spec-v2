@@ -1,8 +1,11 @@
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { useEffect } from 'react';
+
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
+
+import { ALL_CHARACTER_ID } from '../constants';
 import { analyzeCcfoliaLog, type DiceResultForCharacter, type System } from './ccfoliaLogAnalysis';
 import { detectSystem } from './ccfoliaLogAnalysis/detector';
 import { systemStats } from './ccfoliaLogAnalysis/messageParser';
@@ -21,7 +24,9 @@ const logAnalysisSystemAtom = withAtomEffect(atom<System | null>(null), (get, se
   try {
     const detectedSystem = detectSystem(fileContent);
     set(logAnalysisSystemAtom, detectedSystem);
-  } catch (_) {}
+  } catch (err) {
+    console.error('Failed to detect system:', err);
+  }
 });
 
 type LogAnalysisResult = LogAnalysisSuccess | LogAnalysisError | null;
@@ -43,7 +48,8 @@ const logAnalysisResultAtom = atom<LogAnalysisResult>((get) => {
   try {
     const result = analyzeCcfoliaLog(system, fileContent);
     return { type: 'success', results: result };
-  } catch (_) {
+  } catch (err) {
+    console.error('Failed to analyze log:', err);
     return { type: 'error' };
   }
 });
@@ -78,7 +84,7 @@ export const useLogAnalysis = () => {
       return;
     }
 
-    const allResult = result.results.find((p) => p.id === 'all');
+    const allResult = result.results.find((p) => p.id === ALL_CHARACTER_ID);
     if (allResult === undefined || system === null) return;
 
     const { average, deviationScore, successRate, diceRollCount } = allResult.summary;

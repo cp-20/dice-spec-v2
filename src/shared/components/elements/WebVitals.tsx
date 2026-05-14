@@ -2,6 +2,7 @@
 
 import { useReportWebVitals } from 'next/web-vitals';
 import type { FC } from 'react';
+
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 export const WebVitals: FC = () => {

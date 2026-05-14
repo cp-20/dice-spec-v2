@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import type { FC } from 'react';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
+
 import { contents } from '../[category]/[slug]/_contents/contents';
 
 type BlogCardProps = {
@@ -19,7 +21,12 @@ export const BlogCard: FC<BlogCardProps> = ({ category, slug }) => {
         className="w-full flex @max-lg:flex-col border rounded-md overflow-hidden group hover:opacity-70 transition"
       >
         <div className="@max-lg:w-full @lg:h-32 aspect-1200/630 relative">
-          <Image src={`/assets/blog-images/og/${category}/${slug}.png`} alt={article.title ?? ''} fill />
+          <Image
+            src={`/assets/blog-images/og/${category}/${slug}.png`}
+            alt={article.title ?? ''}
+            fill
+            sizes="(max-width: 1024px) 100vw, 240px"
+          />
         </div>
         <div className="px-4 py-2 bg-slate-50 flex flex-col justify-center gap-1 flex-1">
           <div className="text-slate-700 font-bold">{article.shortTitle}</div>

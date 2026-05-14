@@ -1,4 +1,6 @@
 import type { SystemMessageParser, SystemStats } from '.';
+import { normalizeParentheses } from './normalize';
+import { extractSkillNameFromMessage } from './skillName';
 
 // match[1]: 振ったダイスの数 (optional)
 // match[2]: 補正値 (optional)
@@ -12,15 +14,22 @@ const shinobigamiRegex =
   /\((\d*)SG(?:\+(\d+))?@(\d+)#(\d+)(?:>=(\d+))?\)(?: ＞ \[[\d,]+\])? ＞ (\d+)\[[\d,]+\](?:\+\d+)? ＞ (\d+)(?: ＞ (.+?)(?:\(.+\))?)?$/;
 
 export const shinobigamiParser: SystemMessageParser = (message) => {
-  const match = message.match(shinobigamiRegex);
+  const normalizedMessage = normalizeParentheses(message);
+  const match = normalizedMessage.match(shinobigamiRegex);
   if (match === null) return null;
 
   const rawTarget = Number.parseInt(match[5], 10);
   const target = Number.isNaN(rawTarget) ? -1 : rawTarget;
   const results = [Number.parseInt(match[6], 10)];
   const evaluation = match[8] ?? '';
+  const skillName = extractSkillNameFromMessage(normalizedMessage);
 
-  return { evaluation, results, target };
+  return {
+    evaluation,
+    results,
+    target,
+    skillName,
+  };
 };
 
 export const shinobigamiSystemStats = {

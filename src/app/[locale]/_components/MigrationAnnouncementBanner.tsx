@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { type FC, useCallback } from 'react';
 import { Trans } from 'react-i18next';
 import * as v from 'valibot';
+
 import { Button } from '@/shared/components/ui/button';
 import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
 

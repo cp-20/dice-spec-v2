@@ -3,17 +3,19 @@
 import clsx from 'clsx';
 import { t } from 'i18next';
 import { Check, ChevronsUpDown } from 'lucide-react';
-
 import type { FC } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/shared/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
 import { cn } from '@/shared/lib/shadcn-utils';
-import scrollbarStyles from '@/shared/styles/pretty-scrollbar.module.css';
-import styles from './GameSystemSelect.module.css';
+
 import { useDiceRollOption } from './hooks/useDiceRollOption';
 import { useGameSystemList } from './hooks/useGameSystemList';
+
+import styles from './GameSystemSelect.module.css';
+import scrollbarStyles from '@/shared/styles/pretty-scrollbar.module.css';
 
 export const GameSystemSelect: FC = () => {
   const { gameSystemList: systems, selectSystem } = useGameSystemList();
@@ -60,7 +62,7 @@ export const GameSystemSelect: FC = () => {
       <PopoverContent className={clsx('h-60 p-0', styles['popover-content'])} ref={popoverRef}>
         {/* フィルタリングアルゴリズムをいい感じに上書きして最近使ったのを上に出す */}
         <Command className="h-full">
-          <CommandInput placeholder={t('dice:advanced.game-system.search')} autoFocus />
+          <CommandInput placeholder={t('dice:advanced.game-system.search')} />
           <CommandEmpty>{t('dice:advanced.game-system.no-result')}</CommandEmpty>
           <CommandGroup className={clsx('h-fit overflow-y-auto', scrollbarStyles['pretty-scrollbar'])}>
             {systems?.map((s) => (

@@ -40,7 +40,8 @@ export const getDiceRollGenerator = (bcdiceApiEndpoint: string) => async (comman
     const result = parse(diceRollResultSchema, json);
 
     return result;
-  } catch (_err) {
+  } catch (err) {
+    console.error('Failed to get dice roll result', err);
     return {
       ok: false,
     } as const;

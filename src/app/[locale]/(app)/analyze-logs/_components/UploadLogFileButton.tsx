@@ -3,7 +3,9 @@
 import { IconUpload, IconX } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { type FC, useCallback, useRef } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
+
 import { useDropzone } from './hooks/useDropzone';
 import { useCurrentFile, useFileContent } from './hooks/useLogAnalysis';
 

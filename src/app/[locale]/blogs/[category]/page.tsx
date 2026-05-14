@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+
 import { metadataHelper } from '@/shared/lib/metadataGenerator';
+
 import { CategoryBreadCrumb } from '../_components/BlogBreadCrumb';
 import { BlogCard } from '../_components/BlogCard';
 import { contents } from './[slug]/_contents/contents';
@@ -44,3 +46,10 @@ const CategoryPage = async ({ params }: { params: Promise<Params> }) => {
 };
 
 export default CategoryPage;
+
+export const generateStaticParams = async () => {
+  const categories = [...new Set(contents.map((c) => c.category))];
+  return categories.map((category) => ({ category }));
+};
+
+export const dynamicParams = false;

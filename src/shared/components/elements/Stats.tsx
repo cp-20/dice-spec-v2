@@ -1,4 +1,5 @@
 import type { FC, ReactNode } from 'react';
+
 import { Text } from '@/shared/components/Typography/Text';
 
 type StatsProps = {

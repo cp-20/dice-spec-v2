@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
+
 import { i18nConfig, type Locale } from '@/shared/i18n/config';
+import { clientEnv } from '@/shared/lib/env';
 
 type Option = {
   title?: string;
@@ -7,6 +9,8 @@ type Option = {
   path: string;
   locale: Locale;
   ogp?: string;
+  noIndex?: boolean;
+  noFollow?: boolean;
 };
 
 export const appBaseUrl = 'https://dicespec.app';
@@ -32,7 +36,7 @@ export const constructAlternateUrls = (path: string, locale: Locale): Record<Loc
     );
 };
 
-export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp }: Option) => {
+export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp, noIndex, noFollow }: Option) => {
   const appName = {
     en: 'DiceSpec',
     ja: 'ダイススペック',
@@ -88,7 +92,11 @@ export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp
       site: '@__cp20__',
     },
     verification: {
-      google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? '',
+      google: clientEnv.googleSiteVerification,
+    },
+    robots: {
+      index: !noIndex,
+      follow: !noFollow,
     },
   } satisfies Metadata;
 };

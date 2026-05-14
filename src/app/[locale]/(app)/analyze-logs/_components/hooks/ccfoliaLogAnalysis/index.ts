@@ -1,3 +1,4 @@
+import { ALL_CHARACTER_ID, ALL_CHARACTER_NAME } from '../../constants';
 import { parseHtmlLog } from './htmlParser';
 import { formatMessage } from './messageFormatter';
 import { type MessageParserResult, parseMessage, systemStats } from './messageParser';
@@ -38,8 +39,8 @@ export const analyzeCcfoliaLog = (system: System, html: string) => {
 
   const allResults = analyzedLogs.map(({ result }) => result);
   const allCharacterResults: DiceResultForCharacter = {
-    id: 'all',
-    name: '[ALL]',
+    id: ALL_CHARACTER_ID,
+    name: ALL_CHARACTER_NAME,
     results: allResults,
     summary: summarizeResults(allResults, systemStats[system]),
   };

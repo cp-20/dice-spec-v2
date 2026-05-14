@@ -1,4 +1,5 @@
 import { atom, useAtom } from 'jotai';
+
 import type { AvailableDice } from './useSimpleDiceInput';
 
 type simpleDiceOutputAtom = {

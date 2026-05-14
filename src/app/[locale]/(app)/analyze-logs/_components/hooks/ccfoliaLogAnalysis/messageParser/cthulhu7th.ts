@@ -1,4 +1,6 @@
 import type { SystemMessageParser, SystemStats } from '.';
+import { normalizeParentheses } from './normalize';
+import { extractSkillNameFromMessage } from './skillName';
 
 // match[1]: 目標値
 // match[2]: ボーナス・ペナルティダイスの数
@@ -8,15 +10,22 @@ import type { SystemMessageParser, SystemStats } from '.';
 const CoC7thDiceRollRegex = /\(1D100<=(\d+)\) ボーナス・ペナルティダイス\[(-2|-1|0|1|2)\] ＞ (.+) ＞ (\d+) ＞ (.+)/;
 
 export const CoC7thParser: SystemMessageParser = (message) => {
-  const match = message.match(CoC7thDiceRollRegex);
+  const normalizedMessage = normalizeParentheses(message);
+  const match = normalizedMessage.match(CoC7thDiceRollRegex);
   if (match === null) return null;
 
   const target = Number.parseInt(match[1], 10);
   // ボーナス・ペナルティダイスがある場合でも最初の結果を取る
   const result = Number.parseInt(match[3], 10);
   const evaluation = match[5];
+  const skillName = extractSkillNameFromMessage(normalizedMessage);
 
-  return { evaluation, results: [result], target };
+  return {
+    evaluation,
+    results: [result],
+    target,
+    skillName,
+  };
 };
 
 export const CoC7thSystemStats = {
@@ -28,6 +37,8 @@ export const CoC7thSystemStats = {
     { label: 'ファンブル', status: 'failure' },
     { label: '失敗', status: 'failure' },
     { label: 'レギュラー成功', status: 'success' },
+    // CCでは「成功」は出ないが、1d100<=??では出る可能性がある
+    { label: '成功', status: 'success' },
     { label: 'ハード成功', status: 'success' },
     { label: 'イクストリーム成功', status: 'success' },
     { label: 'クリティカル', status: 'success' },

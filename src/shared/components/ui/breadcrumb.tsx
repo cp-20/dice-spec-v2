@@ -1,6 +1,7 @@
 import { Slot } from '@radix-ui/react-slot';
 import { ChevronRight, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
+
 import { cn } from '@/shared/lib/shadcn-utils';
 
 const Breadcrumb = React.forwardRef<HTMLElement, React.ComponentProps<'nav'>>(({ ...props }, ref) => (
@@ -45,6 +46,7 @@ BreadcrumbLink.displayName = 'BreadcrumbLink';
 
 const BreadcrumbPage = React.forwardRef<HTMLAnchorElement, React.ComponentProps<'a'>>(
   ({ className, ...props }, ref) => (
+    // oxlint-disable-next-line jsx_a11y/anchor-has-content
     <a
       ref={ref}
       data-slot="breadcrumb-page"

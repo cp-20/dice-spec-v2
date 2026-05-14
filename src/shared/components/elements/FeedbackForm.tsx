@@ -2,6 +2,7 @@
 
 import { t } from 'i18next';
 import { useState } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
@@ -26,7 +27,8 @@ export const FeedbackForm = () => {
         description: t('common:header.feedback.submitted-description'),
         variant: 'default',
       });
-    } catch (_err) {
+    } catch (err) {
+      console.error('Failed to send feedback', err);
       toast({
         title: t('common:header.feedback.error'),
         variant: 'destructive',

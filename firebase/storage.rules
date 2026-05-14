@@ -1,0 +1,101 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function canReadAnalysisRecords(ownerUid) {
+      let isOwner = isSelf(ownerUid);
+      let metadata = resource.metadata;
+      let visibilityLevel = metadata.visibilityLevel;
+      let showRecordDetails = metadata.showRecordDetails;
+      let isPublicOrUnlisted = (visibilityLevel == 'public' || visibilityLevel == 'unlisted') && (showRecordDetails == 'true' || showRecordDetails == true);
+
+      return isOwner || isPublicOrUnlisted;
+    }
+
+    function isValidVisibilityLevel(value) {
+      return value == 'private' || value == 'unlisted' || value == 'public';
+    }
+
+    function analysisOgImageMetadata() {
+      return resource.metadata;
+    }
+
+    function requestAnalysisOgImageMetadata() {
+      return request.resource.metadata;
+    }
+
+    function isAnalysisOgImageOwner(metadata) {
+      return isSignedIn() && metadata.ownerUid == request.auth.uid;
+    }
+
+    function canReadAnalysisOgImage() {
+      let metadata = analysisOgImageMetadata();
+      let visibilityLevel = metadata.visibilityLevel;
+      let isPublicOrUnlisted = visibilityLevel == 'public' || visibilityLevel == 'unlisted';
+      return isAnalysisOgImageOwner(metadata) || isPublicOrUnlisted;
+    }
+
+    function canCreateAnalysisOgImage() {
+      let metadata = requestAnalysisOgImageMetadata();
+      return isAnalysisOgImageOwner(metadata)
+        && isValidVisibilityLevel(metadata.visibilityLevel)
+        && request.resource.size < 1 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    function canUpdateAnalysisOgImage() {
+      let currentMetadata = analysisOgImageMetadata();
+      let nextMetadata = requestAnalysisOgImageMetadata();
+      return isAnalysisOgImageOwner(currentMetadata)
+        && currentMetadata.ownerUid == nextMetadata.ownerUid
+        && isValidVisibilityLevel(nextMetadata.visibilityLevel)
+        && request.resource.size < 1 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    match /avatars/{uid}/{allPaths=**} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update: if isSelf(uid)
+        && request.resource.size <= 1 * 1024 * 1024
+        && request.resource.contentType.matches('^image/(jpeg|jpg|png|webp)$');
+      allow delete: if isSelf(uid);
+    }
+
+    match /shared-images/{scope}/{imageId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if request.resource.size < 1 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow update, delete: if false;
+    }
+
+    match /analysis-records/{ownerUid}/{analysisId} {
+      allow get: if canReadAnalysisRecords(ownerUid);
+      allow list: if false;
+      allow create, update: if isSelf(ownerUid)
+        && request.resource.size < 50 * 1024 * 1024
+        && request.resource.contentType.matches('application/json.*');
+      allow delete: if isSelf(ownerUid);
+    }
+
+    match /analysis-og-images/{analysisId} {
+      allow get: if canReadAnalysisOgImage();
+      allow list: if false;
+      allow create: if canCreateAnalysisOgImage();
+      allow update: if canUpdateAnalysisOgImage();
+      allow delete: if isAnalysisOgImageOwner(analysisOgImageMetadata());
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

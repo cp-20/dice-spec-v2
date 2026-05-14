@@ -3,13 +3,14 @@ import clsx from 'clsx';
 import { t } from 'i18next';
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
+
 import type { CustomLinkProps } from '@/shared/components/elements/CustomLink';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import type { NavPaths } from '@/shared/lib/navigation';
 import { navLinks } from '@/shared/lib/navigation';
 
 type BottomNavigationProps = {
-  active?: NavPaths;
+  active?: NavPaths | null;
 };
 
 export const BottomNavigation: FC<ComponentProps<'nav'> & BottomNavigationProps> = ({
@@ -18,9 +19,11 @@ export const BottomNavigation: FC<ComponentProps<'nav'> & BottomNavigationProps>
   ...props
 }) => (
   <nav className={twMerge('flex border-t', className)} {...props}>
-    {navLinks.map(({ href, icon }) => (
-      <BottomNavigationLink key={href} href={t('link', { href })} icon={icon} isActive={href === active} />
-    ))}
+    {navLinks
+      .filter((link) => !link.sideNavOnly)
+      .map(({ href, icon }) => (
+        <BottomNavigationLink key={href} href={t('link', { href })} icon={icon} isActive={href === active} />
+      ))}
   </nav>
 );
 

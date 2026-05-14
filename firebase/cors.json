@@ -1,0 +1,7 @@
+[
+  {
+    "origin": ["https://dicespec.app", "https://dice-spec-v2-beta.cp20.workers.dev", "http://localhost:3000"],
+    "method": ["GET"],
+    "maxAgeSeconds": 3600
+  }
+]

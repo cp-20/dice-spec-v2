@@ -2,8 +2,10 @@ import { atom } from 'jotai';
 import { useCallback, useEffect } from 'react';
 import useImmutableSWR from 'swr/immutable';
 import * as v from 'valibot';
+
 import { type GameSystem, gameSystemSchema } from '@/shared/lib/bcdice/getGameSystemList';
 import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
+
 import { useBcdiceApi } from './useBcdiceApi';
 
 const gameSystemListSchema = v.array(gameSystemSchema);
@@ -20,7 +22,6 @@ export const useGameSystemList = () => {
   const { getGameSystemList } = useBcdiceApi();
   const { data } = useImmutableSWR('bcdice/systems', getGameSystemList);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: setGameSystemListをdependency arrayに入れると無限ループする (setGameSystemListがgameSystemListに依存しているため)
   useEffect(() => {
     if (data !== undefined) {
       const newSystemIds = data.map((system) => system.id);
@@ -31,6 +32,7 @@ export const useGameSystemList = () => {
           .concat(data.filter((system) => !prevSystemIds.includes(system.id)));
       });
     }
+    // oxlint-disable-next-line eslint-plugin-react-hooks/exhaustive-deps setGameSystemListをdependency arrayに入れると無限ループする (setGameSystemListがgameSystemListに依存しているため)
   }, [data]);
 
   const selectSystem = useCallback(

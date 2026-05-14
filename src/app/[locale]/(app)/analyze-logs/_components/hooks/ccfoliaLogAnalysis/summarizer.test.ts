@@ -5,11 +5,11 @@ import { summarizeResults } from './summarizer';
 describe('summarizeResults', () => {
   test('正しく集計される', () => {
     const results: MessageParserResult[] = [
-      { evaluation: '成功', evaluationStatus: 'success', results: [3], target: 50 },
-      { evaluation: '成功', evaluationStatus: 'success', results: [25], target: 50 },
-      { evaluation: '失敗', evaluationStatus: 'failure', results: [69], target: 50 },
-      { evaluation: '成功', evaluationStatus: 'success', results: [34], target: 50 },
-      { evaluation: '失敗', evaluationStatus: 'failure', results: [59], target: 50 },
+      { evaluation: '成功', evaluationStatus: 'success', results: [3], target: 50, skillName: null },
+      { evaluation: '成功', evaluationStatus: 'success', results: [25], target: 50, skillName: null },
+      { evaluation: '失敗', evaluationStatus: 'failure', results: [69], target: 50, skillName: null },
+      { evaluation: '成功', evaluationStatus: 'success', results: [34], target: 50, skillName: null },
+      { evaluation: '失敗', evaluationStatus: 'failure', results: [59], target: 50, skillName: null },
     ];
     const stats: SystemStats = CoC6thSystemStats;
 

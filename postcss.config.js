@@ -1,6 +1,8 @@
+import { env } from 'node:process';
+
 export default {
   plugins: {
     '@tailwindcss/postcss': {},
-    ...(process.env.NODE_ENV === 'production' ? { cssnano: {} } : {}),
+    ...(env.NODE_ENV === 'production' ? { cssnano: {} } : {}),
   },
 };

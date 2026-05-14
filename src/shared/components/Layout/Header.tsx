@@ -1,8 +1,12 @@
+import TitleLogoEN from '/public/title-logo-en.svg';
+import TitleLogoJP from '/public/title-logo.svg';
 import { IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
-import { type ComponentProps, type FC, useState } from 'react';
+import { type ComponentProps, type FC, type SubmitEvent, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
+import { AuthWidget } from '@/shared/components/Layout/AuthWidget';
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
@@ -19,8 +23,6 @@ import { Textarea } from '@/shared/components/ui/textarea';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { appVersion } from '@/shared/lib/const';
 import { sendFeedback } from '@/shared/lib/webhook';
-import TitleLogoJP from '/public/title-logo.svg';
-import TitleLogoEN from '/public/title-logo-en.svg';
 
 export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) => {
   const TitleLogo = t('lang') === 'en' ? TitleLogoEN : TitleLogoJP;
@@ -29,10 +31,10 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
   const [feedback, setFeedback] = useState('');
   const { toast } = useToast();
 
-  const feedbackSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+  const feedbackSubmitHandler = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      sendFeedback({
+      await sendFeedback({
         name: e.currentTarget['feedback-form-name'].value,
         feedback: e.currentTarget['feedback-form-feedback'].value,
       });
@@ -42,7 +44,8 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
         description: t('common:header.feedback.submitted-description'),
         variant: 'default',
       });
-    } catch (_err) {
+    } catch (err) {
+      console.error('Failed to send feedback', err);
       toast({
         title: t('common:header.feedback.error'),
         variant: 'destructive',
@@ -62,7 +65,8 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
         </CustomLink>
         <div>v{appVersion}</div>
       </div>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
+        <AuthWidget />
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button

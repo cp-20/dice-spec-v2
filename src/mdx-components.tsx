@@ -1,11 +1,15 @@
 import type { MDXComponents } from 'mdx/types';
 import type { FC, ReactNode } from 'react';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 
 const components: MDXComponents = {
   p: (props) => <p className="[&:not(blockquote_*)]:mb-2" {...props} />,
+  // oxlint-disable-next-line jsx_a11y/heading-has-content
   h1: (props) => <h1 className="text-3xl leading-10 font-bold mb-8" {...props} />,
+  // oxlint-disable-next-line jsx_a11y/heading-has-content
   h2: (props) => <h2 className="text-xl font-semibold mt-16 mb-4 border-b border-b-slate-300 pb-1" {...props} />,
+  // oxlint-disable-next-line jsx_a11y/heading-has-content
   h3: (props) => <h3 className="text-lg font-semibold mt-8 mb-2" {...props} />,
   ul: (props) => <ul className="list-disc pl-5 mt-6 mb-4" {...props} />,
   li: (props) => <li className="mb-2" {...props} />,

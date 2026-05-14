@@ -1,10 +1,10 @@
 export const en = {
   translation: {
     lang: 'en',
+    'date-locale': 'en-US',
     link: '/en{{- href}}',
   },
   'landing-page': {
-    title: 'DiceSpec',
     description:
       'DiceSpec is a service that collects little tools for TRPGs. Tools such as dice prediction, dice rolling, and log analysis are available for free.',
     catchphrase: 'DiceSpec is a service that collects little tools for TRPGs.',
@@ -29,11 +29,6 @@ export const en = {
       },
     },
     credit: 'Credit',
-    'privacy-policy': {
-      label: 'Privacy Policy',
-      description:
-        'This website uses Google Analytics, an access analysis tool provided by Google. This Google Analytics uses cookies to collect data. This data is collected anonymously and does not personally identify you. This feature can be disabled by disabling cookies, so please check your browser settings. For more information about this agreement, please see the Google Analytics Terms of Service page and the Google Policies and Terms page.',
-    },
   },
   expect: {
     usage1:
@@ -85,6 +80,7 @@ export const en = {
         placeholder: 'Enter a command',
         'roll-dice': 'Roll Dice',
       },
+      error: 'Dice roll failed',
       'dicebot-usage': 'How to use "{{systemName}}"',
       'advanced-settings': {
         label: 'Advanced Settings',
@@ -99,6 +95,92 @@ export const en = {
   },
   'analyze-logs': {
     usage1: 'Analyze the logs of Cocoforia to calculate the expected value of the dice, etc.',
+    list: {
+      'sign-in-required': 'Sign in to use this feature.',
+      'tab-mine': 'My analyses',
+      'tab-public': 'Public analyses',
+      filters: {
+        'system-placeholder': 'Game system',
+        'character-placeholder': 'Character',
+        'sort-placeholder': 'Sort',
+        'all-systems': 'All systems',
+      },
+      sort: {
+        newest: 'Newest first',
+        oldest: 'Oldest first',
+        deviationScoreDesc: 'Highest deviation score',
+        deviationScoreAsc: 'Lowest deviation score',
+      },
+      state: {
+        loading: 'Loading...',
+        'no-results': 'No results found.',
+        empty: 'No analyses yet.',
+      },
+      'load-more': 'Load more',
+      card: {
+        'deviation-score': 'Dice Deviation Score',
+      },
+    },
+    save: {
+      title: 'Save and Share',
+      'sign-in-required': 'Sign in to save analyses.',
+      'title-label': 'Title',
+      'title-placeholder': 'Scenario name, etc.',
+      'session-date-label': 'Session date',
+      visibility: {
+        label: 'Visibility',
+        private: 'Private',
+        unlisted: 'Unlisted',
+        public: 'Public',
+      },
+      'show-record-details-label': 'Show record details',
+      'limit-free': 'Free plan allows up to {{limit}} saves (currently {{count}} saved)',
+      'limit-reached-message': 'You have reached the save limit.',
+      'upgrade-to-pro': 'Upgrade to Pro plan for unlimited saves.',
+      'upgrade-button': 'Upgrade to Pro',
+      'save-button': 'Save',
+      saving: 'Saving...',
+      failed: {
+        title: 'Failed to save',
+        description: 'An error occurred while saving. Please try again later.',
+      },
+      'go-to-list': 'Go to Analysis List',
+    },
+    detail: {
+      title: 'Log Analysis Result',
+      'not-found': 'Analysis not found.',
+      'not-found-description': 'The requested analysis does not exist or may have been deleted.',
+      'back-to-list': 'Back to analysis list',
+      edit: 'Edit',
+      delete: 'Delete',
+      private: 'This analysis is private.',
+      'records-owner-only': 'This section is private.',
+      'no-logs': 'No logs were saved.',
+    },
+    'edit-dialog': {
+      title: 'Edit analysis',
+      description: 'You can change the title and visibility settings.',
+      'title-label': 'Title',
+      'title-placeholder': 'Enter a title',
+      'visibility-label': 'Visibility',
+      visibility: {
+        private: 'Private (only me)',
+        unlisted: 'Unlisted (anyone with link)',
+        public: 'Public (shown in list)',
+      },
+      'session-date-label': 'Session date',
+      'show-record-details-label': 'Show dice logs',
+      cancel: 'Cancel',
+      save: 'Save',
+      saving: 'Saving',
+    },
+    'delete-dialog': {
+      title: 'Delete analysis',
+      description: 'This action cannot be undone. Are you sure you want to delete it?',
+      cancel: 'Cancel',
+      delete: 'Delete',
+      deleting: 'Deleting',
+    },
     'game-system-request': {
       label: 'New Game System Request',
       system: 'Game System',
@@ -124,18 +206,37 @@ export const en = {
     error: 'An error occurred during analysis. Please make sure you have uploaded the correct log file.',
     stats: {
       mean: 'Mean',
-      deviation: 'Dice Deviation Value',
       'success-rate': 'Success Rate',
       'roll-count': 'Number of dice rolled',
       'roll-count-unit': '',
       'dice-count-unit': '',
       share: 'Share analysis results',
     },
+    'skill-summary': {
+      label: 'Skill Summary',
+      skill: 'Skill',
+      target: 'Target',
+      'roll-count': 'Rolls',
+      'success-count': 'Successes',
+      'success-rate': 'Success Rate',
+      'no-data': 'No skill rolls available for summary.',
+      untagged: 'Unknown Skill',
+      paywall: {
+        title: 'Detailed skill summary is available on PRO plan',
+        cta: 'Start PRO Plan',
+      },
+    },
     'share-analysis-result': {
       title: 'Share analysis results',
       'scenario-name': 'Scenario name (optional)',
       'scenario-name-description': 'Displayed in the title section of the image',
+      'scenario-name-default': 'Analysis Results',
       'share-image': 'Share image',
+      'image-alt': 'Preview of the share image for analysis results',
+      'share-text':
+        '▼Your analyzed dice results▼\n\nMean: {{average}}\nDice deviation score: {{deviationScore}}\nSuccess rate: {{successRate}}\nDice rolls: {{diceRollCount}}\n\n#DiceSpec\n',
+      'share-image-failed': 'Failed to share image',
+      'share-image-failed-description': 'Failed to generate or upload the image. Please try again later.',
     },
     chart: {
       top: 'Top',
@@ -239,10 +340,124 @@ export const en = {
       description:
         'Analyze Cocoforia\'s logs to calculate dice averages, etc. You may be thinking, "I feel like I had bad luck with dice this session, but what really happened?" If you are thinking, "I think I had bad luck with dice this session, but what really happened?',
     },
+    'analysis-list': {
+      title: 'Analysis List',
+      description: 'You can review your saved log analyses here.',
+    },
+    'blog-callout': {
+      title: 'Now serializing: "Probability & Statistics for TRPG Players"!',
+      points: {
+        0: 'A gentle 6-part guide to probability and statistics for TRPG players.',
+        1: 'Written with readability first, so you can breeze through it.',
+        2: 'Practical insights you can start using right away.',
+      },
+    },
     ccfolia: { title: 'CCFOLIA Export' },
     error: {
       message: 'An unexpected error occurred.',
       reload: 'Reload Page',
+    },
+  },
+  legal: {
+    'back-to-top': 'Back to top page',
+    terms: {
+      metadata: {
+        title: 'Terms of Service',
+        description: 'Terms of Service for using DiceSpec.',
+      },
+      title: 'Terms of Service',
+    },
+    privacy: {
+      metadata: {
+        title: 'Privacy Policy',
+        description: 'Privacy Policy for DiceSpec users.',
+      },
+      title: 'Privacy Policy',
+    },
+    commerce: {
+      metadata: {
+        title: 'Legal Notice Based on the Specified Commercial Transactions Act',
+        description: 'Legal notice for subscription purchases on DiceSpec.',
+      },
+      title: 'Legal Notice Based on the Specified Commercial Transactions Act',
+    },
+  },
+  profile: {
+    title: 'Account',
+    description: 'User profile page',
+    'sign-in-prompt': 'Sign in to view profile',
+    'display-name': {
+      label: 'Display name',
+      placeholder: 'Enter display name',
+    },
+    'google-sign-in': 'Sign in with Google',
+    agreement: {
+      prefix: 'By creating an account, you agree to the ',
+      terms: 'Terms of Service',
+      conjunction: ' and ',
+      privacy: 'Privacy Policy',
+      suffix: '.',
+    },
+    menu: {
+      'aria-label': 'User menu',
+      profile: 'Profile',
+      'sign-out': 'Sign out',
+    },
+    email: {
+      label: 'Email address',
+      hint: "Email address can't be changed",
+    },
+    avatar: {
+      'aria-label': 'Click to upload avatar',
+    },
+    button: {
+      save: 'Save',
+      saving: 'Saving...',
+    },
+    toast: {
+      'save-success-title': 'Saved',
+      'save-success-description': 'Display name updated',
+      'save-error-title': 'An error occurred',
+      'save-error-description': 'Failed to update display name',
+      'avatar-upload-error-title': 'Failed to upload avatar',
+      'avatar-upload-error-description': 'Please try again later.',
+      'avatar-upload-error-unsupported-format-description': 'Unsupported image format. Please use JPEG, PNG, or WebP.',
+      'avatar-upload-error-too-large-description':
+        'The image is still larger than 1 MiB after optimization. Please choose another image.',
+      'avatar-upload-error-invalid-image-description': 'Failed to decode image. Please try another file.',
+      'sign-in-error-title': 'Sign-in failed',
+      'sign-in-error-description': 'Failed to initialize your account. Please try again later.',
+      'upgrade-error-title': 'Upgrade failed',
+      'upgrade-error-description': 'Please try again',
+      'manage-subscription-error-title': 'Failed to manage subscription',
+      'manage-subscription-error-description': 'Please try again',
+      'manage-subscription-error-no-customer': 'Subscription information was not found',
+    },
+    plan: {
+      title: 'Plan Management',
+      'current-plan': 'Current Plan',
+      free: 'Free',
+      pro: 'Pro',
+      'manage-subscription': 'Manage subscription in Stripe',
+      'manage-subscription-note':
+        'You will be redirected to an external site (Stripe). Plan changes and cancellation are available there.',
+      loading: 'Loading...',
+    },
+    pricing: {
+      title: 'Upgrade for a better dice experience🎲',
+      'billing-monthly': 'Monthly',
+      'billing-yearly': 'Yearly',
+      'plan-name': 'PRO',
+      month: 'month',
+      'monthly-payment': 'Monthly billing',
+      'yearly-payment': '¥{{price}} billed yearly',
+      'feature-unlimited-saves': 'Unlimited analysis saves',
+      'feature-advanced-analytics': 'Advanced statistical analysis',
+      'upgrade-button': 'Start PRO Plan',
+      processing: 'Processing...',
+      'legal-note-prefix': 'Before purchasing, please review the ',
+      'legal-link-label': 'Legal Notice Based on the Specified Commercial Transactions Act',
+      'legal-note-suffix': '.',
     },
   },
 };

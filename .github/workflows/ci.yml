@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+
+      - run: bun run lint
+      - run: bun run stylelint
+      - run: bun run typecheck
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - run: bun test
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - run: |
+          NODE_ENV=production \
+          NEXT_PUBLIC_FIREBASE_API_KEY=dummy \
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=dummy \
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID=dummy \
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=dummy \
+          NEXT_PUBLIC_FIREBASE_APP_ID=dummy \
+          NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID=dummy \
+          NEXT_PUBLIC_DISCORD_WEBHOOK_URL=dummy \
+          bun run build

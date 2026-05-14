@@ -1,5 +1,6 @@
 import * as i18n from 'i18next';
 import type { FC, ReactNode } from 'react';
+
 import { i18nextInitOptions } from '@/locales/i18next';
 import { i18nConfig, type Locale } from '@/shared/i18n/config';
 

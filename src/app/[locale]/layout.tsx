@@ -2,11 +2,13 @@ import '@/shared/styles/globals.css';
 import clsx from 'clsx';
 import { Next13NProgress } from 'nextjs13-progress';
 import type { FC, ReactNode } from 'react';
+
 import { WebVitals } from '@/shared/components/elements/WebVitals';
 import { GoogleTagManager } from '@/shared/components/GoogleTagManager';
 import { I18nProvider } from '@/shared/i18n/client-layout';
 import { wrapRootLayout } from '@/shared/i18n/server-layout';
 import { isOldApp } from '@/shared/lib/const';
+
 import {
   MigrationAnnouncementBanner,
   OldAppMigrationAnnouncementBanner,
@@ -16,14 +18,14 @@ const RootLayout: FC<{ children: ReactNode; locale: string }> = ({ children, loc
   return (
     <I18nProvider>
       <html lang={locale} className="h-full">
-        <body className={clsx('h-full text-slate-700 font-(family-name:--font-main)')}>
+        <body className={clsx('h-full flex flex-col text-slate-700 font-(family-name:--font-main)')}>
           <GoogleTagManager />
           <WebVitals />
           <Next13NProgress color="#334155" options={{ showSpinner: false }} />
 
           {isOldApp ? <OldAppMigrationAnnouncementBanner /> : <MigrationAnnouncementBanner />}
 
-          {children}
+          <div className="flex-1">{children}</div>
         </body>
       </html>
     </I18nProvider>
@@ -31,3 +33,7 @@ const RootLayout: FC<{ children: ReactNode; locale: string }> = ({ children, loc
 };
 
 export default wrapRootLayout(RootLayout);
+
+export const generateStaticParams = () => {
+  return [{ locale: 'ja' }, { locale: 'en' }];
+};

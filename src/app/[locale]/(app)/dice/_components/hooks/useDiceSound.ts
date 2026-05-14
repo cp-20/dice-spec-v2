@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import useSound from 'use-sound';
+
 import { useAdvancedSettings } from './useAdvancedSettings';
 
 export const useDiceSound = () => {

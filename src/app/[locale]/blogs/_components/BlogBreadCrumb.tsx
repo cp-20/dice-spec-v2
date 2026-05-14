@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+
 import { contents } from '@/app/[locale]/blogs/[category]/[slug]/_contents/contents';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import {

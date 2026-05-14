@@ -267,7 +267,7 @@ describe('diceExpecter', () => {
     });
   });
 
-  test('1d6 * 8 + ', () => {
+  test('1d6 * 8 +', () => {
     expect(diceExpecter('1d6 * 8 + ')).toEqual({
       success: false,
       message: expect.any(String),

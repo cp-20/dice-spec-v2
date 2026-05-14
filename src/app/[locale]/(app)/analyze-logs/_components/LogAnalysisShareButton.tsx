@@ -3,7 +3,9 @@
 import { IconBrandX, IconLoader } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { FC } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
+
 import { useShareAnalysisResult } from './hooks/useShareAnalysisResult';
 
 export const LogAnalysisShareButton: FC = () => {

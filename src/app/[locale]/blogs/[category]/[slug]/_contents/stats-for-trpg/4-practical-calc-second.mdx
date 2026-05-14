@@ -42,13 +42,17 @@ import { WithCaption } from '@/mdx-components';
 
 この確率分布はこんな形になるよ～！
 
-<WithCaption caption="1d100+ボーナスダイス1個の分布"><PreDefinedExpectResultDistributionChart result={diceExpecter('2pd10*10-10+1d10')} /></WithCaption>
+<WithCaption caption="1d100+ボーナスダイス1個の分布">
+  <PreDefinedExpectResultDistributionChart result={diceExpecter('2pd10*10-10+1d10')} />
+</WithCaption>
 
 なかなか面白い形だね～！　でもちゃんと小さい値の方が出やすくなってることが分かるね！
 
 ちなみにボーナスダイス2個だとこんな感じ！　形はあんまり変わらないけど、縦軸の値の範囲が広がってるのが分かるかな？
 
-<WithCaption caption="1d100+ボーナスダイス2個の分布"><PreDefinedExpectResultDistributionChart result={diceExpecter('3pd10*10-10+1d10')} /></WithCaption>
+<WithCaption caption="1d100+ボーナスダイス2個の分布">
+  <PreDefinedExpectResultDistributionChart result={diceExpecter('3pd10*10-10+1d10')} />
+</WithCaption>
 
 これを技能判定の確率に直すと、**技能値が半分ぐらいより小さいときは成功率が大きく上がる**んだけど、逆に**技能値が高いときはそこまで成功率が上がらない**んだよね～。
 

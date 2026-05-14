@@ -1,4 +1,5 @@
 import type { ComponentProps, FC } from 'react';
+
 import { Text } from '@/shared/components/Typography/Text';
 
 type PlainTextProps = {

@@ -1,9 +1,8 @@
 'use client';
 
-import clsx from 'clsx';
-import { t } from 'i18next';
 import type { FC } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+
+import { CharacterSelectView } from './CharacterSelectView';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
 import { useLogAnalysis } from './hooks/useLogAnalysis';
 
@@ -11,36 +10,15 @@ export const CharacterSelect: FC = () => {
   const { character, selectCharacter } = useCharacterSelect();
   const { result } = useLogAnalysis();
 
+  const enabled = result?.type === 'success';
+  const characters = enabled ? result.results.map((r) => ({ id: r.id, name: r.name })) : [];
+
   return (
-    <div>
-      {/** biome-ignore lint/a11y/noLabelWithoutControl: aria-labelledby に紐づいてる */}
-      <label id="character-select-label" className="text-sm mb-1 font-bold block">
-        キャラクター
-      </label>
-      <Select
-        disabled={result?.type !== 'success'}
-        value={result?.type === 'success' ? character : ''}
-        onValueChange={selectCharacter}
-        aria-labelledby="character-select-label"
-      >
-        <SelectTrigger className="w-full font-bold" aria-label={t('analyze-logs:character-select.label')}>
-          <SelectValue
-            placeholder={<span className="text-slate-500">{t('analyze-logs:character-select.label')}</span>}
-          />
-        </SelectTrigger>
-        <SelectContent>
-          {result?.type === 'success' &&
-            result.results.map((character) => (
-              <SelectItem
-                key={character.id}
-                value={character.id}
-                className={clsx(character.id === 'all' && 'font-semibold')}
-              >
-                {character.name}
-              </SelectItem>
-            ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <CharacterSelectView
+      enabled={enabled}
+      characterId={character}
+      setCharacterId={selectCharacter}
+      characters={characters}
+    />
   );
 };

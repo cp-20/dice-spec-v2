@@ -1,4 +1,5 @@
 import { bench, run } from 'mitata';
+
 import { parseDiceCommand } from './parser';
 
 bench('単純な数字をパースできる', () => {

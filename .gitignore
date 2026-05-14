@@ -53,3 +53,8 @@ yarn-error.log*
 .env.sentry-build-plugin
 
 .wrangler
+
+/firebase-debug.log
+/firestore-debug.log
+
+/.firebaserc

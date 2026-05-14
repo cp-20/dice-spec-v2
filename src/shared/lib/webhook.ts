@@ -1,4 +1,4 @@
-const webhookUrl = process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL as string;
+import { clientEnv } from '@/shared/lib/env';
 
 type Feedback = {
   name?: string;
@@ -21,7 +21,7 @@ export const sendFeedback = async (feedback: Feedback) => {
       },
     ],
   };
-  const res = await fetch(webhookUrl, {
+  const res = await fetch(clientEnv.discordWebhookUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export const sendGameSystemRequest = async (request: GameSystemRequest) => {
   formData.append('payload_json', JSON.stringify(payload));
   if (request.logFile) formData.append('files[0]', request.logFile);
 
-  const res = await fetch(webhookUrl, {
+  const res = await fetch(clientEnv.discordWebhookUrl, {
     method: 'POST',
     body: formData,
   });

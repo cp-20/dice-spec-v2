@@ -1,8 +1,10 @@
+import LogoIcon from '/public/icon.svg';
 import type { IconProps } from '@tabler/icons-react';
 import { IconDice5, IconSearch, IconTimeline } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
 import type { FC } from 'react';
+
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { Footer } from '@/shared/components/Layout/Footer';
@@ -16,7 +18,7 @@ import {
   metadataHelper,
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
-import LogoIcon from '/public/icon.svg';
+
 import { LinkableIconPanel } from './_components/LinkableIconPanel';
 import { Panel } from './_components/Panel';
 
@@ -104,9 +106,28 @@ const LandingPage: NextPage = () => {
         </div>
 
         <div>
-          <H2 className="m-0 mb-4 border-none p-0 text-center text-xl">{t('landing-page:privacy-policy.label')}</H2>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm">
+            <CustomLink
+              href={t('link', { href: '/terms' })}
+              className="underline underline-offset-2 hover:text-slate-600"
+            >
+              {t('profile:agreement.terms')}
+            </CustomLink>
 
-          <p className="max-w-[43rem] text-xs">{t('landing-page:privacy-policy.description')}</p>
+            <CustomLink
+              href={t('link', { href: '/privacy-policy' })}
+              className="underline underline-offset-2 hover:text-slate-600"
+            >
+              {t('profile:agreement.privacy')}
+            </CustomLink>
+
+            <CustomLink
+              href={t('link', { href: '/specified-commercial-transactions' })}
+              className="underline underline-offset-2 hover:text-slate-600"
+            >
+              {t('legal:commerce.title')}
+            </CustomLink>
+          </div>
         </div>
       </main>
       <Footer />

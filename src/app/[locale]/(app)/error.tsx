@@ -3,6 +3,7 @@
 import { IconExclamationCircle } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { FC } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
 
 type Props = {

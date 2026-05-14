@@ -1,7 +1,8 @@
-import type { DiceResultForCharacter, System } from '.';
+import type { System } from '.';
+import type { MessageParserResult } from './messageParser';
 import { systemStats } from './messageParser';
 
-export const aggregateResults = (results: DiceResultForCharacter['results'], system: System) => {
+export const aggregateResults = (results: MessageParserResult[], system: System) => {
   const stats = systemStats[system];
   const labels = stats.pivots.slice(1).map((pivot, i) => {
     const min = stats.pivots[i];
@@ -12,10 +13,13 @@ export const aggregateResults = (results: DiceResultForCharacter['results'], sys
 
   const data: number[] = results
     .flatMap(({ results }) => results)
-    .reduce((acc, result) => {
-      const pivot = stats.pivots.findIndex((pivot) => result < pivot) - 1;
-      return acc.map((value, i) => (i === pivot ? value + 1 : value));
-    }, new Array(labels.length).fill(0));
+    .reduce(
+      (acc, result) => {
+        const pivot = stats.pivots.findIndex((pivot) => result < pivot) - 1;
+        return acc.map((value, i) => (i === pivot ? value + 1 : value));
+      },
+      Array.from<number>({ length: labels.length }).fill(0),
+    );
 
   return { labels, data };
 };

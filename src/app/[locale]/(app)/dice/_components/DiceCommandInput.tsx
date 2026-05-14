@@ -3,8 +3,10 @@
 import { t } from 'i18next';
 import type { FC, FormEventHandler } from 'react';
 import { useEffect, useState } from 'react';
+
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
+
 import { useDiceRoll } from './hooks/useDiceRoll';
 import { useDiceRollValidation } from './hooks/useDiceRollOption';
 
@@ -25,7 +27,7 @@ export const DiceCommandInput: FC = () => {
     if (result.ok) {
       setErrorMessage('');
     } else {
-      setErrorMessage(t('error-failed'));
+      setErrorMessage(t('dice:advanced.input.error-failed'));
     }
   };
 
@@ -33,7 +35,7 @@ export const DiceCommandInput: FC = () => {
     if (isValid) {
       setErrorMessage('');
     } else {
-      setErrorMessage(t('error-invalid'));
+      setErrorMessage(t('dice:advanced.input.error-invalid'));
     }
   }, [isValid]);
 

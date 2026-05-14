@@ -3,6 +3,7 @@
 import { IconAlertCircle } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { FC } from 'react';
+
 import { useLogAnalysis } from './hooks/useLogAnalysis';
 
 export const AnalyzeLogsErrorAlert: FC = () => {
