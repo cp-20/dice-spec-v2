@@ -26,7 +26,7 @@ export const generateMetadata: MetadataGenerator = async (props) => {
 
 export const viewport = viewportGenerator();
 
-const LEGAL_LAST_UPDATED = '2026-03-27';
+const LEGAL_LAST_UPDATED = '2026-05-14';
 
 const SpecifiedCommercialTransactionsPage: NextPage = () => {
   return (
@@ -107,7 +107,7 @@ const SpecifiedCommercialTransactionsPage: NextPage = () => {
             </P>
             <P className="font-semibold text-slate-700">解約方法</P>
             <P>
-              マイページから次回更新日の24時間前までに解約いただけます。解約後も当該請求期間の終了日まではサービスをご利用いただけます。
+              アカウント設定からいつでも解約が可能です。解約により次回更新を停止しますが、既払い期間のサービス利用は有効期限まで継続します。
             </P>
           </Section>
 

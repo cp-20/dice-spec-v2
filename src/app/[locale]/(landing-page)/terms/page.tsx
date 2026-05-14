@@ -26,7 +26,7 @@ export const generateMetadata: MetadataGenerator = async (props) => {
 
 export const viewport = viewportGenerator();
 
-const LEGAL_LAST_UPDATED = '2026-03-23';
+const LEGAL_LAST_UPDATED = '2026-05-14';
 
 const TermsPage: NextPage = () => {
   return (
@@ -126,9 +126,9 @@ const TermsPage: NextPage = () => {
             <H2>第7条 プライバシー</H2>
             <P>
               本サービスのご利用にあたっては、運営の
-              <MarkdownLink href="/privacy-policy">プライバシーポリシー</MarkdownLink>
+              <MarkdownLink href={t('link', { href: '/privacy-policy' })}>プライバシーポリシー</MarkdownLink>
               が適用されます。個人情報の収集、利用、保護方法については
-              <MarkdownLink href="/privacy-policy">当該ポリシー</MarkdownLink>をご参照ください。
+              <MarkdownLink href={t('link', { href: '/privacy-policy' })}>当該ポリシー</MarkdownLink>をご参照ください。
             </P>
           </Section>
 
@@ -148,7 +148,7 @@ const TermsPage: NextPage = () => {
           <Section>
             <H2>第9条 免責事項</H2>
             <P>
-              本サービスは「現状有姿」「現状有効」で提供されます。法令で許容される最大限の範囲で、運営は明示的、黙示的、法定のいかなる保証も否認します。これには、商品性、特定目的適合性、非侵害性、翻訳精度、継続的運用保証などが含まれます。
+              本サービスは現状有姿かつ提供可能な範囲で提供されます。法令で許容される最大限の範囲で、運営は明示的、黙示的、法定のいかなる保証も否認します。これには、商品性、特定目的適合性、非侵害性、翻訳精度、継続的運用保証などが含まれます。
             </P>
             <P>
               不可抗力:
