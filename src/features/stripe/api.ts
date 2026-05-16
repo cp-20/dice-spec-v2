@@ -23,15 +23,27 @@ const getAuthHeader = async () => {
   return { authorization: `Bearer ${idToken}` };
 };
 
+let createCustomerPromise: Promise<CreateCustomerResponse> | null = null;
+
 export async function createCustomer(): Promise<CreateCustomerResponse> {
-  const client = getClient();
-  const res = await client.api.stripe['create-customer'].$post({ json: {} }, { headers: await getAuthHeader() });
-  if (!res.ok) {
-    throw new Error('Failed to create customer', { cause: await res.json() });
+  if (createCustomerPromise) {
+    return createCustomerPromise;
   }
 
-  const data = await res.json();
-  return data;
+  createCustomerPromise = (async () => {
+    const client = getClient();
+    const res = await client.api.stripe['create-customer'].$post({ json: {} }, { headers: await getAuthHeader() });
+    if (!res.ok) {
+      throw new Error('Failed to create customer', { cause: await res.json() });
+    }
+
+    const data = await res.json();
+    return data;
+  })().finally(() => {
+    createCustomerPromise = null;
+  });
+
+  return createCustomerPromise;
 }
 
 // -------------------------------
