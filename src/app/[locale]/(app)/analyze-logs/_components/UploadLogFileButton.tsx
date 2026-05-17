@@ -7,40 +7,51 @@ import { type FC, useCallback, useRef } from 'react';
 import { Button } from '@/shared/components/ui/button';
 
 import { useDropzone } from './hooks/useDropzone';
-import { useCurrentFile, useFileContent } from './hooks/useLogAnalysis';
+import { useLogFiles } from './hooks/useLogAnalysis';
+
+const readFileAsText = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', (e) => {
+      const result = e.target?.result;
+      if (typeof result === 'string') {
+        resolve(result);
+        return;
+      }
+      reject(new Error('Failed to read file'));
+    });
+    reader.addEventListener('error', () => reject(reader.error ?? new Error('Failed to read file')));
+    reader.readAsText(file);
+  });
 
 export const UploadLogFileButton: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { currentFile, setCurrentFile } = useCurrentFile();
-  const { setFileContent } = useFileContent();
+  const { logFiles, setLogFiles } = useLogFiles();
 
   const dropHandler = useCallback(
-    (file: File) => {
-      const filename = file.name;
-      const reader = new FileReader();
-      reader.addEventListener('load', (e) => {
-        const result = e.target?.result;
-        if (typeof result === 'string') {
-          setCurrentFile(filename);
-          setFileContent(result);
-        }
-      });
-      reader.readAsText(file);
+    async (files: File[]) => {
+      const readFiles = await Promise.all(
+        files.map(async (file) => ({
+          name: file.name,
+          content: await readFileAsText(file),
+        })),
+      );
+      setLogFiles((prev) => [...prev, ...readFiles]);
+      if (inputRef.current) inputRef.current.value = '';
     },
-    [setCurrentFile, setFileContent],
+    [setLogFiles],
   );
 
   const { containerProps, inputProps, isDraggedOver } = useDropzone(dropHandler);
 
   const handleRemove = useCallback(() => {
-    setCurrentFile(null);
-    setFileContent('');
+    setLogFiles([]);
     if (inputRef.current) inputRef.current.value = '';
-  }, [setCurrentFile, setFileContent]);
+  }, [setLogFiles]);
 
-  return (
-    <Button asChild variant="outline">
-      {currentFile === null ? (
+  if (logFiles.length === 0) {
+    return (
+      <Button asChild variant="outline">
         <label
           htmlFor="log-file-uploader"
           className="h-fit min-h-20 w-full place-content-center p-4"
@@ -60,24 +71,51 @@ export const UploadLogFileButton: FC = () => {
             id="log-file-uploader"
             type="file"
             accept="text/html"
+            multiple
             className="hidden"
             ref={inputRef}
             {...inputProps}
           />
         </label>
-      ) : (
-        <div className="h-20 w-full p-4">
-          <div className="inline-flex animate-slide-in-top items-center justify-center gap-4">
-            <div className="inline-flex flex-wrap">
-              <span>{t('analyze-logs:upload.current-file')}: </span>
-              <span className="font-bold">{currentFile}</span>
-            </div>
-            <Button variant="ghost" size="icon" onClick={handleRemove}>
-              <IconX />
-            </Button>
-          </div>
+      </Button>
+    );
+  }
+
+  return (
+    <div
+      className="flex min-h-20 w-full flex-wrap items-center justify-between gap-3 rounded-md border border-input bg-background p-4 text-sm shadow-xs"
+      {...containerProps}
+    >
+      <div className="inline-flex animate-slide-in-top flex-wrap items-center gap-2">
+        <span>{t('analyze-logs:upload.current-file')}: </span>
+        <div className="inline-flex flex-wrap gap-2">
+          {logFiles.map((file, index) => (
+            <span className="rounded-sm bg-muted px-2 py-1 font-bold" key={`${file.name}-${index}`}>
+              {file.name}
+            </span>
+          ))}
         </div>
-      )}
-    </Button>
+      </div>
+      <div className="flex items-center gap-2">
+        <Button asChild variant="outline" size="sm">
+          <label htmlFor="log-file-uploader" className="cursor-pointer gap-2">
+            <IconUpload size="18" />
+            <span>{t('analyze-logs:upload.add-button')}</span>
+          </label>
+        </Button>
+        <Button variant="ghost" size="icon" onClick={handleRemove}>
+          <IconX />
+        </Button>
+      </div>
+      <input
+        id="log-file-uploader"
+        type="file"
+        accept="text/html"
+        multiple
+        className="hidden"
+        ref={inputRef}
+        {...inputProps}
+      />
+    </div>
   );
 };
