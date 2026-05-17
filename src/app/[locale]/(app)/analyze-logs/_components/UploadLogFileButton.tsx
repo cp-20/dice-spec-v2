@@ -103,7 +103,7 @@ export const UploadLogFileButton: FC = () => {
             <span>{t('analyze-logs:upload.add-button')}</span>
           </label>
         </Button>
-        <Button variant="ghost" size="icon" onClick={handleRemove}>
+        <Button variant="ghost" size="icon" onClick={handleRemove} aria-label={t('analyze-logs:upload.clear-button')}>
           <IconX />
         </Button>
       </div>
