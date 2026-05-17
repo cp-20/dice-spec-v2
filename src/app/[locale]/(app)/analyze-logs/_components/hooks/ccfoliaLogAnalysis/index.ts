@@ -5,7 +5,7 @@ import { type MessageParserResult, parseMessage, systemStats } from './messagePa
 import { type DiceResultSummary, summarizeResults } from './summarizer';
 import { formatLogTabName } from './tabName';
 
-export type System = 'emoklore' | 'CoC7th' | 'CoC6th' | 'shinobigami';
+export type System = 'emoklore' | 'CoC7th' | 'CoC6th' | 'shinobigami' | 'nechronica';
 
 type ResultRecord = MessageParserResult & {
   fullStr: string;

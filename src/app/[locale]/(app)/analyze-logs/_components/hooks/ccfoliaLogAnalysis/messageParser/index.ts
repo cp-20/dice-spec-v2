@@ -2,6 +2,7 @@ import type { System } from '../';
 import { CoC6thParser, CoC6thSystemStats } from './cthulhu6th';
 import { CoC7thParser, CoC7thSystemStats } from './cthulhu7th';
 import { emokloreParser, emokloreSystemStats } from './emoklore';
+import { nechronicaParser, nechronicaSystemStats } from './nechronica';
 import { shinobigamiParser, shinobigamiSystemStats } from './shinobigami';
 
 export type SystemMessageParserResult = {
@@ -44,6 +45,7 @@ export const systemStats: Record<System, SystemStats> = {
   CoC6th: CoC6thSystemStats,
   CoC7th: CoC7thSystemStats,
   shinobigami: shinobigamiSystemStats,
+  nechronica: nechronicaSystemStats,
 };
 
 export const systems: Record<System, { id: System; name: string }> = {
@@ -51,6 +53,7 @@ export const systems: Record<System, { id: System; name: string }> = {
   CoC6th: { id: 'CoC6th', name: 'クトゥルフ神話TRPG' },
   CoC7th: { id: 'CoC7th', name: '新クトゥルフ神話TRPG' },
   shinobigami: { id: 'shinobigami', name: 'シノビガミ' },
+  nechronica: { id: 'nechronica', name: 'ネクロニカ' },
 };
 
 export const parsers: Record<System, SystemMessageParser> = {
@@ -58,6 +61,7 @@ export const parsers: Record<System, SystemMessageParser> = {
   CoC6th: CoC6thParser,
   CoC7th: CoC7thParser,
   shinobigami: shinobigamiParser,
+  nechronica: nechronicaParser,
 };
 
 export const parseMessage = (system: System, message: string) => postprocess(system, parsers[system](message));

@@ -103,7 +103,7 @@ service cloud.firestore {
         && data.id == analysisId
         && data.title is string
         && data.ownerUid is string
-        && data.systemId in ['emoklore', 'CoC7th', 'CoC6th', 'shinobigami']
+        && data.systemId in ['emoklore', 'CoC7th', 'CoC6th', 'shinobigami', 'nechronica']
         && isVisibilityLevel(data.visibilityLevel)
         && data.showRecordDetails is bool
         && data.characterResults is list

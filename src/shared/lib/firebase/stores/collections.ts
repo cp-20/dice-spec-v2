@@ -81,6 +81,7 @@ const analysisSystemSchema = v.union([
   v.literal('CoC7th'),
   v.literal('CoC6th'),
   v.literal('shinobigami'),
+  v.literal('nechronica'),
 ]);
 
 export const analysesStoreSchema = v.object({
