@@ -3,6 +3,7 @@ import { parseHtmlLog } from './htmlParser';
 import { formatMessage } from './messageFormatter';
 import { type MessageParserResult, parseMessage, systemStats } from './messageParser';
 import { type DiceResultSummary, summarizeResults } from './summarizer';
+import { formatLogTabName } from './tabName';
 
 export type System = 'emoklore' | 'CoC7th' | 'CoC6th' | 'shinobigami';
 
@@ -17,8 +18,8 @@ export type DiceResultForCharacter = {
   summary: DiceResultSummary;
 };
 
-export const analyzeCcfoliaLog = (system: System, html: string) => {
-  const logs = parseHtmlLog(html);
+export const analyzeCcfoliaLog = (system: System, html: string, tabs?: string[]) => {
+  const logs = parseHtmlLog(html).filter((log) => tabs === undefined || tabs.includes(log.tab));
   if (logs.length === 0) {
     throw new Error('No logs detected');
   }
@@ -28,7 +29,7 @@ export const analyzeCcfoliaLog = (system: System, html: string) => {
       formatMessage(message).map((m) => {
         const result = parseMessage(system, m);
         if (result === null) return null;
-        return { ...log, result: { ...result, fullStr: `${log.tab} ${message}` } };
+        return { ...log, result: { ...result, fullStr: `${formatLogTabName(log.tab)} ${message}` } };
       }),
     )
     .filter((log) => log !== null);

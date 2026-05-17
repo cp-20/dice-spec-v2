@@ -25,6 +25,7 @@ import { LogAnalysisCharts } from './_components/LogAnalysisCharts';
 import { LogAnalysisRankingChart } from './_components/LogAnalysisRankingChart';
 import { LogAnalysisShareButton } from './_components/LogAnalysisShareButton';
 import { LogAnalysisStats } from './_components/LogAnalysisStats';
+import { LogTabSelect } from './_components/LogTabSelect';
 import { decodeOgImageId } from './_components/og';
 import { UploadLogFileButton } from './_components/UploadLogFileButton';
 
@@ -82,6 +83,7 @@ const AnalyzeLogsPage: NextPage = () => (
 
     <div className="space-y-4 @container">
       <UploadLogFileButton />
+      <LogTabSelect />
       <div className="grid grid-cols-2 gap-4 @max-md:grid-cols-1">
         <GameSystemSelect />
         <CharacterSelect />

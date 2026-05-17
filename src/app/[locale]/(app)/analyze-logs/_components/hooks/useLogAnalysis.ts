@@ -1,6 +1,6 @@
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
@@ -8,6 +8,7 @@ import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { ALL_CHARACTER_ID } from '../constants';
 import { analyzeCcfoliaLog, type DiceResultForCharacter, type System } from './ccfoliaLogAnalysis';
 import { detectSystem } from './ccfoliaLogAnalysis/detector';
+import { parseHtmlLog } from './ccfoliaLogAnalysis/htmlParser';
 import { systemStats } from './ccfoliaLogAnalysis/messageParser';
 
 type LogFile = {
@@ -30,6 +31,19 @@ const mergeLogContents = (contents: string[]) => {
 };
 
 const fileContentAtom = atom((get) => mergeLogContents(get(logFilesAtom).map(({ content }) => content)));
+const selectedLogTabsAtom = atom<string[] | null>(null);
+
+const logTabOptionsAtom = atom((get) => {
+  const fileContent = get(fileContentAtom);
+  if (fileContent === '') return [];
+
+  try {
+    return takeUnique(parseHtmlLog(fileContent).map(({ tab }) => tab));
+  } catch (err) {
+    console.error('Failed to parse log tabs:', err);
+    return [];
+  }
+});
 
 const logAnalysisSystemAtom = withAtomEffect(atom<System | null>(null), (get, set) => {
   const fileContent = get(fileContentAtom);
@@ -61,10 +75,13 @@ type LogAnalysisError = {
 const logAnalysisResultAtom = atom<LogAnalysisResult>((get) => {
   const fileContent = get(fileContentAtom);
   const system = get(logAnalysisSystemAtom);
+  const selectedTabs = get(selectedLogTabsAtom);
+  const tabs = selectedTabs ?? undefined;
 
   if (fileContent === '' || system === null) return null;
+  if (selectedTabs !== null && selectedTabs.length === 0) return null;
   try {
-    const result = analyzeCcfoliaLog(system, fileContent);
+    const result = analyzeCcfoliaLog(system, fileContent, tabs);
     return { type: 'success', results: result };
   } catch (err) {
     console.error('Failed to analyze log:', err);
@@ -81,6 +98,43 @@ const systemStatsAtom = atom((get) => {
 export const useLogFiles = () => {
   const [logFiles, setLogFiles] = useAtom(logFilesAtom);
   return { logFiles, setLogFiles };
+};
+
+export const useLogTabSelect = () => {
+  const tabs = useAtomValue(logTabOptionsAtom);
+  const [selectedTabs, setSelectedTabs] = useAtom(selectedLogTabsAtom);
+  const enabledTabs = selectedTabs ?? tabs;
+
+  const toggleTab = useCallback(
+    (tab: string) => {
+      setSelectedTabs((prev) => {
+        const current = prev ?? tabs;
+        const next = current.includes(tab) ? current.filter((selectedTab) => selectedTab !== tab) : [...current, tab];
+        if (next.length === tabs.length) return null;
+        return next;
+      });
+    },
+    [setSelectedTabs, tabs],
+  );
+
+  const setAllTabsSelected = useCallback(
+    (checked: boolean) => {
+      setSelectedTabs(checked ? null : []);
+    },
+    [setSelectedTabs],
+  );
+
+  const resetSelectedTabs = useCallback(() => {
+    setSelectedTabs(null);
+  }, [setSelectedTabs]);
+
+  return {
+    tabs,
+    enabledTabs,
+    toggleTab,
+    setAllTabsSelected,
+    resetSelectedTabs,
+  };
 };
 
 export const useLogAnalysis = () => {
@@ -125,3 +179,5 @@ export const useLogAnalysisSystem = () => {
     changeSystem: (system: System | null) => setSystem(system),
   };
 };
+
+const takeUnique = <T>(array: T[]) => Array.from(new Set(array));
