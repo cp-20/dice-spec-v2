@@ -205,6 +205,11 @@ export const en = {
     'character-select': {
       label: 'Select a character',
     },
+    'tab-select': {
+      label: 'Select tabs to analyze',
+      all: 'All',
+      empty: 'Upload logs to select tabs.',
+    },
     error: 'An error occurred during analysis. Please make sure you have uploaded the correct log file.',
     stats: {
       mean: 'Mean',

@@ -7,7 +7,7 @@ import { type FC, useCallback, useRef } from 'react';
 import { Button } from '@/shared/components/ui/button';
 
 import { useDropzone } from './hooks/useDropzone';
-import { useLogFiles } from './hooks/useLogAnalysis';
+import { useLogFiles, useLogTabSelect } from './hooks/useLogAnalysis';
 
 const readFileAsText = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -27,6 +27,7 @@ const readFileAsText = (file: File) =>
 export const UploadLogFileButton: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { logFiles, setLogFiles } = useLogFiles();
+  const { resetSelectedTabs } = useLogTabSelect();
 
   const dropHandler = useCallback(
     async (files: File[]) => {
@@ -37,17 +38,19 @@ export const UploadLogFileButton: FC = () => {
         })),
       );
       setLogFiles((prev) => [...prev, ...readFiles]);
+      resetSelectedTabs();
       if (inputRef.current) inputRef.current.value = '';
     },
-    [setLogFiles],
+    [resetSelectedTabs, setLogFiles],
   );
 
   const { containerProps, inputProps, isDraggedOver } = useDropzone(dropHandler);
 
   const handleRemove = useCallback(() => {
     setLogFiles([]);
+    resetSelectedTabs();
     if (inputRef.current) inputRef.current.value = '';
-  }, [setLogFiles]);
+  }, [resetSelectedTabs, setLogFiles]);
 
   if (logFiles.length === 0) {
     return (
