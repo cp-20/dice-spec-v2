@@ -18,7 +18,7 @@ export const useGameSystemRequestDialog = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const validate = (value: string) => {
-    if (/(CoC|クトゥルフ|エモクロア|シノビガミ)/.test(value)) {
+    if (/(CoC|クトゥルフ|エモクロア|シノビガミ|ネクロニカ)/.test(value)) {
       setErrorMessage(t('analyze-logs:game-system-request:already-implemented'));
     } else {
       setErrorMessage(null);
