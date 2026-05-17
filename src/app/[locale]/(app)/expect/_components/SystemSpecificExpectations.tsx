@@ -20,10 +20,10 @@ export const SystemSpecificExpectations: FC = () => (
 
     <Tabs defaultValue="cthulhu6th">
       <TabsList className="h-auto flex-wrap justify-start">
-        <TabsTrigger value="cthulhu6th">クトゥルフ</TabsTrigger>
-        <TabsTrigger value="cthulhu7th">新クトゥルフ</TabsTrigger>
-        <TabsTrigger value="emoklore">エモクロア</TabsTrigger>
-        <TabsTrigger value="doublecross3rd">DX3rd</TabsTrigger>
+        <TabsTrigger value="cthulhu6th">クトゥルフ神話TRPG</TabsTrigger>
+        <TabsTrigger value="cthulhu7th">新クトゥルフ神話TRPG</TabsTrigger>
+        <TabsTrigger value="emoklore">エモクロアTRPG</TabsTrigger>
+        <TabsTrigger value="doublecross3rd">ダブルクロス3rd</TabsTrigger>
       </TabsList>
       <TabsContent value="cthulhu6th">
         <Cthulhu6thOpposedPanel />
