@@ -29,7 +29,7 @@ export const ProfileSettingsSection = () => {
     setDisplayName(me?.name ?? '');
   }, [me?.name]);
 
-  const dropHandler = useCallback(
+  const uploadAvatar = useCallback(
     async (file: File) => {
       if (authUser?.uid === undefined) return;
       setUploading(true);
@@ -61,6 +61,15 @@ export const ProfileSettingsSection = () => {
       }
     },
     [authUser?.uid, storage, updateAvatarUrl, toast],
+  );
+
+  const dropHandler = useCallback(
+    async (files: File[]) => {
+      const file = files[0];
+      if (file === undefined) return;
+      await uploadAvatar(file);
+    },
+    [uploadAvatar],
   );
 
   const { containerProps, inputProps } = useDropzone(dropHandler);

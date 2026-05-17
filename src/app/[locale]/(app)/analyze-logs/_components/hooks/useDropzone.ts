@@ -1,7 +1,7 @@
 import type { ChangeEventHandler, DragEventHandler } from 'react';
 import { useCallback, useState } from 'react';
 
-type DropHandler = (file: File) => void;
+type DropHandler = (files: File[]) => void;
 
 export const useDropzone = <Element = HTMLElement>(dropHandler: DropHandler) => {
   const [isDraggedOver, setIsDraggedOver] = useState(false);
@@ -12,9 +12,9 @@ export const useDropzone = <Element = HTMLElement>(dropHandler: DropHandler) => 
       e.stopPropagation();
       setIsDraggedOver(false);
 
-      const file = e.dataTransfer.files[0];
-      if (file === null || file === undefined) return;
-      dropHandler(file);
+      const files = Array.from(e.dataTransfer.files);
+      if (files.length === 0) return;
+      dropHandler(files);
     },
     [dropHandler],
   );
@@ -38,10 +38,10 @@ export const useDropzone = <Element = HTMLElement>(dropHandler: DropHandler) => 
 
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     (e) => {
-      const file = e.target.files?.[0];
-      if (file === null || file === undefined) return;
+      const files = Array.from(e.target.files ?? []);
+      if (files.length === 0) return;
 
-      dropHandler(file);
+      dropHandler(files);
     },
     [dropHandler],
   );

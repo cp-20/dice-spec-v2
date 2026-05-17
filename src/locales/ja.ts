@@ -195,6 +195,8 @@ export const ja = {
     },
     upload: {
       button: 'クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード',
+      'add-button': 'ログを追加',
+      'clear-button': '選択したログを削除',
       'button-mouseover': '離してアップロード',
       'current-file': '現在選択されているファイル',
     },

@@ -10,8 +10,26 @@ import { analyzeCcfoliaLog, type DiceResultForCharacter, type System } from './c
 import { detectSystem } from './ccfoliaLogAnalysis/detector';
 import { systemStats } from './ccfoliaLogAnalysis/messageParser';
 
-const fileContentAtom = atom<string>('');
-const currentFileAtom = atom<string | null>(null);
+type LogFile = {
+  name: string;
+  content: string;
+};
+
+const logFilesAtom = atom<LogFile[]>([]);
+
+const mergeLogContents = (contents: string[]) => {
+  if (contents.length <= 1) return contents[0] ?? '';
+
+  const parser = new DOMParser();
+  const mergedLogs = contents
+    .flatMap((content) => Array.from(parser.parseFromString(content, 'text/html').querySelectorAll('body > p')))
+    .map((el) => el.outerHTML)
+    .join('\n');
+
+  return `<html><body>${mergedLogs}</body></html>`;
+};
+
+const fileContentAtom = atom((get) => mergeLogContents(get(logFilesAtom).map(({ content }) => content)));
 
 const logAnalysisSystemAtom = withAtomEffect(atom<System | null>(null), (get, set) => {
   const fileContent = get(fileContentAtom);
@@ -60,14 +78,9 @@ const systemStatsAtom = atom((get) => {
   return systemStats[system];
 });
 
-export const useFileContent = () => {
-  const [fileContent, setFileContent] = useAtom(fileContentAtom);
-  return { fileContent, setFileContent };
-};
-
-export const useCurrentFile = () => {
-  const [currentFile, setCurrentFile] = useAtom(currentFileAtom);
-  return { currentFile, setCurrentFile };
+export const useLogFiles = () => {
+  const [logFiles, setLogFiles] = useAtom(logFilesAtom);
+  return { logFiles, setLogFiles };
 };
 
 export const useLogAnalysis = () => {

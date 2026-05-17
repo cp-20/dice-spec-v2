@@ -194,6 +194,8 @@ export const en = {
     },
     upload: {
       button: 'Click to upload or drag and drop to upload',
+      'add-button': 'Add log',
+      'clear-button': 'Remove selected logs',
       'button-mouseover': 'Release and upload',
       'current-file': 'Currently selected file',
     },
