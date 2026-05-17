@@ -17,17 +17,17 @@ export const SystemSpecificExpectations: FC = () => (
       <p className="text-sm leading-6 text-slate-600">{t('expect:system-specific.description')}</p>
     </div>
 
-    <Tabs defaultValue="cthulhu6th">
+    <Tabs defaultValue="Coc6th">
       <TabsList className="h-auto flex-wrap justify-start">
-        <TabsTrigger value="cthulhu6th">クトゥルフ神話TRPG</TabsTrigger>
-        <TabsTrigger value="cthulhu7th">新クトゥルフ神話TRPG</TabsTrigger>
+        <TabsTrigger value="Coc6th">クトゥルフ神話TRPG</TabsTrigger>
+        <TabsTrigger value="Coc7th">新クトゥルフ神話TRPG</TabsTrigger>
         <TabsTrigger value="emoklore">エモクロアTRPG</TabsTrigger>
         <TabsTrigger value="doublecross3rd">ダブルクロス3rd</TabsTrigger>
       </TabsList>
-      <TabsContent value="cthulhu6th">
+      <TabsContent value="Coc6th">
         <Cthulhu6thOpposedPanel />
       </TabsContent>
-      <TabsContent value="cthulhu7th">
+      <TabsContent value="Coc7th">
         <Cthulhu7thPanel />
       </TabsContent>
       <TabsContent value="emoklore">
