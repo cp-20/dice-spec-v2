@@ -18,6 +18,7 @@ import {
 import { DiceCommandInput } from './_components/DiceCommandInput';
 import { ExpectResultDistributionChart } from './_components/ExpectResultDistributionChart';
 import { ExpectResultStats } from './_components/ExpectResultStats';
+import { SystemSpecificExpectations } from './_components/SystemSpecificExpectations';
 
 const inlineCommandRegex = /`((?:[^`]|\\`)+)`/g;
 
@@ -69,6 +70,8 @@ const ExpectPage: NextPage = () => (
     <ExpectResultStats />
 
     <ExpectResultDistributionChart />
+
+    <SystemSpecificExpectations />
 
     <div className="my-16">
       <BlogCallout />
