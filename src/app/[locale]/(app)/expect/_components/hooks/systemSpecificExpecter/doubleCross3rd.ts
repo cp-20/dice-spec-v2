@@ -6,6 +6,9 @@ export const calculateDoubleCross3rdExplodingDice = (
   criticalValue: number,
   modifier: number,
 ): DistributionResult => {
+  if (!Number.isInteger(diceCount) || diceCount <= 0) {
+    throw new RangeError('diceCount must be a positive integer');
+  }
   const cappedCriticalValue = clamp(criticalValue, 2, 10);
   const distribution: Record<number, number> = {};
   const queue: { dice: number; scoreBase: number; probability: number }[] = [

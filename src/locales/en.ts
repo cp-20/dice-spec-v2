@@ -48,6 +48,10 @@ export const en = {
       variance: 'Variance',
       range: 'Range',
     },
+    'system-specific': {
+      title: 'System-specific predictions',
+      description: 'Calculate success chances and outcome distributions based on system-specific rules.',
+    },
   },
   dice: {
     usage: 'In simple mode, you can roll basic dice, and in advanced mode, you can roll dice for various game systems.',

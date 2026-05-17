@@ -48,6 +48,10 @@ export const ja = {
       variance: '分散',
       range: '範囲',
     },
+    'system-specific': {
+      title: 'システム別予測',
+      description: 'ゲームシステム固有の判定ルールに合わせて、成功率や結果分布を計算できます。',
+    },
   },
   dice: {
     usage:

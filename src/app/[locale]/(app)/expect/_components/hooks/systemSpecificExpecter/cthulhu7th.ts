@@ -1,7 +1,11 @@
 import type { DistributionResult } from './types';
 import { addProbability, getMean } from './utils';
 
+const MAX_EXTRA_DICE = 2;
 const getCthulhu7thD100Distribution = (bonusPenaltyDice: number): Record<number, number> => {
+  if (!Number.isInteger(bonusPenaltyDice) || Math.abs(bonusPenaltyDice) > MAX_EXTRA_DICE) {
+    throw new RangeError(`bonusPenaltyDice must be an integer between -${MAX_EXTRA_DICE} and ${MAX_EXTRA_DICE}`);
+  }
   const extraDice = Math.abs(bonusPenaltyDice);
   const distribution: Record<number, number> = {};
   const probability = 1 / (100 * 10 ** extraDice);

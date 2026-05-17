@@ -1,6 +1,7 @@
 'use client';
 
 import type { FC, ReactNode } from 'react';
+import { useId } from 'react';
 
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
@@ -20,48 +21,76 @@ export const detailedPercent = (value: number) => {
 };
 
 export const NumberField: FC<{
+  id?: string;
   label: string;
   value: number;
   min?: number;
   max?: number;
   className?: string;
   onChange: (value: number) => void;
-}> = ({ label, value, min, max, className, onChange }) => (
-  <div className="space-y-2">
-    <Label className="text-sm font-bold text-slate-600">{label}</Label>
-    <Input
-      className={`w-32 ${className ?? ''}`}
-      type="number"
-      min={min}
-      max={max}
-      value={value}
-      onChange={(event) => onChange(Number(event.target.value))}
-    />
-  </div>
-);
+}> = ({ id, label, value, min, max, className, onChange }) => {
+  const generatedId = useId();
+  const fieldId = id ?? generatedId;
+
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={fieldId} className="text-sm font-bold text-slate-600">
+        {label}
+      </Label>
+      <Input
+        id={fieldId}
+        className={`w-32 ${className ?? ''}`}
+        type="number"
+        min={min}
+        max={max}
+        value={value}
+        onChange={(event) => {
+          const next = event.currentTarget.valueAsNumber;
+          if (!Number.isFinite(next)) return;
+          let clamped = next;
+          if (typeof min === 'number') {
+            clamped = Math.max(min, clamped);
+          }
+          if (typeof max === 'number') {
+            clamped = Math.min(max, clamped);
+          }
+          onChange(clamped);
+        }}
+      />
+    </div>
+  );
+};
 
 export const BonusPenaltySelect: FC<{
+  id?: string;
   label: string;
   value: number;
   onChange: (value: number) => void;
   fullWidth?: boolean;
-}> = ({ label, value, onChange, fullWidth }) => (
-  <div className={cn('space-y-2', fullWidth && 'w-full')}>
-    <Label className="text-sm font-bold text-slate-600">{label}</Label>
-    <Select value={String(value)} onValueChange={(nextValue) => onChange(Number(nextValue))}>
-      <SelectTrigger className={cn(fullWidth ? 'w-full' : 'w-32')}>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="2">ボーナス2</SelectItem>
-        <SelectItem value="1">ボーナス1</SelectItem>
-        <SelectItem value="0">なし</SelectItem>
-        <SelectItem value="-1">ペナルティ1</SelectItem>
-        <SelectItem value="-2">ペナルティ2</SelectItem>
-      </SelectContent>
-    </Select>
-  </div>
-);
+}> = ({ id, label, value, onChange, fullWidth }) => {
+  const generatedId = useId();
+  const fieldId = id ?? generatedId;
+
+  return (
+    <div className={cn('space-y-2', fullWidth && 'w-full')}>
+      <Label htmlFor={fieldId} className="text-sm font-bold text-slate-600">
+        {label}
+      </Label>
+      <Select value={String(value)} onValueChange={(nextValue) => onChange(Number(nextValue))}>
+        <SelectTrigger id={fieldId} className={cn(fullWidth ? 'w-full' : 'w-32')}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="2">ボーナス2</SelectItem>
+          <SelectItem value="1">ボーナス1</SelectItem>
+          <SelectItem value="0">なし</SelectItem>
+          <SelectItem value="-1">ペナルティ1</SelectItem>
+          <SelectItem value="-2">ペナルティ2</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+};
 
 export const SystemPanel: FC<{
   title: string;
