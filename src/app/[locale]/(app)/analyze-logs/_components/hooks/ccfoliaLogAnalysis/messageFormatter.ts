@@ -1,14 +1,18 @@
 export const formatMessage = (message: string) => {
-  const match = message.match(/^x(\d+)\s/);
+  const match = message.match(/^s?x(\d+)\s/i);
   if (match === null) return [message];
 
   const repeatCount = Number.parseInt(match[1], 10);
-  const normalizedMessage = message.replace(/(x\d+.*)\s#1\n/, '$1\n\n#1\n');
+  const messageWithoutRepeatCommand = message.replace(/^s?x\d+\s/i, '');
+  const firstRollMarkerIndex = messageWithoutRepeatCommand.search(/\s+#1(?:\s|$)/);
+  if (firstRollMarkerIndex === -1) return [message];
 
-  const diceRollStr = normalizedMessage.split('\n')[0].replace(/^x\d+\s/, '');
+  const diceRollStr = messageWithoutRepeatCommand.slice(0, firstRollMarkerIndex).trim();
+  const repeatedRollsStr = messageWithoutRepeatCommand.slice(firstRollMarkerIndex).trim();
 
-  return normalizedMessage
-    .replace(/\n#(\d+)\n/g, `($1/${repeatCount}) ${diceRollStr} `)
-    .split('\n')
-    .slice(1);
+  const formattedMessages = Array.from(repeatedRollsStr.matchAll(/#(\d+)\s+([\s\S]*?)(?=\s+#\d+\s+|$)/g)).map(
+    ([, rollIndex, rollResult]) => `(${rollIndex}/${repeatCount}) ${diceRollStr} ${rollResult.trim()}`,
+  );
+
+  return formattedMessages.length === 0 ? [message] : formattedMessages;
 };

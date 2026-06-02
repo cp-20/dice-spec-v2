@@ -1,3 +1,4 @@
+import { formatMessage } from '../messageFormatter';
 import { CoC6thParser } from './cthulhu6th';
 
 describe('CoC6thParser', () => {
@@ -61,5 +62,33 @@ describe('CoC6thParser', () => {
       target: 60,
       skillName: null,
     });
+
+    expect(CoC6thParser('sCCB<=28 【回避】 (1D100<=28) ＞ 5 ＞ 決定的成功/スペシャル')).toStrictEqual({
+      evaluation: 'スペシャル',
+      results: [5],
+      target: 28,
+      skillName: '回避',
+    });
+  });
+
+  test('シークレットの複数回ロールをパースする', () => {
+    const messages = formatMessage(
+      'sx2 CCB<=30 【拳銃】 #1 (1D100<=30) ＞ 5 ＞ 決定的成功/スペシャル #2 (1D100<=30) ＞ 12 ＞ 成功',
+    );
+
+    expect(messages.map((message) => CoC6thParser(message))).toStrictEqual([
+      {
+        evaluation: 'スペシャル',
+        results: [5],
+        target: 30,
+        skillName: '拳銃',
+      },
+      {
+        evaluation: '成功',
+        results: [12],
+        target: 30,
+        skillName: '拳銃',
+      },
+    ]);
   });
 });
