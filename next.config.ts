@@ -111,13 +111,6 @@ const sentryConfig = {
   project: 'javascript-nextjs',
   authToken: buildEnv.sentryAuthToken,
 
-  sourcemaps: {
-    disable: true, // Source maps are enabled by default
-    assets: ['**/*.js', '**/*.js.map'], // Specify which files to upload
-    ignore: ['**/node_modules/**'], // Files to exclude
-    deleteSourcemapsAfterUpload: true, // Security: delete after upload
-  },
-
   // Only print logs for uploading source maps in CI
   silent: !buildEnv.ci,
 
@@ -144,9 +137,7 @@ const sentryConfig = {
 // @ts-expect-error
 let config = withMDX(withPWA(nextConfig));
 
-if (buildEnv.sentryAuthToken) {
-  config = withSentryConfig(config, sentryConfig);
-}
+config = withSentryConfig(config, sentryConfig);
 
 export default config;
 
