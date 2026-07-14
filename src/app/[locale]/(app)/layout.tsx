@@ -1,15 +1,20 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import type { FC, ReactNode } from 'react';
 
-import { AuthWidget } from '@/features/account/ui/AuthWidget';
 import { BottomNavigation } from '@/shared/components/Layout/BottomNavigation';
 import { Footer } from '@/shared/components/Layout/Footer';
 import { Header } from '@/shared/components/Layout/Header';
 import { SideNavigation } from '@/shared/components/Layout/SideNavigation';
 import { Toaster } from '@/shared/components/ui/toaster';
 import { normalizePathname, isNavPath, isSpecialPagePath } from '@/shared/lib/navigation';
+
+const AuthWidget = dynamic(() => import('@/features/account/ui/AuthWidget').then((mod) => mod.AuthWidget), {
+  ssr: false,
+  loading: () => <div className="size-8" />,
+});
 
 type AppLayout = {
   children?: ReactNode;

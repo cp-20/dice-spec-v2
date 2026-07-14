@@ -1,7 +1,7 @@
 'use client';
 
 import { t } from 'i18next';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -10,7 +10,7 @@ import { Textarea } from '@/shared/components/ui/textarea';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { sendFeedback } from '@/shared/lib/webhook';
 
-export const FeedbackForm = () => {
+export const FeedbackForm = ({ header, onSubmitted }: { header?: ReactNode; onSubmitted?: () => void }) => {
   const [name, setName] = useState('');
   const [feedback, setFeedback] = useState('');
   const { toast } = useToast();
@@ -27,6 +27,7 @@ export const FeedbackForm = () => {
         description: t('common:header.feedback.submitted-description'),
         variant: 'default',
       });
+      onSubmitted?.();
     } catch (err) {
       console.error('Failed to send feedback', err);
       toast({
@@ -38,10 +39,12 @@ export const FeedbackForm = () => {
 
   return (
     <form onSubmit={feedbackSubmitHandler}>
-      <div>
-        <div className="text-lg font-bold">{t('common:header.feedback.title')}</div>
-        <div className="text-sm text-slate-500 mt-1 mb-2">{t('common:header.feedback.description')}</div>
-      </div>
+      {header ?? (
+        <div>
+          <div className="text-lg font-bold">{t('common:header.feedback.title')}</div>
+          <div className="text-sm text-slate-500 mt-1 mb-2">{t('common:header.feedback.description')}</div>
+        </div>
+      )}
       <div className="grid gap-4 py-4">
         <div className="space-y-6">
           <div className="flex flex-col gap-2">

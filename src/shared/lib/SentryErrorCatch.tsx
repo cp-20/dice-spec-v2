@@ -2,15 +2,15 @@
 
 import { type FC, useEffect } from 'react';
 
+import { captureClientException } from './sentryClient';
+
 interface Props {
   error: Error & { digest?: string };
 }
 
 export const SentryErrorCatch: FC<Props> = ({ error }) => {
   useEffect(() => {
-    import('@sentry/nextjs').then((Sentry) => {
-      Sentry.captureException(error);
-    });
+    captureClientException(error);
   }, [error]);
 
   return null;
