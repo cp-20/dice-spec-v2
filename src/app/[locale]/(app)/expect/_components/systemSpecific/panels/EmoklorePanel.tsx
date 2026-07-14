@@ -3,10 +3,10 @@
 import type { FC } from 'react';
 import { useMemo, useState } from 'react';
 
+import { calculateEmokloreSuccessDistribution } from '@/features/dice-expectation/system-specific';
 import { Stats } from '@/shared/components/elements/Stats';
 import { round } from '@/shared/lib/round';
 
-import { calculateEmokloreSuccessDistribution } from '@/features/dice-expectation/system-specific';
 import { NumberField, percent, SystemPanel } from '../common';
 
 export const EmoklorePanel: FC = () => {

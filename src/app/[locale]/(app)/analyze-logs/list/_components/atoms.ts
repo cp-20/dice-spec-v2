@@ -3,13 +3,9 @@ import { atom } from 'jotai';
 
 import { ALL_CHARACTER_ID, ALL_CHARACTER_NAME } from '@/app/[locale]/(app)/analyze-logs/_components/constants';
 import { systems } from '@/features/log-analysis/ccfolia/messageParser';
-import { myAnalysesAtom } from '@/features/log-analysis/firebase/userAnalyses';
 import type { AnalysisDocument } from '@/features/log-analysis/firebase/schema';
-import {
-  ALL_SYSTEM_ID,
-  type AnalysisSort,
-  type AnalysisSystemFilter,
-} from '@/features/log-analysis/query';
+import { myAnalysesAtom } from '@/features/log-analysis/firebase/userAnalyses';
+import { ALL_SYSTEM_ID, type AnalysisSort, type AnalysisSystemFilter } from '@/features/log-analysis/query';
 
 interface SortOptionItem {
   value: string;

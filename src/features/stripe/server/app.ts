@@ -5,13 +5,7 @@ import { checkoutRequestSchema, portalRequestSchema } from '@/features/stripe/co
 import { runtimeEnv } from '@/shared/lib/env';
 
 import { getAuthenticatedUser } from './auth';
-import {
-  getPriceId,
-  getStripeClient,
-  getStripeCustomerIdByUserId,
-  getUserById,
-  updateUserById,
-} from './clients';
+import { getPriceId, getStripeClient, getStripeCustomerIdByUserId, getUserById, updateUserById } from './clients';
 import { StripeWebhookHandlerError } from './handlers/types';
 import { scheduleStripeLog } from './logger';
 import { appendEventContext, constructStripeEvent, processStripeEvent } from './webhook';

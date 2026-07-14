@@ -13,8 +13,8 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { AvatarPreparationError, uploadAvatarFromFileToStorage } from '@/shared/lib/firebase/storage/avatars';
 import { getFirebaseServices } from '@/shared/lib/firebase/client';
+import { AvatarPreparationError, uploadAvatarFromFileToStorage } from '@/shared/lib/firebase/storage/avatars';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 export const ProfileSettingsSection = () => {

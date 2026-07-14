@@ -3,8 +3,8 @@ import { atom } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 
-import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { getFirebaseServices } from '@/shared/lib/firebase/client';
+import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 
 import { downloadAnalysisRecordsFromStorage } from './analysisRecordsStorage';

@@ -10,6 +10,6 @@
   "arrowParens": "always",
   "bracketSameLine": false,
   "bracketSpacing": true,
-  "ignorePatterns": ["cloudflare-env.d.ts"],
+  "ignorePatterns": ["cloudflare-env.d.ts", "next-env.d.ts"],
   "sortImports": true
 }

@@ -15,8 +15,8 @@ import { atom, useAtom, useSetAtom } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 
-import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { getFirebaseServices } from '@/shared/lib/firebase/client';
+import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 
 import { ALL_SYSTEM_ID, type AnalysisSort, type AnalysisSystemFilter } from '../query';
 import {

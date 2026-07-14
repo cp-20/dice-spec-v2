@@ -3,13 +3,12 @@
 import type { FC, ReactNode } from 'react';
 import { useId } from 'react';
 
+import type { DistributionResult } from '@/features/dice-expectation/system-specific';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { round } from '@/shared/lib/round';
 import { cn } from '@/shared/lib/shadcn-utils';
-
-import type { DistributionResult } from '@/features/dice-expectation/system-specific';
 
 export const percent = (value: number) => round(value * 100, 1);
 

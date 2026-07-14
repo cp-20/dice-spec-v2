@@ -3,10 +3,10 @@
 import { t } from 'i18next';
 import type { FC } from 'react';
 
+import { formatLogTabName } from '@/features/log-analysis/ccfolia/tabName';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Label } from '@/shared/components/ui/label';
 
-import { formatLogTabName } from '@/features/log-analysis/ccfolia/tabName';
 import { useLogTabSelect } from './hooks/useLogAnalysis';
 
 export const LogTabSelect: FC = () => {

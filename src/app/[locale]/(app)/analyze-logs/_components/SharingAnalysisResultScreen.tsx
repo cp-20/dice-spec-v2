@@ -2,10 +2,10 @@ import LogoIcon from '/public/icon.svg';
 import { t } from 'i18next';
 import { FC, forwardRef, ReactNode } from 'react';
 
+import type { DiceResultForCharacter } from '@/features/log-analysis/model';
 import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { round } from '@/shared/lib/round';
 
-import type { DiceResultForCharacter } from '@/features/log-analysis/model';
 import { LogAnalysisRankingChartView } from './LogAnalysisRankingChartView';
 
 interface StatsProps {

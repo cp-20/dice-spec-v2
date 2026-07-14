@@ -1,6 +1,5 @@
-import { calculateDistribution } from './calculateDistribution';
-
 import type { DiceExpression, Expression, NumberExpression, OperationExpression, ResolvedExpression } from '../type';
+import { calculateDistribution } from './calculateDistribution';
 import { applyOperatorMap } from './utils';
 
 export class ResolverError extends Error {}

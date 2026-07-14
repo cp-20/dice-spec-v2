@@ -4,8 +4,8 @@ import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 
 import { getFirebaseServices } from '@/shared/lib/firebase/client';
-import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
+import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 
 import { type AnalysisDocument, parseAnalysisDocument } from './schema';
 

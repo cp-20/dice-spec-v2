@@ -1,10 +1,9 @@
 import { t } from 'i18next';
 import type { FC, ReactNode } from 'react';
 
+import type { DiceResultForCharacter } from '@/features/log-analysis/model';
 import { Stats } from '@/shared/components/elements/Stats';
 import { round } from '@/shared/lib/round';
-
-import type { DiceResultForCharacter } from '@/features/log-analysis/model';
 
 interface LogAnalysisStatsViewProps {
   result?: Pick<DiceResultForCharacter, 'summary'>;

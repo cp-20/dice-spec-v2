@@ -4,9 +4,9 @@ import { nanoid } from 'nanoid';
 import { useCallback, useTransition } from 'react';
 
 import { useToast } from '@/shared/components/ui/use-toast';
+import { getFirebaseServices } from '@/shared/lib/firebase/client';
 import { SHARED_IMAGE_SCOPES } from '@/shared/lib/firebase/storage/paths';
 import { uploadSharedImageToStorage } from '@/shared/lib/firebase/storage/sharedImages';
-import { getFirebaseServices } from '@/shared/lib/firebase/client';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';

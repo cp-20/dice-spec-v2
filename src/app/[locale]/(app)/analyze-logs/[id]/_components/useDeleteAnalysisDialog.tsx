@@ -6,6 +6,7 @@ import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { useDeleteAnalysis } from '@/features/log-analysis/firebase/mutations';
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
@@ -16,7 +17,6 @@ import {
   DialogTitle,
 } from '@/shared/components/ui/dialog';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { useDeleteAnalysis } from '@/features/log-analysis/firebase/mutations';
 
 import { analysisIdAtom } from './atoms';
 

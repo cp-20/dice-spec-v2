@@ -4,12 +4,12 @@ import { IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { FC } from 'react';
 
+import { systems } from '@/features/log-analysis/ccfolia/messageParser';
+import type { System } from '@/features/log-analysis/model';
 import { Button } from '@/shared/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 
 import { useGameSystemRequestDialog } from './GameSystemRequest';
-import { systems } from '@/features/log-analysis/ccfolia/messageParser';
-import type { System } from '@/features/log-analysis/model';
 import { useLogAnalysisSystem } from './hooks/useLogAnalysis';
 
 export const GameSystemSelect: FC = () => {

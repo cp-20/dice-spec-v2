@@ -4,11 +4,11 @@ import { IconLogout, IconUser, IconUserCircle } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { FC } from 'react';
 
+import { useMeStore } from '@/features/account/firebase/accountStore';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { useMeStore } from '@/features/account/firebase/accountStore';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 export const AuthWidget: FC = () => {

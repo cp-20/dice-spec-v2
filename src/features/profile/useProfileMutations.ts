@@ -5,8 +5,8 @@ import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
 
 import { myAnalysesAtom } from '@/features/log-analysis/firebase/userAnalyses';
-import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { getFirebaseServices } from '@/shared/lib/firebase/client';
+import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 import { splitProfileUpdateBatches } from './profileUpdateBatches';
@@ -44,10 +44,7 @@ export const useProfileMutations = () => {
   );
 
   const updateName = useCallback((name: string) => updateProfile({ name }), [updateProfile]);
-  const updateAvatarUrl = useCallback(
-    (avatarUrl: string) => updateProfile({ avatarUrl }),
-    [updateProfile],
-  );
+  const updateAvatarUrl = useCallback((avatarUrl: string) => updateProfile({ avatarUrl }), [updateProfile]);
 
   return { updateName, updateAvatarUrl };
 };

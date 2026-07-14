@@ -36,8 +36,7 @@ const getFirestoreClient = () => {
   return firestoreClient;
 };
 
-export const getUserById = async (userId: string) =>
-  getFirestoreClient().get(FIREBASE_COLLECTIONS.users, userId);
+export const getUserById = async (userId: string) => getFirestoreClient().get(FIREBASE_COLLECTIONS.users, userId);
 
 export const updateUserById = async (userId: string, data: Record<string, unknown>) => {
   await getFirestoreClient().update(FIREBASE_COLLECTIONS.users, userId, data);

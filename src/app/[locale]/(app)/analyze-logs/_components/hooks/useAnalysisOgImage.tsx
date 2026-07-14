@@ -3,8 +3,9 @@ import { useCallback, useLayoutEffect } from 'react';
 import type { ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { SharingAnalysisResultScreen } from '../SharingAnalysisResultScreen';
 import type { DiceResultForCharacter } from '@/features/log-analysis/model';
+
+import { SharingAnalysisResultScreen } from '../SharingAnalysisResultScreen';
 
 type RenderNotifierProps<Props extends object = object> = {
   Component: ComponentType<Props>;

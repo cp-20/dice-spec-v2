@@ -6,6 +6,8 @@ import { t } from 'i18next';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 
+import { useUpdateAnalysis } from '@/features/log-analysis/firebase/mutations';
+import type { AnalysisVisibilityLevel } from '@/features/log-analysis/firebase/schema';
 import { Button } from '@/shared/components/ui/button';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import {
@@ -20,8 +22,6 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { useUpdateAnalysis } from '@/features/log-analysis/firebase/mutations';
-import type { AnalysisVisibilityLevel } from '@/features/log-analysis/firebase/schema';
 
 import { useAnalysisOgImage } from '../../_components/hooks/useAnalysisOgImage';
 import { analysisIdAtom, currentAnalysisAtom } from './atoms';

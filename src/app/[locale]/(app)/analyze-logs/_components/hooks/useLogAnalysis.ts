@@ -2,15 +2,15 @@ import { atom, useAtom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { useCallback, useEffect } from 'react';
 
-import { round } from '@/shared/lib/round';
-import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
-
-import { ALL_CHARACTER_ID } from '../constants';
 import { analyzeCcfoliaLog } from '@/features/log-analysis/ccfolia';
 import { detectSystem } from '@/features/log-analysis/ccfolia/detector';
 import { parseHtmlLog } from '@/features/log-analysis/ccfolia/htmlParser';
 import { systemStats } from '@/features/log-analysis/ccfolia/messageParser';
 import type { DiceResultForCharacter, System } from '@/features/log-analysis/model';
+import { round } from '@/shared/lib/round';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
+
+import { ALL_CHARACTER_ID } from '../constants';
 
 type LogFile = {
   name: string;

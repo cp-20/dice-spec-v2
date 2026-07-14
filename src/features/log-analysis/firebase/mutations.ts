@@ -13,15 +13,10 @@ import { useCallback, useState } from 'react';
 import * as v from 'valibot';
 
 import { ALL_CHARACTER_ID, type DiceResultForCharacter } from '@/features/log-analysis/model';
-import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { getFirebaseServices } from '@/shared/lib/firebase/client';
+import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
-import {
-  analysisDocumentSchema,
-  type AnalysisVisibilityLevel,
-  type NewAnalysisDocument,
-} from './schema';
 import {
   deleteAnalysisOgImageFromStorage,
   updateAnalysisOgImageMetadataInStorage,
@@ -34,6 +29,7 @@ import {
 } from './analysisRecordsStorage';
 import { shouldCloseAnalysisRecordsBeforeFirestore } from './privacy';
 import { useInvalidatePublicAnalysesCache } from './publicAnalyses';
+import { analysisDocumentSchema, type AnalysisVisibilityLevel, type NewAnalysisDocument } from './schema';
 
 export type SaveAnalysisPayload = Omit<
   NewAnalysisDocument,

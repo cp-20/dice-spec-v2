@@ -4,6 +4,7 @@ import type { FC } from 'react';
 import { useMemo, useState } from 'react';
 
 import { calculateCthulhu6thOpposedRoll } from '@/features/dice-expectation/system-specific';
+
 import { NumberField, OpposedProbabilityBar, SystemPanel } from '../common';
 
 export const Cthulhu6thOpposedPanel: FC = () => {

@@ -2,14 +2,14 @@ import { t } from 'i18next';
 import { useAtomValue } from 'jotai';
 import type { FC } from 'react';
 
+import { systems } from '@/features/log-analysis/ccfolia/messageParser';
+import type { AnalysisDocument } from '@/features/log-analysis/firebase/schema';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { UserAvatar } from '@/shared/components/elements/UserAvatar';
-import type { AnalysisDocument } from '@/features/log-analysis/firebase/schema';
 import { invariant } from '@/shared/lib/invariant';
 import { round } from '@/shared/lib/round';
 
 import { ALL_CHARACTER_ID } from '../../_components/constants';
-import { systems } from '@/features/log-analysis/ccfolia/messageParser';
 import { selectedCharacterIdAtom } from './atoms';
 
 interface AnalysisCardProps {

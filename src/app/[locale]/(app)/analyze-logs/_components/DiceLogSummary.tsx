@@ -5,9 +5,9 @@ import { CheckCircle2, ChevronRight, Lock, Sparkles } from 'lucide-react';
 import type { FC } from 'react';
 
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
+import { useMeStore } from '@/features/account/firebase/accountStore';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
-import { useMeStore } from '@/features/account/firebase/accountStore';
 import { round } from '@/shared/lib/round';
 
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';

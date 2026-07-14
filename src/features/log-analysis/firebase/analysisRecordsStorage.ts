@@ -9,11 +9,7 @@ import {
   uploadTextToStorage,
 } from '@/shared/lib/firebase/storage/upload';
 
-import {
-  analysisRecordsContentSchema,
-  type AnalysisRecordsDocument,
-  type AnalysisVisibilityLevel,
-} from './schema';
+import { analysisRecordsContentSchema, type AnalysisRecordsDocument, type AnalysisVisibilityLevel } from './schema';
 
 const analysisRecordsCache = new Map<string, Promise<AnalysisRecordsDocument> | AnalysisRecordsDocument>();
 

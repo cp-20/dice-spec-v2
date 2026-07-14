@@ -2,8 +2,8 @@ import { t } from 'i18next';
 import { useAtomValue } from 'jotai';
 import { useEffect, useState, type FC } from 'react';
 
-import { Button } from '@/shared/components/ui/button';
 import { usePublicAnalyses } from '@/features/log-analysis/firebase/publicAnalyses';
+import { Button } from '@/shared/components/ui/button';
 
 import { AnalysisCard } from './AnalysisCard';
 import { selectedSystemAtom, sortOptionAtom } from './atoms';

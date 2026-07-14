@@ -5,12 +5,11 @@ import merge from 'deepmerge';
 import { type FC, useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 
-import { commonChartOption } from '@/shared/lib/commonChartOption';
-import { groupBy } from '@/shared/lib/groupBy';
-
 import { systemStats as allSystemStats } from '@/features/log-analysis/ccfolia/messageParser';
 import { aggregateResults } from '@/features/log-analysis/ccfolia/resultAggregator';
 import type { MessageParserResult, System } from '@/features/log-analysis/model';
+import { commonChartOption } from '@/shared/lib/commonChartOption';
+import { groupBy } from '@/shared/lib/groupBy';
 
 const customCanvasBackgroundColorPlugin: Plugin = {
   id: 'customCanvasBackgroundColor',

@@ -1,12 +1,7 @@
 import { type FieldValue, Timestamp } from 'firebase/firestore';
 import * as v from 'valibot';
 
-import {
-  ALL_CHARACTER_ID,
-  type DiceResultForCharacter,
-  type MessageParserResult,
-  type System,
-} from '../model';
+import { ALL_CHARACTER_ID, type DiceResultForCharacter, type MessageParserResult, type System } from '../model';
 
 const analysisVisibilityLevelSchema = v.union([v.literal('private'), v.literal('unlisted'), v.literal('public')]);
 

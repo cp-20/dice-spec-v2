@@ -1,11 +1,10 @@
 import { atom, useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect } from 'react';
 
+import { diceExpecter, type DiceExpecterResult } from '@/features/dice-expectation/expecter';
 import { formatDiceCommand } from '@/shared/lib/formatDiceCommand';
 import { useDebounce } from '@/shared/lib/useDebounce';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
-
-import { diceExpecter, type DiceExpecterResult } from '@/features/dice-expectation/expecter';
 
 type DiceExpecterOption = {
   autoRecalculation: boolean;

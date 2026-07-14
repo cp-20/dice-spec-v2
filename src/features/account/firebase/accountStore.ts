@@ -8,9 +8,9 @@ import * as v from 'valibot';
 import { createCustomer } from '@/features/stripe/api';
 import { type NewUserDocument, type UserDocument, userDocumentSchema } from '@/features/user/firebase/schema';
 import { toast } from '@/shared/components/ui/use-toast';
+import { getFirebaseServices } from '@/shared/lib/firebase/client';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { uploadAvatarFromUrlToStorage } from '@/shared/lib/firebase/storage/avatars';
-import { getFirebaseServices } from '@/shared/lib/firebase/client';
 import { authUserAtom, authUserLoadingAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 
 const internalMeLoadingAtom = atom(true);

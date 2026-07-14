@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+
 import * as v from 'valibot';
 
 import { checkoutRequestSchema, subscriptionMetadataSchema } from './contract';
