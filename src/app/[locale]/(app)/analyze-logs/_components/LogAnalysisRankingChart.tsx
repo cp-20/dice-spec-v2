@@ -18,7 +18,7 @@ export const LogAnalysisRankingChart: FC<LogAnalysisRankingChartProps> = ({ clas
   const { character } = useCharacterSelect();
   const result = useCharacterLogAnalysis(character);
 
-  if (!result) return <div className="h-75" />;
+  const score = result ? result.summary.deviationScore : 0;
 
-  return <LogAnalysisRankingChartView score={result.summary.deviationScore} className={className} />;
+  return <LogAnalysisRankingChartView score={score} className={className} />;
 };
