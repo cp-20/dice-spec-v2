@@ -1,32 +1,20 @@
 'use client';
 
-import type { LinkProps } from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { Link } from 'nextjs13-progress';
-import { type ComponentPropsWithoutRef, type FC, Suspense } from 'react';
+import { lazy, type FC, Suspense } from 'react';
 
-export type CustomLinkProps = Omit<LinkProps<unknown>, 'href'> &
-  Omit<ComponentPropsWithoutRef<'a'>, 'href'> & { href: string };
+import { isOldApp } from '@/shared/lib/const';
 
-export const CustomLink: FC<CustomLinkProps> = ({ children, ...props }) => {
-  return (
-    // use <Suspense> for useSearchParams
-    <Suspense fallback={<Link {...props}>{children}</Link>}>
-      <CustomLinkInner {...props}>{children}</CustomLinkInner>
+import { ProgressLink, type ProgressLinkProps } from './NavigationProgress';
+
+export type CustomLinkProps = Omit<ProgressLinkProps, 'href'> & { href: string };
+
+const LegacyCustomLink = lazy(() => import('./LegacyCustomLink').then((mod) => ({ default: mod.LegacyCustomLink })));
+
+export const CustomLink: FC<CustomLinkProps> = (props) =>
+  isOldApp ? (
+    <Suspense fallback={<ProgressLink {...props} />}>
+      <LegacyCustomLink {...props} />
     </Suspense>
+  ) : (
+    <ProgressLink {...props} />
   );
-};
-
-const CustomLinkInner: FC<CustomLinkProps> = ({ children, ...props }) => {
-  const searchParams = useSearchParams();
-  const link = new URL(props.href, 'https://dummy-site.invalid');
-  if (searchParams.get('keep-old') === 'true') {
-    link.searchParams.set('keep-old', 'true');
-  }
-
-  return (
-    <Link {...props} href={link.pathname + link.search}>
-      {children}
-    </Link>
-  );
-};

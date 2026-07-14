@@ -4,6 +4,7 @@ import { en } from './en';
 import { ja } from './ja';
 
 export const i18nextInitOptions: InitOptions = {
+  initAsync: false,
   lng: 'ja',
   fallbackLng: 'ja',
   defaultNS: 'translation',

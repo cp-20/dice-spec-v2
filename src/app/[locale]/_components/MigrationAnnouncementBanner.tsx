@@ -11,7 +11,7 @@ import * as v from 'valibot';
 import { Button } from '@/shared/components/ui/button';
 import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
 
-const showMigrationAnnouncementAtom = atom(false);
+const showMigrationAnnouncementAtom = atom(true);
 
 export const MigrationAnnouncementBanner: FC = () => {
   const [show, setShow] = useLocalStorageAtom(
@@ -28,7 +28,10 @@ export const MigrationAnnouncementBanner: FC = () => {
   if (!show) return null;
 
   return (
-    <div className="bg-slate-200 text-slate-600 px-4 py-3 flex justify-center items-center gap-2" role="alert">
+    <div
+      className="migration-announcement bg-slate-200 text-slate-600 px-4 py-3 flex justify-center items-center gap-2"
+      role="alert"
+    >
       <div className="flex-1 flex justify-center items-start gap-1">
         <span className="font-bold text-nowrap">{t('common:announcement.label')}: </span>
         <span className="text-pretty">
