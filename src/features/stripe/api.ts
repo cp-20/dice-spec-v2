@@ -1,8 +1,8 @@
 import { hc } from 'hono/client';
 
-import type { AppType } from '@/app/api/stripe/[...path]/route';
+import type { BillingInterval } from '@/features/stripe/contract';
+import type { StripeAppType } from '@/features/stripe/server/app';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
-import type { BillingInterval } from '@/shared/lib/stripe/config';
 
 // -------------------------------
 
@@ -10,7 +10,8 @@ interface CreateCustomerResponse {
   customerId: string;
 }
 
-const getClient = () => hc<AppType>(typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+const getClient = () =>
+  hc<StripeAppType>(typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
 
 const getAuthHeader = async () => {
   const { auth } = useFirebase();

@@ -1,37 +1,12 @@
 import * as v from 'valibot';
 
-import type { BillingInterval } from '@/shared/lib/stripe/config';
+import { type BillingInterval, subscriptionMetadataSchema } from '@/features/stripe/contract';
 
+import { currentSubscriptionIdOf, isStaleSubscription, planForSubscriptionStatus } from '../subscriptionState';
 import type { HandlerDeps, HandlerResult, SubscriptionPayload, SubscriptionUpdatedPayload } from './types';
 import { StripeWebhookHandlerError } from './types';
 
-const subscriptionMetadataSchema = v.object({
-  type: v.literal('subscription.pro'),
-  userId: v.string(),
-  interval: v.picklist(['monthly', 'yearly']),
-});
-
 const PLAN_VALUES = ['free', 'pro'] as const;
-
-const planForSubscriptionStatus = (status: SubscriptionPayload['status']) =>
-  status === 'active' || status === 'trialing' ? 'pro' : 'free';
-
-const currentSubscriptionIdOf = (userDoc: Record<string, unknown> | null) => {
-  const value = userDoc?.stripeSubscriptionId;
-  return typeof value === 'string' && value.length > 0 ? value : null;
-};
-
-export const isStaleSubscription = async (
-  userDoc: Record<string, unknown> | null,
-  candidate: SubscriptionPayload,
-  getSubscriptionById: HandlerDeps['getSubscriptionById'],
-) => {
-  const currentSubscriptionId = currentSubscriptionIdOf(userDoc);
-  if (!currentSubscriptionId || currentSubscriptionId === candidate.id) return false;
-
-  const currentSubscription = await getSubscriptionById(currentSubscriptionId);
-  return candidate.created <= currentSubscription.created;
-};
 
 const staleSubscriptionEventResult = (
   eventType: string,

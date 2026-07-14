@@ -1,16 +1,11 @@
 import type { Stripe } from 'stripe';
 import * as v from 'valibot';
 
-import type { BillingInterval } from '@/shared/lib/stripe/config';
+import { type BillingInterval, subscriptionMetadataSchema } from '@/features/stripe/contract';
 
+import { type DiscountSummary, summarizeSubscriptionDiscounts } from '../discounts';
 import type { HandlerDeps, HandlerResult, InvoicePayload, SubscriptionPayload } from './types';
 import { StripeWebhookHandlerError } from './types';
-
-const subscriptionMetadataSchema = v.object({
-  type: v.literal('subscription.pro'),
-  userId: v.string(),
-  interval: v.picklist(['monthly', 'yearly']),
-});
 
 const formatUnixTimeToIso = (unixTime: number | null | undefined): string | null => {
   if (typeof unixTime !== 'number') {
@@ -28,48 +23,6 @@ const getSubscriptionIdFromInvoice = (invoice: InvoicePayload): string | null =>
   }
 
   return typeof subscription === 'string' ? subscription : subscription.id;
-};
-
-type DiscountSummary = {
-  discountId?: string;
-  promotionCode?: string | null;
-  couponId?: string;
-  couponName?: string | null;
-  percentOff?: number | null;
-  amountOff?: number | null;
-  duration?: string;
-};
-
-const getDiscountSummary = (subscription: SubscriptionPayload): DiscountSummary[] => {
-  const discounts = subscription.discounts;
-
-  if (!Array.isArray(discounts)) {
-    return [];
-  }
-
-  return discounts.map((discount) => {
-    if (typeof discount === 'string') {
-      return {
-        discountId: discount,
-      };
-    }
-
-    const coupon = discount.source.coupon;
-    const couponId = typeof coupon === 'string' ? coupon : coupon?.id;
-
-    const promotionCode =
-      typeof discount.promotion_code === 'string' ? discount.promotion_code : (discount.promotion_code?.code ?? null);
-
-    return {
-      discountId: discount.id,
-      promotionCode,
-      couponId,
-      couponName: typeof coupon === 'string' ? null : coupon?.name,
-      percentOff: typeof coupon === 'string' ? null : coupon?.percent_off,
-      amountOff: typeof coupon === 'string' ? null : coupon?.amount_off,
-      duration: typeof coupon === 'string' ? undefined : coupon?.duration,
-    };
-  });
 };
 
 const getInvoiceCurrency = (invoice: InvoicePayload): string | null => {
@@ -160,7 +113,7 @@ const loadSubscriptionContext = async (
       userId,
       subscriptionId,
       billingInterval: interval,
-      discounts: getDiscountSummary(subscription),
+      discounts: summarizeSubscriptionDiscounts(subscription),
     },
   };
 };

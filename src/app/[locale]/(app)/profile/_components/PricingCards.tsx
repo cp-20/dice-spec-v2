@@ -5,11 +5,11 @@ import { t } from 'i18next';
 import { useState } from 'react';
 
 import { createCheckoutSession } from '@/features/stripe/api';
+import type { BillingInterval } from '@/features/stripe/contract';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { cn } from '@/shared/lib/shadcn-utils';
-import type { BillingInterval } from '@/shared/lib/stripe/config';
 
 const MONTHLY_PRICE = 300;
 const YEARLY_PRICE = 3000;

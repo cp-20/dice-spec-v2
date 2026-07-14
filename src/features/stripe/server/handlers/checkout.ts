@@ -1,17 +1,12 @@
 import type { Stripe } from 'stripe';
 import * as v from 'valibot';
 
-import type { BillingInterval } from '@/shared/lib/stripe/config';
+import { type BillingInterval, subscriptionMetadataSchema } from '@/features/stripe/contract';
 
-import { isStaleSubscription } from './subscription';
-import type { HandlerDeps, HandlerResult, SubscriptionPayload } from './types';
+import { summarizeSubscriptionDiscounts } from '../discounts';
+import { isStaleSubscription, planForSubscriptionStatus } from '../subscriptionState';
+import type { HandlerDeps, HandlerResult } from './types';
 import { StripeWebhookHandlerError } from './types';
-
-const checkoutMetadataSchema = v.object({
-  type: v.literal('subscription.pro'),
-  userId: v.string(),
-  interval: v.picklist(['monthly', 'yearly']),
-});
 
 const getSubscriptionIdFromCheckoutSession = (session: Stripe.Checkout.Session): string | null => {
   if (!session.subscription) {
@@ -19,46 +14,6 @@ const getSubscriptionIdFromCheckoutSession = (session: Stripe.Checkout.Session):
   }
 
   return typeof session.subscription === 'string' ? session.subscription : session.subscription.id;
-};
-
-type DiscountSummary = {
-  discountId?: string;
-  promotionCode?: string | null;
-  couponId?: string;
-  couponName?: string | null;
-  percentOff?: number | null;
-  amountOff?: number | null;
-  duration?: string;
-};
-
-const getDiscountSummary = (subscription: SubscriptionPayload): DiscountSummary[] => {
-  if (!Array.isArray(subscription.discounts)) {
-    return [];
-  }
-
-  return subscription.discounts.map((discount) => {
-    if (typeof discount === 'string') {
-      return {
-        discountId: discount,
-      };
-    }
-
-    const coupon = discount.source.coupon;
-    const couponId = typeof coupon === 'string' ? coupon : coupon?.id;
-
-    const promotionCode =
-      typeof discount.promotion_code === 'string' ? discount.promotion_code : (discount.promotion_code?.code ?? null);
-
-    return {
-      discountId: discount.id,
-      promotionCode,
-      couponId,
-      couponName: typeof coupon === 'string' ? null : coupon?.name,
-      percentOff: typeof coupon === 'string' ? null : coupon?.percent_off,
-      amountOff: typeof coupon === 'string' ? null : coupon?.amount_off,
-      duration: typeof coupon === 'string' ? undefined : coupon?.duration,
-    };
-  });
 };
 
 const getCheckoutMessage = (billingInterval: BillingInterval): string => {
@@ -83,7 +38,7 @@ const getCheckoutCurrency = (session: Stripe.Checkout.Session): string | null =>
 
 export const createCheckoutHandler = ({ getUserById, updateUserById, getSubscriptionById }: HandlerDeps) => {
   return async (session: Stripe.Checkout.Session): Promise<HandlerResult> => {
-    const metadata = v.safeParse(checkoutMetadataSchema, session.metadata);
+    const metadata = v.safeParse(subscriptionMetadataSchema, session.metadata);
     if (!metadata.success) {
       return {
         ok: false,
@@ -131,7 +86,7 @@ export const createCheckoutHandler = ({ getUserById, updateUserById, getSubscrip
         };
       }
 
-      const plan = subscription.status === 'active' || subscription.status === 'trialing' ? 'pro' : 'free';
+      const plan = planForSubscriptionStatus(subscription.status);
       await updateUserById(userId, {
         plan,
         stripeSubscriptionId: subscription.id,
@@ -155,7 +110,7 @@ export const createCheckoutHandler = ({ getUserById, updateUserById, getSubscrip
             billingInterval,
             amountTotal: session.amount_total,
             currency: getCheckoutCurrency(session),
-            discounts: getDiscountSummary(subscription),
+            discounts: summarizeSubscriptionDiscounts(subscription),
           },
         },
       };

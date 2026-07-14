@@ -1,15 +1,13 @@
 import type { Stripe } from 'stripe';
 import * as v from 'valibot';
 
-import { type HandlerDeps, type HandlerResult, StripeWebhookHandlerError } from './types';
+import { customerMetadataSchema } from '@/features/stripe/contract';
 
-const subscriptionMetadataSchema = v.object({
-  userId: v.string(),
-});
+import { type HandlerDeps, type HandlerResult, StripeWebhookHandlerError } from './types';
 
 export const createCustomerCreatedHandler = (_: HandlerDeps) => {
   return async (customer: Stripe.Customer): Promise<HandlerResult> => {
-    const metadata = v.safeParse(subscriptionMetadataSchema, customer.metadata);
+    const metadata = v.safeParse(customerMetadataSchema, customer.metadata);
     if (!metadata.success) {
       return {
         ok: false,

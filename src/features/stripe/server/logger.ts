@@ -1,3 +1,5 @@
+import { after } from 'next/server';
+
 import { runtimeEnv } from '@/shared/lib/env';
 
 type StripeLogLevel = 'info' | 'success' | 'error' | 'warning';
@@ -178,6 +180,7 @@ export const sendStripeLog = async (log: StripeLog) => {
   };
 
   try {
+    // Discord側のレートリミットに任せる方針のため、アプリ側には送信キューを持たせない。
     const res = await fetch(runtimeEnv.stripe.discordWebhookUrl, {
       method: 'POST',
       headers: {
@@ -194,4 +197,10 @@ export const sendStripeLog = async (log: StripeLog) => {
     // Don't throw error to avoid blocking the main process
     console.error('Failed to send Discord webhook:', error);
   }
+};
+
+export const scheduleStripeLog = (...params: Parameters<typeof sendStripeLog>) => {
+  after(async () => {
+    await sendStripeLog(...params);
+  });
 };
