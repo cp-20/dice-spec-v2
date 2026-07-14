@@ -1,4 +1,5 @@
 import { analyzeDiceExpression } from './analyzer';
+import { DistributionError } from './analyzer/calculateDistribution';
 import { ResolverError } from './analyzer/resolveExpression';
 import { formatInput } from './analyzer/utils';
 import { ParserError, parseDiceCommand } from './parser';
@@ -24,7 +25,12 @@ export const diceExpecter = (input: string): DiceExpecterResult => {
     const result = analyzeDiceExpression(ast);
     return { success: true, ...result };
   } catch (err) {
-    if (err instanceof ParserError || err instanceof ResolverError || err instanceof TokenizerError) {
+    if (
+      err instanceof ParserError ||
+      err instanceof ResolverError ||
+      err instanceof TokenizerError ||
+      err instanceof DistributionError
+    ) {
       return {
         success: false,
         message: err.message,

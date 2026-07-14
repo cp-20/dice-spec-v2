@@ -1,6 +1,8 @@
 import type { DiceExpression, Expression, OperationExpression } from '../type';
 import { applyOperatorMap, generate2DArray } from './utils';
 
+export class DistributionError extends Error {}
+
 export const calculateDistribution = (expression: Expression): Record<string, number> => {
   if (expression.type === 'operation') {
     return calculateOperationDistribution(expression);
@@ -28,6 +30,9 @@ const calculateOperationDistribution = (expression: OperationExpression): Record
 
   const leftValues = Object.keys(leftDistribution);
   const rightValues = Object.keys(rightDistribution);
+  if (leftValues.length * rightValues.length > 1_000_000) {
+    throw new DistributionError('distribution is too large');
+  }
 
   for (let i = 0; i < leftValues.length; i++) {
     for (let j = 0; j < rightValues.length; j++) {

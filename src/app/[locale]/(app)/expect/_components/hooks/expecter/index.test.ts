@@ -246,6 +246,25 @@ describe('diceExpecter', () => {
     });
   });
 
+  test('1d6 / 2 の分散を除数の二乗で割る', () => {
+    const result = diceExpecter('1d6 / 2');
+    expect(result).toMatchObject({
+      success: true,
+      mean: singleD6Mean / 2,
+      variance: expect.closeTo(singleD6Variance / 4, 5),
+      range: { min: 0.5, max: 3 },
+    });
+  });
+
+  test('ゼロまたはランダムな値での除算を拒否する', () => {
+    expect(diceExpecter('1 / (1 - 1)')).toMatchObject({ success: false });
+    expect(diceExpecter('1 / 1d6')).toMatchObject({ success: false });
+  });
+
+  test('巨大な分布の直積を計算前に拒否する', () => {
+    expect(diceExpecter('1d1001 * 1d1001')).toMatchObject({ success: false });
+  });
+
   test('d6 + 8', () => {
     expect(diceExpecter('d6 + 8')).toEqual({
       success: false,

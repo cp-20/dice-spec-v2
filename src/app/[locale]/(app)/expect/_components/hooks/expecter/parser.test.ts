@@ -125,6 +125,12 @@ describe('parseDiceCommand', () => {
     });
   });
 
+  test('比較対象の空値・不正値・比較演算子の重複を拒否する', () => {
+    expect(() => parseDiceCommand('1d6 >= ')).toThrowError(new ParserError('Invalid target'));
+    expect(() => parseDiceCommand('1d6 >= Infinity')).toThrowError(new ParserError('Invalid target'));
+    expect(() => parseDiceCommand('1d6 >= 2 <= 3')).toThrowError(new ParserError('Invalid comparison'));
+  });
+
   test('不正な計算式はパースできない', () => {
     expect(() => parseDiceCommand('1 + 1d6 + ')).toThrowError(new ParserError('Invalid expression'));
 

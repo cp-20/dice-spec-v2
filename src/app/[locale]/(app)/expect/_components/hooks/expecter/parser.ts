@@ -105,23 +105,37 @@ const parseDiceExpression = (expressionStr: string): Expression => {
   return stack[0];
 };
 
-const inequalitySignRegexp = />=|<=/;
+const inequalitySignRegexp = />=|<=/g;
 
 export const parseDiceCommand = (command: string): DiceAST => {
   const trimmedCommand = command.replace(/\s/g, '');
 
-  if (trimmedCommand.search(inequalitySignRegexp) === -1) {
+  const inequalitySigns = [...trimmedCommand.matchAll(inequalitySignRegexp)];
+  if (inequalitySigns.length === 0) {
     return parseDiceExpression(trimmedCommand);
   }
 
-  const [expressionStr, targetStr] = trimmedCommand.split(inequalitySignRegexp);
+  if (inequalitySigns.length !== 1) {
+    throw new ParserError('Invalid comparison');
+  }
+
+  const [{ 0: sign, index }] = inequalitySigns;
+  if (index === undefined) throw new ParserError('Invalid comparison');
+
+  const expressionStr = trimmedCommand.slice(0, index);
+  const targetStr = trimmedCommand.slice(index + sign.length);
+  if (!/^-?\d+(?:\.\d+)?$/.test(targetStr)) {
+    throw new ParserError('Invalid target');
+  }
+
   const expression = parseDiceExpression(expressionStr);
   const target = Number(targetStr);
+  if (!Number.isFinite(target)) throw new ParserError('Invalid target');
 
   return {
     type: 'comparing',
     expression,
     target,
-    sign: trimmedCommand.includes('>=') ? '>=' : '<=',
+    sign: sign as '>=' | '<=',
   };
 };

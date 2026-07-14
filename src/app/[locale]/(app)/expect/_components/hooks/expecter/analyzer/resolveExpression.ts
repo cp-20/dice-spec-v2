@@ -35,6 +35,12 @@ const resolveOperationExpression = (expression: OperationExpression): ResolvedEx
 
   const applyOperator = applyOperatorMap[expression.operator];
 
+  if (expression.operator === '/') {
+    const hasConstantDivisor = RVariance === 0 && RRange.min === RRange.max;
+    if (!hasConstantDivisor) throw new ResolverError('cannot divide by dice roll');
+    if (RMean === 0) throw new ResolverError('division by zero');
+  }
+
   const mean = applyOperator(LMean, RMean);
 
   const variance = (() => {
@@ -48,12 +54,8 @@ const resolveOperationExpression = (expression: OperationExpression): ResolvedEx
       return LVariance * RVariance + LMean ** 2 * RVariance + RMean ** 2 * LVariance;
     }
 
-    // 定数での割り算
-    if (LVariance * RVariance === 0) {
-      return LVariance || RVariance;
-    }
-
-    throw new Error('cannot divide by dice roll');
+    // V(X / c) = V(X) / c^2
+    return LVariance / RMean ** 2;
   })();
 
   const range = (() => {
@@ -68,6 +70,10 @@ const resolveOperationExpression = (expression: OperationExpression): ResolvedEx
       max: Math.max(...minmax),
     };
   })();
+
+  if (![mean, variance, range.min, range.max].every(Number.isFinite)) {
+    throw new ResolverError('result is not finite');
+  }
 
   return {
     type: 'resolved',
