@@ -1,10 +1,7 @@
 import { afterEach, beforeEach, describe, expect, mock, test, vi } from 'bun:test';
 
 import { act, renderHook } from '@testing-library/react';
-import { useAtom } from 'jotai';
 import * as useImmutableSWR from 'swr/immutable';
-
-import * as useLocalStorage from '@/shared/lib/useLocalStorage';
 
 import { useGameSystemList } from './useGameSystemList';
 
@@ -26,15 +23,10 @@ describe('useGameSystemList', () => {
       error: undefined,
       isValidating: false,
     });
-
-    const spy2 = vi.spyOn(useLocalStorage, 'useLocalStorageAtom');
-    spy2.mockImplementation((_key, atom, _schema) => {
-      return useAtom(atom);
-    });
   });
 
   afterEach(() => {
-    vi.resetAllMocks();
+    vi.restoreAllMocks();
   });
 
   test('ゲームシステムの一覧を取得してくる', () => {

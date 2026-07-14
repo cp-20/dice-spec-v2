@@ -1,14 +1,10 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import type { FC } from 'react';
 
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
-const LogAnalysisRankingChartView = dynamic(
-  () => import('./LogAnalysisRankingChartView').then((mod) => mod.LogAnalysisRankingChartView),
-  { ssr: false, loading: () => <div className="h-75" /> },
-);
+import { LogAnalysisRankingChartView } from './LogAnalysisRankingChartView';
 
 interface LogAnalysisRankingChartProps {
   className?: string;
@@ -18,7 +14,7 @@ export const LogAnalysisRankingChart: FC<LogAnalysisRankingChartProps> = ({ clas
   const { character } = useCharacterSelect();
   const result = useCharacterLogAnalysis(character);
 
-  if (!result) return <div className="h-75" />;
+  const score = result ? result.summary.deviationScore : 0;
 
-  return <LogAnalysisRankingChartView score={result.summary.deviationScore} className={className} />;
+  return <LogAnalysisRankingChartView score={score} className={className} />;
 };
