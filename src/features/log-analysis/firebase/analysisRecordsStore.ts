@@ -3,11 +3,12 @@ import { atom } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 
-import { downloadAnalysisRecordsFromStorage } from '@/shared/lib/firebase/storage/analysisRecords';
+import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
+import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 
-import { useFirebase } from '../useFirebase';
-import { authUserAtom } from '../useFirebaseAuth';
-import { type AnalysisRecordsDocument, COLLECTIONS, parseAnalysisDocument } from './collections';
+import { downloadAnalysisRecordsFromStorage } from './analysisRecordsStorage';
+import { type AnalysisRecordsDocument, parseAnalysisDocument } from './schema';
 
 type AnalysisRecordsAtom = {
   records: AnalysisRecordsDocument | null;
@@ -25,7 +26,7 @@ const internalAnalysisRecordsAtomFamily = atomFamily((id: string | undefined) =>
       return;
     }
 
-    const analysisRef = doc(firestore, COLLECTIONS.analyses, id);
+    const analysisRef = doc(firestore, FIREBASE_COLLECTIONS.analyses, id);
 
     // 最新の結果のみを反映するために、onSnapshot のシーケンスを管理する
     let sequence = 0;

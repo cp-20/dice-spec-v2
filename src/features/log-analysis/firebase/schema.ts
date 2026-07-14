@@ -6,48 +6,20 @@ import {
   type DiceResultForCharacter,
   type MessageParserResult,
   type System,
-} from '@/features/log-analysis/model';
-
-export const COLLECTIONS = {
-  users: 'users',
-  analyses: 'analyses',
-} as const;
-
-// userStore
-
-const userPlanSchema = v.union([v.literal('free'), v.literal('pro')]);
-
-const publicUserSchema = v.object({
-  id: v.string(),
-  name: v.string(),
-  avatarUrl: v.optional(v.string()),
-  plan: userPlanSchema,
-  createdAt: v.instance(Timestamp),
-  updatedAt: v.instance(Timestamp),
-});
-
-export type PublicUser = v.InferOutput<typeof publicUserSchema>;
-
-export const userStoreSchema = v.object({
-  ...publicUserSchema.entries,
-  stripeCustomerId: v.string(),
-  stripeSubscriptionId: v.optional(v.string(), ''),
-  analysisCount: v.number(),
-  analysisCountSyncAnalysisId: v.nullable(v.string()),
-});
-
-export type UserDocument = v.InferOutput<typeof userStoreSchema>;
-
-export type NewUserDocument = Omit<UserDocument, 'createdAt' | 'updatedAt'> & {
-  createdAt: FieldValue;
-  updatedAt: FieldValue;
-};
-
-// analysesStore
+} from '../model';
 
 const analysisVisibilityLevelSchema = v.union([v.literal('private'), v.literal('unlisted'), v.literal('public')]);
 
 export type AnalysisVisibilityLevel = v.InferOutput<typeof analysisVisibilityLevelSchema>;
+
+const analysisOwnerSchema = v.object({
+  id: v.string(),
+  name: v.string(),
+  avatarUrl: v.optional(v.string()),
+  plan: v.union([v.literal('free'), v.literal('pro')]),
+  createdAt: v.instance(Timestamp),
+  updatedAt: v.instance(Timestamp),
+});
 
 const characterResultSummaryRecordSchema = v.object({
   evaluation: v.string(),
@@ -80,7 +52,7 @@ const analysisSystemSchema = v.union([
   v.literal('nechronica'),
 ]);
 
-export const analysesStoreSchema = v.pipe(
+export const analysisDocumentSchema = v.pipe(
   v.object({
     id: v.string(),
     title: v.string(),
@@ -92,10 +64,8 @@ export const analysesStoreSchema = v.pipe(
     sessionDate: v.instance(Timestamp),
     createdAt: v.instance(Timestamp),
     updatedAt: v.instance(Timestamp),
-    // ALL_CHARACTER_ID の偏差値
     primaryDeviationScore: v.number(),
-    // relation
-    owner: publicUserSchema,
+    owner: analysisOwnerSchema,
   }),
   v.check(
     (analysis) =>
@@ -105,10 +75,10 @@ export const analysesStoreSchema = v.pipe(
   ),
 );
 
-export type AnalysisDocument = v.InferOutput<typeof analysesStoreSchema>;
+export type AnalysisDocument = v.InferOutput<typeof analysisDocumentSchema>;
 
 export const parseAnalysisDocument = (data: unknown): AnalysisDocument | null => {
-  const result = v.safeParse(analysesStoreSchema, data);
+  const result = v.safeParse(analysisDocumentSchema, data);
   return result.success ? result.output : null;
 };
 
@@ -125,8 +95,6 @@ const _testAnalysisResultsType: AssertEqual<
   AnalysisDocument['characterResults'][number],
   Omit<DiceResultForCharacter, 'results'> & { summaryRecords: MessageParserResult[] }
 > = true;
-
-// analysisRecordsStore (実体は storage に保管される)
 
 const characterResultRecordSchema = v.object({
   ...characterResultSummaryRecordSchema.entries,
@@ -145,6 +113,6 @@ export const analysisRecordsContentSchema = v.object({
 export type AnalysisRecordsDocument = v.InferOutput<typeof analysisRecordsContentSchema>;
 
 const _testAnalysisRecordType: AssertEqual<
-  v.InferOutput<typeof analysisRecordsContentSchema>['characterRecords'][number]['records'][number],
+  AnalysisRecordsDocument['characterRecords'][number]['records'][number],
   DiceResultForCharacter['results'][number]
 > = true;

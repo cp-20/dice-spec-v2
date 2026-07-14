@@ -2,10 +2,14 @@ import { IconSortAscending, IconSortAscendingNumbers } from '@tabler/icons-react
 import { atom } from 'jotai';
 
 import { ALL_CHARACTER_ID, ALL_CHARACTER_NAME } from '@/app/[locale]/(app)/analyze-logs/_components/constants';
-import { myAnalysesAtom } from '@/shared/lib/firebase/stores/analyses/userAnalyses';
-import type { AnalysisDocument } from '@/shared/lib/firebase/stores/collections';
-
 import { systems } from '@/features/log-analysis/ccfolia/messageParser';
+import { myAnalysesAtom } from '@/features/log-analysis/firebase/userAnalyses';
+import type { AnalysisDocument } from '@/features/log-analysis/firebase/schema';
+import {
+  ALL_SYSTEM_ID,
+  type AnalysisSort,
+  type AnalysisSystemFilter,
+} from '@/features/log-analysis/query';
 
 interface SortOptionItem {
   value: string;
@@ -24,13 +28,12 @@ export const sortOptions = [
   { value: 'deviationScoreAsc', labelKey: 'analyze-logs:list.sort.deviationScoreAsc', icon: IconSortAscendingNumbers },
 ] as const satisfies SortOptionItem[];
 
-export type SortOption = (typeof sortOptions)[number]['value'];
-
-export const ALL_SYSTEM_ID = 'all-systems';
+export type SortOption = AnalysisSort;
+export { ALL_SYSTEM_ID };
 
 export const systemOptions = [{ id: ALL_SYSTEM_ID, name: '' }, ...Object.values(systems)] as const;
 
-export type SystemFilterOption = (typeof systemOptions)[number]['id'];
+export type SystemFilterOption = AnalysisSystemFilter;
 
 const baseActiveTabAtom = atom<'public' | 'mine'>('mine');
 

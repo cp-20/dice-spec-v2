@@ -12,27 +12,26 @@ import {
 import { useCallback, useState } from 'react';
 import * as v from 'valibot';
 
-import { useAnalysisOgImage } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/useAnalysisOgImage';
 import { ALL_CHARACTER_ID, type DiceResultForCharacter } from '@/features/log-analysis/model';
-import {
-  deleteAnalysisOgImageFromStorage,
-  updateAnalysisOgImageMetadataInStorage,
-  uploadAnalysisOgImageToStorage,
-} from '@/shared/lib/firebase/storage/analysisOgImages';
-import {
-  deleteAnalysisRecordsFromStorage,
-  updateAnalysisRecordsMetadataInStorage,
-  uploadAnalysisRecordsToStorage,
-} from '@/shared/lib/firebase/storage/analysisRecords';
+import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 import {
-  analysesStoreSchema,
+  analysisDocumentSchema,
   type AnalysisVisibilityLevel,
-  COLLECTIONS,
   type NewAnalysisDocument,
-} from '../collections';
+} from './schema';
+import {
+  deleteAnalysisOgImageFromStorage,
+  updateAnalysisOgImageMetadataInStorage,
+  uploadAnalysisOgImageToStorage,
+} from './analysisOgImagesStorage';
+import {
+  deleteAnalysisRecordsFromStorage,
+  updateAnalysisRecordsMetadataInStorage,
+  uploadAnalysisRecordsToStorage,
+} from './analysisRecordsStorage';
 import { shouldCloseAnalysisRecordsBeforeFirestore } from './privacy';
 import { useInvalidatePublicAnalysesCache } from './publicAnalyses';
 
@@ -51,12 +50,16 @@ type SyncAnalysisOgImageParams = {
   allCharacterResult?: Pick<DiceResultForCharacter, 'summary'>;
 };
 
+export type GenerateAnalysisOgImage = (
+  result: Pick<DiceResultForCharacter, 'summary'>,
+  title: string,
+) => Promise<string>;
+
 const isStorageObjectNotFound = (error: unknown) =>
   error instanceof FirebaseError && error.code === 'storage/object-not-found';
 
-const useSyncAnalysisOgImage = () => {
+const useSyncAnalysisOgImage = (generateOgImage: GenerateAnalysisOgImage) => {
   const { storage } = useFirebase();
-  const { generateOgImage } = useAnalysisOgImage();
 
   return useCallback(
     async (params: SyncAnalysisOgImageParams) => {
@@ -82,10 +85,10 @@ const useSyncAnalysisOgImage = () => {
   );
 };
 
-export const useSaveAnalysis = () => {
+export const useSaveAnalysis = (generateOgImage: GenerateAnalysisOgImage) => {
   const { firestore, storage } = useFirebase();
   const [saving, setSaving] = useState(false);
-  const syncAnalysisOgImage = useSyncAnalysisOgImage();
+  const syncAnalysisOgImage = useSyncAnalysisOgImage(generateOgImage);
   const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();
 
   const saveAnalysis = useCallback(
@@ -93,7 +96,7 @@ export const useSaveAnalysis = () => {
       setSaving(true);
       try {
         const batch = writeBatch(firestore);
-        const newDoc = doc(collection(firestore, COLLECTIONS.analyses));
+        const newDoc = doc(collection(firestore, FIREBASE_COLLECTIONS.analyses));
 
         const { characterResults, ...restPayload } = payload;
 
@@ -137,7 +140,7 @@ export const useSaveAnalysis = () => {
           showRecordDetails: payload.showRecordDetails,
         });
 
-        const userRef = doc(firestore, COLLECTIONS.users, payload.ownerUid);
+        const userRef = doc(firestore, FIREBASE_COLLECTIONS.users, payload.ownerUid);
         batch.set(
           userRef,
           {
@@ -188,17 +191,17 @@ export type UpdateAnalysisPayload = Partial<{
   sessionDate: Timestamp;
 }>;
 
-export const useUpdateAnalysis = () => {
+export const useUpdateAnalysis = (generateOgImage: GenerateAnalysisOgImage) => {
   const { firestore, storage } = useFirebase();
   const [updating, setUpdating] = useState(false);
-  const syncAnalysisOgImage = useSyncAnalysisOgImage();
+  const syncAnalysisOgImage = useSyncAnalysisOgImage(generateOgImage);
   const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();
 
   const updateAnalysis = useCallback(
     async (id: string, updates: UpdateAnalysisPayload) => {
       setUpdating(true);
       try {
-        const analysisRef = doc(firestore, COLLECTIONS.analyses, id);
+        const analysisRef = doc(firestore, FIREBASE_COLLECTIONS.analyses, id);
         const shouldSyncAnalysisRecordsMetadata =
           updates.visibilityLevel !== undefined || updates.showRecordDetails !== undefined;
         const shouldSyncAnalysisOgImage = updates.title !== undefined || updates.visibilityLevel !== undefined;
@@ -216,7 +219,7 @@ export const useUpdateAnalysis = () => {
         if (!beforeSnap.exists()) {
           throw new Error('Analysis not found');
         }
-        const beforeAnalysis = v.parse(analysesStoreSchema, beforeSnap.data({ serverTimestamps: 'estimate' }));
+        const beforeAnalysis = v.parse(analysisDocumentSchema, beforeSnap.data({ serverTimestamps: 'estimate' }));
         const previousMetadata = {
           visibilityLevel: beforeAnalysis.visibilityLevel,
           showRecordDetails: beforeAnalysis.showRecordDetails,
@@ -308,10 +311,10 @@ export const useDeleteAnalysis = () => {
         }
 
         const batch = writeBatch(firestore);
-        const analysisRef = doc(firestore, COLLECTIONS.analyses, id);
+        const analysisRef = doc(firestore, FIREBASE_COLLECTIONS.analyses, id);
         batch.delete(analysisRef);
 
-        const userRef = doc(firestore, COLLECTIONS.users, authUser.uid);
+        const userRef = doc(firestore, FIREBASE_COLLECTIONS.users, authUser.uid);
         batch.set(
           userRef,
           {

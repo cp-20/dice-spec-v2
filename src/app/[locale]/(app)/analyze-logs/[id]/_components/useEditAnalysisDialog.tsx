@@ -20,9 +20,10 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { useUpdateAnalysis } from '@/shared/lib/firebase/stores/analyses/mutations';
-import type { AnalysisVisibilityLevel } from '@/shared/lib/firebase/stores/collections';
+import { useUpdateAnalysis } from '@/features/log-analysis/firebase/mutations';
+import type { AnalysisVisibilityLevel } from '@/features/log-analysis/firebase/schema';
 
+import { useAnalysisOgImage } from '../../_components/hooks/useAnalysisOgImage';
 import { analysisIdAtom, currentAnalysisAtom } from './atoms';
 
 interface VisibilityOption {
@@ -45,7 +46,8 @@ export const useEditAnalysisDialog = () => {
   const [visibility, setVisibility] = useState<AnalysisVisibilityLevel>('private');
   const [showRecordDetails, setShowRecordDetails] = useState(false);
   const [sessionDate, setSessionDate] = useState('');
-  const { updateAnalysis, updating } = useUpdateAnalysis();
+  const { generateOgImage } = useAnalysisOgImage();
+  const { updateAnalysis, updating } = useUpdateAnalysis(generateOgImage);
   const { toast } = useToast();
 
   const isValid = analysisId !== undefined && title.trim().length > 0;

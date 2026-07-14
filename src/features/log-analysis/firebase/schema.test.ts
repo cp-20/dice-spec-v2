@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 
 import { Timestamp } from 'firebase/firestore';
 
-import { parseAnalysisDocument } from './collections';
+import { parseAnalysisDocument } from './schema';
 
 const validAnalysis = () => ({
   id: 'analysis_1',

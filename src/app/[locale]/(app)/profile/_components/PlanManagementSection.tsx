@@ -5,11 +5,11 @@ import { t } from 'i18next';
 import { useState } from 'react';
 
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
+import { useMeStore } from '@/features/account/firebase/accountStore';
 import { createPortalSession } from '@/features/stripe/api';
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 import { PricingCards } from './PricingCards';

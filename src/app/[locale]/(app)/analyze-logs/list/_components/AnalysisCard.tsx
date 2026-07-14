@@ -4,7 +4,7 @@ import type { FC } from 'react';
 
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { UserAvatar } from '@/shared/components/elements/UserAvatar';
-import type { AnalysisDocument } from '@/shared/lib/firebase/stores/collections';
+import type { AnalysisDocument } from '@/features/log-analysis/firebase/schema';
 import { invariant } from '@/shared/lib/invariant';
 import { round } from '@/shared/lib/round';
 
@@ -47,7 +47,7 @@ export const AnalysisCard: FC<AnalysisCardProps> = ({ analysis }) => {
               </div>
 
               <div className="flex items-center gap-1.5">
-                <UserAvatar uid={analysis.ownerUid} size={16} />
+                <UserAvatar avatarUrl={analysis.owner.avatarUrl} size={16} />
                 <span>{analysis.owner.name}</span>
               </div>
             </div>

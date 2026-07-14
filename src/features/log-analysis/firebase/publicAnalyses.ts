@@ -12,19 +12,15 @@ import { atom, useAtom, useSetAtom } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 
-import {
-  ALL_SYSTEM_ID,
-  type SortOption,
-  type SystemFilterOption,
-} from '@/app/[locale]/(app)/analyze-logs/list/_components/atoms';
+import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 
-import { type AnalysisDocument, COLLECTIONS, parseAnalysisDocument } from '../collections';
-import { internalUserFamilyAtom } from '../userAtoms';
+import { ALL_SYSTEM_ID, type AnalysisSort, type AnalysisSystemFilter } from '../query';
+import { type AnalysisDocument, parseAnalysisDocument } from './schema';
 
 export type PublicAnalysesQueryParams = {
-  systemId: SystemFilterOption;
-  sortBy: SortOption;
+  systemId: AnalysisSystemFilter;
+  sortBy: AnalysisSort;
   pageSize: number;
 };
 
@@ -59,7 +55,7 @@ const buildQuery = (firestore: Firestore, params: PublicAnalysesQueryParams, req
   }
 
   return query(
-    collection(firestore, COLLECTIONS.analyses),
+    collection(firestore, FIREBASE_COLLECTIONS.analyses),
     ...whereConstraints,
     buildOrderByConstraint(params),
     limit(requestedTotalSize),
@@ -143,9 +139,6 @@ const publicAnalysesAtom = atomFamily(
               hasMore: snap.docs.length === requestedTotalSize,
               error: null,
             });
-            for (const analysis of analyses) {
-              set(internalUserFamilyAtom(analysis.ownerUid), analysis.owner);
-            }
           })
           .catch((error: unknown) => {
             console.error('Error fetching public analyses:', error);

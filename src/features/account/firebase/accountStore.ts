@@ -1,19 +1,17 @@
 import { signOut } from 'firebase/auth';
-import { doc, onSnapshot, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore';
+import { doc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore';
 import { t } from 'i18next';
 import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import * as v from 'valibot';
 
 import { createCustomer } from '@/features/stripe/api';
+import { type NewUserDocument, type UserDocument, userDocumentSchema } from '@/features/user/firebase/schema';
 import { toast } from '@/shared/components/ui/use-toast';
+import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
+import { uploadAvatarFromUrlToStorage } from '@/shared/lib/firebase/storage/avatars';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
-import { authUserAtom, authUserLoadingAtom, useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
-
-import { uploadAvatarFromUrlToStorage } from '../storage/avatars';
-import { myAnalysesAtom } from './analyses/userAnalyses';
-import { COLLECTIONS, type NewUserDocument, type UserDocument, userStoreSchema } from './collections';
-import { internalUserFamilyAtom } from './userAtoms';
+import { authUserAtom, authUserLoadingAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 
 const internalMeLoadingAtom = atom(true);
 
@@ -36,7 +34,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
 
   set(internalMeLoadingAtom, true);
 
-  const userRef = doc(firestore, COLLECTIONS.users, authUser.uid);
+  const userRef = doc(firestore, FIREBASE_COLLECTIONS.users, authUser.uid);
   const unsubscribe = onSnapshot(userRef, async (snap) => {
     if (!snap.exists()) {
       try {
@@ -84,7 +82,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
       return;
     }
 
-    const data = v.parse(userStoreSchema, snap.data({ serverTimestamps: 'estimate' }));
+    const data = v.parse(userDocumentSchema, snap.data({ serverTimestamps: 'estimate' }));
 
     if (data.stripeCustomerId === '') {
       createCustomer().catch((error) => {
@@ -103,58 +101,7 @@ const meAtom = atom((get) => get(internalMeAtom));
 const meLoadingAtom = atom((get) => get(internalMeLoadingAtom));
 
 export const useMeStore = () => {
-  const { authUser } = useFirebaseAuth();
-  const { firestore } = useFirebase();
   const me = useAtomValue(meAtom);
   const meLoading = useAtomValue(meLoadingAtom);
-  const analyses = useAtomValue(myAnalysesAtom);
-
-  const updateName = async (newName: string) => {
-    if (!authUser) return;
-
-    const batch = writeBatch(firestore);
-
-    const userRef = doc(firestore, COLLECTIONS.users, authUser.uid);
-    batch.set(userRef, { name: newName, updatedAt: serverTimestamp() }, { merge: true });
-
-    for (const analysis of analyses) {
-      const analysisRef = doc(firestore, COLLECTIONS.analyses, analysis.id);
-      // FIXME: batchの上限は500件なので、それを超えるときにエラーになる
-      batch.set(
-        analysisRef,
-        { owner: { ...analysis.owner, name: newName, updatedAt: serverTimestamp() } },
-        { merge: true },
-      );
-    }
-
-    await batch.commit();
-  };
-
-  const updateAvatarUrl = async (newAvatarUrl: string) => {
-    if (!authUser) return;
-
-    const batch = writeBatch(firestore);
-
-    const userRef = doc(firestore, COLLECTIONS.users, authUser.uid);
-    batch.set(userRef, { avatarUrl: newAvatarUrl, updatedAt: serverTimestamp() }, { merge: true });
-
-    for (const analysis of analyses) {
-      const analysisRef = doc(firestore, COLLECTIONS.analyses, analysis.id);
-      batch.set(
-        analysisRef,
-        { owner: { ...analysis.owner, avatarUrl: newAvatarUrl, updatedAt: serverTimestamp() } },
-        { merge: true },
-      );
-    }
-
-    await batch.commit();
-  };
-
-  return { me, meLoading, updateName, updateAvatarUrl };
-};
-
-export const useUserStore = (uid: string | null | undefined) => {
-  const userStore = useAtomValue(internalUserFamilyAtom(uid));
-
-  return userStore;
+  return { me, meLoading };
 };

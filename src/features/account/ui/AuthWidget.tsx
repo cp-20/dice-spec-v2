@@ -8,7 +8,7 @@ import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
+import { useMeStore } from '@/features/account/firebase/accountStore';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 export const AuthWidget: FC = () => {

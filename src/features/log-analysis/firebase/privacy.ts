@@ -1,4 +1,4 @@
-import type { AnalysisVisibilityLevel } from '../collections';
+import type { AnalysisVisibilityLevel } from './schema';
 
 export type AnalysisRecordsPrivacy = {
   visibilityLevel: AnalysisVisibilityLevel;

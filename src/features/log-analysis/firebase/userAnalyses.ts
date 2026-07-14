@@ -5,9 +5,9 @@ import { atomFamily } from 'jotai-family';
 
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
+import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 
-import { type AnalysisDocument, COLLECTIONS, parseAnalysisDocument } from '../collections';
-import { internalUserFamilyAtom } from '../userAtoms';
+import { type AnalysisDocument, parseAnalysisDocument } from './schema';
 
 type AnalysesAtom = {
   analyses: AnalysisDocument[];
@@ -24,7 +24,7 @@ const internalUserAnalysesAtomFamily = atomFamily((uid: string | null | undefine
       return;
     }
 
-    const analysesQuery = query(collection(firestore, COLLECTIONS.analyses), where('ownerUid', '==', uid));
+    const analysesQuery = query(collection(firestore, FIREBASE_COLLECTIONS.analyses), where('ownerUid', '==', uid));
 
     return onSnapshot(
       analysesQuery,
@@ -41,9 +41,6 @@ const internalUserAnalysesAtomFamily = atomFamily((uid: string | null | undefine
           loading: false,
           error: hasInvalidDocument ? new Error('Invalid analysis document') : null,
         });
-        for (const analysis of data) {
-          set(internalUserFamilyAtom(analysis.ownerUid), analysis.owner);
-        }
       },
       (error) => {
         set(internalUserAnalysesAtomFamily(uid), {

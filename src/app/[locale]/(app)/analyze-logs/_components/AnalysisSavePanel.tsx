@@ -9,6 +9,7 @@ import type { FC } from 'react';
 import { useState } from 'react';
 
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
+import { useMeStore } from '@/features/account/firebase/accountStore';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { GoogleSignInAgreement } from '@/shared/components/elements/GoogleSignInAgreement';
 import { GoogleSignInButton } from '@/shared/components/elements/GoogleSignInButton';
@@ -17,12 +18,12 @@ import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Input } from '@/shared/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { type SaveAnalysisPayload, useSaveAnalysis } from '@/shared/lib/firebase/stores/analyses/mutations';
-import { myAnalysesAtom, useUserAnalyses } from '@/shared/lib/firebase/stores/analyses/userAnalyses';
-import type { AnalysisVisibilityLevel } from '@/shared/lib/firebase/stores/collections';
-import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
+import { type SaveAnalysisPayload, useSaveAnalysis } from '@/features/log-analysis/firebase/mutations';
+import type { AnalysisVisibilityLevel } from '@/features/log-analysis/firebase/schema';
+import { myAnalysesAtom, useUserAnalyses } from '@/features/log-analysis/firebase/userAnalyses';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
+import { useAnalysisOgImage } from './hooks/useAnalysisOgImage';
 import { useLogAnalysis } from './hooks/useLogAnalysis';
 
 const SAVE_ANALYSIS_LIMIT_FREE = 3;
@@ -46,7 +47,8 @@ export const AnalysisSavePanel: FC = () => {
   const { toast } = useToast();
   const { authUser } = useFirebaseAuth();
   const { system, result } = useLogAnalysis();
-  const { saveAnalysis } = useSaveAnalysis();
+  const { generateOgImage } = useAnalysisOgImage();
+  const { saveAnalysis } = useSaveAnalysis(generateOgImage);
   useUserAnalyses(authUser?.uid);
   const analyses = useAtomValue(myAnalysesAtom);
   const { me } = useMeStore();

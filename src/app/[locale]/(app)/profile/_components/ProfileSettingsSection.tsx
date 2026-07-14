@@ -6,20 +6,22 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { useDropzone } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/useDropzone';
-import { MyAvatar } from '@/shared/components/elements/UserAvatar';
+import { useMeStore } from '@/features/account/firebase/accountStore';
+import { useProfileMutations } from '@/features/profile/useProfileMutations';
+import { UserAvatar } from '@/shared/components/elements/UserAvatar';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { AvatarPreparationError, uploadAvatarFromFileToStorage } from '@/shared/lib/firebase/storage/avatars';
-import { useMeStore } from '@/shared/lib/firebase/stores/userStore';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 export const ProfileSettingsSection = () => {
   const { storage } = useFirebase();
   const { authUser } = useFirebaseAuth();
-  const { me, updateName, updateAvatarUrl } = useMeStore();
+  const { me, meLoading } = useMeStore();
+  const { updateName, updateAvatarUrl } = useProfileMutations();
   const [displayName, setDisplayName] = useState('');
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
@@ -102,7 +104,7 @@ export const ProfileSettingsSection = () => {
         <div className="flex items-center justify-center px-12">
           <input id="avatar-upload" type="file" accept="image/*" className="hidden" {...inputProps} />
           <div className="size-32 rounded-full relative" {...containerProps}>
-            <MyAvatar size={128} />
+            <UserAvatar avatarUrl={me?.avatarUrl} loading={meLoading} size={128} />
             {uploading ? (
               <div className="absolute inset-0 rounded-full bg-black/50 grid place-content-center text-white">
                 <IconLoader2 className="size-6 animate-spin" />

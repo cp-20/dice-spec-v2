@@ -2,8 +2,8 @@ import { atom, useSetAtom } from 'jotai';
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
 
-import { analysisAtomFamily } from '@/shared/lib/firebase/stores/analyses/singleAnalysis';
-import { analysisRecordsAtomFamily } from '@/shared/lib/firebase/stores/analysisRecordsStore';
+import { analysisRecordsAtomFamily } from '@/features/log-analysis/firebase/analysisRecordsStore';
+import { analysisAtomFamily } from '@/features/log-analysis/firebase/singleAnalysis';
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 
 import { ALL_CHARACTER_ID } from '../../_components/constants';

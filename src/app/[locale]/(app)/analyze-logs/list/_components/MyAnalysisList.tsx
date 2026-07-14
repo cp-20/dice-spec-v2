@@ -2,7 +2,7 @@ import { t } from 'i18next';
 import { useAtomValue } from 'jotai';
 import type { FC } from 'react';
 
-import { myAnalysesLoadingAtom } from '@/shared/lib/firebase/stores/analyses/userAnalyses';
+import { myAnalysesLoadingAtom } from '@/features/log-analysis/firebase/userAnalyses';
 
 import { AnalysisCard } from './AnalysisCard';
 import { ALL_SYSTEM_ID, filteredAndSortedMyAnalysesAtom, selectedSystemAtom } from './atoms';

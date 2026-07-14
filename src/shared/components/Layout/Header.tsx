@@ -2,11 +2,10 @@ import TitleLogoEN from '/public/title-logo-en.svg';
 import TitleLogoJP from '/public/title-logo.svg';
 import { IconMessageReply } from '@tabler/icons-react';
 import { t } from 'i18next';
-import { type ComponentProps, type FC, type SubmitEvent, useState } from 'react';
+import { type ComponentProps, type FC, type ReactNode, type SubmitEvent, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { CustomLink } from '@/shared/components/elements/CustomLink';
-import { AuthWidget } from '@/shared/components/Layout/AuthWidget';
 import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
@@ -24,7 +23,11 @@ import { useToast } from '@/shared/components/ui/use-toast';
 import { appVersion } from '@/shared/lib/const';
 import { sendFeedback } from '@/shared/lib/webhook';
 
-export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) => {
+type HeaderProps = ComponentProps<'header'> & {
+  account?: ReactNode;
+};
+
+export const Header: FC<HeaderProps> = ({ account, className, ...props }) => {
   const TitleLogo = t('lang') === 'en' ? TitleLogoEN : TitleLogoJP;
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
@@ -66,7 +69,7 @@ export const Header: FC<ComponentProps<'header'>> = ({ className, ...props }) =>
         <div>v{appVersion}</div>
       </div>
       <div className="flex items-center gap-2">
-        <AuthWidget />
+        {account}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button

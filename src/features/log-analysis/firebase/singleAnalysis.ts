@@ -4,9 +4,9 @@ import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 
-import { type AnalysisDocument, COLLECTIONS, parseAnalysisDocument } from '../collections';
-import { internalUserFamilyAtom } from '../userAtoms';
+import { type AnalysisDocument, parseAnalysisDocument } from './schema';
 
 type AnalysisAtom = {
   analysis: AnalysisDocument | null;
@@ -23,7 +23,7 @@ const internalAnalysisAtomFamily = atomFamily((id: string | undefined) =>
       return;
     }
 
-    const analysisRef = doc(firestore, COLLECTIONS.analyses, id);
+    const analysisRef = doc(firestore, FIREBASE_COLLECTIONS.analyses, id);
     return onSnapshot(
       analysisRef,
       (snap) => {
@@ -43,7 +43,6 @@ const internalAnalysisAtomFamily = atomFamily((id: string | undefined) =>
         }
 
         set(internalAnalysisAtomFamily(id), { analysis: analysisDocument, loading: false, error: null });
-        set(internalUserFamilyAtom(analysisDocument.ownerUid), analysisDocument.owner);
       },
       (err) => {
         const error =

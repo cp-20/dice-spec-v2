@@ -2,39 +2,18 @@ import { IconUserFilled } from '@tabler/icons-react';
 import type { FC } from 'react';
 
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { useMeStore, useUserStore } from '@/shared/lib/firebase/stores/userStore';
 
-interface MyAvatarProps {
+interface UserAvatarProps {
+  avatarUrl?: string;
+  loading?: boolean;
   size: number;
 }
 
-export const MyAvatar: FC<MyAvatarProps> = ({ size }) => {
-  const { me } = useMeStore();
-
-  if (me === null) {
+export const UserAvatar: FC<UserAvatarProps> = ({ avatarUrl, loading = false, size }) => {
+  if (loading) {
     return <Skeleton className="rounded-full" style={{ width: size, height: size }} />;
   }
 
-  return <PresentationalUserAvatar avatarUrl={me.avatarUrl} size={size} />;
-};
-
-interface UserAvatarProps {
-  uid?: string | null | undefined;
-  size: number;
-}
-
-export const UserAvatar: FC<UserAvatarProps> = ({ uid, size }) => {
-  const user = useUserStore(uid);
-
-  return <PresentationalUserAvatar avatarUrl={user?.avatarUrl} size={size} />;
-};
-
-interface PresentationalUserAvatarProps {
-  avatarUrl: string | undefined;
-  size: number;
-}
-
-const PresentationalUserAvatar: FC<PresentationalUserAvatarProps> = ({ avatarUrl, size }) => {
   const iconSize = Math.max(12, Math.floor(size / 1.5));
 
   return (
