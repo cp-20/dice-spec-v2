@@ -2,7 +2,7 @@ import { hc } from 'hono/client';
 
 import type { BillingInterval } from '@/features/stripe/contract';
 import type { StripeAppType } from '@/features/stripe/server/app';
-import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { getFirebaseServices } from '@/shared/lib/firebase/client';
 
 // -------------------------------
 
@@ -14,7 +14,7 @@ const getClient = () =>
   hc<StripeAppType>(typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
 
 const getAuthHeader = async () => {
-  const { auth } = useFirebase();
+  const { auth } = getFirebaseServices();
   const idToken = await auth.currentUser?.getIdToken();
 
   if (!idToken) {

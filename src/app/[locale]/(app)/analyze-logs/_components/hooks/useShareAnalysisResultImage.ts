@@ -6,7 +6,7 @@ import { useCallback, useTransition } from 'react';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { SHARED_IMAGE_SCOPES } from '@/shared/lib/firebase/storage/paths';
 import { uploadSharedImageToStorage } from '@/shared/lib/firebase/storage/sharedImages';
-import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { getFirebaseServices } from '@/shared/lib/firebase/client';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
@@ -18,7 +18,7 @@ import { useCharacterSelect } from './useCharacterSelect';
 
 export const useShareAnalysisResultImage = () => {
   const [isSharingImage, startTransition] = useTransition();
-  const { storage } = useFirebase();
+  const { storage } = getFirebaseServices();
   const { authUser } = useFirebaseAuth();
   const { toast } = useToast();
   const { character } = useCharacterSelect();

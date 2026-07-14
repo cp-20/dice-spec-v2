@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 
 import { myAnalysesAtom } from '@/features/log-analysis/firebase/userAnalyses';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
-import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { getFirebaseServices } from '@/shared/lib/firebase/client';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 import { splitProfileUpdateBatches } from './profileUpdateBatches';
@@ -14,7 +14,7 @@ import { splitProfileUpdateBatches } from './profileUpdateBatches';
 type ProfileUpdate = { name: string } | { avatarUrl: string };
 
 export const useProfileMutations = () => {
-  const { firestore } = useFirebase();
+  const { firestore } = getFirebaseServices();
   const { authUser } = useFirebaseAuth();
   const analyses = useAtomValue(myAnalysesAtom);
 

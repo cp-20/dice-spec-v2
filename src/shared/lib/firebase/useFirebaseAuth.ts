@@ -11,12 +11,12 @@ import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { useCallback } from 'react';
 
-import { useFirebase } from './useFirebase';
+import { getFirebaseServices } from './client';
 
 const internalAuthUserLoadingAtom = atom(true);
 
 const internalAuthUserAtom = withAtomEffect(atom<User | null>(null), (_, set) => {
-  const { auth } = useFirebase();
+  const { auth } = getFirebaseServices();
 
   const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
     set(internalAuthUserAtom, nextUser);
@@ -29,7 +29,7 @@ export const authUserAtom = atom((get) => get(internalAuthUserAtom));
 export const authUserLoadingAtom = atom((get) => get(internalAuthUserLoadingAtom));
 
 export const useFirebaseAuth = () => {
-  const { auth } = useFirebase();
+  const { auth } = getFirebaseServices();
   const authUser = useAtomValue(internalAuthUserAtom);
   const loading = useAtomValue(internalAuthUserLoadingAtom);
 

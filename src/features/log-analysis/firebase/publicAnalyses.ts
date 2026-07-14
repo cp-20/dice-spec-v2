@@ -16,7 +16,7 @@ import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
-import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { getFirebaseServices } from '@/shared/lib/firebase/client';
 
 import { ALL_SYSTEM_ID, type AnalysisSort, type AnalysisSystemFilter } from '../query';
 import {
@@ -118,7 +118,7 @@ const publicAnalysesAtom = atomFamily(
         },
       ),
       (get, set) => {
-        const { firestore } = useFirebase();
+        const { firestore } = getFirebaseServices();
         const stateAtom = internalPublicAnalysesAtomFamily(params);
         const state = get(stateAtom);
         const invalidationToken = get(publicAnalysesInvalidationTokenAtom);

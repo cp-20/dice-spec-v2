@@ -14,7 +14,7 @@ import * as v from 'valibot';
 
 import { ALL_CHARACTER_ID, type DiceResultForCharacter } from '@/features/log-analysis/model';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
-import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { getFirebaseServices } from '@/shared/lib/firebase/client';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 import {
@@ -59,7 +59,7 @@ const isStorageObjectNotFound = (error: unknown) =>
   error instanceof FirebaseError && error.code === 'storage/object-not-found';
 
 const useSyncAnalysisOgImage = (generateOgImage: GenerateAnalysisOgImage) => {
-  const { storage } = useFirebase();
+  const { storage } = getFirebaseServices();
 
   return useCallback(
     async (params: SyncAnalysisOgImageParams) => {
@@ -86,7 +86,7 @@ const useSyncAnalysisOgImage = (generateOgImage: GenerateAnalysisOgImage) => {
 };
 
 export const useSaveAnalysis = (generateOgImage: GenerateAnalysisOgImage) => {
-  const { firestore, storage } = useFirebase();
+  const { firestore, storage } = getFirebaseServices();
   const [saving, setSaving] = useState(false);
   const syncAnalysisOgImage = useSyncAnalysisOgImage(generateOgImage);
   const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();
@@ -192,7 +192,7 @@ export type UpdateAnalysisPayload = Partial<{
 }>;
 
 export const useUpdateAnalysis = (generateOgImage: GenerateAnalysisOgImage) => {
-  const { firestore, storage } = useFirebase();
+  const { firestore, storage } = getFirebaseServices();
   const [updating, setUpdating] = useState(false);
   const syncAnalysisOgImage = useSyncAnalysisOgImage(generateOgImage);
   const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();
@@ -286,7 +286,7 @@ export const useUpdateAnalysis = (generateOgImage: GenerateAnalysisOgImage) => {
 };
 
 export const useDeleteAnalysis = () => {
-  const { firestore, storage } = useFirebase();
+  const { firestore, storage } = getFirebaseServices();
   const { authUser } = useFirebaseAuth();
   const [deleting, setDeleting] = useState(false);
   const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();

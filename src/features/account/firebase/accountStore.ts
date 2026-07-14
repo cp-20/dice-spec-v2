@@ -10,13 +10,13 @@ import { type NewUserDocument, type UserDocument, userDocumentSchema } from '@/f
 import { toast } from '@/shared/components/ui/use-toast';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { uploadAvatarFromUrlToStorage } from '@/shared/lib/firebase/storage/avatars';
-import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { getFirebaseServices } from '@/shared/lib/firebase/client';
 import { authUserAtom, authUserLoadingAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 
 const internalMeLoadingAtom = atom(true);
 
 const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set) => {
-  const { auth, firestore, storage } = useFirebase();
+  const { auth, firestore, storage } = getFirebaseServices();
 
   const authUserLoading = get(authUserLoadingAtom);
   if (authUserLoading) {

@@ -16,7 +16,7 @@ const firebaseConfig: FirebaseOptions = {
 
 const databaseId = clientEnv.firebaseFirestoreDatabaseId;
 
-export const useFirebase = () => {
+export const getFirebaseServices = () => {
   const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const firestore = getFirestore(app, databaseId);
