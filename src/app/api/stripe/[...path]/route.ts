@@ -25,7 +25,7 @@ const getStripeClient = () => {
   if (!stripe) {
     stripe = new Stripe(runtimeEnv.stripe.secretKey, {
       httpClient: Stripe.createFetchHttpClient(),
-      apiVersion: '2026-04-22.dahlia',
+      apiVersion: '2026-06-24.dahlia',
     });
   }
   return stripe;
