@@ -1,4 +1,3 @@
-import withBundleAnalyzerFn from '@next/bundle-analyzer';
 import withMDXFn from '@next/mdx';
 import { withSentryConfig } from '@sentry/nextjs';
 import withPWAFn from 'next-pwa';
@@ -95,10 +94,6 @@ const nextConfig = {
   htmlLimitedBots: /Google-Site-Verification/,
 };
 
-const withBundleAnalyzer = withBundleAnalyzerFn({
-  enabled: buildEnv.analyzeEnabled,
-});
-
 const withPWA = withPWAFn({
   dest: 'public',
   register: true,
@@ -143,7 +138,7 @@ const sentryConfig = {
 };
 
 // @ts-expect-error
-let config = withMDX(withBundleAnalyzer(withPWA(nextConfig)));
+let config = withMDX(withPWA(nextConfig));
 
 if (buildEnv.sentryAuthToken) {
   config = withSentryConfig(config, sentryConfig);

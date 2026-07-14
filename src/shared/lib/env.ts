@@ -6,7 +6,6 @@ type EnvReaders = {
 
 const envReaders = {
   build: {
-    ANALYZE: () => process.env.ANALYZE,
     NODE_ENV: () => process.env.NODE_ENV,
     SENTRY_AUTH_TOKEN: () => process.env.SENTRY_AUTH_TOKEN,
     CI: () => process.env.CI,
@@ -75,7 +74,7 @@ const optionalEnv = <S extends EnvScope>(key: EnvKeyMap[S], scope: S): string | 
 };
 
 const envVariableCatalog = {
-  build: ['ANALYZE', 'NODE_ENV', 'SENTRY_AUTH_TOKEN', 'CI'],
+  build: ['NODE_ENV', 'SENTRY_AUTH_TOKEN', 'CI'],
   runtime: [
     'APP_ORIGIN',
     'STRIPE_SECRET_KEY',
@@ -108,9 +107,6 @@ const envVariableCatalog = {
 };
 
 export const buildEnv = {
-  get analyzeEnabled(): boolean {
-    return optionalEnv('ANALYZE', 'build') === 'true';
-  },
   get nodeEnv(): string {
     return requiredEnv('NODE_ENV', 'build');
   },
