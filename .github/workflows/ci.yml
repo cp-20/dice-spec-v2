@@ -43,6 +43,7 @@ jobs:
         background: true
       - uses: ./.github/actions/setup
       - wait: java
+      - run: bunx --package firebase-tools@15.23.0 firebase --version
       - run: bun test
 
   build:
