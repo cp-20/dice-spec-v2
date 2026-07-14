@@ -57,6 +57,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
           stripeCustomerId: '',
+          stripeSubscriptionId: '',
           analysisCount: 0,
           analysisCountSyncAnalysisId: null,
         };

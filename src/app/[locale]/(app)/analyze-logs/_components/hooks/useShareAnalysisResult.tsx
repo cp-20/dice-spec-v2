@@ -1,58 +1,33 @@
 import { IconLoader } from '@tabler/icons-react';
-import { toPng } from 'html-to-image';
 import { t } from 'i18next';
-import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { type FC, useCallback, useEffect, useState } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
-import { atomWithDebounce } from '@/shared/lib/jotai/atomWithDebounce';
 
 import { SharingAnalysisResultScreen } from '../SharingAnalysisResultScreen';
+import {
+  debouncedScenarioNameAtom,
+  imageRefAtom,
+  scenarioNameAtom,
+  sharingImageDataUrlAtom,
+  sharingImageVersionAtom,
+} from './shareAnalysisImageAtoms';
 import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
 import { useCharacterSelect } from './useCharacterSelect';
 import { useShareAnalysisResultImage } from './useShareAnalysisResultImage';
 
-const imageRefAtom = atom<React.RefObject<HTMLDivElement | null> | undefined>(undefined);
-const { currentValueAtom: scenarioNameAtom, debouncedValueAtom: debouncedScenarioNameAtom } = atomWithDebounce(
-  '',
-  300,
-  true,
-);
-
-const sharingImageVersion = atom(0);
 const useRegenerateImage = () => {
-  const setVersion = useSetAtom(sharingImageVersion);
+  const setVersion = useSetAtom(sharingImageVersionAtom);
 
   const regenerateImage = useCallback(() => {
     setVersion((v) => v + 1);
   }, [setVersion]);
 
   return { regenerateImage };
-};
-
-export const sharingImageDataUrlAtom = atom(async (get) => {
-  get(sharingImageVersion);
-
-  const imageRef = get(imageRefAtom);
-
-  if (imageRef?.current === null || imageRef?.current === undefined) return null;
-
-  const dataUrl = await toPng(imageRef.current);
-  return dataUrl;
-});
-
-export const useGenerateShareAnalysisImageDataUrl = () => {
-  const imageRef = useAtomValue(imageRefAtom);
-
-  const generateShareImageDataUrl = useCallback(async () => {
-    if (imageRef?.current === null || imageRef?.current === undefined) return null;
-    return await toPng(imageRef.current);
-  }, [imageRef]);
-
-  return { generateShareImageDataUrl };
 };
 
 const SharingImagePreview: FC = () => {

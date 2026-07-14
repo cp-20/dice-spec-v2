@@ -1,3 +1,4 @@
+import { FirebaseError } from 'firebase/app';
 import {
   collection,
   doc,
@@ -11,9 +12,8 @@ import {
 import { useCallback, useState } from 'react';
 import * as v from 'valibot';
 
-import { ALL_CHARACTER_ID } from '@/app/[locale]/(app)/analyze-logs/_components/constants';
-import type { DiceResultForCharacter } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/ccfoliaLogAnalysis';
 import { useAnalysisOgImage } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/useAnalysisOgImage';
+import { ALL_CHARACTER_ID, type DiceResultForCharacter } from '@/features/log-analysis/model';
 import {
   deleteAnalysisOgImageFromStorage,
   updateAnalysisOgImageMetadataInStorage,
@@ -33,6 +33,7 @@ import {
   COLLECTIONS,
   type NewAnalysisDocument,
 } from '../collections';
+import { shouldCloseAnalysisRecordsBeforeFirestore } from './privacy';
 import { useInvalidatePublicAnalysesCache } from './publicAnalyses';
 
 export type SaveAnalysisPayload = Omit<
@@ -50,31 +51,32 @@ type SyncAnalysisOgImageParams = {
   allCharacterResult?: Pick<DiceResultForCharacter, 'summary'>;
 };
 
-const useSyncAnalysisOgImageInBackground = () => {
+const isStorageObjectNotFound = (error: unknown) =>
+  error instanceof FirebaseError && error.code === 'storage/object-not-found';
+
+const useSyncAnalysisOgImage = () => {
   const { storage } = useFirebase();
   const { generateOgImage } = useAnalysisOgImage();
 
   return useCallback(
-    (params: SyncAnalysisOgImageParams) => {
-      void (async () => {
-        try {
-          if (params.allCharacterResult) {
-            const ogImageDataUrl = await generateOgImage(params.allCharacterResult, params.title);
-            await uploadAnalysisOgImageToStorage(storage, params.id, ogImageDataUrl, {
-              ownerUid: params.ownerUid,
-              visibilityLevel: params.visibilityLevel,
-            });
-            return;
-          }
+    async (params: SyncAnalysisOgImageParams) => {
+      if (params.allCharacterResult) {
+        const ogImageDataUrl = await generateOgImage(params.allCharacterResult, params.title);
+        await uploadAnalysisOgImageToStorage(storage, params.id, ogImageDataUrl, {
+          ownerUid: params.ownerUid,
+          visibilityLevel: params.visibilityLevel,
+        });
+        return;
+      }
 
-          await updateAnalysisOgImageMetadataInStorage(storage, params.id, {
-            ownerUid: params.ownerUid,
-            visibilityLevel: params.visibilityLevel,
-          });
-        } catch (error) {
-          console.error('Failed to sync analysis OG image in background', error);
-        }
-      })();
+      try {
+        await updateAnalysisOgImageMetadataInStorage(storage, params.id, {
+          ownerUid: params.ownerUid,
+          visibilityLevel: params.visibilityLevel,
+        });
+      } catch (error) {
+        if (!isStorageObjectNotFound(error)) throw error;
+      }
     },
     [generateOgImage, storage],
   );
@@ -83,7 +85,7 @@ const useSyncAnalysisOgImageInBackground = () => {
 export const useSaveAnalysis = () => {
   const { firestore, storage } = useFirebase();
   const [saving, setSaving] = useState(false);
-  const syncAnalysisOgImageInBackground = useSyncAnalysisOgImageInBackground();
+  const syncAnalysisOgImage = useSyncAnalysisOgImage();
   const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();
 
   const saveAnalysis = useCallback(
@@ -149,20 +151,22 @@ export const useSaveAnalysis = () => {
         try {
           await batch.commit();
         } catch (error) {
-          // なるべく storage と firestore で同期を取る
-          deleteAnalysisRecordsFromStorage(storage, payload.ownerUid, newDoc.id).catch((err) => {
-            console.error('Failed to delete analysis assets from storage', err);
-          });
+          try {
+            await deleteAnalysisRecordsFromStorage(storage, payload.ownerUid, newDoc.id);
+          } catch (cleanupError) {
+            throw new AggregateError([error, cleanupError], 'Failed to save analysis and clean up its records');
+          }
           throw error;
         }
 
-        syncAnalysisOgImageInBackground({
+        // OG 画像は解析本体から再生成できる派生データなので、失敗しても保存自体は取り消さない。
+        void syncAnalysisOgImage({
           id: newDoc.id,
           title: payload.title,
           ownerUid: payload.ownerUid,
           visibilityLevel: payload.visibilityLevel,
           allCharacterResult,
-        });
+        }).catch((error) => console.error('Failed to sync analysis OG image in background', error));
 
         invalidatePublicAnalysesCache();
 
@@ -171,7 +175,7 @@ export const useSaveAnalysis = () => {
         setSaving(false);
       }
     },
-    [firestore, invalidatePublicAnalysesCache, storage, syncAnalysisOgImageInBackground],
+    [firestore, invalidatePublicAnalysesCache, storage, syncAnalysisOgImage],
   );
 
   return { saveAnalysis, saving };
@@ -187,7 +191,7 @@ export type UpdateAnalysisPayload = Partial<{
 export const useUpdateAnalysis = () => {
   const { firestore, storage } = useFirebase();
   const [updating, setUpdating] = useState(false);
-  const syncAnalysisOgImageInBackground = useSyncAnalysisOgImageInBackground();
+  const syncAnalysisOgImage = useSyncAnalysisOgImage();
   const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();
 
   const updateAnalysis = useCallback(
@@ -221,47 +225,58 @@ export const useUpdateAnalysis = () => {
           visibilityLevel: updates.visibilityLevel ?? previousMetadata.visibilityLevel,
           showRecordDetails: updates.showRecordDetails ?? previousMetadata.showRecordDetails,
         };
+        const closeRecordsBeforeFirestore =
+          shouldSyncAnalysisRecordsMetadata &&
+          shouldCloseAnalysisRecordsBeforeFirestore(previousMetadata, nextMetadata);
+        const closeOgImageBeforeFirestore =
+          updates.visibilityLevel === 'private' && beforeAnalysis.visibilityLevel !== 'private';
 
-        if (shouldSyncAnalysisRecordsMetadata) {
+        if (closeRecordsBeforeFirestore) {
           await updateAnalysisRecordsMetadataInStorage(storage, beforeAnalysis.ownerUid, id, nextMetadata);
         }
 
-        try {
-          await updateDoc(analysisRef, {
-            ...updates,
-            updatedAt: serverTimestamp(),
+        if (closeOgImageBeforeFirestore) {
+          await syncAnalysisOgImage({
+            id,
+            title: updates.title ?? beforeAnalysis.title,
+            ownerUid: beforeAnalysis.ownerUid,
+            visibilityLevel: nextMetadata.visibilityLevel,
           });
-        } catch (error) {
-          if (shouldSyncAnalysisRecordsMetadata) {
-            await updateAnalysisRecordsMetadataInStorage(storage, beforeAnalysis.ownerUid, id, previousMetadata);
-          }
+        }
 
-          throw error;
+        // Firestore と Storage は同一トランザクションにできないため、公開範囲が広がらない順序を優先する。
+        await updateDoc(analysisRef, {
+          ...updates,
+          updatedAt: serverTimestamp(),
+        });
+
+        if (shouldSyncAnalysisRecordsMetadata && !closeRecordsBeforeFirestore) {
+          await updateAnalysisRecordsMetadataInStorage(storage, beforeAnalysis.ownerUid, id, nextMetadata);
         }
 
         invalidatePublicAnalysesCache();
 
         if (shouldSyncAnalysisOgImage) {
           const allCharacterResult = beforeAnalysis.characterResults.find((result) => result.id === ALL_CHARACTER_ID);
-          if (allCharacterResult === undefined) {
-            console.error('All character result not found, skipping OG image sync');
-            return;
-          }
+          if (allCharacterResult === undefined) throw new Error('All character result not found');
           const shouldRegenerateOgImage = updates.title !== undefined && updates.title.trim() !== beforeAnalysis.title;
 
-          syncAnalysisOgImageInBackground({
-            id,
-            title: updates.title ?? beforeAnalysis.title,
-            ownerUid: beforeAnalysis.ownerUid,
-            visibilityLevel: nextMetadata.visibilityLevel,
-            allCharacterResult: shouldRegenerateOgImage ? allCharacterResult : undefined,
-          });
+          if (!closeOgImageBeforeFirestore || shouldRegenerateOgImage) {
+            // タイトル変更時の再生成は派生データの更新なので、編集結果を巻き戻さない。
+            void syncAnalysisOgImage({
+              id,
+              title: updates.title ?? beforeAnalysis.title,
+              ownerUid: beforeAnalysis.ownerUid,
+              visibilityLevel: nextMetadata.visibilityLevel,
+              allCharacterResult: shouldRegenerateOgImage ? allCharacterResult : undefined,
+            }).catch((error) => console.error('Failed to sync analysis OG image in background', error));
+          }
         }
       } finally {
         setUpdating(false);
       }
     },
-    [firestore, invalidatePublicAnalysesCache, storage, syncAnalysisOgImageInBackground],
+    [firestore, invalidatePublicAnalysesCache, storage, syncAnalysisOgImage],
   );
 
   return { updateAnalysis, updating };
@@ -279,6 +294,19 @@ export const useDeleteAnalysis = () => {
 
       setDeleting(true);
       try {
+        // Firestore と Storage は同一トランザクションにできないため、公開データを残さないよう Storage を先に削除する。
+        const cleanupResults = await Promise.allSettled([
+          deleteAnalysisRecordsFromStorage(storage, authUser.uid, id),
+          deleteAnalysisOgImageFromStorage(storage, id),
+        ]);
+        const cleanupErrors = cleanupResults.flatMap((result) => {
+          if (result.status === 'fulfilled' || isStorageObjectNotFound(result.reason)) return [];
+          return [result.reason];
+        });
+        if (cleanupErrors.length > 0) {
+          throw new AggregateError(cleanupErrors, 'Failed to delete analysis assets');
+        }
+
         const batch = writeBatch(firestore);
         const analysisRef = doc(firestore, COLLECTIONS.analyses, id);
         batch.delete(analysisRef);
@@ -295,15 +323,6 @@ export const useDeleteAnalysis = () => {
         );
 
         await batch.commit();
-
-        await Promise.allSettled([
-          deleteAnalysisRecordsFromStorage(storage, authUser.uid, id).catch((err) => {
-            console.error('Failed to delete analysis records from storage', err);
-          }),
-          deleteAnalysisOgImageFromStorage(storage, id).catch((err) => {
-            console.error('Failed to delete analysis OG image from storage', err);
-          }),
-        ]);
 
         invalidatePublicAnalysesCache();
       } finally {

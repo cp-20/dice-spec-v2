@@ -30,6 +30,7 @@ service cloud.firestore {
         'createdAt',
         'updatedAt',
         'stripeCustomerId',
+        'stripeSubscriptionId',
         'analysisCount',
         'analysisCountSyncAnalysisId',
       ];
@@ -52,6 +53,7 @@ service cloud.firestore {
         && data.createdAt is timestamp
         && data.updatedAt is timestamp
         && data.stripeCustomerId is string
+        && (!('stripeSubscriptionId' in data) || data.stripeSubscriptionId is string)
         && (!('analysisCount' in data) || isValidAnalysisCount(data.analysisCount))
         && (!('analysisCountSyncAnalysisId' in data)
           || data.analysisCountSyncAnalysisId == null
@@ -107,10 +109,16 @@ service cloud.firestore {
         && isVisibilityLevel(data.visibilityLevel)
         && data.showRecordDetails is bool
         && data.characterResults is list
-          && (data.sessionDate is timestamp || data.sessionDate == null)
+        && data.characterResults.size() > 0
+        && data.characterResults[0] is map
+        && data.characterResults[0].id == 'all'
+        && data.characterResults[0].summary is map
+        && data.characterResults[0].summary.deviationScore is number
+        && data.sessionDate is timestamp
         && data.createdAt is timestamp
         && data.updatedAt is timestamp
         && data.primaryDeviationScore is number
+        && data.primaryDeviationScore == data.characterResults[0].summary.deviationScore
         && data.owner is map
         && isValidPublicOwner(data.owner)
         && isValidPublicOwnerByUserDoc(data.owner, data.ownerUid);
@@ -147,13 +155,19 @@ service cloud.firestore {
           && request.resource.data.analysisCountSyncAnalysisId is string)
           ? request.resource.data.analysisCountSyncAnalysisId
           : '';
+      let analysisPath = /databases/$(database)/documents/analyses/$(syncAnalysisId);
+      let analysisCreated = !exists(analysisPath) && existsAfter(analysisPath);
+      let analysisDeleted = exists(analysisPath) && !existsAfter(analysisPath);
 
       return affectedKeys().hasOnly(['analysisCount', 'analysisCountSyncAnalysisId', 'updatedAt'])
         && isValidAnalysisCount(nextCount)
         && syncAnalysisId is string
         && syncAnalysisId.size() > 0
         && request.resource.data.updatedAt is timestamp
-        && (nextCount == prevCount + 1 || nextCount == prevCount - 1);
+        && (
+          (nextCount == prevCount + 1 && analysisCreated)
+          || (nextCount == prevCount - 1 && analysisDeleted)
+        );
     }
 
     function isAnalysisMetaUpdateOnly() {
@@ -161,7 +175,7 @@ service cloud.firestore {
         && request.resource.data.title is string
         && isVisibilityLevel(request.resource.data.visibilityLevel)
         && request.resource.data.showRecordDetails is bool
-        && (request.resource.data.sessionDate is timestamp || request.resource.data.sessionDate == null)
+        && request.resource.data.sessionDate is timestamp
         && request.resource.data.updatedAt is timestamp;
     }
 
@@ -222,9 +236,11 @@ service cloud.firestore {
 
       allow create: if isSelf(userId)
         && isValidUserDocument(request.resource.data)
+        && request.resource.data.id == userId
         && request.resource.data.plan == 'free'
         && request.resource.data.analysisCount == 0
         && request.resource.data.stripeCustomerId == ''
+        && (!('stripeSubscriptionId' in request.resource.data) || request.resource.data.stripeSubscriptionId == '')
         && request.resource.data.analysisCountSyncAnalysisId == null;
 
       allow update: if isSelf(userId)

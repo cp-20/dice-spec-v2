@@ -47,7 +47,7 @@ service firebase.storage {
       return isAnalysisOgImageOwner(metadata)
         && isValidVisibilityLevel(metadata.visibilityLevel)
         && request.resource.size < 1 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+        && request.resource.contentType == 'image/png';
     }
 
     function canUpdateAnalysisOgImage() {
@@ -57,7 +57,7 @@ service firebase.storage {
         && currentMetadata.ownerUid == nextMetadata.ownerUid
         && isValidVisibilityLevel(nextMetadata.visibilityLevel)
         && request.resource.size < 1 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+        && request.resource.contentType == 'image/png';
     }
 
     match /avatars/{uid}/{allPaths=**} {
@@ -72,17 +72,22 @@ service firebase.storage {
     match /shared-images/{scope}/{imageId} {
       allow get: if true;
       allow list: if false;
-      allow create: if request.resource.size < 1 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+      allow create: if isSignedIn()
+        && request.resource.size < 1 * 1024 * 1024
+        && request.resource.contentType == 'image/png';
       allow update, delete: if false;
     }
 
     match /analysis-records/{ownerUid}/{analysisId} {
+      // 名前付き Firestore DB は Storage Rules から参照できないため、解析 ID の存在確認はできない。
+      // 所有者の認証、厳格なメタデータ、サイズ上限で不正利用を抑止する。
       allow get: if canReadAnalysisRecords(ownerUid);
       allow list: if false;
       allow create, update: if isSelf(ownerUid)
-        && request.resource.size < 50 * 1024 * 1024
-        && request.resource.contentType.matches('application/json.*');
+        && isValidVisibilityLevel(request.resource.metadata.visibilityLevel)
+        && (request.resource.metadata.showRecordDetails == 'true' || request.resource.metadata.showRecordDetails == 'false')
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('^application/json(;.*)?$');
       allow delete: if isSelf(ownerUid);
     }
 

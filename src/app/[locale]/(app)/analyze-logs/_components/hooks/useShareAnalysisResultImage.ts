@@ -7,17 +7,19 @@ import { useToast } from '@/shared/components/ui/use-toast';
 import { SHARED_IMAGE_SCOPES } from '@/shared/lib/firebase/storage/paths';
 import { uploadSharedImageToStorage } from '@/shared/lib/firebase/storage/sharedImages';
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
+import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { encodeOgImageId } from '../og';
+import { sharingImageDataUrlAtom } from './shareAnalysisImageAtoms';
 import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
 import { useCharacterSelect } from './useCharacterSelect';
-import { sharingImageDataUrlAtom } from './useShareAnalysisResult';
 
 export const useShareAnalysisResultImage = () => {
   const [isSharingImage, startTransition] = useTransition();
   const { storage } = useFirebase();
+  const { authUser } = useFirebaseAuth();
   const { toast } = useToast();
   const { character } = useCharacterSelect();
   const result = useCharacterLogAnalysis(character);
@@ -42,7 +44,7 @@ export const useShareAnalysisResultImage = () => {
         }),
       );
 
-      if (sharingImageDataUrl === null) {
+      if (sharingImageDataUrl === null || authUser === null) {
         sendEvent('shareImage', '');
         const url = encodeURIComponent('https://dicespec.app/analyze-logs');
         const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
@@ -78,7 +80,7 @@ export const useShareAnalysisResultImage = () => {
         }
       });
     },
-    [result, sendEvent, sharingImageDataUrl, storage, toast],
+    [authUser, result, sendEvent, sharingImageDataUrl, storage, toast],
   );
 
   return { isSharingImage, shareImage };

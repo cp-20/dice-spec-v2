@@ -94,6 +94,7 @@ const userDoc = (overrides: Record<string, unknown> = {}) => ({
   createdAt: now,
   updatedAt: now,
   stripeCustomerId: '',
+  stripeSubscriptionId: '',
   analysisCount: 0,
   analysisCountSyncAnalysisId: null,
   ...overrides,
@@ -116,7 +117,14 @@ const analysisDoc = (analysisId: string, ownerUid: string, overrides: Record<str
   systemId: 'CoC7th',
   visibilityLevel: 'private',
   showRecordDetails: false,
-  characterResults: [],
+  characterResults: [
+    {
+      id: 'all',
+      summary: {
+        deviationScore: 0,
+      },
+    },
+  ],
   sessionDate: now,
   createdAt: now,
   updatedAt: now,
@@ -253,6 +261,12 @@ describe('Firestore セキュリティルール', () => {
     await assertSucceeds(getDoc(doc(ownerDb, 'users/user_1')));
   });
 
+  test('users: ドキュメント ID と data.id が一致しない作成は拒否される', async () => {
+    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
+
+    await assertFails(setDoc(doc(ownerDb, 'users/user_1'), userDoc({ id: 'other_user' })));
+  });
+
   test('users: 他人のユーザードキュメントは取得・更新できない', async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const adminDb = context.firestore();
@@ -278,7 +292,7 @@ describe('Firestore セキュリティルール', () => {
     );
   });
 
-  test('users: 本人でも plan と stripeCustomerId は直接変更できない', async () => {
+  test('users: 本人でも plan と Stripe の ID は直接変更できない', async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const adminDb = context.firestore();
       await setDoc(doc(adminDb, 'users/user_1'), userDoc());
@@ -296,6 +310,13 @@ describe('Firestore セキュリティルール', () => {
     await assertFails(
       updateDoc(doc(ownerDb, 'users/user_1'), {
         stripeCustomerId: 'cus_hacked',
+        updatedAt: Timestamp.fromDate(new Date('2026-03-18T01:00:00.000Z')),
+      }),
+    );
+
+    await assertFails(
+      updateDoc(doc(ownerDb, 'users/user_1'), {
+        stripeSubscriptionId: 'sub_hacked',
         updatedAt: Timestamp.fromDate(new Date('2026-03-18T01:00:00.000Z')),
       }),
     );
@@ -367,6 +388,35 @@ describe('Firestore セキュリティルール', () => {
     await assertFails(setDoc(doc(ownerDb, 'analyses/a1'), analysisDoc('a1', 'user_1')));
   });
 
+  test('analyses: 解析を削除せず analysisCount だけ減らす更新は拒否される', async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const adminDb = context.firestore();
+      await setDoc(doc(adminDb, 'users/user_1'), userDoc({ analysisCount: 1 }));
+      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
+    });
+
+    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
+
+    await assertFails(
+      updateDoc(doc(ownerDb, 'users/user_1'), {
+        analysisCount: 0,
+        analysisCountSyncAnalysisId: 'a1',
+        updatedAt: Timestamp.fromDate(new Date('2026-03-18T03:00:00.000Z')),
+      }),
+    );
+  });
+
+  test('analyses: 全体集計がない解析ドキュメントの作成は拒否される', async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const adminDb = context.firestore();
+      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
+    });
+
+    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
+
+    await assertFails(saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1', { characterResults: [] }));
+  });
+
   test('analyses: 削除時にカウンタ同期がなければ拒否される', async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const adminDb = context.firestore();
@@ -430,8 +480,15 @@ describe('Firestore セキュリティルール', () => {
         title: 'Updated title',
         visibilityLevel: 'public',
         showRecordDetails: true,
-        sessionDate: null,
+        sessionDate: Timestamp.fromDate(new Date('2026-03-17T00:00:00.000Z')),
         updatedAt: Timestamp.fromDate(new Date('2026-03-18T02:00:00.000Z')),
+      }),
+    );
+
+    await assertFails(
+      updateDoc(doc(ownerDb, 'analyses/a1'), {
+        sessionDate: null,
+        updatedAt: Timestamp.fromDate(new Date('2026-03-18T02:10:00.000Z')),
       }),
     );
 
@@ -659,6 +716,17 @@ describe('Firestore セキュリティルール', () => {
     );
   });
 
+  test('storage/analysis-records: 公開設定 metadata がない書き込みは拒否される', async () => {
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+
+    await assertFails(
+      ownerStorage
+        .ref('analysis-records/owner/a1')
+        .putString('{"characterRecords":[]}', 'raw', { contentType: 'application/json' })
+        .then(() => undefined),
+    );
+  });
+
   test('storage/analysis-records: metadata に visibilityLevel=public + showRecordDetails=true が埋め込まれている場合、他ユーザーも読み取りできる', async () => {
     const analysisId = 'storage_public_detail_true';
     const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
@@ -817,6 +885,30 @@ describe('Firestore セキュリティルール', () => {
 
     const anonStorage = testEnv.unauthenticatedContext().storage(STORAGE_BUCKET);
     await assertFails(anonStorage.ref(`analysis-og-images/${analysisId}`).getMetadata());
+  });
+
+  test('storage/shared-images: 認証済みユーザーだけが PNG を書き込める', async () => {
+    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+    const anonStorage = testEnv.unauthenticatedContext().storage(STORAGE_BUCKET);
+
+    await assertSucceeds(
+      ownerStorage
+        .ref('shared-images/log-analysis/authenticated.png')
+        .putString('data:image/png;base64,AA==', 'data_url', { contentType: 'image/png' })
+        .then(() => undefined),
+    );
+    await assertFails(
+      anonStorage
+        .ref('shared-images/log-analysis/anonymous.png')
+        .putString('data:image/png;base64,AA==', 'data_url', { contentType: 'image/png' })
+        .then(() => undefined),
+    );
+    await assertFails(
+      ownerStorage
+        .ref('shared-images/log-analysis/vector.svg')
+        .putString('<svg></svg>', 'raw', { contentType: 'image/svg+xml' })
+        .then(() => undefined),
+    );
   });
 
   test('storage/avatars: 所有者は 1MiB 以下の JPEG/PNG/WebP を書き込める', async () => {

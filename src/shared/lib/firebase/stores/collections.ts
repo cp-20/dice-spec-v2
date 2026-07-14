@@ -1,11 +1,12 @@
 import { type FieldValue, Timestamp } from 'firebase/firestore';
 import * as v from 'valibot';
 
-import type {
-  DiceResultForCharacter,
-  System,
-} from '@/app/[locale]/(app)/analyze-logs/_components/hooks/ccfoliaLogAnalysis';
-import type { MessageParserResult } from '@/app/[locale]/(app)/analyze-logs/_components/hooks/ccfoliaLogAnalysis/messageParser';
+import {
+  ALL_CHARACTER_ID,
+  type DiceResultForCharacter,
+  type MessageParserResult,
+  type System,
+} from '@/features/log-analysis/model';
 
 export const COLLECTIONS = {
   users: 'users',
@@ -14,11 +15,9 @@ export const COLLECTIONS = {
 
 // userStore
 
-export const userPlanSchema = v.union([v.literal('free'), v.literal('pro')]);
+const userPlanSchema = v.union([v.literal('free'), v.literal('pro')]);
 
-export type UserPlan = v.InferOutput<typeof userPlanSchema>;
-
-export const publicUserSchema = v.object({
+const publicUserSchema = v.object({
   id: v.string(),
   name: v.string(),
   avatarUrl: v.optional(v.string()),
@@ -32,6 +31,7 @@ export type PublicUser = v.InferOutput<typeof publicUserSchema>;
 export const userStoreSchema = v.object({
   ...publicUserSchema.entries,
   stripeCustomerId: v.string(),
+  stripeSubscriptionId: v.optional(v.string(), ''),
   analysisCount: v.number(),
   analysisCountSyncAnalysisId: v.nullable(v.string()),
 });
@@ -45,11 +45,7 @@ export type NewUserDocument = Omit<UserDocument, 'createdAt' | 'updatedAt'> & {
 
 // analysesStore
 
-export const analysisVisibilityLevelSchema = v.union([
-  v.literal('private'),
-  v.literal('unlisted'),
-  v.literal('public'),
-]);
+const analysisVisibilityLevelSchema = v.union([v.literal('private'), v.literal('unlisted'), v.literal('public')]);
 
 export type AnalysisVisibilityLevel = v.InferOutput<typeof analysisVisibilityLevelSchema>;
 
@@ -84,31 +80,44 @@ const analysisSystemSchema = v.union([
   v.literal('nechronica'),
 ]);
 
-export const analysesStoreSchema = v.object({
-  id: v.string(),
-  title: v.string(),
-  ownerUid: v.string(),
-  systemId: analysisSystemSchema,
-  visibilityLevel: analysisVisibilityLevelSchema,
-  showRecordDetails: v.boolean(),
-  characterResults: v.array(characterResultSchema),
-  sessionDate: v.instance(Timestamp),
-  createdAt: v.instance(Timestamp),
-  updatedAt: v.instance(Timestamp),
-  // ALL_CHARACTER_ID の偏差値
-  primaryDeviationScore: v.number(),
-  // relation
-  owner: publicUserSchema,
-});
+export const analysesStoreSchema = v.pipe(
+  v.object({
+    id: v.string(),
+    title: v.string(),
+    ownerUid: v.string(),
+    systemId: analysisSystemSchema,
+    visibilityLevel: analysisVisibilityLevelSchema,
+    showRecordDetails: v.boolean(),
+    characterResults: v.pipe(v.array(characterResultSchema), v.minLength(1)),
+    sessionDate: v.instance(Timestamp),
+    createdAt: v.instance(Timestamp),
+    updatedAt: v.instance(Timestamp),
+    // ALL_CHARACTER_ID の偏差値
+    primaryDeviationScore: v.number(),
+    // relation
+    owner: publicUserSchema,
+  }),
+  v.check(
+    (analysis) =>
+      analysis.characterResults[0]?.id === ALL_CHARACTER_ID &&
+      analysis.characterResults[0].summary.deviationScore === analysis.primaryDeviationScore,
+    '全体集計が解析結果の先頭に必要です',
+  ),
+);
 
 export type AnalysisDocument = v.InferOutput<typeof analysesStoreSchema>;
+
+export const parseAnalysisDocument = (data: unknown): AnalysisDocument | null => {
+  const result = v.safeParse(analysesStoreSchema, data);
+  return result.success ? result.output : null;
+};
 
 export type NewAnalysisDocument = Omit<AnalysisDocument, 'createdAt' | 'updatedAt'> & {
   createdAt: FieldValue;
   updatedAt: FieldValue;
 };
 
-export type AssertEqual<T, Expected> = T extends Expected ? (Expected extends T ? unknown : never) : never;
+type AssertEqual<T, Expected> = T extends Expected ? (Expected extends T ? unknown : never) : never;
 
 const _testAnalysisSystemType: AssertEqual<AnalysisDocument['systemId'], System> = true;
 
