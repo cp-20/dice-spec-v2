@@ -1,4 +1,4 @@
-export type ProbabilityRow = {
+type ProbabilityRow = {
   label: string;
   probability: number;
 };

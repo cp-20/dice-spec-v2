@@ -10,6 +10,7 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     loader: 'custom',
+    // Next.js が設定ファイル経由で読み込むため、静的解析では未使用に見える。
     loaderFile: './src/image-loader.ts',
   },
   redirects: async () => [

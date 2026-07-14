@@ -31,7 +31,7 @@ type SkillSummary = {
   successRate: number;
 };
 
-export const summarizeBySkill = (results: LogResult[]): SkillSummary[] => {
+const summarizeBySkill = (results: LogResult[]): SkillSummary[] => {
   const map = new Map<string, Omit<SkillSummary, 'successRate'>>();
   const untaggedSkillName = t('analyze-logs:skill-summary.untagged');
 

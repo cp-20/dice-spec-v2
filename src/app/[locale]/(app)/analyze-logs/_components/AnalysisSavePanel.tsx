@@ -25,7 +25,7 @@ import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 import { useLogAnalysis } from './hooks/useLogAnalysis';
 
-export const SAVE_ANALYSIS_LIMIT_FREE = 3;
+const SAVE_ANALYSIS_LIMIT_FREE = 3;
 
 const formatDate = (date: Date): string => {
   const year = date.getFullYear();

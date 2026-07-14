@@ -46,27 +46,6 @@ export const uploadTextToStorage = async (
   return result;
 };
 
-export const uploadBufferFromUrlToStorage = async (
-  storage: FirebaseStorage,
-  path: string,
-  sourceUrl: string,
-  metadata?: SettableMetadata,
-): Promise<UploadResult> => {
-  const response = await fetch(sourceUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch buffer: ${response.status}`);
-  }
-
-  const buffer = await response.arrayBuffer();
-  const metadataWithContentType = {
-    contentType: response.headers.get('Content-Type') || undefined,
-    ...metadata,
-  };
-  const result = await uploadBufferToStorage(storage, path, buffer, metadataWithContentType);
-
-  return result;
-};
-
 export const downloadTextFromStorage = async (storage: FirebaseStorage, path: string): Promise<string> => {
   const storageRef = ref(storage, path);
   const bytes = await getBytes(storageRef);

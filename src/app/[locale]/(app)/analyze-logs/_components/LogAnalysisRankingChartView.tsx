@@ -1,5 +1,7 @@
 'use client';
 
+/* oxlint-disable jsx_a11y/prefer-tag-over-role -- SVG 全体を一つの画像として読み上げる */
+
 import { t } from 'i18next';
 import type { FC } from 'react';
 

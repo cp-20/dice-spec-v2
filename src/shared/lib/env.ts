@@ -74,7 +74,7 @@ const optionalEnv = <S extends EnvScope>(key: EnvKeyMap[S], scope: S): string | 
   return readEnv(key, scope);
 };
 
-export const envVariableCatalog = {
+const envVariableCatalog = {
   build: ['ANALYZE', 'NODE_ENV', 'SENTRY_AUTH_TOKEN', 'CI'],
   runtime: [
     'APP_ORIGIN',

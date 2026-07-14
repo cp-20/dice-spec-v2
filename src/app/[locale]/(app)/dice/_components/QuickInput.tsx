@@ -47,8 +47,13 @@ export const QuickInput: FC = () => {
           <Trans
             i18nKey="dice:advanced.quick-input.migration-announcement"
             components={{
-              // oxlint-disable-next-line jsx_a11y/anchor-has-content 後で children が渡される
-              l: <a href="https://dicespec.vercel.app/dice?keep-old=true" className="underline hover:opacity-70" />,
+              l: (
+                <a
+                  href="https://dicespec.vercel.app/dice?keep-old=true"
+                  aria-label="Dice Spec v1"
+                  className="underline hover:opacity-70"
+                />
+              ),
             }}
           />
         </p>

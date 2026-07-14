@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 
 import { ALL_CHARACTER_ID } from '../constants';
 
-export const logAnalysisCharacterAtom = atom<string>(ALL_CHARACTER_ID);
+const logAnalysisCharacterAtom = atom<string>(ALL_CHARACTER_ID);
 
 export const useCharacterSelect = () => {
   const [character, setCharacter] = useAtom(logAnalysisCharacterAtom);
