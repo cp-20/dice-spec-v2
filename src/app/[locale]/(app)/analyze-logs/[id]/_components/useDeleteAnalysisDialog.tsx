@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shared/components/ui/dialog';
+import { useToast } from '@/shared/components/ui/use-toast';
 import { useDeleteAnalysis } from '@/shared/lib/firebase/stores/analyses/mutations';
 
 import { analysisIdAtom } from './atoms';
@@ -24,11 +25,17 @@ export const useDeleteAnalysisDialog = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { deleteAnalysis, deleting } = useDeleteAnalysis();
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleDelete = async () => {
     if (!analysisId) return;
-    await deleteAnalysis(analysisId);
-    router.push(t('link', { href: '/analyze-logs/list' }));
+    try {
+      await deleteAnalysis(analysisId);
+      router.push(t('link', { href: '/analyze-logs/list' }));
+    } catch (error) {
+      console.error(error);
+      toast({ title: t('analyze-logs:delete-dialog.failed'), variant: 'destructive' });
+    }
   };
 
   const open = () => setIsOpen(true);

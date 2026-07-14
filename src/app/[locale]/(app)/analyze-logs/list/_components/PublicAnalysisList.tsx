@@ -12,17 +12,17 @@ const usePublicAnalysesList = () => {
   const selectedSystem = useAtomValue(selectedSystemAtom);
   const sortOption = useAtomValue(sortOptionAtom);
 
-  const { analyses, loading, hasMore, loadMore } = usePublicAnalyses({
+  const { analyses, loading, hasMore, error, loadMore, retry } = usePublicAnalyses({
     systemId: selectedSystem,
     sortBy: sortOption,
     pageSize: 9,
   });
 
-  return { analyses, loading, hasMore, loadMore };
+  return { analyses, loading, hasMore, error, loadMore, retry };
 };
 
 export const PublicAnalysisList: FC = () => {
-  const { analyses, loading, hasMore, loadMore } = usePublicAnalysesList();
+  const { analyses, loading, hasMore, error, loadMore, retry } = usePublicAnalysesList();
   const [lastSettledState, setLastSettledState] = useState<{
     analyses: typeof analyses;
     hasMore: boolean;
@@ -41,6 +41,17 @@ export const PublicAnalysisList: FC = () => {
 
   if (loading && visibleAnalyses.length === 0) {
     return <div className="text-slate-500 text-sm py-8 text-center">{t('analyze-logs:list.state.loading')}</div>;
+  }
+
+  if (error && visibleAnalyses.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-8 text-center">
+        <div className="text-red-600 text-sm">{t('analyze-logs:list.state.failed')}</div>
+        <Button onClick={retry} variant="outline" size="sm">
+          {t('analyze-logs:list.retry')}
+        </Button>
+      </div>
+    );
   }
 
   if (visibleAnalyses.length === 0) {

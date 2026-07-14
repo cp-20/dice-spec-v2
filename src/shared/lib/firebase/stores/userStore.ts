@@ -3,7 +3,6 @@ import { doc, onSnapshot, serverTimestamp, setDoc, writeBatch } from 'firebase/f
 import { t } from 'i18next';
 import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
-import { atomFamily } from 'jotai-family';
 import * as v from 'valibot';
 
 import { createCustomer } from '@/features/stripe/api';
@@ -13,7 +12,8 @@ import { authUserAtom, authUserLoadingAtom, useFirebaseAuth } from '@/shared/lib
 
 import { uploadAvatarFromUrlToStorage } from '../storage/avatars';
 import { myAnalysesAtom } from './analyses/userAnalyses';
-import { COLLECTIONS, type NewUserDocument, type PublicUser, type UserDocument, userStoreSchema } from './collections';
+import { COLLECTIONS, type NewUserDocument, type UserDocument, userStoreSchema } from './collections';
+import { internalUserFamilyAtom } from './userAtoms';
 
 const internalMeLoadingAtom = atom(true);
 
@@ -99,8 +99,8 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
   return unsubscribe;
 });
 
-export const meAtom = atom((get) => get(internalMeAtom));
-export const meLoadingAtom = atom((get) => get(internalMeLoadingAtom));
+const meAtom = atom((get) => get(internalMeAtom));
+const meLoadingAtom = atom((get) => get(internalMeLoadingAtom));
 
 export const useMeStore = () => {
   const { authUser } = useFirebaseAuth();
@@ -153,16 +153,8 @@ export const useMeStore = () => {
   return { me, meLoading, updateName, updateAvatarUrl };
 };
 
-// analyses.owner から取得される
-// セキュリティ上の理由から直接取得できないため、getDoc 等はしない
-export const internalUserFamilyAtom = atomFamily((_uid: string | null | undefined) => atom<PublicUser | null>(null));
-
-export const userFamilyAtom = atomFamily((uid: string | null | undefined) =>
-  atom((get) => get(internalUserFamilyAtom(uid))),
-);
-
 export const useUserStore = (uid: string | null | undefined) => {
-  const userStore = useAtomValue(userFamilyAtom(uid));
+  const userStore = useAtomValue(internalUserFamilyAtom(uid));
 
   return userStore;
 };

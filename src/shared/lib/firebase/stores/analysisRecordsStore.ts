@@ -1,27 +1,27 @@
 import { doc, onSnapshot } from 'firebase/firestore';
-import { atom, useAtomValue } from 'jotai';
+import { atom } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
-import * as v from 'valibot';
 
 import { downloadAnalysisRecordsFromStorage } from '@/shared/lib/firebase/storage/analysisRecords';
 
 import { useFirebase } from '../useFirebase';
 import { authUserAtom } from '../useFirebaseAuth';
-import { type AnalysisRecordsDocument, analysesStoreSchema, COLLECTIONS } from './collections';
+import { type AnalysisRecordsDocument, COLLECTIONS, parseAnalysisDocument } from './collections';
 
 type AnalysisRecordsAtom = {
   records: AnalysisRecordsDocument | null;
   loading: boolean;
+  error: Error | null;
 };
 
 const internalAnalysisRecordsAtomFamily = atomFamily((id: string | undefined) =>
-  withAtomEffect(atom<AnalysisRecordsAtom>({ records: null, loading: true }), (get, set) => {
+  withAtomEffect(atom<AnalysisRecordsAtom>({ records: null, loading: true, error: null }), (get, set) => {
     const { firestore, storage } = useFirebase();
     const authUser = get(authUserAtom);
 
     if (!id) {
-      set(internalAnalysisRecordsAtomFamily(id), { records: null, loading: false });
+      set(internalAnalysisRecordsAtomFamily(id), { records: null, loading: false, error: null });
       return;
     }
 
@@ -36,31 +36,45 @@ const internalAnalysisRecordsAtomFamily = atomFamily((id: string | undefined) =>
         const currentSequence = ++sequence;
 
         if (!snap.exists()) {
-          set(internalAnalysisRecordsAtomFamily(id), { records: null, loading: false });
+          set(internalAnalysisRecordsAtomFamily(id), { records: null, loading: false, error: null });
           return;
         }
 
-        const analysis = v.parse(analysesStoreSchema, snap.data({ serverTimestamps: 'estimate' }));
+        const analysis = parseAnalysisDocument(snap.data({ serverTimestamps: 'estimate' }));
+        if (!analysis) {
+          set(internalAnalysisRecordsAtomFamily(id), {
+            records: null,
+            loading: false,
+            error: new Error('Invalid analysis document'),
+          });
+          return;
+        }
         const isOwner = authUser !== null && authUser.uid === analysis.ownerUid;
 
         const canViewRecords = (analysis.visibilityLevel !== 'private' && analysis.showRecordDetails) || isOwner;
         if (!canViewRecords) {
-          set(internalAnalysisRecordsAtomFamily(id), { records: null, loading: false });
+          set(internalAnalysisRecordsAtomFamily(id), { records: null, loading: false, error: null });
           return;
         }
 
-        set(internalAnalysisRecordsAtomFamily(id), (prev) => ({ ...prev, loading: true }));
-        const recordsDocument = await downloadAnalysisRecordsFromStorage(storage, analysis.ownerUid, analysis.id);
-
-        if (currentSequence !== sequence) return;
-        set(internalAnalysisRecordsAtomFamily(id), { records: recordsDocument, loading: false });
+        set(internalAnalysisRecordsAtomFamily(id), (prev) => ({ ...prev, loading: true, error: null }));
+        try {
+          const recordsDocument = await downloadAnalysisRecordsFromStorage(storage, analysis.ownerUid, analysis.id);
+          if (currentSequence !== sequence) return;
+          set(internalAnalysisRecordsAtomFamily(id), { records: recordsDocument, loading: false, error: null });
+        } catch (error) {
+          if (currentSequence !== sequence) return;
+          set(internalAnalysisRecordsAtomFamily(id), {
+            records: null,
+            loading: false,
+            error: error instanceof Error ? error : new Error('Failed to load analysis records'),
+          });
+        }
       },
       (err) => {
-        if (err.code === 'permission-denied' || err.code === 'not-found') {
-          set(internalAnalysisRecordsAtomFamily(id), { records: null, loading: false });
-        } else {
-          throw err;
-        }
+        const error =
+          err.code === 'permission-denied' || err.code === 'not-found' ? null : new Error(err.message, { cause: err });
+        set(internalAnalysisRecordsAtomFamily(id), { records: null, loading: false, error });
       },
     );
   }),
@@ -69,11 +83,5 @@ const internalAnalysisRecordsAtomFamily = atomFamily((id: string | undefined) =>
 export const analysisRecordsAtomFamily = atomFamily((id: string | undefined) =>
   atom((get) => get(internalAnalysisRecordsAtomFamily(id))),
 );
-
-export const useAnalysisRecordsById = (id: string | undefined) => {
-  const { records, loading } = useAtomValue(internalAnalysisRecordsAtomFamily(id));
-
-  return { records, loading };
-};
 
 // 保存・削除は analyses ドキュメントと同時に行う必要があるため、analysesStore 内で記述する

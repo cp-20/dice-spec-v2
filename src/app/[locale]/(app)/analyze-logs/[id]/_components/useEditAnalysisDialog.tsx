@@ -19,6 +19,7 @@ import {
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+import { useToast } from '@/shared/components/ui/use-toast';
 import { useUpdateAnalysis } from '@/shared/lib/firebase/stores/analyses/mutations';
 import type { AnalysisVisibilityLevel } from '@/shared/lib/firebase/stores/collections';
 
@@ -45,6 +46,7 @@ export const useEditAnalysisDialog = () => {
   const [showRecordDetails, setShowRecordDetails] = useState(false);
   const [sessionDate, setSessionDate] = useState('');
   const { updateAnalysis, updating } = useUpdateAnalysis();
+  const { toast } = useToast();
 
   const isValid = analysisId !== undefined && title.trim().length > 0;
 
@@ -61,13 +63,18 @@ export const useEditAnalysisDialog = () => {
 
   const handleSave = async () => {
     if (!isValid || !isDirty || loading || updating) return;
-    await updateAnalysis(analysisId, {
-      title: title.trim(),
-      visibilityLevel: visibility,
-      showRecordDetails: showRecordDetails,
-      sessionDate: Timestamp.fromDate(new Date(sessionDate)),
-    });
-    setIsOpen(false);
+    try {
+      await updateAnalysis(analysisId, {
+        title: title.trim(),
+        visibilityLevel: visibility,
+        showRecordDetails: showRecordDetails,
+        sessionDate: Timestamp.fromDate(new Date(sessionDate)),
+      });
+      setIsOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast({ title: t('analyze-logs:edit-dialog.failed'), variant: 'destructive' });
+    }
   };
 
   const open = () => {

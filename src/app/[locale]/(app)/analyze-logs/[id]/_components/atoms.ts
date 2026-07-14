@@ -48,15 +48,6 @@ export const systemNameAtom = atom((get) => {
 
 export const selectedCharacterIdAtom = atom<string>(ALL_CHARACTER_ID);
 
-export const selectedCharacterAtom = atom((get) => {
-  const { analysis } = get(currentAnalysisAtom);
-  const selectedCharacterId = get(selectedCharacterIdAtom);
-
-  if (analysis === null) return null;
-
-  return analysis.characterResults.find((c) => c.id === selectedCharacterId) ?? null;
-});
-
 export const selectedCharacterResultAtom = atom((get) => {
   const { analysis } = get(currentAnalysisAtom);
   const selectedCharacterId = get(selectedCharacterIdAtom);
@@ -83,4 +74,9 @@ export const currentAnalysisRecordsAtom = atom((get) => {
 
   const characterRecord = records.characterRecords.find((c) => c.characterId === characterId);
   return characterRecord?.records ?? null;
+});
+
+export const currentAnalysisRecordsStateAtom = atom((get) => {
+  const id = get(analysisIdAtom);
+  return get(analysisRecordsAtomFamily(id));
 });

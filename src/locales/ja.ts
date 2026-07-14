@@ -119,9 +119,11 @@ export const ja = {
       state: {
         loading: '読み込み中...',
         'no-results': '検索結果が見つかりませんでした',
+        failed: '解析結果を取得できませんでした',
         empty: '解析結果がありません',
       },
       'load-more': 'もっと見る',
+      retry: '再試行',
       card: {
         'deviation-score': 'ダイス偏差値',
       },
@@ -161,6 +163,8 @@ export const ja = {
       private: 'この解析は非公開です',
       'records-owner-only': '非公開になっています',
       'no-logs': 'ログは保存されていません',
+      'load-failed': '解析結果を読み込めませんでした',
+      'records-load-failed': 'ダイスログを読み込めませんでした',
     },
     'edit-dialog': {
       title: '解析結果を編集',
@@ -178,6 +182,7 @@ export const ja = {
       cancel: 'キャンセル',
       save: '保存',
       saving: '保存中',
+      failed: '解析結果を更新できませんでした',
     },
     'delete-dialog': {
       title: '解析結果を削除',
@@ -185,6 +190,7 @@ export const ja = {
       cancel: 'キャンセル',
       delete: '削除',
       deleting: '削除中',
+      failed: '解析結果を削除できませんでした',
     },
     'game-system-request': {
       label: '他ゲームシステム対応をリクエスト',

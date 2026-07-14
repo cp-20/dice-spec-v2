@@ -118,9 +118,11 @@ export const en = {
       state: {
         loading: 'Loading...',
         'no-results': 'No results found.',
+        failed: 'Failed to load analysis results.',
         empty: 'No analyses yet.',
       },
       'load-more': 'Load more',
+      retry: 'Retry',
       card: {
         'deviation-score': 'Dice Deviation Score',
       },
@@ -160,6 +162,8 @@ export const en = {
       private: 'This analysis is private.',
       'records-owner-only': 'This section is private.',
       'no-logs': 'No logs were saved.',
+      'load-failed': 'Failed to load the analysis.',
+      'records-load-failed': 'Failed to load the dice logs.',
     },
     'edit-dialog': {
       title: 'Edit analysis',
@@ -177,6 +181,7 @@ export const en = {
       cancel: 'Cancel',
       save: 'Save',
       saving: 'Saving',
+      failed: 'Failed to update the analysis.',
     },
     'delete-dialog': {
       title: 'Delete analysis',
@@ -184,6 +189,7 @@ export const en = {
       cancel: 'Cancel',
       delete: 'Delete',
       deleting: 'Deleting',
+      failed: 'Failed to delete the analysis.',
     },
     'game-system-request': {
       label: 'New Game System Request',

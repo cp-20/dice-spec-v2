@@ -20,7 +20,7 @@ import { CharacterStats } from './CharacterStats';
 
 const AnalyzeLogDetailPageClient: FC = () => {
   useAnalysisIdSync();
-  const { analysis, loading } = useAtomValue(currentAnalysisAtom);
+  const { analysis, loading, error } = useAtomValue(currentAnalysisAtom);
   const { authUser } = useFirebaseAuth();
 
   if (loading) {
@@ -31,6 +31,14 @@ const AnalyzeLogDetailPageClient: FC = () => {
           <IconLoader2 className="size-8 animate-spin text-slate-400" />
         </div>
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <ContainerSection>
+        <div className="py-12 text-center text-red-600">{t('analyze-logs:detail.load-failed')}</div>
+      </ContainerSection>
     );
   }
 

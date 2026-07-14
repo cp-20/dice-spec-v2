@@ -2,44 +2,58 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
-import * as v from 'valibot';
 
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 
-import { type AnalysisDocument, analysesStoreSchema, COLLECTIONS } from '../collections';
-import { internalUserFamilyAtom } from '../userStore';
+import { type AnalysisDocument, COLLECTIONS, parseAnalysisDocument } from '../collections';
+import { internalUserFamilyAtom } from '../userAtoms';
 
 type AnalysesAtom = {
   analyses: AnalysisDocument[];
   loading: boolean;
+  error: Error | null;
 };
 
 const internalUserAnalysesAtomFamily = atomFamily((uid: string | null | undefined) =>
-  withAtomEffect(atom<AnalysesAtom>({ analyses: [], loading: true }), (_, set) => {
+  withAtomEffect(atom<AnalysesAtom>({ analyses: [], loading: true, error: null }), (_, set) => {
     const { firestore } = useFirebase();
 
     if (!uid) {
-      set(internalUserAnalysesAtomFamily(uid), { analyses: [], loading: false });
+      set(internalUserAnalysesAtomFamily(uid), { analyses: [], loading: false, error: null });
       return;
     }
 
     const analysesQuery = query(collection(firestore, COLLECTIONS.analyses), where('ownerUid', '==', uid));
 
-    return onSnapshot(analysesQuery, (snapshot) => {
-      const data = snapshot.docs.map((docSnap) =>
-        v.parse(analysesStoreSchema, docSnap.data({ serverTimestamps: 'estimate' })),
-      );
-      set(internalUserAnalysesAtomFamily(uid), { analyses: data, loading: false });
-      for (const analysis of data) {
-        set(internalUserFamilyAtom(analysis.ownerUid), analysis.owner);
-      }
-    });
+    return onSnapshot(
+      analysesQuery,
+      (snapshot) => {
+        let hasInvalidDocument = false;
+        const data = snapshot.docs.flatMap((docSnap) => {
+          const parsed = parseAnalysisDocument(docSnap.data({ serverTimestamps: 'estimate' }));
+          if (parsed) return [parsed];
+          hasInvalidDocument = true;
+          return [];
+        });
+        set(internalUserAnalysesAtomFamily(uid), {
+          analyses: data,
+          loading: false,
+          error: hasInvalidDocument ? new Error('Invalid analysis document') : null,
+        });
+        for (const analysis of data) {
+          set(internalUserFamilyAtom(analysis.ownerUid), analysis.owner);
+        }
+      },
+      (error) => {
+        set(internalUserAnalysesAtomFamily(uid), {
+          analyses: [],
+          loading: false,
+          error: new Error(error.message, { cause: error }),
+        });
+      },
+    );
   }),
-);
-
-export const userAnalysesAtomFamily = atomFamily((uid: string | null | undefined) =>
-  atom((get) => get(internalUserAnalysesAtomFamily(uid))),
 );
 
 const internalMyAnalysesAtom = atom((get) => {
@@ -56,17 +70,10 @@ const internalMyAnalysesLoadingAtom = atom((get) => {
   return loading;
 });
 
-export const useMyAnalyses = () => {
-  const analyses = useAtomValue(internalMyAnalysesAtom);
-  const loading = useAtomValue(internalMyAnalysesLoadingAtom);
-
-  return { analyses, loading };
-};
-
 export const myAnalysesLoadingAtom = atom((get) => get(internalMyAnalysesLoadingAtom));
 
 export const useUserAnalyses = (uid: string | null | undefined) => {
-  const { analyses, loading } = useAtomValue(internalUserAnalysesAtomFamily(uid));
+  const { analyses, loading, error } = useAtomValue(internalUserAnalysesAtomFamily(uid));
 
-  return { analyses, loading };
+  return { analyses, loading, error };
 };

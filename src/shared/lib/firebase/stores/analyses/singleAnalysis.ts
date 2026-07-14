@@ -1,25 +1,25 @@
 import { doc, onSnapshot } from 'firebase/firestore';
-import { atom, useAtomValue } from 'jotai';
+import { atom } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
-import * as v from 'valibot';
 
 import { useFirebase } from '@/shared/lib/firebase/useFirebase';
 
-import { type AnalysisDocument, analysesStoreSchema, COLLECTIONS } from '../collections';
-import { internalUserFamilyAtom } from '../userStore';
+import { type AnalysisDocument, COLLECTIONS, parseAnalysisDocument } from '../collections';
+import { internalUserFamilyAtom } from '../userAtoms';
 
 type AnalysisAtom = {
   analysis: AnalysisDocument | null;
   loading: boolean;
+  error: Error | null;
 };
 
 const internalAnalysisAtomFamily = atomFamily((id: string | undefined) =>
-  withAtomEffect(atom<AnalysisAtom>({ analysis: null, loading: true }), (_, set) => {
+  withAtomEffect(atom<AnalysisAtom>({ analysis: null, loading: true, error: null }), (_, set) => {
     const { firestore } = useFirebase();
 
     if (!id) {
-      set(internalAnalysisAtomFamily(id), { analysis: null, loading: false });
+      set(internalAnalysisAtomFamily(id), { analysis: null, loading: false, error: null });
       return;
     }
 
@@ -28,20 +28,27 @@ const internalAnalysisAtomFamily = atomFamily((id: string | undefined) =>
       analysisRef,
       (snap) => {
         if (!snap.exists()) {
-          set(internalAnalysisAtomFamily(id), { analysis: null, loading: false });
+          set(internalAnalysisAtomFamily(id), { analysis: null, loading: false, error: null });
           return;
         }
 
-        const analysisDocument = v.parse(analysesStoreSchema, snap.data({ serverTimestamps: 'estimate' }));
-        set(internalAnalysisAtomFamily(id), { analysis: analysisDocument, loading: false });
+        const analysisDocument = parseAnalysisDocument(snap.data({ serverTimestamps: 'estimate' }));
+        if (!analysisDocument) {
+          set(internalAnalysisAtomFamily(id), {
+            analysis: null,
+            loading: false,
+            error: new Error('Invalid analysis document'),
+          });
+          return;
+        }
+
+        set(internalAnalysisAtomFamily(id), { analysis: analysisDocument, loading: false, error: null });
         set(internalUserFamilyAtom(analysisDocument.ownerUid), analysisDocument.owner);
       },
       (err) => {
-        if (err.code === 'permission-denied' || err.code === 'not-found') {
-          set(internalAnalysisAtomFamily(id), { analysis: null, loading: false });
-        } else {
-          throw err;
-        }
+        const error =
+          err.code === 'permission-denied' || err.code === 'not-found' ? null : new Error(err.message, { cause: err });
+        set(internalAnalysisAtomFamily(id), { analysis: null, loading: false, error });
       },
     );
   }),
@@ -50,9 +57,3 @@ const internalAnalysisAtomFamily = atomFamily((id: string | undefined) =>
 export const analysisAtomFamily = atomFamily((id: string | undefined) =>
   atom((get) => get(internalAnalysisAtomFamily(id))),
 );
-
-export const useAnalysisById = (id: string | undefined) => {
-  const { analysis, loading } = useAtomValue(internalAnalysisAtomFamily(id));
-
-  return { analysis, loading };
-};
