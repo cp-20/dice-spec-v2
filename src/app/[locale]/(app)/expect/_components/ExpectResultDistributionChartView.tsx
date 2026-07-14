@@ -49,19 +49,21 @@ export const ExpectResultDistributionChartView: FC<{ result: DiceExpecterResult 
   const labels = Object.keys(result.distribution).sort((a, b) => Number(a) - Number(b));
 
   return (
-    <Line
-      data={{
-        labels,
-        datasets: [
-          {
-            data: labels.map((key) => result.distribution[key]),
-            fill: true,
-            segment: { backgroundColor: color, borderColor: color },
-          },
-        ],
-      }}
-      height={300}
-      options={options}
-    />
+    <div className="relative h-75">
+      <Line
+        data={{
+          labels,
+          datasets: [
+            {
+              data: labels.map((key) => result.distribution[key]),
+              fill: true,
+              segment: { backgroundColor: color, borderColor: color },
+            },
+          ],
+        }}
+        height={300}
+        options={options}
+      />
+    </div>
   );
 };
