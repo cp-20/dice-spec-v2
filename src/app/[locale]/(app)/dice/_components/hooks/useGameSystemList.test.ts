@@ -34,7 +34,7 @@ describe('useGameSystemList', () => {
   });
 
   afterEach(() => {
-    vi.resetAllMocks();
+    vi.restoreAllMocks();
   });
 
   test('ゲームシステムの一覧を取得してくる', () => {
