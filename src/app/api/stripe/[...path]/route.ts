@@ -261,7 +261,6 @@ const portalSchema = v.object({});
 
 const app = new Hono()
   .basePath('/api/stripe')
-  // FIXME: レースコンディションで複数の stripe customer を作成できる
   .post('/create-customer', async (c) => {
     const user = await getAuthenticatedUser(c.req.header('authorization'), 'create-customer');
     if (!user) {
@@ -277,11 +276,14 @@ const app = new Hono()
         return c.json({ customerId });
       }
 
-      const customer = await getStripeClient().customers.create({
-        email,
-        name,
-        metadata: { userId },
-      });
+      const customer = await getStripeClient().customers.create(
+        {
+          email,
+          name,
+          metadata: { userId },
+        },
+        { idempotencyKey: `firebase-user-${userId}` },
+      );
 
       await updateUserById(userId, {
         stripeCustomerId: customer.id,
@@ -312,7 +314,13 @@ const app = new Hono()
 
     try {
       const priceId = getPriceId(interval);
-      const customerId = await getStripeCustomerIdByUserId(userId);
+      const userDoc = await getUserById(userId);
+      if (userDoc?.plan === 'pro') {
+        return c.json({ error: 'User already has an active subscription' }, 409);
+      }
+      const stripeCustomerId = userDoc?.stripeCustomerId;
+      const customerId =
+        typeof stripeCustomerId === 'string' && stripeCustomerId.length > 0 ? stripeCustomerId : undefined;
 
       if (!customerId) {
         return c.json({ error: 'Stripe customer not found' }, 400);

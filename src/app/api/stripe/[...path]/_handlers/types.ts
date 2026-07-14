@@ -8,8 +8,6 @@ type UpdateUserById = (userId: string, data: Record<string, unknown>) => Promise
 
 type GetSubscriptionById = (subscriptionId: string) => Promise<Stripe.Subscription>;
 
-export type CheckoutSessionPayload = Stripe.Checkout.Session;
-
 export type SubscriptionPayload = Stripe.Subscription;
 
 export type InvoicePayload = Stripe.Invoice;
@@ -27,7 +25,7 @@ export type HandlerDeps = {
 
 type HandlerLogLevel = 'info' | 'success' | 'warning';
 
-export type HandlerLog = {
+type HandlerLog = {
   level: HandlerLogLevel;
   eventType: string;
   message: string;

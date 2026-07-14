@@ -3,6 +3,7 @@ import * as v from 'valibot';
 
 import type { BillingInterval } from '@/shared/lib/stripe/config';
 
+import { isStaleSubscription } from './subscription';
 import type { HandlerDeps, HandlerResult, SubscriptionPayload } from './types';
 import { StripeWebhookHandlerError } from './types';
 
@@ -80,7 +81,7 @@ const getCheckoutCurrency = (session: Stripe.Checkout.Session): string | null =>
   return session.currency.toUpperCase();
 };
 
-export const createCheckoutHandler = ({ updateUserById, getSubscriptionById }: HandlerDeps) => {
+export const createCheckoutHandler = ({ getUserById, updateUserById, getSubscriptionById }: HandlerDeps) => {
   return async (session: Stripe.Checkout.Session): Promise<HandlerResult> => {
     const metadata = v.safeParse(checkoutMetadataSchema, session.metadata);
     if (!metadata.success) {
@@ -98,24 +99,66 @@ export const createCheckoutHandler = ({ updateUserById, getSubscriptionById }: H
     const { userId, interval: billingInterval } = metadata.output;
 
     const subscriptionId = getSubscriptionIdFromCheckoutSession(session);
-    let discounts: DiscountSummary[] = [];
-    let subscriptionLookupError: string | null = null;
-
-    if (subscriptionId) {
-      try {
-        const subscription = await getSubscriptionById(subscriptionId);
-        discounts = getDiscountSummary(subscription);
-      } catch (error) {
-        subscriptionLookupError =
-          error instanceof Error ? error.message : 'Failed to resolve subscription details from checkout session';
-      }
+    if (!subscriptionId) {
+      return {
+        ok: false,
+        error: new StripeWebhookHandlerError({
+          message: 'Checkout session is missing a subscription',
+          eventType: 'checkout.session.completed',
+          userId,
+          fatal: true,
+        }),
+      };
     }
 
     try {
+      const subscription = await getSubscriptionById(subscriptionId);
+      const userDoc = await getUserById(userId);
+      if (await isStaleSubscription(userDoc, subscription, getSubscriptionById)) {
+        return {
+          ok: true,
+          log: {
+            level: 'warning',
+            eventType: 'checkout.session.completed',
+            message: '現在の契約より古い Checkout イベントを無視しました',
+            userId,
+            details: {
+              action: 'stale_subscription_ignored',
+              subscriptionId,
+              currentSubscriptionId: userDoc?.stripeSubscriptionId,
+            },
+          },
+        };
+      }
+
+      const plan = subscription.status === 'active' || subscription.status === 'trialing' ? 'pro' : 'free';
       await updateUserById(userId, {
-        plan: 'pro',
+        plan,
+        stripeSubscriptionId: subscription.id,
         updatedAt: new Date(),
       });
+
+      return {
+        ok: true,
+        log: {
+          level: 'success',
+          eventType: 'checkout.session.completed',
+          message: getCheckoutMessage(billingInterval),
+          userId,
+          details: {
+            action: 'subscription_started',
+            sessionId: session.id,
+            sessionStatus: session.status,
+            paymentStatus: session.payment_status,
+            subscriptionId,
+            subscriptionStatus: subscription.status,
+            billingInterval,
+            amountTotal: session.amount_total,
+            currency: getCheckoutCurrency(session),
+            discounts: getDiscountSummary(subscription),
+          },
+        },
+      };
     } catch (error) {
       return {
         ok: false,
@@ -128,27 +171,5 @@ export const createCheckoutHandler = ({ updateUserById, getSubscriptionById }: H
         }),
       };
     }
-
-    return {
-      ok: true,
-      log: {
-        level: 'success',
-        eventType: 'checkout.session.completed',
-        message: getCheckoutMessage(billingInterval),
-        userId,
-        details: {
-          action: 'subscription_started',
-          sessionId: session.id,
-          sessionStatus: session.status,
-          paymentStatus: session.payment_status,
-          subscriptionId,
-          billingInterval,
-          amountTotal: session.amount_total,
-          currency: getCheckoutCurrency(session),
-          discounts,
-          subscriptionLookupError,
-        },
-      },
-    };
   };
 };

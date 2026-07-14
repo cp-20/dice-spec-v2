@@ -13,6 +13,42 @@ const subscriptionMetadataSchema = v.object({
 
 const PLAN_VALUES = ['free', 'pro'] as const;
 
+const planForSubscriptionStatus = (status: SubscriptionPayload['status']) =>
+  status === 'active' || status === 'trialing' ? 'pro' : 'free';
+
+const currentSubscriptionIdOf = (userDoc: Record<string, unknown> | null) => {
+  const value = userDoc?.stripeSubscriptionId;
+  return typeof value === 'string' && value.length > 0 ? value : null;
+};
+
+export const isStaleSubscription = async (
+  userDoc: Record<string, unknown> | null,
+  candidate: SubscriptionPayload,
+  getSubscriptionById: HandlerDeps['getSubscriptionById'],
+) => {
+  const currentSubscriptionId = currentSubscriptionIdOf(userDoc);
+  if (!currentSubscriptionId || currentSubscriptionId === candidate.id) return false;
+
+  const currentSubscription = await getSubscriptionById(currentSubscriptionId);
+  return candidate.created <= currentSubscription.created;
+};
+
+const staleSubscriptionEventResult = (
+  eventType: string,
+  userId: string,
+  subscriptionId: string,
+  currentSubscriptionId: string,
+): HandlerResult => ({
+  ok: true,
+  log: {
+    level: 'warning',
+    eventType,
+    message: '現在の契約とは異なる古いサブスクリプションイベントを無視しました',
+    userId,
+    details: { action: 'stale_subscription_ignored', subscriptionId, currentSubscriptionId },
+  },
+});
+
 const normalizePlan = (plan: unknown): (typeof PLAN_VALUES)[number] | 'unknown' => {
   if (typeof plan !== 'string') {
     return 'unknown';
@@ -110,7 +146,7 @@ const resolveCreatedMessage = (billingInterval: BillingInterval): string => {
   }
 };
 
-export const createSubscriptionCreatedHandler = (_: HandlerDeps) => {
+export const createSubscriptionCreatedHandler = ({ getUserById, updateUserById, getSubscriptionById }: HandlerDeps) => {
   return async (subscription: SubscriptionPayload): Promise<HandlerResult> => {
     const metadata = v.safeParse(subscriptionMetadataSchema, subscription.metadata);
     if (!metadata.success) {
@@ -126,6 +162,39 @@ export const createSubscriptionCreatedHandler = (_: HandlerDeps) => {
     }
 
     const { userId, interval } = metadata.output;
+
+    try {
+      const currentSubscription = await getSubscriptionById(subscription.id);
+      const userDoc = await getUserById(userId);
+      const currentSubscriptionId = currentSubscriptionIdOf(userDoc);
+      if (currentSubscriptionId && (await isStaleSubscription(userDoc, currentSubscription, getSubscriptionById))) {
+        return staleSubscriptionEventResult(
+          'customer.subscription.created',
+          userId,
+          subscription.id,
+          currentSubscriptionId,
+        );
+      }
+
+      await updateUserById(userId, {
+        plan: planForSubscriptionStatus(currentSubscription.status),
+        stripeSubscriptionId: currentSubscription.id,
+        updatedAt: new Date(),
+      });
+
+      subscription = currentSubscription;
+    } catch (error) {
+      return {
+        ok: false,
+        error: new StripeWebhookHandlerError({
+          message: 'サブスクリプションの作成反映に失敗しました',
+          eventType: 'customer.subscription.created',
+          userId,
+          fatal: true,
+          cause: error,
+        }),
+      };
+    }
 
     return {
       ok: true,
@@ -148,7 +217,7 @@ export const createSubscriptionCreatedHandler = (_: HandlerDeps) => {
   };
 };
 
-export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById }: HandlerDeps) => {
+export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById, getSubscriptionById }: HandlerDeps) => {
   return async ({ subscription, previousAttributes }: SubscriptionUpdatedPayload): Promise<HandlerResult> => {
     const metadata = v.safeParse(subscriptionMetadataSchema, subscription.metadata);
     if (!metadata.success) {
@@ -166,22 +235,32 @@ export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById }
     const { userId, interval } = metadata.output;
 
     try {
-      const status = subscription.status;
-      const isActive = status === 'active';
-      const nextPlan = isActive ? 'pro' : 'free';
       const userDoc = await getUserById(userId);
+      const currentSubscription = await getSubscriptionById(subscription.id);
+      const currentSubscriptionId = currentSubscriptionIdOf(userDoc);
+      if (currentSubscriptionId && (await isStaleSubscription(userDoc, currentSubscription, getSubscriptionById))) {
+        return staleSubscriptionEventResult(
+          'customer.subscription.updated',
+          userId,
+          subscription.id,
+          currentSubscriptionId,
+        );
+      }
+
+      const status = currentSubscription.status;
+      const nextPlan = planForSubscriptionStatus(status);
       const previousPlan = normalizePlan(userDoc?.plan);
-      const remainingDays = calcRemainingDays(subscription.cancel_at);
-      const cancelAt = formatUnixTimeToIso(subscription.cancel_at);
-      const canceledAt = formatUnixTimeToIso(subscription.canceled_at);
-      const endedAt = formatUnixTimeToIso(subscription.ended_at);
+      const remainingDays = calcRemainingDays(currentSubscription.cancel_at);
+      const cancelAt = formatUnixTimeToIso(currentSubscription.cancel_at);
+      const canceledAt = formatUnixTimeToIso(currentSubscription.canceled_at);
+      const endedAt = formatUnixTimeToIso(currentSubscription.ended_at);
       const previousCancelAtPeriodEnd = readPreviousBoolean(previousAttributes, 'cancel_at_period_end');
       const previousStatus = readPreviousString(previousAttributes, 'status');
 
       const action: SubscriptionUpdateAction =
-        previousCancelAtPeriodEnd === false && subscription.cancel_at_period_end
+        previousCancelAtPeriodEnd === false && currentSubscription.cancel_at_period_end
           ? 'cancellation_scheduled'
-          : previousCancelAtPeriodEnd === true && !subscription.cancel_at_period_end
+          : previousCancelAtPeriodEnd === true && !currentSubscription.cancel_at_period_end
             ? 'cancellation_resumed'
             : previousStatus && previousStatus !== status
               ? 'subscription_status_changed'
@@ -191,6 +270,7 @@ export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById }
 
       await updateUserById(userId, {
         plan: nextPlan,
+        stripeSubscriptionId: currentSubscription.id,
         updatedAt: new Date(),
       });
 
@@ -213,14 +293,14 @@ export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById }
                 after: nextPlan,
               },
             },
-            cancelAtPeriodEnd: subscription.cancel_at_period_end,
+            cancelAtPeriodEnd: currentSubscription.cancel_at_period_end,
             remainingDays,
             cancelAt,
             canceledAt,
             endedAt,
-            cancellationReason: subscription.cancellation_details?.reason,
-            cancellationFeedback: subscription.cancellation_details?.feedback,
-            hasCancellationComment: Boolean(subscription.cancellation_details?.comment),
+            cancellationReason: currentSubscription.cancellation_details?.reason,
+            cancellationFeedback: currentSubscription.cancellation_details?.feedback,
+            hasCancellationComment: Boolean(currentSubscription.cancellation_details?.comment),
           },
         },
       };
@@ -239,7 +319,7 @@ export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById }
   };
 };
 
-export const createSubscriptionDeletedHandler = ({ getUserById, updateUserById }: HandlerDeps) => {
+export const createSubscriptionDeletedHandler = ({ getUserById, updateUserById, getSubscriptionById }: HandlerDeps) => {
   return async (subscription: SubscriptionPayload): Promise<HandlerResult> => {
     const metadata = v.safeParse(subscriptionMetadataSchema, subscription.metadata);
     if (!metadata.success) {
@@ -258,12 +338,23 @@ export const createSubscriptionDeletedHandler = ({ getUserById, updateUserById }
 
     try {
       const userDoc = await getUserById(userId);
+      const currentSubscriptionId = currentSubscriptionIdOf(userDoc);
+      if (currentSubscriptionId && (await isStaleSubscription(userDoc, subscription, getSubscriptionById))) {
+        return staleSubscriptionEventResult(
+          'customer.subscription.deleted',
+          userId,
+          subscription.id,
+          currentSubscriptionId,
+        );
+      }
+
       const previousPlan = normalizePlan(userDoc?.plan);
       const endedAt = formatUnixTimeToIso(subscription.ended_at);
       const canceledAt = formatUnixTimeToIso(subscription.canceled_at);
 
       await updateUserById(userId, {
         plan: 'free',
+        stripeSubscriptionId: subscription.id,
         updatedAt: new Date(),
       });
 
