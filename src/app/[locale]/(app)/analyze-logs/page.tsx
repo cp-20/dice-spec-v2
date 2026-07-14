@@ -15,15 +15,17 @@ import {
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
 
-import { AnalysisSavePanel } from './_components/AnalysisSavePanel';
 import { AnalyzeLogsErrorAlert } from './_components/AnalyzeLogsErrorAlert';
 import { CharacterSelect } from './_components/CharacterSelect';
+import {
+  DeferredAnalysisSavePanel,
+  DeferredDiceLogSummary,
+  DeferredLogAnalysisShareButton,
+} from './_components/DeferredAnalysisSections';
 import { DiceLogList } from './_components/DiceLogList';
-import { DiceLogSummary } from './_components/DiceLogSummary';
 import { GameSystemSelect } from './_components/GameSystemSelect';
 import { LogAnalysisCharts } from './_components/LogAnalysisCharts';
 import { LogAnalysisRankingChart } from './_components/LogAnalysisRankingChart';
-import { LogAnalysisShareButton } from './_components/LogAnalysisShareButton';
 import { LogAnalysisStats } from './_components/LogAnalysisStats';
 import { LogTabSelect } from './_components/LogTabSelect';
 import { decodeOgImageId } from './_components/og';
@@ -103,12 +105,12 @@ const AnalyzeLogsPage: NextPage = () => (
         <LogAnalysisStats />
         <LogAnalysisRankingChart />
       </div>
-      <LogAnalysisShareButton />
-      <AnalysisSavePanel />
+      <DeferredLogAnalysisShareButton />
+      <DeferredAnalysisSavePanel />
       <LogAnalysisCharts />
     </div>
 
-    <DiceLogSummary />
+    <DeferredDiceLogSummary />
 
     <DiceLogList />
 

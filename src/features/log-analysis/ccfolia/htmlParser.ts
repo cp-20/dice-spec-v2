@@ -5,9 +5,14 @@ type StructuredLog = {
   message: string;
 };
 
+let cachedHtml = '';
+let cachedLogs: StructuredLog[] = [];
+
 // input: html 形式のログ
 // output: 構造化されたログ
 export const parseHtmlLog = (html: string): StructuredLog[] => {
+  if (html === cachedHtml) return cachedLogs;
+
   const parser = new DOMParser();
 
   const doc = parser.parseFromString(html, 'text/html');
@@ -26,5 +31,7 @@ export const parseHtmlLog = (html: string): StructuredLog[] => {
     return { color, tab: tab.trim(), character, message: message.trim() };
   });
 
+  cachedHtml = html;
+  cachedLogs = logs;
   return logs;
 };

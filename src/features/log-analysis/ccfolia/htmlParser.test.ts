@@ -80,6 +80,10 @@ const htmlLog = `<!DOCTYPE html>
 </html>`;
 
 describe('parseHtmlLog', () => {
+  test('同じHTMLは解析結果を再利用する', () => {
+    expect(parseHtmlLog(htmlLog)).toBe(parseHtmlLog(htmlLog));
+  });
+
   test('正しくパースできる', () => {
     const actual = parseHtmlLog(htmlLog);
     const expected: ReturnType<typeof parseHtmlLog> = [

@@ -1,12 +1,16 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import type { FC } from 'react';
 
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
 import { useLogAnalysisSystem } from './hooks/useLogAnalysis';
 import { useLogAnalysisSystemStats } from './hooks/useLogAnalysisSystemStats';
-import { LogAnalysisChartsView } from './LogAnalysisChartsView';
+const LogAnalysisChartsView = dynamic(
+  () => import('./LogAnalysisChartsView').then((mod) => mod.LogAnalysisChartsView),
+  { ssr: false, loading: () => <div className="h-75" /> },
+);
 
 export const LogAnalysisCharts: FC = () => {
   const systemStats = useLogAnalysisSystemStats();
