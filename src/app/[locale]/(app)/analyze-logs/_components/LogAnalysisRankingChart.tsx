@@ -1,14 +1,10 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import type { FC } from 'react';
 
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
-const LogAnalysisRankingChartView = dynamic(
-  () => import('./LogAnalysisRankingChartView').then((mod) => mod.LogAnalysisRankingChartView),
-  { ssr: false, loading: () => <div className="h-75" /> },
-);
+import { LogAnalysisRankingChartView } from './LogAnalysisRankingChartView';
 
 interface LogAnalysisRankingChartProps {
   className?: string;
