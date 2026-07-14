@@ -4,6 +4,7 @@
     "eslint",
     "jsdoc",
     "jsx-a11y",
+    "import",
     "nextjs",
     "node",
     "oxc",
@@ -15,7 +16,44 @@
     "vitest"
   ],
   "categories": {},
-  "rules": {},
+  "rules": {
+    "import/namespace": "off",
+    "import/no-cycle": "error"
+  },
+  "overrides": [
+    {
+      "files": ["src/shared/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/app/**", "@/features/**"],
+                "message": "sharedからappまたはfeaturesへ依存できません"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/features/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/app/**"],
+                "message": "featuresからappへ依存できません"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
   "settings": {
     "jsx-a11y": {
       "polymorphicPropName": null,
