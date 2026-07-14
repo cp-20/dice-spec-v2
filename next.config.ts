@@ -7,7 +7,7 @@ import { buildEnv } from './src/shared/lib/env';
 const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
-  // CI の高速な tsgo を唯一の型検査にして、next build で同じ検査を重複させない。
+  // CI の TypeScript 7 を唯一の型検査にして、next build で同じ検査を重複させない。
   typescript: { ignoreBuildErrors: true },
   images: {
     loader: 'custom',
