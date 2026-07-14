@@ -190,10 +190,12 @@ describe('Firestore セキュリティルール', () => {
       if (!firestoreRunning) emulators.push('firestore');
       if (!storageRunning) emulators.push('storage');
 
-      const firebaseCli = resolve(process.cwd(), 'node_modules/.bin/firebase');
       emulatorProcess = spawn(
-        firebaseCli,
+        'bunx',
         [
+          '--package',
+          'firebase-tools@15.23.0',
+          'firebase',
           'emulators:start',
           '--only',
           emulators.join(','),
