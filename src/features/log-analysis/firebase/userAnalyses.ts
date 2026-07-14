@@ -3,7 +3,7 @@ import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 
-import { getFirebaseServices } from '@/shared/lib/firebase/client';
+import { getFirebaseFirestore } from '@/shared/lib/firebase/client';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 
@@ -17,7 +17,7 @@ type AnalysesAtom = {
 
 const internalUserAnalysesAtomFamily = atomFamily((uid: string | null | undefined) =>
   withAtomEffect(atom<AnalysesAtom>({ analyses: [], loading: true, error: null }), (_, set) => {
-    const { firestore } = getFirebaseServices();
+    const firestore = getFirebaseFirestore();
 
     if (!uid) {
       set(internalUserAnalysesAtomFamily(uid), { analyses: [], loading: false, error: null });

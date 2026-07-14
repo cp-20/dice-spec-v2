@@ -16,11 +16,8 @@ const firebaseConfig: FirebaseOptions = {
 
 const databaseId = clientEnv.firebaseFirestoreDatabaseId;
 
-export const getFirebaseServices = () => {
-  const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const firestore = getFirestore(app, databaseId);
-  const storage = getStorage(app);
+const getFirebaseApp = () => (getApps().length > 0 ? getApp() : initializeApp(firebaseConfig));
 
-  return { app, auth, firestore, storage };
-};
+export const getFirebaseAuth = () => getAuth(getFirebaseApp());
+export const getFirebaseFirestore = () => getFirestore(getFirebaseApp(), databaseId);
+export const getFirebaseStorage = () => getStorage(getFirebaseApp());

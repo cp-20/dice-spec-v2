@@ -8,7 +8,7 @@ import * as v from 'valibot';
 import { createCustomer } from '@/features/stripe/api';
 import { type NewUserDocument, type UserDocument, userDocumentSchema } from '@/features/user/firebase/schema';
 import { toast } from '@/shared/components/ui/use-toast';
-import { getFirebaseServices } from '@/shared/lib/firebase/client';
+import { getFirebaseAuth, getFirebaseFirestore, getFirebaseStorage } from '@/shared/lib/firebase/client';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { uploadAvatarFromUrlToStorage } from '@/shared/lib/firebase/storage/avatars';
 import { authUserAtom, authUserLoadingAtom } from '@/shared/lib/firebase/useFirebaseAuth';
@@ -16,7 +16,9 @@ import { authUserAtom, authUserLoadingAtom } from '@/shared/lib/firebase/useFire
 const internalMeLoadingAtom = atom(true);
 
 const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set) => {
-  const { auth, firestore, storage } = getFirebaseServices();
+  const auth = getFirebaseAuth();
+  const firestore = getFirebaseFirestore();
+  const storage = getFirebaseStorage();
 
   const authUserLoading = get(authUserLoadingAtom);
   if (authUserLoading) {

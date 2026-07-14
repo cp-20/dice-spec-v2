@@ -13,7 +13,7 @@ import { useCallback, useState } from 'react';
 import * as v from 'valibot';
 
 import { ALL_CHARACTER_ID, type DiceResultForCharacter } from '@/features/log-analysis/model';
-import { getFirebaseServices } from '@/shared/lib/firebase/client';
+import { getFirebaseFirestore, getFirebaseStorage } from '@/shared/lib/firebase/client';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
@@ -55,7 +55,7 @@ const isStorageObjectNotFound = (error: unknown) =>
   error instanceof FirebaseError && error.code === 'storage/object-not-found';
 
 const useSyncAnalysisOgImage = (generateOgImage: GenerateAnalysisOgImage) => {
-  const { storage } = getFirebaseServices();
+  const storage = getFirebaseStorage();
 
   return useCallback(
     async (params: SyncAnalysisOgImageParams) => {
@@ -82,7 +82,8 @@ const useSyncAnalysisOgImage = (generateOgImage: GenerateAnalysisOgImage) => {
 };
 
 export const useSaveAnalysis = (generateOgImage: GenerateAnalysisOgImage) => {
-  const { firestore, storage } = getFirebaseServices();
+  const firestore = getFirebaseFirestore();
+  const storage = getFirebaseStorage();
   const [saving, setSaving] = useState(false);
   const syncAnalysisOgImage = useSyncAnalysisOgImage(generateOgImage);
   const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();
@@ -188,7 +189,8 @@ export type UpdateAnalysisPayload = Partial<{
 }>;
 
 export const useUpdateAnalysis = (generateOgImage: GenerateAnalysisOgImage) => {
-  const { firestore, storage } = getFirebaseServices();
+  const firestore = getFirebaseFirestore();
+  const storage = getFirebaseStorage();
   const [updating, setUpdating] = useState(false);
   const syncAnalysisOgImage = useSyncAnalysisOgImage(generateOgImage);
   const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();
@@ -282,7 +284,8 @@ export const useUpdateAnalysis = (generateOgImage: GenerateAnalysisOgImage) => {
 };
 
 export const useDeleteAnalysis = () => {
-  const { firestore, storage } = getFirebaseServices();
+  const firestore = getFirebaseFirestore();
+  const storage = getFirebaseStorage();
   const { authUser } = useFirebaseAuth();
   const [deleting, setDeleting] = useState(false);
   const invalidatePublicAnalysesCache = useInvalidatePublicAnalysesCache();

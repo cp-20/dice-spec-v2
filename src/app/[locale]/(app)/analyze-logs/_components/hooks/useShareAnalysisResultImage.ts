@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 import { useCallback, useTransition } from 'react';
 
 import { useToast } from '@/shared/components/ui/use-toast';
-import { getFirebaseServices } from '@/shared/lib/firebase/client';
+import { getFirebaseStorage } from '@/shared/lib/firebase/client';
 import { SHARED_IMAGE_SCOPES } from '@/shared/lib/firebase/storage/paths';
 import { uploadSharedImageToStorage } from '@/shared/lib/firebase/storage/sharedImages';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
@@ -18,7 +18,7 @@ import { useCharacterSelect } from './useCharacterSelect';
 
 export const useShareAnalysisResultImage = () => {
   const [isSharingImage, startTransition] = useTransition();
-  const { storage } = getFirebaseServices();
+  const storage = getFirebaseStorage();
   const { authUser } = useFirebaseAuth();
   const { toast } = useToast();
   const { character } = useCharacterSelect();

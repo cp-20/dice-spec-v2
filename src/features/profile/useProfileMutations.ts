@@ -5,7 +5,7 @@ import { useAtomValue } from 'jotai';
 import { useCallback } from 'react';
 
 import { myAnalysesAtom } from '@/features/log-analysis/firebase/userAnalyses';
-import { getFirebaseServices } from '@/shared/lib/firebase/client';
+import { getFirebaseFirestore } from '@/shared/lib/firebase/client';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
@@ -14,7 +14,7 @@ import { splitProfileUpdateBatches } from './profileUpdateBatches';
 type ProfileUpdate = { name: string } | { avatarUrl: string };
 
 export const useProfileMutations = () => {
-  const { firestore } = getFirebaseServices();
+  const firestore = getFirebaseFirestore();
   const { authUser } = useFirebaseAuth();
   const analyses = useAtomValue(myAnalysesAtom);
 
