@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
-import type { AvailableDice, SimpleDices } from './useSimpleDiceInput';
+import type { AvailableDice, SimpleDices } from './simpleDiceTypes';
 import { useSimpleDiceOutput } from './useSimpleDiceOutput';
 
 const useSimpleDiceRollCore = () => {

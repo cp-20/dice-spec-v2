@@ -6,8 +6,6 @@ import { t } from 'i18next';
 import { type FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans } from 'react-i18next';
-import type { InferOutput } from 'valibot';
-import * as v from 'valibot';
 
 import { Button } from '@/shared/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shared/components/ui/form';
@@ -16,16 +14,8 @@ import { Slider } from '@/shared/components/ui/slider';
 import { Switch } from '@/shared/components/ui/switch';
 import { bcdiceApiEndpoint, isOldApp } from '@/shared/lib/const';
 
+import { AdvancedSettingsFormSchema, type AdvancedSettings } from './advancedSettingsSchema';
 import { useAdvancedSettings } from './hooks/useAdvancedSettings';
-
-export const AdvancedSettingsFormSchema = v.object({
-  showHelp: v.boolean(),
-  playSound: v.boolean(),
-  volume: v.pipe(v.number(), v.minValue(0), v.maxValue(100)),
-  bcdiceApiEndpoint: v.pipe(v.string(), v.url()),
-});
-
-export type AdvancedSettings = InferOutput<typeof AdvancedSettingsFormSchema>;
 
 export const AdvancedSettingsContent: FC = () => {
   const { advancedSettings, setAdvancedSettings } = useAdvancedSettings();

@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
+import type { InputFormSchemaType } from './inputFormSchema';
 import { useFormResult } from './useFormResult';
-import type { InputFormSchemaType } from './useInputForm';
 
 export const useInputFormUpdate = () => {
   const { setFormResult } = useFormResult();

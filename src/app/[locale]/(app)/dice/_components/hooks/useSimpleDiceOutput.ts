@@ -1,6 +1,6 @@
 import { atom, useAtom } from 'jotai';
 
-import type { AvailableDice } from './useSimpleDiceInput';
+import type { AvailableDice } from './simpleDiceTypes';
 
 type simpleDiceOutputAtom = {
   key: string;
