@@ -9,22 +9,40 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
+        with:
+          save_cache: 'true'
 
-      - run: bun run lint
-      - run: bun run stylelint
-      - run: bun run typecheck
+      - parallel:
+          - name: Lint
+            run: bun run lint
+          - name: Lint styles
+            run: bun run stylelint
+          - name: Typecheck
+            run: bun run typecheck
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Setup Java
+        id: java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+        background: true
       - uses: ./.github/actions/setup
+      - wait: java
       - run: bun test
 
   build:
