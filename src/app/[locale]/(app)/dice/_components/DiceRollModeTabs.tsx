@@ -2,16 +2,21 @@
 
 import clsx from 'clsx';
 import { t } from 'i18next';
+import dynamic from 'next/dynamic';
 import { type FC, type ReactNode, useState } from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 
 type DiceRollModeTabsProps = {
   simpleTabContent: ReactNode;
-  advancedTabContent: ReactNode;
 };
 
-export const DiceRollModeTabs: FC<DiceRollModeTabsProps> = ({ simpleTabContent, advancedTabContent }) => {
+const AdvancedDiceRollPanel = dynamic(
+  () => import('./AdvancedDiceRollPanel').then((mod) => mod.AdvancedDiceRollPanel),
+  { ssr: false, loading: () => <div className="min-h-40 animate-pulse rounded-md bg-slate-100" /> },
+);
+
+export const DiceRollModeTabs: FC<DiceRollModeTabsProps> = ({ simpleTabContent }) => {
   const [value, setValue] = useState('simple');
 
   return (
@@ -37,7 +42,7 @@ export const DiceRollModeTabs: FC<DiceRollModeTabsProps> = ({ simpleTabContent, 
         {simpleTabContent}
       </TabsContent>
       <TabsContent className={clsx(value === 'advanced' && 'animate-slide-in-left')} value="advanced">
-        {advancedTabContent}
+        {value === 'advanced' && <AdvancedDiceRollPanel />}
       </TabsContent>
     </Tabs>
   );
