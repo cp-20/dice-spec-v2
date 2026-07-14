@@ -1,5 +1,7 @@
 import { clientEnv } from '@/shared/lib/env';
 
+// Webhook URL のクライアント公開と送信頻度の制御は、Discord 側のレート制限に委ねる方針とする。
+
 type Feedback = {
   name?: string;
   feedback: string;

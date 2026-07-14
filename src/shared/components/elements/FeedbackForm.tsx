@@ -18,7 +18,7 @@ export const FeedbackForm = () => {
   const feedbackSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      sendFeedback({
+      await sendFeedback({
         name: e.currentTarget['feedback-form-name'].value,
         feedback: e.currentTarget['feedback-form-feedback'].value,
       });
