@@ -134,7 +134,11 @@ const sentryConfig = {
   // tunnelRoute: "/monitoring",
 
   // Automatically tree-shake Sentry logger statements to reduce bundle size
-  disableLogger: true,
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
 };
 
 // @ts-expect-error
