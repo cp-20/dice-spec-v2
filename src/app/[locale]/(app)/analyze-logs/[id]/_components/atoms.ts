@@ -7,7 +7,7 @@ import { analysisRecordsAtomFamily } from '@/shared/lib/firebase/stores/analysis
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 
 import { ALL_CHARACTER_ID } from '../../_components/constants';
-import { systems } from '../../_components/hooks/ccfoliaLogAnalysis/messageParser';
+import { systems } from '@/features/log-analysis/ccfolia/messageParser';
 
 const internalAnalysisIdAtom = atom<string | undefined>(undefined);
 

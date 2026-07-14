@@ -1,6 +1,9 @@
-import type { DiceResultForCharacter, System } from '@/features/log-analysis/model';
-
-import { ALL_CHARACTER_ID, ALL_CHARACTER_NAME } from '../../constants';
+import {
+  ALL_CHARACTER_ID,
+  ALL_CHARACTER_NAME,
+  type DiceResultForCharacter,
+  type System,
+} from '../model';
 import { parseHtmlLog } from './htmlParser';
 import { formatMessage } from './messageFormatter';
 import { parseMessage, systemStats } from './messageParser';

@@ -6,7 +6,10 @@ import { useMemo, useState } from 'react';
 import { Stats } from '@/shared/components/elements/Stats';
 import { round } from '@/shared/lib/round';
 
-import { calculateDoubleCross3rdExplodingDice, type DistributionResult } from '../../hooks/systemSpecificExpecter';
+import {
+  calculateDoubleCross3rdExplodingDice,
+  type DistributionResult,
+} from '@/features/dice-expectation/system-specific';
 import { detailedPercent, NumberField, percent, ProbabilityBars, SystemPanel } from '../common';
 
 const collapseSmallTail = (result: DistributionResult): DistributionResult => {

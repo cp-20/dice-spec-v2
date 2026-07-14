@@ -4,7 +4,7 @@ import type { ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { SharingAnalysisResultScreen } from '../SharingAnalysisResultScreen';
-import { DiceResultForCharacter } from './ccfoliaLogAnalysis';
+import type { DiceResultForCharacter } from '@/features/log-analysis/model';
 
 type RenderNotifierProps<Props extends object = object> = {
   Component: ComponentType<Props>;

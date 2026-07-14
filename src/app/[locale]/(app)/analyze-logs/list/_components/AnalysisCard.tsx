@@ -9,7 +9,7 @@ import { invariant } from '@/shared/lib/invariant';
 import { round } from '@/shared/lib/round';
 
 import { ALL_CHARACTER_ID } from '../../_components/constants';
-import { systems } from '../../_components/hooks/ccfoliaLogAnalysis/messageParser';
+import { systems } from '@/features/log-analysis/ccfolia/messageParser';
 import { selectedCharacterIdAtom } from './atoms';
 
 interface AnalysisCardProps {

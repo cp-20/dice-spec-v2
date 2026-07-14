@@ -5,7 +5,7 @@ import { FC, forwardRef, ReactNode } from 'react';
 import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { round } from '@/shared/lib/round';
 
-import { DiceResultForCharacter } from './hooks/ccfoliaLogAnalysis';
+import type { DiceResultForCharacter } from '@/features/log-analysis/model';
 import { LogAnalysisRankingChartView } from './LogAnalysisRankingChartView';
 
 interface StatsProps {

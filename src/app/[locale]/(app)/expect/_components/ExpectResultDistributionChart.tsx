@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 
-import type { DiceExpecterResult } from '@/app/[locale]/(app)/expect/_components/hooks/expecter';
+import type { DiceExpecterResult } from '@/features/dice-expectation/expecter';
 import { commonChartOption } from '@/shared/lib/commonChartOption';
 
 import { useDiceExpecterResult } from './hooks/useDiceExpecter';

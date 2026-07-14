@@ -6,7 +6,7 @@ import type { FC, ReactNode } from 'react';
 import { Stats } from '@/shared/components/elements/Stats';
 import { round } from '@/shared/lib/round';
 
-import type { DiceExpecterResult, SuccessExpectResult } from './hooks/expecter';
+import type { DiceExpecterResult, SuccessExpectResult } from '@/features/dice-expectation/expecter';
 import { useDiceExpecterResult } from './hooks/useDiceExpecter';
 
 const getResultFormatBase =

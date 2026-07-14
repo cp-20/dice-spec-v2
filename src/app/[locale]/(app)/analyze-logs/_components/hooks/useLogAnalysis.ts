@@ -6,10 +6,11 @@ import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { ALL_CHARACTER_ID } from '../constants';
-import { analyzeCcfoliaLog, type DiceResultForCharacter, type System } from './ccfoliaLogAnalysis';
-import { detectSystem } from './ccfoliaLogAnalysis/detector';
-import { parseHtmlLog } from './ccfoliaLogAnalysis/htmlParser';
-import { systemStats } from './ccfoliaLogAnalysis/messageParser';
+import { analyzeCcfoliaLog } from '@/features/log-analysis/ccfolia';
+import { detectSystem } from '@/features/log-analysis/ccfolia/detector';
+import { parseHtmlLog } from '@/features/log-analysis/ccfolia/htmlParser';
+import { systemStats } from '@/features/log-analysis/ccfolia/messageParser';
+import type { DiceResultForCharacter, System } from '@/features/log-analysis/model';
 
 type LogFile = {
   name: string;

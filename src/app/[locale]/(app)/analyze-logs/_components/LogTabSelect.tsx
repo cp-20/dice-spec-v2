@@ -6,7 +6,7 @@ import type { FC } from 'react';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { Label } from '@/shared/components/ui/label';
 
-import { formatLogTabName } from './hooks/ccfoliaLogAnalysis/tabName';
+import { formatLogTabName } from '@/features/log-analysis/ccfolia/tabName';
 import { useLogTabSelect } from './hooks/useLogAnalysis';
 
 export const LogTabSelect: FC = () => {

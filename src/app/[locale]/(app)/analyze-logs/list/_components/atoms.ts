@@ -5,7 +5,7 @@ import { ALL_CHARACTER_ID, ALL_CHARACTER_NAME } from '@/app/[locale]/(app)/analy
 import { myAnalysesAtom } from '@/shared/lib/firebase/stores/analyses/userAnalyses';
 import type { AnalysisDocument } from '@/shared/lib/firebase/stores/collections';
 
-import { systems } from '../../_components/hooks/ccfoliaLogAnalysis/messageParser';
+import { systems } from '@/features/log-analysis/ccfolia/messageParser';
 
 interface SortOptionItem {
   value: string;

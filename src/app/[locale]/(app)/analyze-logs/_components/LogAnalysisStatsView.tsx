@@ -4,7 +4,7 @@ import type { FC, ReactNode } from 'react';
 import { Stats } from '@/shared/components/elements/Stats';
 import { round } from '@/shared/lib/round';
 
-import type { DiceResultForCharacter } from './hooks/ccfoliaLogAnalysis';
+import type { DiceResultForCharacter } from '@/features/log-analysis/model';
 
 interface LogAnalysisStatsViewProps {
   result?: Pick<DiceResultForCharacter, 'summary'>;

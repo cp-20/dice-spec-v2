@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react';
 import { Stats } from '@/shared/components/elements/Stats';
 import { round } from '@/shared/lib/round';
 
-import { calculateCthulhu7thOpposedRoll, calculateCthulhu7thRoll } from '../../hooks/systemSpecificExpecter';
+import { calculateCthulhu7thOpposedRoll, calculateCthulhu7thRoll } from '@/features/dice-expectation/system-specific';
 import { BonusPenaltySelect, NumberField, OpposedProbabilityBar, percent, SystemPanel } from '../common';
 
 export const Cthulhu7thPanel: FC = () => {

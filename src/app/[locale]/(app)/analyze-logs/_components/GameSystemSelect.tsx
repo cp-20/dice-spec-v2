@@ -8,8 +8,8 @@ import { Button } from '@/shared/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 
 import { useGameSystemRequestDialog } from './GameSystemRequest';
-import type { System } from './hooks/ccfoliaLogAnalysis';
-import { systems } from './hooks/ccfoliaLogAnalysis/messageParser';
+import { systems } from '@/features/log-analysis/ccfolia/messageParser';
+import type { System } from '@/features/log-analysis/model';
 import { useLogAnalysisSystem } from './hooks/useLogAnalysis';
 
 export const GameSystemSelect: FC = () => {

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { round } from '@/shared/lib/round';
 import { cn } from '@/shared/lib/shadcn-utils';
 
-import type { DistributionResult } from '../hooks/systemSpecificExpecter';
+import type { DistributionResult } from '@/features/dice-expectation/system-specific';
 
 export const percent = (value: number) => round(value * 100, 1);
 

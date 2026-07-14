@@ -1,4 +1,4 @@
-import { calculateDistribution } from '@/app/[locale]/(app)/expect/_components/hooks/expecter/analyzer/calculateDistribution';
+import { calculateDistribution } from './calculateDistribution';
 
 import type { DiceExpression, Expression, NumberExpression, OperationExpression, ResolvedExpression } from '../type';
 import { applyOperatorMap } from './utils';

@@ -4,7 +4,7 @@ import {
   calculateCthulhu7thRoll,
   calculateDoubleCross3rdExplodingDice,
   calculateEmokloreSuccessDistribution,
-} from './systemSpecificExpecter';
+} from './system-specific';
 
 const sum = (values: number[]) => values.reduce((acc, value) => acc + value, 0);
 

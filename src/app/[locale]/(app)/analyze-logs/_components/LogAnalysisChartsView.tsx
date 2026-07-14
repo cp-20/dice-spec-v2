@@ -8,10 +8,9 @@ import { Bar } from 'react-chartjs-2';
 import { commonChartOption } from '@/shared/lib/commonChartOption';
 import { groupBy } from '@/shared/lib/groupBy';
 
-import type { System } from './hooks/ccfoliaLogAnalysis';
-import type { MessageParserResult } from './hooks/ccfoliaLogAnalysis/messageParser';
-import { systemStats as allSystemStats } from './hooks/ccfoliaLogAnalysis/messageParser';
-import { aggregateResults } from './hooks/ccfoliaLogAnalysis/resultAggregator';
+import { systemStats as allSystemStats } from '@/features/log-analysis/ccfolia/messageParser';
+import { aggregateResults } from '@/features/log-analysis/ccfolia/resultAggregator';
+import type { MessageParserResult, System } from '@/features/log-analysis/model';
 
 const customCanvasBackgroundColorPlugin: Plugin = {
   id: 'customCanvasBackgroundColor',
