@@ -21,10 +21,9 @@ export const stripeApp = new Hono()
       const customerId = await getStripeCustomerIdByUserId(userId);
       if (customerId) return c.json({ customerId });
 
-      const customer = await getStripeClient().customers.create(
-        { email, name, metadata: { userId } },
-        { idempotencyKey: `firebase-user-${userId}` },
-      );
+      const customer = await (
+        await getStripeClient()
+      ).customers.create({ email, name, metadata: { userId } }, { idempotencyKey: `firebase-user-${userId}` });
       await updateUserById(userId, { stripeCustomerId: customer.id });
       return c.json({ customerId: customer.id });
     } catch (error) {
@@ -57,7 +56,9 @@ export const stripeApp = new Hono()
       if (!customerId) return c.json({ error: 'Stripe customer not found' }, 400);
 
       const metadata = { ...payload, userId };
-      const session = await getStripeClient().checkout.sessions.create({
+      const session = await (
+        await getStripeClient()
+      ).checkout.sessions.create({
         mode: 'subscription',
         customer: customerId,
         line_items: [{ price: getPriceId(payload.interval), quantity: 1 }],
@@ -93,7 +94,9 @@ export const stripeApp = new Hono()
       const customerId = await getStripeCustomerIdByUserId(userId);
       if (!customerId) return c.json({ error: 'Stripe customer not found' }, 400);
 
-      const session = await getStripeClient().billingPortal.sessions.create({
+      const session = await (
+        await getStripeClient()
+      ).billingPortal.sessions.create({
         customer: customerId,
         return_url: `${runtimeEnv.appOrigin}/profile`,
       });
@@ -124,7 +127,7 @@ export const stripeApp = new Hono()
       return c.json({ error: 'Missing signature' }, 400);
     }
 
-    const event = constructStripeEvent(body, signature);
+    const event = await constructStripeEvent(body, signature);
     if (!event) return c.json({ error: 'Invalid signature' }, 400);
 
     try {

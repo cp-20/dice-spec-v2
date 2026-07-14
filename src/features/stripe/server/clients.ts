@@ -1,20 +1,21 @@
 import { createFirestoreClient } from 'firebase-rest-firestore';
-import Stripe from 'stripe';
+import type Stripe from 'stripe';
 
 import type { BillingInterval } from '@/features/stripe/contract';
 import { runtimeEnv } from '@/shared/lib/env';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 
-let stripe: Stripe | null = null;
+let stripePromise: Promise<Stripe> | null = null;
 
 export const getStripeClient = () => {
-  if (!stripe) {
-    stripe = new Stripe(runtimeEnv.stripe.secretKey, {
-      httpClient: Stripe.createFetchHttpClient(),
-      apiVersion: '2026-06-24.dahlia',
-    });
-  }
-  return stripe;
+  stripePromise ??= import('stripe').then(
+    ({ default: Stripe }) =>
+      new Stripe(runtimeEnv.stripe.secretKey, {
+        httpClient: Stripe.createFetchHttpClient(),
+        apiVersion: '2026-06-24.dahlia',
+      }),
+  );
+  return stripePromise;
 };
 
 let firestoreClient: ReturnType<typeof createFirestoreClient> | null = null;
@@ -38,12 +39,21 @@ const getFirestoreClient = () => {
 
 export const getUserById = async (userId: string) => getFirestoreClient().get(FIREBASE_COLLECTIONS.users, userId);
 
+export const updateExistingUserById = async (
+  client: Pick<ReturnType<typeof createFirestoreClient>, 'get' | 'update'>,
+  userId: string,
+  data: Record<string, unknown>,
+) => {
+  if (!(await client.get(FIREBASE_COLLECTIONS.users, userId))) throw new Error('User not found');
+  await client.update(FIREBASE_COLLECTIONS.users, userId, data);
+};
+
 export const updateUserById = async (userId: string, data: Record<string, unknown>) => {
-  await getFirestoreClient().update(FIREBASE_COLLECTIONS.users, userId, data);
+  await updateExistingUserById(getFirestoreClient(), userId, data);
 };
 
 export const getSubscriptionById = async (subscriptionId: string) =>
-  getStripeClient().subscriptions.retrieve(subscriptionId, { expand: ['discounts'] });
+  (await getStripeClient()).subscriptions.retrieve(subscriptionId, { expand: ['discounts'] });
 
 export const getStripeCustomerIdByUserId = async (userId: string) => {
   const value = (await getUserById(userId))?.stripeCustomerId;

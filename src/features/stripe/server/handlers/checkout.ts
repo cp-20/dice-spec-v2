@@ -67,8 +67,7 @@ export const createCheckoutHandler = ({ getUserById, updateUserById, getSubscrip
     }
 
     try {
-      const subscription = await getSubscriptionById(subscriptionId);
-      const userDoc = await getUserById(userId);
+      const [subscription, userDoc] = await Promise.all([getSubscriptionById(subscriptionId), getUserById(userId)]);
       if (await isStaleSubscription(userDoc, subscription, getSubscriptionById)) {
         return {
           ok: true,

@@ -139,8 +139,10 @@ export const createSubscriptionCreatedHandler = ({ getUserById, updateUserById, 
     const { userId, interval } = metadata.output;
 
     try {
-      const currentSubscription = await getSubscriptionById(subscription.id);
-      const userDoc = await getUserById(userId);
+      const [currentSubscription, userDoc] = await Promise.all([
+        getSubscriptionById(subscription.id),
+        getUserById(userId),
+      ]);
       const currentSubscriptionId = currentSubscriptionIdOf(userDoc);
       if (currentSubscriptionId && (await isStaleSubscription(userDoc, currentSubscription, getSubscriptionById))) {
         return staleSubscriptionEventResult(
@@ -210,8 +212,10 @@ export const createSubscriptionUpdatedHandler = ({ getUserById, updateUserById, 
     const { userId, interval } = metadata.output;
 
     try {
-      const userDoc = await getUserById(userId);
-      const currentSubscription = await getSubscriptionById(subscription.id);
+      const [userDoc, currentSubscription] = await Promise.all([
+        getUserById(userId),
+        getSubscriptionById(subscription.id),
+      ]);
       const currentSubscriptionId = currentSubscriptionIdOf(userDoc);
       if (currentSubscriptionId && (await isStaleSubscription(userDoc, currentSubscription, getSubscriptionById))) {
         return staleSubscriptionEventResult(
