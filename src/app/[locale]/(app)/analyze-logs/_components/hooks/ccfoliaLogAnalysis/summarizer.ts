@@ -1,17 +1,6 @@
-import type { MessageParserResult, SystemStats } from './messageParser';
+import type { DiceResultSummary, MessageParserResult, SystemStats } from '@/features/log-analysis/model';
 
-export type DiceResultSummary = {
-  // 成功率
-  successRate: number;
-  // 平均値
-  average: number;
-  // ダイスロール回数
-  diceRollCount: number;
-  // 振ったダイスの個数
-  diceCount: number;
-  // 偏差値
-  deviationScore: number;
-};
+export type { DiceResultSummary } from '@/features/log-analysis/model';
 
 export const summarizeResults = (results: MessageParserResult[], stats: SystemStats): DiceResultSummary => {
   const numberResults = results.flatMap(({ results }) => results);
@@ -20,7 +9,8 @@ export const summarizeResults = (results: MessageParserResult[], stats: SystemSt
 
   const successCount = results.filter(({ evaluationStatus }) => evaluationStatus === 'success').length;
   const failureCount = results.filter(({ evaluationStatus }) => evaluationStatus === 'failure').length;
-  const successRate = (successCount / (successCount + failureCount)) * 100;
+  const evaluatedCount = successCount + failureCount;
+  const successRate = evaluatedCount === 0 ? 0 : (successCount / evaluatedCount) * 100;
 
   const average = numberResults.reduce((acc, number) => acc + number, 0) / diceCount;
 

@@ -1,4 +1,5 @@
-import type { SystemMessageParser, SystemStats } from '.';
+import type { SystemMessageParser, SystemStats } from '@/features/log-analysis/model';
+
 import { normalizeParentheses } from './normalize';
 import { extractSkillNameFromMessage } from './skillName';
 

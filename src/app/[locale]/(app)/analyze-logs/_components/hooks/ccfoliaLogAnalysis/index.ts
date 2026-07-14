@@ -1,22 +1,13 @@
+import type { DiceResultForCharacter, System } from '@/features/log-analysis/model';
+
 import { ALL_CHARACTER_ID, ALL_CHARACTER_NAME } from '../../constants';
 import { parseHtmlLog } from './htmlParser';
 import { formatMessage } from './messageFormatter';
-import { type MessageParserResult, parseMessage, systemStats } from './messageParser';
-import { type DiceResultSummary, summarizeResults } from './summarizer';
+import { parseMessage, systemStats } from './messageParser';
+import { summarizeResults } from './summarizer';
 import { formatLogTabName } from './tabName';
 
-export type System = 'emoklore' | 'CoC7th' | 'CoC6th' | 'shinobigami' | 'nechronica';
-
-type ResultRecord = MessageParserResult & {
-  fullStr: string;
-};
-
-export type DiceResultForCharacter = {
-  id: string;
-  name: string;
-  results: ResultRecord[];
-  summary: DiceResultSummary;
-};
+export type { DiceResultForCharacter, System } from '@/features/log-analysis/model';
 
 export const analyzeCcfoliaLog = (system: System, html: string, tabs?: string[]) => {
   const logs = parseHtmlLog(html).filter((log) => tabs === undefined || tabs.includes(log.tab));

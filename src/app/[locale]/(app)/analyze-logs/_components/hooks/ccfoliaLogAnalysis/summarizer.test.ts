@@ -22,4 +22,12 @@ describe('summarizeResults', () => {
       deviationScore: ((stats.average - 38) * 10) / Math.sqrt(stats.variance / 5) + 50,
     });
   });
+
+  test('成功・失敗の評価がない場合も成功率が NaN にならない', () => {
+    const results: MessageParserResult[] = [
+      { evaluation: '', evaluationStatus: 'other', results: [7], target: -1, skillName: null },
+    ];
+
+    expect(summarizeResults(results, CoC6thSystemStats).successRate).toBe(0);
+  });
 });
