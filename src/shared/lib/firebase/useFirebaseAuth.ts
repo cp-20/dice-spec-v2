@@ -15,6 +15,10 @@ import { getFirebaseAuth } from './client';
 
 const internalAuthUserLoadingAtom = atom(true);
 
+export const isExpectedSignInCancellation = (error: unknown) =>
+  error instanceof FirebaseError &&
+  (error.code === AuthErrorCodes.POPUP_CLOSED_BY_USER || error.code === AuthErrorCodes.EXPIRED_POPUP_REQUEST);
+
 const internalAuthUserAtom = withAtomEffect(atom<User | null>(null), (_, set) => {
   const auth = getFirebaseAuth();
 
@@ -38,9 +42,7 @@ export const useFirebaseAuth = () => {
     try {
       await signInWithPopup(auth, provider);
     } catch (err) {
-      if (err instanceof FirebaseError) {
-        if (err.code === AuthErrorCodes.POPUP_CLOSED_BY_USER) return;
-      }
+      if (isExpectedSignInCancellation(err)) return;
       throw err;
     }
   }, [auth]);

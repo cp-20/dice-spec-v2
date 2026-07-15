@@ -5,6 +5,7 @@ import { t } from 'i18next';
 import { type FC, useCallback, useRef } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
+import { useToast } from '@/shared/components/ui/use-toast';
 
 import { useDropzone } from './hooks/useDropzone';
 import { useLogFiles, useLogTabSelect } from './hooks/useLogAnalysis';
@@ -26,22 +27,29 @@ const readFileAsText = (file: File) =>
 
 export const UploadLogFileButton: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
   const { logFiles, setLogFiles } = useLogFiles();
   const { resetSelectedTabs } = useLogTabSelect();
 
   const dropHandler = useCallback(
     async (files: File[]) => {
-      const readFiles = await Promise.all(
-        files.map(async (file) => ({
-          name: file.name,
-          content: await readFileAsText(file),
-        })),
-      );
-      setLogFiles((prev) => [...prev, ...readFiles]);
-      resetSelectedTabs();
-      if (inputRef.current) inputRef.current.value = '';
+      try {
+        const readFiles = await Promise.all(
+          files.map(async (file) => ({
+            name: file.name,
+            content: await readFileAsText(file),
+          })),
+        );
+        setLogFiles((prev) => [...prev, ...readFiles]);
+        resetSelectedTabs();
+      } catch (error) {
+        console.error('Failed to read log file:', error);
+        toast({ title: t('analyze-logs:error'), variant: 'destructive' });
+      } finally {
+        if (inputRef.current) inputRef.current.value = '';
+      }
     },
-    [resetSelectedTabs, setLogFiles],
+    [resetSelectedTabs, setLogFiles, toast],
   );
 
   const { containerProps, inputProps, isDraggedOver } = useDropzone(dropHandler);
