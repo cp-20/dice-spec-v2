@@ -1,6 +1,7 @@
 import { expect, mock, test, vi } from 'bun:test';
 
 import { act, renderHook, waitFor } from '@testing-library/react';
+import * as firebaseAuth from 'firebase/auth';
 import * as firestore from 'firebase/firestore';
 import { atom } from 'jotai';
 
@@ -28,7 +29,7 @@ const createCustomerMock = vi.fn(async () => {
 });
 const signOutMock = vi.fn();
 
-mock.module('firebase/auth', () => ({ signOut: signOutMock }));
+mock.module('firebase/auth', () => ({ ...firebaseAuth, signOut: signOutMock }));
 mock.module('firebase/firestore', () => ({
   ...firestore,
   doc: vi.fn(() => ({})),
