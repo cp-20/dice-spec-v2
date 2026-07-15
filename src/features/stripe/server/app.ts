@@ -18,7 +18,13 @@ export const stripeApp = new Hono()
 
     const { uid: userId, name, email } = user;
     try {
-      const customerId = await getStripeCustomerIdByUserId(userId);
+      const userDoc = await getUserById(userId);
+      if (!userDoc) return c.json({ error: 'User not found' }, 409);
+
+      const customerId =
+        typeof userDoc.stripeCustomerId === 'string' && userDoc.stripeCustomerId.length > 0
+          ? userDoc.stripeCustomerId
+          : undefined;
       if (customerId) return c.json({ customerId });
 
       const customer = await (

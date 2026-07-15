@@ -37,7 +37,10 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
   set(internalMeLoadingAtom, true);
 
   const userRef = doc(firestore, FIREBASE_COLLECTIONS.users, authUser.uid);
-  const unsubscribe = onSnapshot(userRef, async (snap) => {
+  const unsubscribe = onSnapshot(userRef, { includeMetadataChanges: true }, async (snap) => {
+    // Firestore emits optimistic snapshots before setDoc reaches the server.
+    if (snap.metadata.fromCache || snap.metadata.hasPendingWrites) return;
+
     if (!snap.exists()) {
       try {
         let avatarUrl: string | undefined;
@@ -62,10 +65,8 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
           analysisCountSyncAnalysisId: null,
         };
         await setDoc(userRef, newUserDocument);
-
-        await createCustomer();
       } catch (error) {
-        console.error('Failed to create Stripe customer:', error);
+        console.error('Failed to create user document:', error);
         toast({
           title: t('profile:toast.sign-in-error-title'),
           description: t('profile:toast.sign-in-error-description'),
@@ -75,11 +76,18 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
         try {
           await signOut(auth);
         } catch (signOutError) {
-          console.error('Failed to sign out after Stripe customer creation failure:', signOutError);
+          console.error('Failed to sign out after user document creation failure:', signOutError);
         }
 
         set(internalMeAtom, null);
         set(internalMeLoadingAtom, false);
+        return;
+      }
+
+      try {
+        await createCustomer();
+      } catch (error) {
+        console.error('Failed to create Stripe customer:', error);
       }
       return;
     }
