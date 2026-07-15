@@ -191,11 +191,8 @@ describe('Firestore セキュリティルール', () => {
       if (!storageRunning) emulators.push('storage');
 
       emulatorProcess = spawn(
-        'bunx',
+        'firebase',
         [
-          '--package',
-          'firebase-tools@15.23.0',
-          'firebase',
           'emulators:start',
           '--only',
           emulators.join(','),
