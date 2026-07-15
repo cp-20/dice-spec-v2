@@ -5,6 +5,8 @@ import * as firebaseAuth from 'firebase/auth';
 import * as firestore from 'firebase/firestore';
 import { atom } from 'jotai';
 
+import * as firebaseAuthHook from '@/shared/lib/firebase/useFirebaseAuth';
+
 type Snapshot = {
   exists: () => boolean;
   data: () => Record<string, unknown>;
@@ -50,6 +52,7 @@ mock.module('@/shared/lib/firebase/client', () => ({
 }));
 mock.module('@/shared/lib/firebase/storage/avatars', () => ({ uploadAvatarFromUrlToStorage: vi.fn() }));
 mock.module('@/shared/lib/firebase/useFirebaseAuth', () => ({
+  ...firebaseAuthHook,
   authUserAtom: atom({ uid: 'user_1', displayName: 'User', photoURL: null }),
   authUserLoadingAtom: atom(false),
 }));
