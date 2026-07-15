@@ -18,11 +18,15 @@ let snapshotOptions: unknown;
 let resolveSetDoc: (() => void) | undefined;
 
 const setDocMock = vi.fn(
-  () =>
+  (_ref: unknown, _data: Record<string, unknown>) =>
     new Promise<void>((resolve) => {
       resolveSetDoc = resolve;
     }),
 );
+const avatarUploadError = new Error('Firebase Storage: User does not have permission');
+const uploadAvatarMock = vi.fn(async () => {
+  throw avatarUploadError;
+});
 const createCustomerError = new Error('Failed to create customer', {
   cause: { name: 'Error', message: 'User not found' },
 });
@@ -50,14 +54,14 @@ mock.module('@/shared/lib/firebase/client', () => ({
   getFirebaseFirestore: () => ({}),
   getFirebaseStorage: () => ({}),
 }));
-mock.module('@/shared/lib/firebase/storage/avatars', () => ({ uploadAvatarFromUrlToStorage: vi.fn() }));
+mock.module('@/shared/lib/firebase/storage/avatars', () => ({ uploadAvatarFromUrlToStorage: uploadAvatarMock }));
 mock.module('@/shared/lib/firebase/useFirebaseAuth', () => ({
   ...firebaseAuthHook,
-  authUserAtom: atom({ uid: 'user_1', displayName: 'User', photoURL: null }),
+  authUserAtom: atom({ uid: 'user_1', displayName: 'User', photoURL: 'https://example.com/avatar.png' }),
   authUserLoadingAtom: atom(false),
 }));
 
-test('未確定のユーザー文書では Customer を作らず、User not found でもログアウトしない', async () => {
+test('アバター保存失敗時もユーザー文書を作り、User not found でログアウトしない', async () => {
   const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   const { useMeStore } = await import('./accountStore');
   renderHook(() => useMeStore());
@@ -80,6 +84,7 @@ test('未確定のユーザー文書では Customer を作らず、User not foun
     metadata: { fromCache: false, hasPendingWrites: false },
   });
   await waitFor(() => expect(setDocMock).toHaveBeenCalledTimes(1));
+  expect(setDocMock.mock.calls[0]?.[1]).not.toHaveProperty('avatarUrl');
 
   await act(async () => {
     await snapshotListener!({
@@ -107,6 +112,7 @@ test('未確定のユーザー文書では Customer を作らず、User not foun
   });
 
   expect(createCustomerMock).toHaveBeenCalledTimes(1);
+  expect(errorSpy).toHaveBeenCalledWith('Failed to upload Google avatar to Storage:', avatarUploadError);
   expect(errorSpy).toHaveBeenCalledWith('Failed to create Stripe customer:', createCustomerError);
   expect(signOutMock).not.toHaveBeenCalled();
   errorSpy.mockRestore();

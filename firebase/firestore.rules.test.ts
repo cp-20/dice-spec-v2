@@ -263,6 +263,13 @@ describe('Firestore セキュリティルール', () => {
     await assertSucceeds(getDoc(doc(ownerDb, 'users/user_1')));
   });
 
+  test('users: アバターなしでも自分のユーザードキュメントを作成できる', async () => {
+    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
+    const { avatarUrl: _avatarUrl, ...documentWithoutAvatar } = userDoc();
+
+    await assertSucceeds(setDoc(doc(ownerDb, 'users/user_1'), documentWithoutAvatar));
+  });
+
   test('users: ドキュメント ID と data.id が一致しない作成は拒否される', async () => {
     const ownerDb = testEnv.authenticatedContext('user_1').firestore();
 

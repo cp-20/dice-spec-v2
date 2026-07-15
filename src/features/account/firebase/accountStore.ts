@@ -55,7 +55,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
         const newUserDocument: NewUserDocument = {
           id: authUser.uid,
           name: authUser.displayName ?? 'ユーザー',
-          avatarUrl,
+          ...(avatarUrl === undefined ? {} : { avatarUrl }),
           plan: 'free',
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
