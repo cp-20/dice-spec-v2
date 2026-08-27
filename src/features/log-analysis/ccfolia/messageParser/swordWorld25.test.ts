@@ -84,5 +84,6 @@ describe('isSwordWorld25Message', () => {
   test('SW2.5固有の威力表出力だけを自動検出の根拠にする', () => {
     expect(isSwordWorld25Message('KeyNo.20c[10] ＞ 2D:[5,3]=8 ＞ 6')).toBe(true);
     expect(isSwordWorld25Message('(2D6+10>=15) ＞ 8[2,6]+10 ＞ 18 ＞ 成功')).toBe(false);
+    expect(isSwordWorld25Message('KeyNo.20c[10] ＞ 不完全な出力')).toBe(false);
   });
 });

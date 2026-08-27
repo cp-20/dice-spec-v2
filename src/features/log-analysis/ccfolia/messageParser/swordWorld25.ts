@@ -81,7 +81,8 @@ export const swordWorld25Parser: SystemMessageParser = (message) => {
 };
 
 // 通常の2D6は他システムでも使われる。自動検出ではSW2.5固有の威力表出力だけを根拠にする。
-export const isSwordWorld25Message = (message: string): boolean => /KeyNo\.\d+/u.test(message);
+export const isSwordWorld25Message = (message: string): boolean =>
+  parseRatingMessage(normalizeParentheses(message)) !== null;
 
 export const swordWorld25SystemStats = {
   average: 7,

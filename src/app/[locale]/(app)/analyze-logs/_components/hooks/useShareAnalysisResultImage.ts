@@ -30,11 +30,11 @@ export const useShareAnalysisResultImage = () => {
     (onCompleted?: () => void) => {
       if (!result) return;
 
-      const { average, deviationScore, successRate, diceRollCount } = result.summary;
+      const { average, deviationScore, successRate, evaluatedRollCount, diceRollCount } = result.summary;
 
       const averageStr = round(average, 2);
       const deviationScoreStr = round(deviationScore, 2);
-      const successRateStr = `${round(successRate, 2)}%`;
+      const successRateStr = evaluatedRollCount === 0 ? '-' : `${round(successRate, 2)}%`;
       const text = encodeURIComponent(
         t('analyze-logs:share-analysis-result.share-text', {
           average: averageStr,

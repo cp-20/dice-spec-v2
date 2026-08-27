@@ -53,7 +53,7 @@ export const SharingAnalysisResultScreen = forwardRef<HTMLDivElement, Props>(
             <Stats
               label={t('analyze-logs:stats.success-rate')}
               number={evaluatedRollCount === 0 ? '-' : round(analysisResult.summary.successRate, 2)}
-              unit="%"
+              unit={evaluatedRollCount === 0 ? undefined : '%'}
               small={evaluatedRollCountLabel}
             />
             <Stats
