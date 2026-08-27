@@ -11,6 +11,12 @@ interface LogAnalysisStatsViewProps {
 
 export const LogAnalysisStatsView: FC<LogAnalysisStatsViewProps> = ({ result }) => {
   const numberWrapper = (number: ReactNode) => result && number;
+  const evaluatedRollCount = result?.summary.evaluatedRollCount;
+  const successRate = evaluatedRollCount === 0 ? undefined : result && round(result.summary.successRate, 2);
+  const evaluatedRollCountLabel =
+    evaluatedRollCount !== undefined && evaluatedRollCount !== result?.summary.diceRollCount
+      ? t('analyze-logs:stats.evaluated-roll-count', { count: evaluatedRollCount })
+      : undefined;
 
   return (
     <div className="@container">
@@ -21,8 +27,9 @@ export const LogAnalysisStatsView: FC<LogAnalysisStatsViewProps> = ({ result }) 
         />
         <Stats
           label={t('analyze-logs:stats.success-rate')}
-          number={numberWrapper(result && round(result.summary.successRate, 2))}
+          number={numberWrapper(successRate)}
           unit="%"
+          small={evaluatedRollCountLabel}
         />
         <Stats
           label={t('analyze-logs:stats.roll-count')}

@@ -16,6 +16,7 @@ describe('summarizeResults', () => {
     const summary = summarizeResults(results, stats);
     expect(summary).toEqual({
       successRate: 60,
+      evaluatedRollCount: 5,
       average: 38,
       diceRollCount: 5,
       diceCount: 5,
@@ -28,6 +29,9 @@ describe('summarizeResults', () => {
       { evaluation: '', evaluationStatus: 'other', results: [7], target: -1, skillName: null },
     ];
 
-    expect(summarizeResults(results, CoC6thSystemStats).successRate).toBe(0);
+    expect(summarizeResults(results, CoC6thSystemStats)).toMatchObject({
+      successRate: 0,
+      evaluatedRollCount: 0,
+    });
   });
 });

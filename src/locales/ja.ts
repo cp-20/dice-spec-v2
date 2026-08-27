@@ -226,6 +226,7 @@ export const ja = {
     stats: {
       mean: '平均',
       'success-rate': '成功率',
+      'evaluated-roll-count': '{{count}}回を評価',
       'roll-count': 'ダイスを振った回数',
       'roll-count-unit': '回',
       'dice-count-unit': '個',

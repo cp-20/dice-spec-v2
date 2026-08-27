@@ -10,6 +10,7 @@ import { CoC7thParser, CoC7thSystemStats } from './cthulhu7th';
 import { emokloreParser, emokloreSystemStats } from './emoklore';
 import { nechronicaParser, nechronicaSystemStats } from './nechronica';
 import { shinobigamiParser, shinobigamiSystemStats } from './shinobigami';
+import { swordWorld25Parser, swordWorld25SystemStats } from './swordWorld25';
 
 export type {
   MessageParserResult,
@@ -24,6 +25,7 @@ export const systemStats: Record<System, SystemStats> = {
   CoC7th: CoC7thSystemStats,
   shinobigami: shinobigamiSystemStats,
   nechronica: nechronicaSystemStats,
+  'SwordWorld2.5': swordWorld25SystemStats,
 };
 
 export const systems: Record<System, { id: System; name: string }> = {
@@ -32,6 +34,7 @@ export const systems: Record<System, { id: System; name: string }> = {
   CoC7th: { id: 'CoC7th', name: '新クトゥルフ神話TRPG' },
   shinobigami: { id: 'shinobigami', name: 'シノビガミ' },
   nechronica: { id: 'nechronica', name: 'ネクロニカ' },
+  'SwordWorld2.5': { id: 'SwordWorld2.5', name: 'ソード・ワールド2.5' },
 };
 
 export const parsers: Record<System, SystemMessageParser> = {
@@ -40,12 +43,20 @@ export const parsers: Record<System, SystemMessageParser> = {
   CoC7th: CoC7thParser,
   shinobigami: shinobigamiParser,
   nechronica: nechronicaParser,
+  'SwordWorld2.5': swordWorld25Parser,
 };
 
 export const parseMessage = (system: System, message: string) => postprocess(system, parsers[system](message));
 
 const postprocess = (system: System, result: SystemMessageParserResult | null) => {
   if (result === null) return null;
+
+  if (result.evaluation === '') {
+    return {
+      ...result,
+      evaluationStatus: 'other' as const,
+    };
+  }
 
   const stats = systemStats[system];
   const rawEval = stats.evaluations.find((e) => e.label === result.evaluation);

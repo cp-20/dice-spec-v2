@@ -19,6 +19,7 @@ const validAnalysis = () => ({
         average: 50,
         deviationScore: 52,
         successRate: 60,
+        evaluatedRollCount: 10,
         diceRollCount: 10,
         diceCount: 10,
       },
@@ -41,6 +42,16 @@ const validAnalysis = () => ({
 describe('parseAnalysisDocument', () => {
   test('全体集計を先頭に持つ正しい解析を読み込める', () => {
     expect(parseAnalysisDocument(validAnalysis())).not.toBeNull();
+  });
+
+  test('SW2.5の解析を読み込める', () => {
+    expect(parseAnalysisDocument({ ...validAnalysis(), systemId: 'SwordWorld2.5' })).not.toBeNull();
+  });
+
+  test('旧形式の解析に評価対象数がなくても読み込める', () => {
+    const analysis = validAnalysis();
+    delete (analysis.characterResults[0].summary as { evaluatedRollCount?: number }).evaluatedRollCount;
+    expect(parseAnalysisDocument(analysis)).not.toBeNull();
   });
 
   test('全体集計がない解析は一覧全体を壊さず無効として扱う', () => {

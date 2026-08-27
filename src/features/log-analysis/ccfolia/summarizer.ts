@@ -17,5 +17,5 @@ export const summarizeResults = (results: MessageParserResult[], stats: SystemSt
   const SD = Math.sqrt(stats.variance / diceCount);
   const deviationScore = ((stats.better === 'low' ? -1 : 1) * (average - stats.average) * 10) / SD + 50;
 
-  return { successRate, average, diceRollCount, diceCount, deviationScore };
+  return { successRate, evaluatedRollCount: evaluatedCount, average, diceRollCount, diceCount, deviationScore };
 };

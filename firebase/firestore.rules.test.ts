@@ -1,5 +1,5 @@
 import { describe, test, afterAll, afterEach, beforeAll, setDefaultTimeout, spyOn } from 'bun:test';
-import { type ChildProcessWithoutNullStreams, spawn } from 'node:child_process';
+import { type ChildProcess, spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import net from 'node:net';
 import { resolve } from 'node:path';
@@ -27,11 +27,9 @@ import {
 } from 'firebase/firestore';
 import { list as storageList, ref as storageRef } from 'firebase/storage';
 
-import { getAllProcessEnv } from '../src/shared/lib/env';
-
 const PROJECT_ID = 'test-dice-spec-v2';
 const FIRESTORE_EMULATOR_HOST = '127.0.0.1';
-const FIRESTORE_EMULATOR_PORT = 8080;
+const FIRESTORE_EMULATOR_PORT = 18080;
 const STORAGE_EMULATOR_HOST = '127.0.0.1';
 const STORAGE_EMULATOR_PORT = 9199;
 const STORAGE_BUCKET = `gs://${PROJECT_ID}.appspot.com`;
@@ -43,14 +41,23 @@ const now = Timestamp.fromDate(new Date('2026-03-18T00:00:00.000Z'));
 const isPortOpen = (host: string, port: number): Promise<boolean> =>
   new Promise((resolvePromise) => {
     const socket = net.createConnection({ host, port });
+    const finish = (isOpen: boolean) => {
+      socket.removeAllListeners();
+      socket.destroy();
+      resolvePromise(isOpen);
+    };
 
     socket.once('connect', () => {
-      socket.end();
-      resolvePromise(true);
+      finish(true);
     });
 
     socket.once('error', () => {
-      resolvePromise(false);
+      finish(false);
+    });
+
+    socket.setTimeout(500);
+    socket.once('timeout', () => {
+      finish(false);
     });
   });
 
@@ -62,10 +69,53 @@ const waitForPortOpen = async (host: string, port: number, timeoutMs: number) =>
     await new Promise((resolvePromise) => setTimeout(resolvePromise, 200));
   }
 
-  throw new Error(`Timed out waiting for Firestore Emulator at ${host}:${port}`);
+  throw new Error(`Timed out waiting for Emulator at ${host}:${port}`);
 };
 
-const stopEmulator = async (processRef: ChildProcessWithoutNullStreams) => {
+const waitForPortOrProcessExit = async (
+  processRef: ChildProcess,
+  emulatorName: string,
+  host: string,
+  port: number,
+  timeoutMs: number,
+): Promise<void> =>
+  new Promise((resolvePromise, rejectPromise) => {
+    const cleanup = () => {
+      processRef.off('error', onError);
+      processRef.off('exit', onExit);
+    };
+    const resolve = () => {
+      cleanup();
+      resolvePromise();
+    };
+    const reject = (error: unknown) => {
+      cleanup();
+      rejectPromise(error);
+    };
+    const onError = (error: Error) => {
+      reject(new Error(`Failed to start Firebase Emulator CLI while waiting for ${emulatorName}`, { cause: error }));
+    };
+    const onExit = (code: number | null, signal: NodeJS.Signals | null) => {
+      reject(
+        new Error(
+          `Firebase Emulator CLI exited before ${emulatorName} was ready (code=${String(code)}, signal=${String(signal)})`,
+        ),
+      );
+    };
+
+    if (processRef.exitCode !== null || processRef.signalCode !== null) {
+      onExit(processRef.exitCode, processRef.signalCode);
+      return;
+    }
+
+    processRef.once('error', onError);
+    processRef.once('exit', onExit);
+    void waitForPortOpen(host, port, timeoutMs).then(resolve, reject);
+  });
+
+const stopEmulator = async (processRef: ChildProcess) => {
+  if (processRef.pid === undefined || processRef.exitCode !== null || processRef.signalCode !== null) return;
+
   processRef.kill('SIGINT');
 
   await new Promise<void>((resolvePromise, rejectPromise) => {
@@ -172,7 +222,7 @@ const deleteAnalysisWithCountSync = async (db: TestFirestore, uid: string, analy
 
 describe('Firestore セキュリティルール', () => {
   let testEnv: RulesTestEnvironment;
-  let emulatorProcess: ChildProcessWithoutNullStreams | null = null;
+  let emulatorProcess: ChildProcess | null = null;
   let startedByTest = false;
 
   const errorSpy = spyOn(console, 'error');
@@ -203,19 +253,34 @@ describe('Firestore セキュリティルール', () => {
         ],
         {
           cwd: process.cwd(),
-          env: {
-            ...getAllProcessEnv(),
-            FIRESTORE_EMULATOR_HOST: `${FIRESTORE_EMULATOR_HOST}:${FIRESTORE_EMULATOR_PORT}`,
-            FIREBASE_STORAGE_EMULATOR_HOST: `${STORAGE_EMULATOR_HOST}:${STORAGE_EMULATOR_PORT}`,
-          },
+          stdio: 'inherit',
         },
       );
       startedByTest = true;
-      if (!firestoreRunning) {
-        await waitForPortOpen(FIRESTORE_EMULATOR_HOST, FIRESTORE_EMULATOR_PORT, 30000);
-      }
-      if (!storageRunning) {
-        await waitForPortOpen(STORAGE_EMULATOR_HOST, STORAGE_EMULATOR_PORT, 30000);
+      try {
+        if (!firestoreRunning) {
+          await waitForPortOrProcessExit(
+            emulatorProcess,
+            'Firestore Emulator',
+            FIRESTORE_EMULATOR_HOST,
+            FIRESTORE_EMULATOR_PORT,
+            30000,
+          );
+        }
+        if (!storageRunning) {
+          await waitForPortOrProcessExit(
+            emulatorProcess,
+            'Storage Emulator',
+            STORAGE_EMULATOR_HOST,
+            STORAGE_EMULATOR_PORT,
+            30000,
+          );
+        }
+      } catch (error) {
+        await stopEmulator(emulatorProcess);
+        emulatorProcess = null;
+        startedByTest = false;
+        throw error;
       }
     }
 
@@ -337,6 +402,21 @@ describe('Firestore セキュリティルール', () => {
     const ownerDb = testEnv.authenticatedContext('user_1').firestore();
 
     await assertSucceeds(saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1'));
+  });
+
+  test('analyses: SW2.5の解析ドキュメントを作成できる', async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const adminDb = context.firestore();
+      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
+    });
+
+    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
+
+    await assertSucceeds(
+      saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1', {
+        systemId: 'SwordWorld2.5',
+      }),
+    );
   });
 
   test('analyses: owner スナップショットが users と不一致なら作成できない', async () => {
