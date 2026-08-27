@@ -69,10 +69,53 @@ const waitForPortOpen = async (host: string, port: number, timeoutMs: number) =>
     await new Promise((resolvePromise) => setTimeout(resolvePromise, 200));
   }
 
-  throw new Error(`Timed out waiting for Firestore Emulator at ${host}:${port}`);
+  throw new Error(`Timed out waiting for Emulator at ${host}:${port}`);
 };
 
+const waitForPortOrProcessExit = async (
+  processRef: ChildProcess,
+  emulatorName: string,
+  host: string,
+  port: number,
+  timeoutMs: number,
+): Promise<void> =>
+  new Promise((resolvePromise, rejectPromise) => {
+    const cleanup = () => {
+      processRef.off('error', onError);
+      processRef.off('exit', onExit);
+    };
+    const resolve = () => {
+      cleanup();
+      resolvePromise();
+    };
+    const reject = (error: unknown) => {
+      cleanup();
+      rejectPromise(error);
+    };
+    const onError = (error: Error) => {
+      reject(new Error(`Failed to start Firebase Emulator CLI while waiting for ${emulatorName}`, { cause: error }));
+    };
+    const onExit = (code: number | null, signal: NodeJS.Signals | null) => {
+      reject(
+        new Error(
+          `Firebase Emulator CLI exited before ${emulatorName} was ready (code=${String(code)}, signal=${String(signal)})`,
+        ),
+      );
+    };
+
+    if (processRef.exitCode !== null || processRef.signalCode !== null) {
+      onExit(processRef.exitCode, processRef.signalCode);
+      return;
+    }
+
+    processRef.once('error', onError);
+    processRef.once('exit', onExit);
+    void waitForPortOpen(host, port, timeoutMs).then(resolve, reject);
+  });
+
 const stopEmulator = async (processRef: ChildProcess) => {
+  if (processRef.pid === undefined || processRef.exitCode !== null || processRef.signalCode !== null) return;
+
   processRef.kill('SIGINT');
 
   await new Promise<void>((resolvePromise, rejectPromise) => {
@@ -214,11 +257,30 @@ describe('Firestore セキュリティルール', () => {
         },
       );
       startedByTest = true;
-      if (!firestoreRunning) {
-        await waitForPortOpen(FIRESTORE_EMULATOR_HOST, FIRESTORE_EMULATOR_PORT, 30000);
-      }
-      if (!storageRunning) {
-        await waitForPortOpen(STORAGE_EMULATOR_HOST, STORAGE_EMULATOR_PORT, 30000);
+      try {
+        if (!firestoreRunning) {
+          await waitForPortOrProcessExit(
+            emulatorProcess,
+            'Firestore Emulator',
+            FIRESTORE_EMULATOR_HOST,
+            FIRESTORE_EMULATOR_PORT,
+            30000,
+          );
+        }
+        if (!storageRunning) {
+          await waitForPortOrProcessExit(
+            emulatorProcess,
+            'Storage Emulator',
+            STORAGE_EMULATOR_HOST,
+            STORAGE_EMULATOR_PORT,
+            30000,
+          );
+        }
+      } catch (error) {
+        await stopEmulator(emulatorProcess);
+        emulatorProcess = null;
+        startedByTest = false;
+        throw error;
       }
     }
 
