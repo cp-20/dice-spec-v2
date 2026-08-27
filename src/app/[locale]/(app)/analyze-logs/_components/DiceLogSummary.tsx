@@ -36,6 +36,8 @@ const summarizeBySkill = (results: LogResult[]): SkillSummary[] => {
   const untaggedSkillName = t('analyze-logs:skill-summary.untagged');
 
   for (const result of results) {
+    if (result.evaluationStatus === 'other') continue;
+
     const skillName = result.skillName ?? untaggedSkillName;
     const key = skillName;
     const current = map.get(key);
@@ -123,7 +125,7 @@ export const DiceLogSummaryView: FC<DiceLogSummaryViewProps> = ({ results }) => 
                       <td className="py-2 pl-2 text-right tabular-nums text-lg font-semibold text-slate-900">
                         {round(summary.successRate, 1)}%{' '}
                         <span className="text-xs font-normal text-slate-500">
-                          ({summary.successCount}/{summary.rollCount})
+                          ({summary.successCount}/{summary.successCount + summary.failureCount})
                         </span>
                       </td>
                     </tr>

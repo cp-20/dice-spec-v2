@@ -1,7 +1,7 @@
 export const ALL_CHARACTER_ID = 'all';
 export const ALL_CHARACTER_NAME = '[ALL]';
 
-export type System = 'emoklore' | 'CoC7th' | 'CoC6th' | 'shinobigami' | 'nechronica';
+export type System = 'emoklore' | 'CoC7th' | 'CoC6th' | 'shinobigami' | 'nechronica' | 'SwordWorld2.5';
 
 export type SystemMessageParserResult = {
   evaluation: string;
@@ -26,6 +26,7 @@ export type SystemStats = {
 
 export type DiceResultSummary = {
   successRate: number;
+  evaluatedRollCount?: number;
   average: number;
   diceRollCount: number;
   diceCount: number;

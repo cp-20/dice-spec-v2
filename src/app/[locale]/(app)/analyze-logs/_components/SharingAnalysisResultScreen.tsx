@@ -35,6 +35,12 @@ interface Props {
 
 export const SharingAnalysisResultScreen = forwardRef<HTMLDivElement, Props>(
   ({ scenarioName, analysisResult }, ref) => {
+    const evaluatedRollCount = analysisResult.summary.evaluatedRollCount;
+    const evaluatedRollCountLabel =
+      evaluatedRollCount !== undefined && evaluatedRollCount !== analysisResult.summary.diceRollCount
+        ? t('analyze-logs:stats.evaluated-roll-count', { count: evaluatedRollCount })
+        : undefined;
+
     return (
       <div ref={ref} className="p-12 pl-24 bg-white aspect-1200/630 relative flex flex-col gap-20 w-full">
         <div className="text-4xl font-bold text-slate-900">
@@ -46,8 +52,9 @@ export const SharingAnalysisResultScreen = forwardRef<HTMLDivElement, Props>(
             <Stats label={t('analyze-logs:stats.mean')} number={round(analysisResult.summary.average, 2)} />
             <Stats
               label={t('analyze-logs:stats.success-rate')}
-              number={round(analysisResult.summary.successRate, 2)}
+              number={evaluatedRollCount === 0 ? '-' : round(analysisResult.summary.successRate, 2)}
               unit="%"
+              small={evaluatedRollCountLabel}
             />
             <Stats
               label={t('analyze-logs:stats.roll-count')}

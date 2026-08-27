@@ -224,6 +224,7 @@ export const en = {
     stats: {
       mean: 'Mean',
       'success-rate': 'Success Rate',
+      'evaluated-roll-count': '{{count}} evaluated',
       'roll-count': 'Number of dice rolled',
       'roll-count-unit': '',
       'dice-count-unit': '',

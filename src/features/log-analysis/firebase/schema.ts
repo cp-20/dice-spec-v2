@@ -28,6 +28,7 @@ const analysisSummarySchema = v.object({
   average: v.number(),
   deviationScore: v.number(),
   successRate: v.number(),
+  evaluatedRollCount: v.optional(v.number()),
   diceRollCount: v.number(),
   diceCount: v.number(),
 });
@@ -45,6 +46,7 @@ const analysisSystemSchema = v.union([
   v.literal('CoC6th'),
   v.literal('shinobigami'),
   v.literal('nechronica'),
+  v.literal('SwordWorld2.5'),
 ]);
 
 export const analysisDocumentSchema = v.pipe(
