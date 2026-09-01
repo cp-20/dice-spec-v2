@@ -155,6 +155,7 @@ export const clientEnv = {
 const createTestEnv = () => {
   const firebaseProjectId = process.env.TEST_FIREBASE_PROJECT_ID ?? 'demo-dice-spec-v2';
   const emulatorHost = '127.0.0.1';
+  const storageEmulatorPort = 9199;
   const requiredTestEnv = (name: string, value: string | undefined): string => {
     if (!value) throw new Error(`[env:test] Missing required environment variable: ${name}`);
     return value;
@@ -183,9 +184,17 @@ const createTestEnv = () => {
         },
         storage: {
           host: emulatorHost,
-          port: 9199,
+          port: storageEmulatorPort,
         },
-        get client(): { authUrl: string; firestoreHost: string; firestorePort: number } | undefined {
+        get client():
+          | {
+              authUrl: string;
+              firestoreHost: string;
+              firestorePort: number;
+              storageHost: string;
+              storagePort: number;
+            }
+          | undefined {
           if (process.env.NEXT_PUBLIC_FIREBASE_USE_EMULATORS !== 'true') return undefined;
 
           return {
@@ -205,6 +214,8 @@ const createTestEnv = () => {
               ),
               10,
             ),
+            storageHost: emulatorHost,
+            storagePort: storageEmulatorPort,
           };
         },
       },
