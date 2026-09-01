@@ -20,7 +20,7 @@ export const PlanManagementSection = () => {
   const { me } = useMeStore();
   const { toast } = useToast();
   const [managingSubscription, setManagingSubscription] = useState(false);
-  const { sendEvent } = useGoogleAnalytics();
+  const { sendEvent, sendEventBeforeNavigation } = useGoogleAnalytics();
 
   const handleOpenPortal = async () => {
     if (me === null) return;
@@ -42,8 +42,9 @@ export const PlanManagementSection = () => {
         throw new Error('Stripe portal URL not found');
       }
 
-      sendEvent('open_billing_portal', { success: true });
-      window.location.href = data.url;
+      sendEventBeforeNavigation('open_billing_portal', { success: true }, () => {
+        window.location.href = data.url;
+      });
     } catch (error) {
       sendEvent('open_billing_portal', { success: false });
       console.error('Error opening subscription portal:', error);
@@ -52,7 +53,6 @@ export const PlanManagementSection = () => {
         description: t('profile:toast.manage-subscription-error-description'),
         variant: 'destructive',
       });
-    } finally {
       setManagingSubscription(false);
     }
   };

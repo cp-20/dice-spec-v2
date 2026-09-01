@@ -17,8 +17,13 @@ export const ResultView: FC = () => {
   const { sendEvent } = useGoogleAnalytics();
 
   const handleCopyToClipboard = useCallback(async () => {
-    await navigator.clipboard.writeText(formResult);
-    sendEvent('copy_ccfolia_character');
+    try {
+      await navigator.clipboard.writeText(formResult);
+      sendEvent('copy_ccfolia_character', { success: true });
+    } catch {
+      sendEvent('copy_ccfolia_character', { success: false });
+      return;
+    }
 
     setDone(true);
     const timeout = setTimeout(() => setDone(false), 1000);

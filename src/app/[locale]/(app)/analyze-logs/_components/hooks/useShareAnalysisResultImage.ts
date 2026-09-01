@@ -45,7 +45,7 @@ export const useShareAnalysisResultImage = () => {
       );
 
       if (sharingImageDataUrl === null || authUser === null) {
-        sendEvent('share', { method: 'X', content_type: 'analysis', authenticated: false });
+        sendEvent('share', { method: 'X', content_type: 'analysis', authenticated: authUser !== null });
         const url = encodeURIComponent('https://dicespec.app/analyze-logs');
         const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
         window.open(href, '_blank');

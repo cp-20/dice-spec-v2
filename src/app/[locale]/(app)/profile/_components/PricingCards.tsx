@@ -23,19 +23,24 @@ export const PricingCards = () => {
   const { toast } = useToast();
   const [interval, setInterval] = useState<BillingInterval>('yearly');
   const [loading, setLoading] = useState(false);
-  const { sendEvent } = useGoogleAnalytics();
+  const { sendEvent, sendEventBeforeNavigation } = useGoogleAnalytics();
 
   const handleUpgrade = async () => {
     setLoading(true);
     try {
       const data = await createCheckoutSession({ interval });
       const value = interval === 'monthly' ? MONTHLY_PRICE : YEARLY_PRICE;
-      sendEvent('begin_checkout', {
-        currency: 'JPY',
-        value,
-        items: [{ item_id: `pro_${interval}`, item_name: 'Pro', price: value, quantity: 1 }],
-      });
-      window.location.href = data.url;
+      sendEventBeforeNavigation(
+        'begin_checkout',
+        {
+          currency: 'JPY',
+          value,
+          items: [{ item_id: `pro_${interval}`, item_name: 'Pro', price: value, quantity: 1 }],
+        },
+        () => {
+          window.location.href = data.url;
+        },
+      );
     } catch (error) {
       sendEvent('checkout_error', { billing_interval: interval });
       console.error('Error upgrading:', error);
@@ -44,7 +49,6 @@ export const PricingCards = () => {
         description: t('profile:toast.upgrade-error-description'),
         variant: 'destructive',
       });
-    } finally {
       setLoading(false);
     }
   };
