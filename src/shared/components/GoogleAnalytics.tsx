@@ -1,3 +1,5 @@
+'use client';
+
 import Script from 'next/script';
 import type { FC } from 'react';
 
@@ -25,6 +27,9 @@ export const GoogleAnalytics: FC = () => {
         id="google-analytics"
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(googleAnalyticsId)}`}
+        onLoad={() => {
+          window.googleAnalyticsLoaded = true;
+        }}
       />
     </>
   );

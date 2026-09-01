@@ -4,6 +4,7 @@ declare global {
   interface Window {
     dataLayer: unknown[];
     gtag?: (...args: unknown[]) => void;
+    googleAnalyticsLoaded?: boolean;
   }
 }
 
@@ -30,6 +31,11 @@ export const sendGoogleAnalyticsEventBeforeNavigation = (
   parameters: EventParameters,
   navigate: () => void,
 ) => {
+  if (!window.googleAnalyticsLoaded) {
+    navigate();
+    return;
+  }
+
   let navigated = false;
   let timeoutId: number | undefined;
   const navigateOnce = () => {
