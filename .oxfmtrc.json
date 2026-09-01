@@ -11,5 +11,11 @@
   "bracketSameLine": false,
   "bracketSpacing": true,
   "ignorePatterns": ["cloudflare-env.d.ts", "next-env.d.ts"],
+  "overrides": [
+    {
+      "files": ["firebase/firestore.indexes.jsonc"],
+      "options": { "trailingComma": "none" }
+    }
+  ],
   "sortImports": true
 }
