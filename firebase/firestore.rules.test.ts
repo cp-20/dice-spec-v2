@@ -276,6 +276,18 @@ describe('Firebase セキュリティルール', () => {
       await assertSucceeds(saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1'));
     });
 
+    test('アバターなしでも解析ドキュメントを作成できる', async () => {
+      const { avatarUrl: _userAvatarUrl, ...userWithoutAvatar } = userDoc();
+      const { avatarUrl: _ownerAvatarUrl, ...ownerWithoutAvatar } = ownerSnapshot();
+      await testEnv.seedFirestore(seed('users/user_1', userWithoutAvatar));
+
+      await assertSucceeds(
+        saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1', {
+          owner: ownerWithoutAvatar,
+        }),
+      );
+    });
+
     test('SW2.5の解析ドキュメントを作成できる', async () => {
       await assertSucceeds(
         saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1', {

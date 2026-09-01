@@ -155,7 +155,7 @@ service cloud.firestore {
       return userDoc.data != null
         && owner.id == uid
         && owner.name == userDoc.data.name
-        && owner.avatarUrl == userDoc.data.avatarUrl
+        && owner.get('avatarUrl', null) == userDoc.data.get('avatarUrl', null)
         && owner.plan == userDoc.data.plan
         && owner.createdAt == userDoc.data.createdAt
         && owner.updatedAt is timestamp;
