@@ -8,6 +8,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { sendFeedback } from '@/shared/lib/webhook';
 
@@ -29,11 +30,11 @@ export const FeedbackForm = ({ header, onSubmitted }: { header?: ReactNode; onSu
         description: t('common:header.feedback.submitted-description'),
         variant: 'default',
       });
-      sendEvent('submit_feedback', { success: true });
+      sendEvent('submit_feedback');
       onSubmitted?.();
     } catch (err) {
-      sendEvent('submit_feedback', { success: false });
       console.error('Failed to send feedback', err);
+      captureClientException(err);
       toast({
         title: t('common:header.feedback.error'),
         variant: 'destructive',

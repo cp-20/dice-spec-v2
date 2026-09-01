@@ -104,7 +104,7 @@ export const useDiceRoll = () => {
   const diceRoll = useCallback(
     async (command: string) => {
       const result = await diceRollCore(command);
-      sendEvent('roll_dice', { mode: 'advanced', game_system: system, success: result.ok });
+      if (result.ok) sendEvent('roll_dice', { mode: 'advanced', game_system: system });
       play();
 
       if (!result.ok) {

@@ -6,6 +6,7 @@ import { type FC, useCallback, useRef } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useDropzone } from './hooks/useDropzone';
@@ -44,10 +45,10 @@ export const UploadLogFileButton: FC = () => {
         );
         setLogFiles((prev) => [...prev, ...readFiles]);
         resetSelectedTabs();
-        sendEvent('upload_log', { success: true, file_count: files.length });
+        sendEvent('upload_log', { file_count: files.length });
       } catch (error) {
-        sendEvent('upload_log', { success: false, file_count: files.length });
         console.error('Failed to read log file:', error);
+        captureClientException(error);
         toast({ title: t('analyze-logs:error'), variant: 'destructive' });
       } finally {
         if (inputRef.current) inputRef.current.value = '';

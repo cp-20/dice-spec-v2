@@ -22,6 +22,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useAnalysisOgImage } from './hooks/useAnalysisOgImage';
@@ -98,15 +99,14 @@ export const AnalysisSavePanel: FC = () => {
 
       const analysisId = await saveAnalysis(payload);
       sendEvent('save_analysis', {
-        success: true,
         visibility,
         show_record_details: showRecordDetails,
         plan: me.plan,
       });
       router.push(t('link', { href: `/analyze-logs/${analysisId}` }));
     } catch (err) {
-      sendEvent('save_analysis', { success: false, visibility, plan: me.plan });
       console.error(err);
+      captureClientException(err);
       toast({
         title: t('analyze-logs:save.failed.title'),
         description: t('analyze-logs:save.failed.description'),

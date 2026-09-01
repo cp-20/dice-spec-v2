@@ -4,6 +4,7 @@ import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { useCallback } from 'react';
 
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { getFirebaseAuth } from './client';
@@ -42,7 +43,7 @@ export const useFirebaseAuth = () => {
       sendEvent('login', { method: 'Google' });
     } catch (err) {
       if (isExpectedSignInCancellation(err)) return;
-      sendEvent('login_error', { method: 'Google' });
+      captureClientException(err);
       throw err;
     }
   }, [auth, sendEvent]);

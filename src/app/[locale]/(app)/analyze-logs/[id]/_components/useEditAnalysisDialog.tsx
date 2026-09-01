@@ -22,6 +22,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useAnalysisOgImage } from '../../_components/hooks/useAnalysisOgImage';
@@ -74,11 +75,11 @@ export const useEditAnalysisDialog = () => {
         showRecordDetails: showRecordDetails,
         sessionDate: Timestamp.fromDate(new Date(sessionDate)),
       });
-      sendEvent('update_analysis', { success: true, visibility });
+      sendEvent('update_analysis', { visibility });
       setIsOpen(false);
     } catch (error) {
-      sendEvent('update_analysis', { success: false, visibility });
       console.error(error);
+      captureClientException(error);
       toast({ title: t('analyze-logs:edit-dialog.failed'), variant: 'destructive' });
     }
   };

@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { sendGameSystemRequest } from '@/shared/lib/webhook';
 
@@ -31,7 +32,7 @@ export const useGameSystemRequestDialog = () => {
     e.preventDefault();
     try {
       await sendGameSystemRequest({ system, logFile });
-      sendEvent('request_game_system', { success: true, has_log_file: logFile !== null });
+      sendEvent('request_game_system', { has_log_file: logFile !== null });
       setIsOpen(false);
       toast({
         title: t('analyze-logs:game-system-request:submitted'),
@@ -39,8 +40,8 @@ export const useGameSystemRequestDialog = () => {
         variant: 'default',
       });
     } catch (err) {
-      sendEvent('request_game_system', { success: false, has_log_file: logFile !== null });
       console.error(err);
+      captureClientException(err);
       toast({
         title: t('analyze-logs:game-system-request:error'),
         variant: 'destructive',

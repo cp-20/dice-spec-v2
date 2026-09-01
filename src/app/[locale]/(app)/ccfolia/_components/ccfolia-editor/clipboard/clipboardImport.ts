@@ -29,13 +29,12 @@ export const loadClipboardCharacterAtom = atom(null, async (get, set): Promise<b
     set(selectionAtom, { characterId: null, revision: null });
     set(remoteConflictAtom, null);
     resetEditorAsUnsavedNew(form, character);
-    sendGoogleAnalyticsEvent('load_ccfolia_character', { success: true });
+    sendGoogleAnalyticsEvent('load_ccfolia_character');
     return true;
-  } catch {
+  } catch (loadError) {
     if (!operationIsCurrent()) return false;
-    sendGoogleAnalyticsEvent('load_ccfolia_character', { success: false });
     console.error('CCFOLIA_CLIPBOARD_LOAD_FAILED');
-    captureClientException(new Error('CCFOLIA_CLIPBOARD_LOAD_FAILED'));
+    captureClientException(loadError);
     toast({
       title: t('ccfolia:load-clipboard.error'),
       description: t('ccfolia:load-clipboard.error-description'),

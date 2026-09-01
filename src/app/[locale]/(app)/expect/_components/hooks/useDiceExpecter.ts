@@ -34,8 +34,9 @@ export const useRecalculation = () => {
       return setResult(null);
     }
 
-    sendEvent('calculate_probability', { mode: 'manual' });
-    setResult(diceExpecter(command));
+    const result = diceExpecter(command);
+    setResult(result);
+    if (result.success) sendEvent('calculate_probability', { mode: 'manual' });
   }, [command, sendEvent, setResult]);
 
   return {
@@ -56,8 +57,9 @@ const useAutoRecalculation = (enabled: boolean) => {
       return setResult(null);
     }
 
-    sendEvent('calculate_probability', { mode: 'automatic' });
-    setResult(diceExpecter(debouncedCommand));
+    const result = diceExpecter(debouncedCommand);
+    setResult(result);
+    if (result.success) sendEvent('calculate_probability', { mode: 'automatic' });
   }, [debouncedCommand, enabled, sendEvent, setResult]);
 };
 

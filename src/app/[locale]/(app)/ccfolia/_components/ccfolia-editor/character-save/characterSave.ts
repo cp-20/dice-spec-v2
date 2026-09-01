@@ -143,7 +143,7 @@ export const saveCharacterAtom = atom(
       }
 
       if (!operationIsCurrent()) return;
-      sendGoogleAnalyticsEvent('save_ccfolia_character', { action: intent, success: true });
+      sendGoogleAnalyticsEvent('save_ccfolia_character', { action: intent });
       set(successfulSaveFeedbacksAtom, (current) => {
         const feedbackKey = saveFeedbackKey(intent, characterId);
         const previous = current.get(feedbackKey);
@@ -164,7 +164,6 @@ export const saveCharacterAtom = atom(
       }
     } catch (saveError) {
       if (!operationIsCurrent()) return;
-      sendGoogleAnalyticsEvent('save_ccfolia_character', { action: intent, success: false });
       if (saveError instanceof CcfoliaCharacterConflictError || saveError instanceof CcfoliaCharacterNotFoundError) {
         if (operationStillOwnsEditor()) {
           set(remoteConflictAtom, saveError instanceof CcfoliaCharacterNotFoundError ? 'deleted' : 'updated');

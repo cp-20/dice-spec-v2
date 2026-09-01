@@ -598,8 +598,8 @@ describe('CcfoliaEditor', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'クリップボードから読み込む' }));
     await waitFor(() => expect(nameInput.value).toBe('読み込んだキャラ'));
-    expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('delete_saved_ccfolia_character', { success: true });
-    expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('load_ccfolia_character', { success: true });
+    expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('delete_saved_ccfolia_character');
+    expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('load_ccfolia_character');
     await act(async () => resolveUpdate(2));
     expect(nameInput.value).toBe('読み込んだキャラ');
     readText.mockRestore();
@@ -662,7 +662,6 @@ describe('CcfoliaEditor', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: '保存しました' })).toBeTruthy());
     expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('save_ccfolia_character', {
       action: 'overwrite',
-      success: true,
     });
   });
 
@@ -683,7 +682,7 @@ describe('CcfoliaEditor', () => {
     act(() => vi.advanceTimersByTime(600));
 
     expect(screen.getByRole('button', { name: `コピーしました: ${character.name}` })).toBeTruthy();
-    expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('export_saved_ccfolia_character', { success: true });
+    expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('export_saved_ccfolia_character');
     writeText.mockRestore();
   });
 

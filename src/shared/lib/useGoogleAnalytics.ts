@@ -1,3 +1,5 @@
+import { captureClientException } from './sentryClient';
+
 declare global {
   interface Window {
     dataLayer: unknown[];
@@ -18,6 +20,7 @@ export const sendGoogleAnalyticsEvent = (event: string, parameters: EventParamet
     return true;
   } catch (error) {
     console.error('Failed to send Google Analytics event:', error);
+    captureClientException(error);
     return false;
   }
 };

@@ -22,19 +22,16 @@ export const ResultView: FC<ResultViewProps> = ({ formResult }) => {
   const { sendEvent } = useGoogleAnalytics();
 
   const handleCopyToClipboard = useCallback(async () => {
-    let success = false;
     try {
       await navigator.clipboard.writeText(formResult);
-      success = true;
     } catch (copyError) {
       console.error('Failed to copy CCFOLIA result', copyError);
       captureClientException(copyError);
       toast({ title: t('ccfolia:copy-error'), variant: 'destructive' });
       return;
-    } finally {
-      sendEvent('copy_ccfolia_character', { success });
     }
 
+    sendEvent('copy_ccfolia_character');
     showDone();
   }, [formResult, sendEvent, showDone, toast]);
 

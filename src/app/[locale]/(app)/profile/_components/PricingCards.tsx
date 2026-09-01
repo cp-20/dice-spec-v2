@@ -9,6 +9,7 @@ import type { BillingInterval } from '@/features/stripe/contract';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { cn } from '@/shared/lib/shadcn-utils';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
@@ -23,7 +24,7 @@ export const PricingCards = () => {
   const { toast } = useToast();
   const [interval, setInterval] = useState<BillingInterval>('yearly');
   const [loading, setLoading] = useState(false);
-  const { sendEvent, sendEventBeforeNavigation } = useGoogleAnalytics();
+  const { sendEventBeforeNavigation } = useGoogleAnalytics();
 
   const handleUpgrade = async () => {
     setLoading(true);
@@ -42,8 +43,8 @@ export const PricingCards = () => {
         },
       );
     } catch (error) {
-      sendEvent('checkout_error', { billing_interval: interval });
       console.error('Error upgrading:', error);
+      captureClientException(error);
       toast({
         title: t('profile:toast.upgrade-error-title'),
         description: t('profile:toast.upgrade-error-description'),

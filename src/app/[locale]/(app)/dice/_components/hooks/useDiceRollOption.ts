@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 
 import { defaultOption } from '@/shared/lib/bcdice/defaultOption';
 import type { GameSystemInfo } from '@/shared/lib/bcdice/getGameSystemInfo';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useBcdiceApi } from './useBcdiceApi';
@@ -22,15 +23,13 @@ export const useDiceRollOption = () => {
 
   const setSystem = useCallback(
     async (system: string) => {
-      let success = false;
       try {
         const systemInfo = await getGameSystemInfo(system);
         setOptions((prev) => ({ ...prev, system, systemInfo }));
-        success = true;
+        sendEvent('change_game_system', { game_system: system });
       } catch (err) {
         console.error(err);
-      } finally {
-        sendEvent('change_game_system', { game_system: system, success });
+        captureClientException(err);
       }
     },
     [getGameSystemInfo, sendEvent, setOptions],

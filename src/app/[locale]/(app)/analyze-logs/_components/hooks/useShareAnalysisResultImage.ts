@@ -9,6 +9,7 @@ import { SHARED_IMAGE_SCOPES } from '@/shared/lib/firebase/storage/paths';
 import { uploadSharedImageToStorage } from '@/shared/lib/firebase/storage/sharedImages';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 import { round } from '@/shared/lib/round';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { encodeOgImageId } from '../og';
@@ -64,8 +65,8 @@ export const useShareAnalysisResultImage = () => {
 
           onCompleted?.();
         } catch (err) {
-          sendEvent('share_analysis_error', { authenticated: true });
           console.error(err);
+          captureClientException(err);
 
           toast({
             title: t('analyze-logs:share-analysis-result.share-image-failed'),
