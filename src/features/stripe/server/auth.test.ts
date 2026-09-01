@@ -44,6 +44,29 @@ describe('getAuthenticatedUser', () => {
     );
   });
 
+  test('Firebase APIキーが無効な場合はサービスエラーとして記録する', async () => {
+    globalThis.fetch = (async () =>
+      Response.json(
+        { error: { message: 'API key not valid. Please pass a valid API key.' } },
+        { status: 400 },
+      )) as unknown as typeof fetch;
+    const scheduleStripeLog = vi.spyOn(logger, 'scheduleStripeLog').mockImplementation(() => undefined);
+
+    expect(await getAuthenticatedUser('Bearer token', 'checkout')).toBeNull();
+    expect(scheduleStripeLog).toHaveBeenCalledWith(expect.objectContaining({ level: 'error', eventType: 'checkout' }));
+  });
+
+  test('IDトークンが無効な場合は利用者エラーとして記録する', async () => {
+    globalThis.fetch = (async () =>
+      Response.json({ error: { message: 'INVALID_ID_TOKEN' } }, { status: 400 })) as unknown as typeof fetch;
+    const scheduleStripeLog = vi.spyOn(logger, 'scheduleStripeLog').mockImplementation(() => undefined);
+
+    expect(await getAuthenticatedUser('Bearer token', 'checkout')).toBeNull();
+    expect(scheduleStripeLog).toHaveBeenCalledWith(
+      expect.objectContaining({ level: 'warning', eventType: 'checkout' }),
+    );
+  });
+
   test('エラーレスポンスの本文を読めない場合はサービスエラーとして記録する', async () => {
     const body = new ReadableStream({
       start(controller) {

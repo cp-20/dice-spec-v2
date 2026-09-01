@@ -12,6 +12,15 @@ type IdentityToolkitLookupResponse = {
 
 class FirebaseAuthServiceError extends Error {}
 
+const getFirebaseErrorMessage = (body: string): string => {
+  try {
+    const payload = JSON.parse(body) as { error?: { message?: unknown } };
+    return typeof payload.error?.message === 'string' ? payload.error.message : '';
+  } catch {
+    return '';
+  }
+};
+
 export const getBearerToken = (authorizationHeader: string | undefined) => {
   if (!authorizationHeader) return null;
 
@@ -47,7 +56,10 @@ const lookupFirebaseUserByIdToken = async (idToken: string) => {
       throw new FirebaseAuthServiceError('Failed to read Firebase ID token verification response', { cause: error });
     }
     const message = `Firebase ID token verification failed with status ${response.status}: ${body}`;
-    if (response.status === 429 || response.status >= 500) throw new FirebaseAuthServiceError(message);
+    const firebaseErrorMessage = getFirebaseErrorMessage(body);
+    if (response.status === 429 || response.status >= 500 || /API[ _-]?KEY/i.test(firebaseErrorMessage)) {
+      throw new FirebaseAuthServiceError(message);
+    }
     throw new Error(message);
   }
 
