@@ -56,6 +56,23 @@ describe('getAuthenticatedUser', () => {
     expect(scheduleStripeLog).toHaveBeenCalledWith(expect.objectContaining({ level: 'error', eventType: 'checkout' }));
   });
 
+  test('Firebase APIキーの制限違反はサービスエラーとして記録する', async () => {
+    globalThis.fetch = (async () =>
+      Response.json(
+        {
+          error: {
+            message: 'Requests from referer <empty> are blocked.',
+            details: [{ reason: 'API_KEY_HTTP_REFERRER_BLOCKED' }],
+          },
+        },
+        { status: 403 },
+      )) as unknown as typeof fetch;
+    const scheduleStripeLog = vi.spyOn(logger, 'scheduleStripeLog').mockImplementation(() => undefined);
+
+    expect(await getAuthenticatedUser('Bearer token', 'checkout')).toBeNull();
+    expect(scheduleStripeLog).toHaveBeenCalledWith(expect.objectContaining({ level: 'error', eventType: 'checkout' }));
+  });
+
   test('IDトークンが無効な場合は利用者エラーとして記録する', async () => {
     globalThis.fetch = (async () =>
       Response.json({ error: { message: 'INVALID_ID_TOKEN' } }, { status: 400 })) as unknown as typeof fetch;
