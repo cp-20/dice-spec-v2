@@ -105,7 +105,6 @@ jobs:
     if: github.event_name == 'push'
     needs: [quality, test, firebase-rules-test, e2e, build]
     runs-on: ubuntu-latest
-    environment: Production
     permissions:
       contents: read
       id-token: write
