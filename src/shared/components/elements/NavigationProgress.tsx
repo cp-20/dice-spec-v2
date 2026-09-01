@@ -109,7 +109,7 @@ const NavigationProgressInner = () => {
         className="h-full w-full origin-left bg-slate-700 shadow-[0_0_8px_#334155]"
         style={{
           transform: `scaleX(${scale})`,
-          transitionDuration: status === 'running' ? '10s' : status === 'complete' ? '150ms' : '0ms',
+          transitionDuration: status === 'running' ? '1s' : status === 'complete' ? '150ms' : '0ms',
           transitionProperty: 'transform',
           transitionTimingFunction: status === 'running' ? 'cubic-bezier(0.1, 0.5, 0.2, 1)' : 'ease-out',
         }}
