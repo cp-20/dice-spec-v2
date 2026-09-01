@@ -1,0 +1,97 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "analyses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "visibilityLevel", "order": "ASCENDING" },
+        { "fieldPath": "primaryDeviationScore", "order": "ASCENDING" },
+        { "fieldPath": "__name__", "order": "ASCENDING" },
+      ],
+      "density": "SPARSE_ALL",
+    },
+    {
+      "collectionGroup": "analyses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "visibilityLevel", "order": "ASCENDING" },
+        { "fieldPath": "primaryDeviationScore", "order": "DESCENDING" },
+        { "fieldPath": "__name__", "order": "DESCENDING" },
+      ],
+      "density": "SPARSE_ALL",
+    },
+    {
+      "collectionGroup": "analyses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "visibilityLevel", "order": "ASCENDING" },
+        { "fieldPath": "sessionDate", "order": "ASCENDING" },
+        { "fieldPath": "__name__", "order": "ASCENDING" },
+      ],
+      "density": "SPARSE_ALL",
+    },
+    {
+      "collectionGroup": "analyses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "visibilityLevel", "order": "ASCENDING" },
+        { "fieldPath": "sessionDate", "order": "DESCENDING" },
+        { "fieldPath": "__name__", "order": "DESCENDING" },
+      ],
+      "density": "SPARSE_ALL",
+    },
+    {
+      "collectionGroup": "analyses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "visibilityLevel", "order": "ASCENDING" },
+        { "fieldPath": "systemId", "order": "ASCENDING" },
+        { "fieldPath": "primaryDeviationScore", "order": "ASCENDING" },
+        { "fieldPath": "__name__", "order": "ASCENDING" },
+      ],
+      "density": "SPARSE_ALL",
+    },
+    {
+      "collectionGroup": "analyses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "visibilityLevel", "order": "ASCENDING" },
+        { "fieldPath": "systemId", "order": "ASCENDING" },
+        { "fieldPath": "primaryDeviationScore", "order": "DESCENDING" },
+        { "fieldPath": "__name__", "order": "DESCENDING" },
+      ],
+      "density": "SPARSE_ALL",
+    },
+    {
+      "collectionGroup": "analyses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "visibilityLevel", "order": "ASCENDING" },
+        { "fieldPath": "systemId", "order": "ASCENDING" },
+        { "fieldPath": "sessionDate", "order": "ASCENDING" },
+        { "fieldPath": "__name__", "order": "ASCENDING" },
+      ],
+      "density": "SPARSE_ALL",
+    },
+    {
+      "collectionGroup": "analyses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "visibilityLevel", "order": "ASCENDING" },
+        { "fieldPath": "systemId", "order": "ASCENDING" },
+        { "fieldPath": "sessionDate", "order": "DESCENDING" },
+        { "fieldPath": "__name__", "order": "DESCENDING" },
+      ],
+      "density": "SPARSE_ALL",
+    },
+  ],
+
+  // 検索に使わないフィールドに貼られる暗黙的なインデックスをなくす
+  "fieldOverrides": [
+    { "collectionGroup": "ccfoliaCharacters", "fieldPath": "memo", "indexes": [] },
+    { "collectionGroup": "ccfoliaCharacters", "fieldPath": "status", "indexes": [] },
+    { "collectionGroup": "ccfoliaCharacters", "fieldPath": "params", "indexes": [] },
+    { "collectionGroup": "ccfoliaCharacters", "fieldPath": "color", "indexes": [] },
+    { "collectionGroup": "ccfoliaCharacters", "fieldPath": "commands", "indexes": [] },
+  ],
+}

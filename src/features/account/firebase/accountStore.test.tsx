@@ -1,7 +1,6 @@
 import { expect, mock, test, vi } from 'bun:test';
 
 import { act, renderHook, waitFor } from '@testing-library/react';
-import * as firebaseAuth from 'firebase/auth';
 import * as firestore from 'firebase/firestore';
 import { atom } from 'jotai';
 
@@ -33,9 +32,8 @@ const createCustomerError = new Error('Failed to create customer', {
 const createCustomerMock = vi.fn(async () => {
   throw createCustomerError;
 });
-const signOutMock = vi.fn();
+const signOutWithGuardMock = vi.fn();
 
-mock.module('firebase/auth', () => ({ ...firebaseAuth, signOut: signOutMock }));
 mock.module('firebase/firestore', () => ({
   ...firestore,
   doc: vi.fn(() => ({})),
@@ -55,9 +53,10 @@ mock.module('@/shared/lib/firebase/client', () => ({
   getFirebaseStorage: () => ({}),
 }));
 mock.module('@/shared/lib/firebase/storage/avatars', () => ({ uploadAvatarFromUrlToStorage: uploadAvatarMock }));
+mock.module('@/shared/lib/firebase/signOut', () => ({ signOutWithGuard: signOutWithGuardMock }));
 mock.module('@/shared/lib/firebase/useFirebaseAuth', () => ({
   ...firebaseAuthHook,
-  authUserAtom: atom({ uid: 'user_1', displayName: 'User', photoURL: 'https://example.com/avatar.png' }),
+  authUserAtom: atom({ uid: 'user_1', displayName: 'User', photoURL: 'https://dicespec.test/avatar.png' }),
   authUserLoadingAtom: atom(false),
 }));
 
@@ -114,6 +113,28 @@ test('アバター保存失敗時もユーザー文書を作り、User not found
   expect(createCustomerMock).toHaveBeenCalledTimes(1);
   expect(errorSpy).toHaveBeenCalledWith('Failed to upload Google avatar to Storage:', avatarUploadError);
   expect(errorSpy).toHaveBeenCalledWith('Failed to create Stripe customer:', createCustomerError);
-  expect(signOutMock).not.toHaveBeenCalled();
+  expect(signOutWithGuardMock).not.toHaveBeenCalled();
+  errorSpy.mockRestore();
+});
+
+test('ユーザー文書作成失敗後のログアウトを中止したら読込状態を維持する', async () => {
+  snapshotListener = undefined;
+  setDocMock.mockRejectedValueOnce(new Error('permission denied'));
+  signOutWithGuardMock.mockResolvedValueOnce(false);
+  const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const { useMeStore } = await import('./accountStore');
+  const { result } = renderHook(() => useMeStore());
+
+  await waitFor(() => expect(snapshotListener).toBeDefined());
+  await act(async () => {
+    await snapshotListener!({
+      exists: () => false,
+      data: () => ({}),
+      metadata: { fromCache: false, hasPendingWrites: false },
+    });
+  });
+
+  expect(signOutWithGuardMock).toHaveBeenCalledTimes(1);
+  expect(result.current.meLoading).toBe(true);
   errorSpy.mockRestore();
 });
