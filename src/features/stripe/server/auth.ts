@@ -37,7 +37,7 @@ const lookupFirebaseUserByIdToken = async (idToken: string) => {
   if (!response.ok) {
     const body = await response.text();
     const message = `Firebase ID token verification failed with status ${response.status}: ${body}`;
-    if (response.status >= 500) throw new FirebaseAuthServiceError(message);
+    if (response.status === 429 || response.status >= 500) throw new FirebaseAuthServiceError(message);
     throw new Error(message);
   }
 
