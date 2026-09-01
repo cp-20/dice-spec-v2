@@ -17,6 +17,7 @@ const envReaders = {
     STRIPE_PRICE_ID_PRO_MONTHLY: () => process.env.STRIPE_PRICE_ID_PRO_MONTHLY,
     STRIPE_PRICE_ID_PRO_YEARLY: () => process.env.STRIPE_PRICE_ID_PRO_YEARLY,
     STRIPE_DISCORD_WEBHOOK_URL: () => process.env.STRIPE_DISCORD_WEBHOOK_URL,
+    STRIPE_AUDIT_DISCORD_WEBHOOK_URL: () => process.env.STRIPE_AUDIT_DISCORD_WEBHOOK_URL,
     FIREBASE_PROJECT_ID: () => process.env.FIREBASE_PROJECT_ID,
     FIREBASE_FIRESTORE_DATABASE_ID: () => process.env.FIREBASE_FIRESTORE_DATABASE_ID,
     FIREBASE_WEB_API_KEY: () => process.env.FIREBASE_WEB_API_KEY,
@@ -82,6 +83,7 @@ const envVariableCatalog = {
     'STRIPE_PRICE_ID_PRO_MONTHLY',
     'STRIPE_PRICE_ID_PRO_YEARLY',
     'STRIPE_DISCORD_WEBHOOK_URL',
+    'STRIPE_AUDIT_DISCORD_WEBHOOK_URL',
     'FIREBASE_PROJECT_ID',
     'FIREBASE_FIRESTORE_DATABASE_ID',
     'FIREBASE_WEB_API_KEY',
@@ -173,6 +175,9 @@ export const runtimeEnv = {
     },
     get discordWebhookUrl(): string {
       return requiredEnv('STRIPE_DISCORD_WEBHOOK_URL', 'runtime');
+    },
+    get auditDiscordWebhookUrl(): string {
+      return requiredEnv('STRIPE_AUDIT_DISCORD_WEBHOOK_URL', 'runtime');
     },
   },
   firebase: {

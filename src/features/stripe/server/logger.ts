@@ -8,29 +8,29 @@ type StripeLog = {
   level: StripeLogLevel;
   eventType: string;
   message: string;
+  notify?: boolean;
   userId?: string;
   details?: Record<string, unknown>;
   error?: Error | unknown;
 };
 
-const DISCORD_MAX_FIELDS = 25;
-const DISCORD_MAX_FIELD_NAME_LENGTH = 256;
-const DISCORD_MAX_FIELD_VALUE_LENGTH = 1024;
+const DISCORD_MAX_CONTENT_LENGTH = 2000;
+const DISCORD_MAX_DESCRIPTION_LENGTH = 4096;
 const MAX_ERROR_MESSAGE_LENGTH = 240;
 
 const getLevelColor = (level: StripeLogLevel): number => {
   switch (level) {
     case 'success':
-      return 0x28a745; // Green
+      return 0x28a745;
     case 'error':
-      return 0xdc3545; // Red
+      return 0xdc3545;
     case 'warning':
-      return 0xffc107; // Yellow
+      return 0xffc107;
     case 'info':
-      return 0x007bff; // Blue
+      return 0x007bff;
     default: {
       const _: never = level;
-      return 0x6c757d; // Gray
+      return 0x6c757d;
     }
   }
 };
@@ -60,38 +60,6 @@ const truncate = (value: string, maxLength: number): string => {
   return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
 };
 
-const formatDetailValue = (value: unknown): string => {
-  if (value === undefined) {
-    return 'undefined';
-  }
-
-  if (value === null) {
-    return 'null';
-  }
-
-  if (value instanceof Date) {
-    return value.toISOString();
-  }
-
-  if (typeof value === 'string') {
-    return truncate(value, DISCORD_MAX_FIELD_VALUE_LENGTH);
-  }
-
-  if (typeof value === 'number' || typeof value === 'boolean') {
-    return String(value);
-  }
-
-  try {
-    return truncate(JSON.stringify(value), DISCORD_MAX_FIELD_VALUE_LENGTH);
-  } catch {
-    return truncate(String(value), DISCORD_MAX_FIELD_VALUE_LENGTH);
-  }
-};
-
-const formatFieldName = (name: string): string => {
-  return truncate(name.replaceAll('_', ' '), DISCORD_MAX_FIELD_NAME_LENGTH);
-};
-
 const getErrorSummary = (error: Error | unknown): Record<string, unknown> => {
   if (error instanceof Error) {
     return {
@@ -102,57 +70,109 @@ const getErrorSummary = (error: Error | unknown): Record<string, unknown> => {
 
   return {
     type: typeof error,
-    message: truncate(formatDetailValue(error), MAX_ERROR_MESSAGE_LENGTH),
+    message: truncate(String(error), MAX_ERROR_MESSAGE_LENGTH),
   };
 };
 
-const buildDiscordFields = (log: StripeLog): { name: string; value: string; inline?: boolean }[] => {
-  const fields: { name: string; value: string; inline?: boolean }[] = [
-    {
-      name: 'Event Type',
-      value: `\`${formatDetailValue(log.eventType)}\``,
-      inline: true,
-    },
-  ];
+const stringifyJson = (value: unknown): string => {
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return JSON.stringify({ serializationError: String(value) }, null, 2);
+  }
+};
 
-  if (log.userId) {
-    fields.push({
-      name: 'User ID',
-      value: `\`${formatDetailValue(log.userId)}\``,
-      inline: true,
-    });
+const buildAuditContent = (log: StripeLog, timestamp: string): string => {
+  const payload = {
+    timestamp,
+    level: log.level,
+    eventType: truncate(log.eventType, 160),
+    message: truncate(log.message, 320),
+    userId: log.userId ? truncate(log.userId, 160) : undefined,
+    details: log.details,
+    error: log.error ? getErrorSummary(log.error) : undefined,
+  };
+  const maxJsonLength = DISCORD_MAX_CONTENT_LENGTH - '```json\n\n```'.length;
+  let json = stringifyJson(payload).replaceAll('```', '\\u0060\\u0060\\u0060');
+
+  if (json.length > maxJsonLength) {
+    json = stringifyJson({
+      ...payload,
+      details: log.details ? truncate(stringifyJson(log.details), 600) : undefined,
+      truncated: true,
+    }).replaceAll('```', '\\u0060\\u0060\\u0060');
   }
 
-  if (log.details) {
-    for (const [key, value] of Object.entries(log.details)) {
-      if (fields.length >= DISCORD_MAX_FIELDS) {
-        break;
-      }
+  if (json.length > maxJsonLength) {
+    json = stringifyJson({ ...payload, details: 'Discord の文字数制限により省略', truncated: true });
+  }
 
-      const valueText = formatDetailValue(value);
-      fields.push({
-        name: formatFieldName(key),
-        value: `\`${valueText}\``,
-        inline: valueText.length <= 48,
-      });
+  return `\`\`\`json\n${json}\n\`\`\``;
+};
+
+const readDetail = (details: Record<string, unknown> | undefined, key: string): string | null => {
+  const value = details?.[key];
+  return typeof value === 'string' && value.length > 0 ? value : null;
+};
+
+const buildNotificationDescription = (log: StripeLog): string => {
+  const details = log.details;
+  const lines = [`イベント: \`${truncate(log.eventType, 160)}\``];
+
+  if (log.userId) lines.push(`ユーザー: \`${truncate(log.userId, 160)}\``);
+
+  const billingInterval = readDetail(details, 'billingInterval');
+  if (billingInterval) lines.push(`契約間隔: \`${billingInterval}\``);
+
+  const amount = details?.amountPaid ?? details?.amountDue;
+  const currency = readDetail(details, 'currency');
+  if (typeof amount === 'number') lines.push(`金額: \`${amount}${currency ? ` ${currency}` : ''}\``);
+
+  const cancelAt = readDetail(details, 'cancelAt');
+  if (cancelAt) lines.push(`終了予定: \`${cancelAt}\``);
+
+  const nextPaymentAttempt = readDetail(details, 'nextPaymentAttempt');
+  if (nextPaymentAttempt) lines.push(`次回決済試行: \`${nextPaymentAttempt}\``);
+
+  const failureMessage = readDetail(details, 'failureMessage');
+  if (failureMessage) lines.push(`理由: ${truncate(failureMessage, 500)}`);
+
+  if (log.error) {
+    const error = getErrorSummary(log.error);
+    lines.push(`エラー: \`${truncate(String(error.message), MAX_ERROR_MESSAGE_LENGTH)}\``);
+  }
+
+  return truncate(lines.join('\n'), DISCORD_MAX_DESCRIPTION_LENGTH);
+};
+
+const postDiscordWebhook = async (
+  getUrl: () => string,
+  body: Record<string, unknown>,
+  destination: 'audit' | 'notification',
+) => {
+  try {
+    const res = await fetch(getUrl(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`Failed to send Stripe ${destination} log:`, truncate(errorText, 500));
     }
+  } catch (error) {
+    console.error(`Failed to send Stripe ${destination} log:`, error);
   }
-
-  if (log.error && fields.length < DISCORD_MAX_FIELDS) {
-    fields.push({
-      name: 'Error',
-      value: `\`${formatDetailValue(getErrorSummary(log.error))}\``,
-      inline: false,
-    });
-  }
-
-  return fields;
 };
 
 /**
- * never throw error from this function to avoid blocking the main process. Log any error internally instead.
+ * ログ送信の失敗で Stripe の処理を止めない。
  */
 export const sendStripeLog = async (log: StripeLog) => {
+  const timestamp = new Date().toISOString();
   const consolePayload = {
     eventType: log.eventType,
     message: log.message,
@@ -163,40 +183,34 @@ export const sendStripeLog = async (log: StripeLog) => {
 
   console.log(`[Stripe][${log.level}]`, consolePayload);
 
-  // Don't send info level logs to Discord to avoid noise, but still log them in the console
-  if (log.level === 'info') return;
+  const requests = [
+    postDiscordWebhook(
+      () => runtimeEnv.stripe.auditDiscordWebhookUrl,
+      { content: buildAuditContent(log, timestamp) },
+      'audit',
+    ),
+  ];
 
-  const fields = buildDiscordFields(log);
-
-  const body = {
-    embeds: [
-      {
-        title: `${getLevelEmoji(log.level)} Stripe ${log.level.toUpperCase()}: ${log.message}`,
-        color: getLevelColor(log.level),
-        fields,
-        timestamp: new Date().toISOString(),
-      },
-    ],
-  };
-
-  try {
-    // Discord側のレートリミットに任せる方針のため、アプリ側には送信キューを持たせない。
-    const res = await fetch(runtimeEnv.stripe.discordWebhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error('Failed to send Discord webhook:', truncate(errorText, 500));
-    }
-  } catch (error) {
-    // Don't throw error to avoid blocking the main process
-    console.error('Failed to send Discord webhook:', error);
+  if (log.notify || log.level === 'error') {
+    requests.push(
+      postDiscordWebhook(
+        () => runtimeEnv.stripe.discordWebhookUrl,
+        {
+          embeds: [
+            {
+              title: `${getLevelEmoji(log.level)} ${log.message}`,
+              description: buildNotificationDescription(log),
+              color: getLevelColor(log.level),
+              timestamp,
+            },
+          ],
+        },
+        'notification',
+      ),
+    );
   }
+
+  await Promise.all(requests);
 };
 
 export const scheduleStripeLog = (...params: Parameters<typeof sendStripeLog>) => {

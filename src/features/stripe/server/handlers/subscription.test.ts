@@ -99,4 +99,42 @@ describe('subscription webhook handlers', () => {
     expect(result.ok).toBe(true);
     expect(updates[0]).toMatchObject({ plan: 'pro', stripeSubscriptionId: 'sub_new' });
   });
+
+  test('past_due への更新中は決済リトライのため Pro を維持する', async () => {
+    const updates: Record<string, unknown>[] = [];
+    const deps: HandlerDeps = {
+      getUserById: async () => ({ plan: 'pro', stripeSubscriptionId: 'sub_current' }),
+      updateUserById: async (_userId, data) => {
+        updates.push(data);
+      },
+      getSubscriptionById: async () => subscription({ status: 'past_due' }),
+    };
+
+    const result = await createSubscriptionUpdatedHandler(deps)({
+      subscription: subscription({ status: 'past_due' }),
+      previousAttributes: { status: 'active' },
+    });
+
+    expect(result.ok).toBe(true);
+    expect(updates[0]).toMatchObject({ plan: 'pro', stripeSubscriptionId: 'sub_current' });
+  });
+
+  test('解約予約は通常ログへ通知し、その他の更新は監査ログだけに残す', async () => {
+    const deps: HandlerDeps = {
+      getUserById: async () => ({ plan: 'pro', stripeSubscriptionId: 'sub_current' }),
+      updateUserById: async () => undefined,
+      getSubscriptionById: async () => subscription({ cancel_at_period_end: true, cancel_at: 300 }),
+    };
+
+    const scheduled = await createSubscriptionUpdatedHandler(deps)({
+      subscription: subscription({ cancel_at_period_end: true, cancel_at: 300 }),
+      previousAttributes: { cancel_at_period_end: false },
+    });
+    const other = await createSubscriptionUpdatedHandler(deps)({
+      subscription: subscription({ cancel_at_period_end: true, cancel_at: 300 }),
+    });
+
+    expect(scheduled.ok && scheduled.log?.notify).toBe(true);
+    expect(other.ok && other.log?.notify).toBe(false);
+  });
 });
