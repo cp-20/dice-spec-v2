@@ -1,4 +1,3 @@
-import { signOut } from 'firebase/auth';
 import { doc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore';
 import { t } from 'i18next';
 import { atom, useAtomValue } from 'jotai';
@@ -10,6 +9,7 @@ import { type NewUserDocument, type UserDocument, userDocumentSchema } from '@/f
 import { toast } from '@/shared/components/ui/use-toast';
 import { getFirebaseAuth, getFirebaseFirestore, getFirebaseStorage } from '@/shared/lib/firebase/client';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
+import { signOutWithGuard } from '@/shared/lib/firebase/signOut';
 import { uploadAvatarFromUrlToStorage } from '@/shared/lib/firebase/storage/avatars';
 import { authUserAtom, authUserLoadingAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
@@ -64,6 +64,8 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
           stripeSubscriptionId: '',
           analysisCount: 0,
           analysisCountSyncAnalysisId: null,
+          ccfoliaCharacterCount: 0,
+          ccfoliaCharacterCountSyncCharacterId: null,
         };
         await setDoc(userRef, newUserDocument);
         sendGoogleAnalyticsEvent('sign_up', { method: 'Google' });
@@ -76,7 +78,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
         });
 
         try {
-          await signOut(auth);
+          if (!(await signOutWithGuard(auth))) return;
         } catch (signOutError) {
           console.error('Failed to sign out after user document creation failure:', signOutError);
         }
@@ -109,8 +111,8 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
   return unsubscribe;
 });
 
-const meAtom = atom((get) => get(internalMeAtom));
-const meLoadingAtom = atom((get) => get(internalMeLoadingAtom));
+export const meAtom = atom((get) => get(internalMeAtom));
+export const meLoadingAtom = atom((get) => get(internalMeLoadingAtom));
 
 export const useMeStore = () => {
   const me = useAtomValue(meAtom);

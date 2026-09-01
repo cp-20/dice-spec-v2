@@ -84,7 +84,7 @@ export const AnalysisSavePanel: FC = () => {
         owner: {
           id: me.id,
           name: me.name,
-          avatarUrl: me.avatarUrl,
+          ...(me.avatarUrl === undefined ? {} : { avatarUrl: me.avatarUrl }),
           plan: me.plan,
           createdAt: me.createdAt,
           updatedAt: me.updatedAt,

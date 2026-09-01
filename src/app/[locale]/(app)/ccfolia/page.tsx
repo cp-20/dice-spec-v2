@@ -1,4 +1,4 @@
-import { IconChevronsRight, IconFileExport } from '@tabler/icons-react';
+import { IconFileExport } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
 
@@ -13,9 +13,7 @@ import {
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
 
-import { InputForm } from './_components/InputForm';
-import { LoadClipboardButton } from './_components/LoadClipboardButton';
-import { ResultView } from './_components/ResultView';
+import { CcfoliaEditor } from './_components/ccfolia-editor/CcfoliaEditor';
 
 export const generateMetadata: MetadataGenerator = async (props) => {
   const locale = await localeHelper(props);
@@ -39,15 +37,7 @@ const CcfoliaPage: NextPage = () => (
         </PageDescriptionContainer>
       </div>
 
-      <LoadClipboardButton />
-
-      <InputForm />
-
-      <div className="grid place-content-center">
-        <IconChevronsRight className="rotate-90" size="64" />
-      </div>
-
-      <ResultView />
+      <CcfoliaEditor />
 
       <div className="my-16">
         <BlogCallout />

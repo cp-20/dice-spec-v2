@@ -1,12 +1,5 @@
 import { FirebaseError } from 'firebase/app';
-import {
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithPopup,
-  signOut,
-  type User,
-  AuthErrorCodes,
-} from 'firebase/auth';
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, type User, AuthErrorCodes } from 'firebase/auth';
 import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { useCallback } from 'react';
@@ -14,6 +7,7 @@ import { useCallback } from 'react';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { getFirebaseAuth } from './client';
+import { signOutWithGuard } from './signOut';
 
 const internalAuthUserLoadingAtom = atom(true);
 
@@ -31,6 +25,7 @@ const internalAuthUserAtom = withAtomEffect(atom<User | null>(null), (_, set) =>
 
   return unsubscribe;
 });
+
 export const authUserAtom = atom((get) => get(internalAuthUserAtom));
 export const authUserLoadingAtom = atom((get) => get(internalAuthUserLoadingAtom));
 
@@ -53,8 +48,7 @@ export const useFirebaseAuth = () => {
   }, [auth, sendEvent]);
 
   const signOutUser = useCallback(async () => {
-    await signOut(auth);
-    sendEvent('logout');
+    if (await signOutWithGuard(auth)) sendEvent('logout');
   }, [auth, sendEvent]);
 
   return {
