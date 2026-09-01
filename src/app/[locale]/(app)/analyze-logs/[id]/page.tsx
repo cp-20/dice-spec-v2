@@ -5,6 +5,7 @@ import { t } from 'i18next';
 
 import { wrapPage } from '@/shared/i18n/page-layout';
 import { mixedEnv } from '@/shared/lib/env';
+import { connectFirebaseStorageEmulator } from '@/shared/lib/firebase/emulator';
 import { storagePaths } from '@/shared/lib/firebase/storage/paths';
 import {
   localeHelper,
@@ -23,6 +24,7 @@ const getAnalysisOgpUrl = async (analysisId: string) => {
   try {
     const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
     const storage = getStorage(app);
+    if (process.env.NODE_ENV !== 'production') connectFirebaseStorageEmulator(storage);
     const storageRef = ref(storage, storagePaths.getAnalysisOgImagePath(analysisId));
 
     return await getDownloadURL(storageRef);

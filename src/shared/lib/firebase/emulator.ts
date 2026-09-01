@@ -2,12 +2,15 @@ import type { Auth } from 'firebase/auth';
 import { connectAuthEmulator, signInWithEmailAndPassword } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
 import { connectFirestoreEmulator } from 'firebase/firestore';
+import type { FirebaseStorage } from 'firebase/storage';
+import { connectStorageEmulator } from 'firebase/storage';
 
 import { testEnv } from '@/shared/lib/env';
 
 type FirebaseEmulatorConnectionState = {
   auth: boolean;
   firestore: boolean;
+  storage: boolean;
 };
 
 declare global {
@@ -20,7 +23,7 @@ const emulatorConnectionState = (): FirebaseEmulatorConnectionState => {
   const globalState = globalThis as typeof globalThis & {
     __diceSpecFirebaseEmulatorConnectionState?: FirebaseEmulatorConnectionState;
   };
-  globalState.__diceSpecFirebaseEmulatorConnectionState ??= { auth: false, firestore: false };
+  globalState.__diceSpecFirebaseEmulatorConnectionState ??= { auth: false, firestore: false, storage: false };
   return globalState.__diceSpecFirebaseEmulatorConnectionState;
 };
 
@@ -48,5 +51,16 @@ export const connectFirebaseFirestoreEmulator = (firestore: Firestore) => {
   if (!connectionState.firestore) {
     connectFirestoreEmulator(firestore, emulators.firestoreHost, emulators.firestorePort);
     connectionState.firestore = true;
+  }
+};
+
+export const connectFirebaseStorageEmulator = (storage: FirebaseStorage) => {
+  const emulators = testEnv?.firebase.emulators.client;
+  if (!emulators) return;
+
+  const connectionState = emulatorConnectionState();
+  if (!connectionState.storage) {
+    connectStorageEmulator(storage, emulators.storageHost, emulators.storagePort);
+    connectionState.storage = true;
   }
 };

@@ -28,7 +28,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `firebase emulators:exec --only auth,firestore --project ${firebase.projectId} --config firebase/firebase-e2e.json "bun run dev --hostname 127.0.0.1 --port 3100"`,
+    command: `firebase emulators:exec --only auth,firestore,storage --project ${firebase.projectId} --config firebase/firebase-e2e.json "bun run dev --hostname 127.0.0.1 --port 3100"`,
     url: `${appOrigin}/`,
     reuseExistingServer: false,
     timeout: 120_000,
