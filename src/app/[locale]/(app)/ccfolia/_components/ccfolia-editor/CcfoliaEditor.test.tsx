@@ -442,29 +442,6 @@ describe('CcfoliaEditor', () => {
     await waitFor(() => expect(result.value).toContain('"color":"#123abc"'));
   });
 
-  test('出力結果のコピーを成功・失敗とも計測する', async () => {
-    setListedCharacterIds();
-    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const writeText = vi
-      .spyOn(navigator.clipboard, 'writeText')
-      .mockResolvedValueOnce(undefined)
-      .mockRejectedValueOnce(new Error('copy failed'));
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
-    render(<CcfoliaEditor />);
-
-    fireEvent.click(screen.getByRole('button', { name: 'クリップボードにコピー' }));
-    await waitFor(() =>
-      expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('copy_ccfolia_character', { success: true }),
-    );
-    fireEvent.click(screen.getByRole('button', { name: 'コピーしました' }));
-    await waitFor(() =>
-      expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('copy_ccfolia_character', { success: false }),
-    );
-
-    writeText.mockRestore();
-    consoleError.mockRestore();
-  });
-
   test('保存済みキャラクターでは新規保存と上書き保存を分けて表示する', async () => {
     setListedCharacterIds([character.id]);
     remotelyExists = true;

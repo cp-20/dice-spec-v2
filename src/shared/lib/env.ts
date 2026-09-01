@@ -31,6 +31,7 @@ const envReaders = {
     NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: () => process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
     NEXT_PUBLIC_FIREBASE_APP_ID: () => process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID: () => process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID,
+    NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: () => process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: () => process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     NEXT_PUBLIC_BCDICE_API_ENDPOINT: () => process.env.NEXT_PUBLIC_BCDICE_API_ENDPOINT,
     NEXT_PUBLIC_IS_OLD_APP: () => process.env.NEXT_PUBLIC_IS_OLD_APP,
@@ -93,6 +94,7 @@ const envVariableCatalog = {
     'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
     'NEXT_PUBLIC_FIREBASE_APP_ID',
     'NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID',
+    'NEXT_PUBLIC_GOOGLE_ANALYTICS_ID',
     'NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION',
     'NEXT_PUBLIC_BCDICE_API_ENDPOINT',
     'NEXT_PUBLIC_IS_OLD_APP',
@@ -132,6 +134,9 @@ export const clientEnv = {
   },
   get firebaseFirestoreDatabaseId(): string {
     return requiredEnv('NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID', 'client');
+  },
+  get googleAnalyticsId(): string {
+    return requiredEnv('NEXT_PUBLIC_GOOGLE_ANALYTICS_ID', 'client');
   },
   get googleSiteVerification(): string | undefined {
     return optionalEnv('NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION', 'client');

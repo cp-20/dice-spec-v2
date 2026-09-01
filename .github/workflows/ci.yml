@@ -140,5 +140,6 @@ jobs:
           NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=dummy \
           NEXT_PUBLIC_FIREBASE_APP_ID=dummy \
           NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID=dummy \
+          NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=dummy \
           NEXT_PUBLIC_DISCORD_WEBHOOK_URL=dummy \
           bun run build
