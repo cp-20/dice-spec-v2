@@ -71,11 +71,12 @@ export const getAuthenticatedUser = async (authorizationHeader: string | undefin
   } catch (error) {
     console.error('Failed to verify Firebase ID token:', error);
     const serviceFailure = error instanceof FirebaseAuthServiceError;
+    const logError = serviceFailure ? (error.cause ?? error) : error;
     scheduleStripeLog({
       level: serviceFailure ? 'error' : 'warning',
       eventType,
       message: 'Firebase ID token verification failed',
-      error,
+      error: logError,
     });
     return null;
   }
