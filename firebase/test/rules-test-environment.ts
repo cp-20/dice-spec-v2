@@ -7,11 +7,18 @@ import { resolve } from 'node:path';
 import { initializeTestEnvironment, type RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { doc, setLogLevel, writeBatch } from 'firebase/firestore';
 
-const PROJECT_ID = 'test-dice-spec-v2';
-const FIRESTORE_EMULATOR = { name: 'Firestore', host: '127.0.0.1', port: 18080 } as const;
-const STORAGE_EMULATOR = { name: 'Storage', host: '127.0.0.1', port: 9199 } as const;
+import { testEnv } from '@/shared/lib/env';
 
-export const STORAGE_BUCKET = `gs://${PROJECT_ID}.appspot.com`;
+if (!testEnv) throw new Error('Firebase Rules テストは production 環境では実行できません');
+const PROJECT_ID = testEnv.firebase.projectId;
+const FIRESTORE_EMULATOR = {
+  name: 'Firestore',
+  host: testEnv.firebase.emulators.firestore.host,
+  port: testEnv.firebase.emulators.firestore.rulesPort,
+} as const;
+const STORAGE_EMULATOR = { name: 'Storage', ...testEnv.firebase.emulators.storage } as const;
+
+export const STORAGE_BUCKET = `gs://${testEnv.firebase.storageBucket}`;
 
 export type TestFirestore = ReturnType<ReturnType<RulesTestEnvironment['authenticatedContext']>['firestore']>;
 export type SeedDocument = { path: string; data: Record<string, unknown> };
@@ -129,8 +136,10 @@ export const setupRulesTestEnvironment = () => {
 
     if (missingEmulators.length > 0) {
       emulatorProcess = spawn(
-        'firebase',
+        process.execPath,
         [
+          'x',
+          'firebase',
           'emulators:start',
           '--only',
           missingEmulators.map(({ name }) => name.toLowerCase()).join(','),
