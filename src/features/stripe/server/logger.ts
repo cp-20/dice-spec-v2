@@ -15,6 +15,7 @@ type StripeLog = {
 };
 
 const DISCORD_MAX_CONTENT_LENGTH = 2000;
+const DISCORD_MAX_TITLE_LENGTH = 256;
 const DISCORD_MAX_DESCRIPTION_LENGTH = 4096;
 const MAX_ERROR_MESSAGE_LENGTH = 240;
 
@@ -63,7 +64,7 @@ const truncate = (value: string, maxLength: number): string => {
 const getErrorSummary = (error: Error | unknown): Record<string, unknown> => {
   if (error instanceof Error) {
     return {
-      name: error.name,
+      name: truncate(error.name, MAX_ERROR_MESSAGE_LENGTH),
       message: truncate(error.message, MAX_ERROR_MESSAGE_LENGTH),
     };
   }
@@ -198,7 +199,7 @@ export const sendStripeLog = async (log: StripeLog) => {
         {
           embeds: [
             {
-              title: `${getLevelEmoji(log.level)} ${log.message}`,
+              title: truncate(`${getLevelEmoji(log.level)} ${log.message}`, DISCORD_MAX_TITLE_LENGTH),
               description: buildNotificationDescription(log),
               color: getLevelColor(log.level),
               timestamp,

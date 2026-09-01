@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 
+import { runtimeEnv } from '@/shared/lib/env';
+
 import { sendStripeLog } from './logger';
 
 const originalFetch = globalThis.fetch;
@@ -88,5 +90,36 @@ describe('sendStripeLog', () => {
 
     expect(String(requests[0]?.body.content).length).toBeLessThanOrEqual(2000);
     expect(String(requests[0]?.body.content).match(/```/g)).toHaveLength(2);
+  });
+
+  test('エラー名を監査ログの文字数制限内に収める', async () => {
+    const error = new Error('テストエラー');
+    error.name = 'a'.repeat(4000);
+
+    await sendStripeLog({ level: 'info', eventType: 'test.error-name', message: 'エラー名テスト', error });
+
+    const content = String(requests[0]?.body.content);
+    expect(content.length).toBeLessThanOrEqual(2000);
+    expect(content).toContain(`"name": "${'a'.repeat(237)}..."`);
+  });
+
+  test('通知タイトルを Discord の文字数制限内に収める', async () => {
+    await sendStripeLog({
+      level: 'success',
+      eventType: 'test.long-title',
+      message: 'a'.repeat(400),
+      notify: true,
+    });
+
+    const notification = requests.find(({ url }) => url === 'https://discord.test/notification');
+    const embeds = notification?.body.embeds as { title: string }[];
+    expect(embeds[0]?.title.length).toBe(256);
+    expect(embeds[0]?.title.endsWith('...')).toBe(true);
+  });
+
+  test('監査ログ URL は HTTPS のみ許可する', () => {
+    process.env.STRIPE_AUDIT_DISCORD_WEBHOOK_URL = 'http://discord.test/audit';
+
+    expect(() => runtimeEnv.stripe.auditDiscordWebhookUrl).toThrow('must use HTTPS');
   });
 });

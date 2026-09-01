@@ -177,7 +177,11 @@ export const runtimeEnv = {
       return requiredEnv('STRIPE_DISCORD_WEBHOOK_URL', 'runtime');
     },
     get auditDiscordWebhookUrl(): string {
-      return requiredEnv('STRIPE_AUDIT_DISCORD_WEBHOOK_URL', 'runtime');
+      const value = requiredEnv('STRIPE_AUDIT_DISCORD_WEBHOOK_URL', 'runtime');
+      if (new URL(value).protocol !== 'https:') {
+        throw new Error('[env:runtime] STRIPE_AUDIT_DISCORD_WEBHOOK_URL must use HTTPS.');
+      }
+      return value;
     },
   },
   firebase: {
