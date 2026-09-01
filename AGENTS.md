@@ -6,3 +6,5 @@ AGENTS.md や docs は特定の画面や変更作業に依存しない形で記�
 
 - UIを追加・変更・レビューするときは、実装前に docs/ui-style-guide.md 読み、デザイン判断の正本として扱う。
 - フロントエンドコンポーネントやクライアント状態を追加・変更・レビューするときは、実装前に docs/frontend-architecture.md を読む。
+- コードレビューするときは、実施前に docs/code-review.md を読む。
+- 変更作業では docs/workflow.md に従う。
