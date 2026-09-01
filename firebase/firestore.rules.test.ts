@@ -1,25 +1,16 @@
-import { describe, test, afterAll, afterEach, beforeAll, setDefaultTimeout, spyOn } from 'bun:test';
-import { type ChildProcess, spawn } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import net from 'node:net';
-import { resolve } from 'node:path';
+import { beforeEach, describe, expect, test } from 'bun:test';
 
-import {
-  assertFails,
-  assertSucceeds,
-  initializeTestEnvironment,
-  type RulesTestEnvironment,
-} from '@firebase/rules-unit-testing';
+import { assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
 import {
   collection,
   deleteDoc,
   doc,
   getDoc,
   getDocs,
-  increment,
+  limit,
   query,
+  serverTimestamp,
   setDoc,
-  setLogLevel,
   Timestamp,
   updateDoc,
   where,
@@ -27,1053 +18,840 @@ import {
 } from 'firebase/firestore';
 import { list as storageList, ref as storageRef } from 'firebase/storage';
 
-const PROJECT_ID = 'test-dice-spec-v2';
-const FIRESTORE_EMULATOR_HOST = '127.0.0.1';
-const FIRESTORE_EMULATOR_PORT = 18080;
-const STORAGE_EMULATOR_HOST = '127.0.0.1';
-const STORAGE_EMULATOR_PORT = 9199;
-const STORAGE_BUCKET = `gs://${PROJECT_ID}.appspot.com`;
+import {
+  analysisDoc,
+  ccfoliaCharacterDoc,
+  deleteAnalysisWithCountSync,
+  deleteCcfoliaCharacterWithCountSync,
+  ownerSnapshot,
+  saveAnalysisWithCountSync,
+  saveCcfoliaCharacterWithCountSync,
+  seed,
+  seedAnalysis,
+  seedCharacter,
+  seedUser,
+  userDoc,
+} from './test/firestore-fixtures';
+import { setupRulesTestEnvironment, type TestFirestore } from './test/rules-test-environment';
 
-setDefaultTimeout(60000);
+describe('Firebase セキュリティルール', () => {
+  const testEnv = setupRulesTestEnvironment();
+  let ownerDb: TestFirestore;
 
-const now = Timestamp.fromDate(new Date('2026-03-18T00:00:00.000Z'));
-
-const isPortOpen = (host: string, port: number): Promise<boolean> =>
-  new Promise((resolvePromise) => {
-    const socket = net.createConnection({ host, port });
-    const finish = (isOpen: boolean) => {
-      socket.removeAllListeners();
-      socket.destroy();
-      resolvePromise(isOpen);
-    };
-
-    socket.once('connect', () => {
-      finish(true);
-    });
-
-    socket.once('error', () => {
-      finish(false);
-    });
-
-    socket.setTimeout(500);
-    socket.once('timeout', () => {
-      finish(false);
-    });
+  beforeEach(() => {
+    ownerDb = testEnv.firestore('user_1');
   });
 
-const waitForPortOpen = async (host: string, port: number, timeoutMs: number) => {
-  const start = Date.now();
+  describe('users', () => {
+    test('本人は自分のユーザードキュメントを作成・取得できる', async () => {
+      await assertSucceeds(setDoc(doc(ownerDb, 'users/user_1'), userDoc()));
+      await assertSucceeds(getDoc(doc(ownerDb, 'users/user_1')));
+    });
 
-  while (Date.now() - start < timeoutMs) {
-    if (await isPortOpen(host, port)) return;
-    await new Promise((resolvePromise) => setTimeout(resolvePromise, 200));
-  }
+    test('アバターなしでも自分のユーザードキュメントを作成できる', async () => {
+      const { avatarUrl: _avatarUrl, ...documentWithoutAvatar } = userDoc();
 
-  throw new Error(`Timed out waiting for Emulator at ${host}:${port}`);
-};
+      await assertSucceeds(setDoc(doc(ownerDb, 'users/user_1'), documentWithoutAvatar));
+    });
 
-const waitForPortOrProcessExit = async (
-  processRef: ChildProcess,
-  emulatorName: string,
-  host: string,
-  port: number,
-  timeoutMs: number,
-): Promise<void> =>
-  new Promise((resolvePromise, rejectPromise) => {
-    const cleanup = () => {
-      processRef.off('error', onError);
-      processRef.off('exit', onExit);
-    };
-    const resolve = () => {
-      cleanup();
-      resolvePromise();
-    };
-    const reject = (error: unknown) => {
-      cleanup();
-      rejectPromise(error);
-    };
-    const onError = (error: Error) => {
-      reject(new Error(`Failed to start Firebase Emulator CLI while waiting for ${emulatorName}`, { cause: error }));
-    };
-    const onExit = (code: number | null, signal: NodeJS.Signals | null) => {
-      reject(
-        new Error(
-          `Firebase Emulator CLI exited before ${emulatorName} was ready (code=${String(code)}, signal=${String(signal)})`,
-        ),
+    test('ドキュメント ID と data.id が一致しない作成は拒否される', async () => {
+      await assertFails(setDoc(doc(ownerDb, 'users/user_1'), userDoc({ id: 'other_user' })));
+    });
+
+    test('他人のユーザードキュメントは取得・更新できない', async () => {
+      await testEnv.seedFirestore(seedUser());
+
+      const otherDb = testEnv.firestore('user_2');
+
+      await assertFails(getDoc(doc(otherDb, 'users/user_1')));
+      await assertFails(
+        updateDoc(doc(otherDb, 'users/user_1'), {
+          name: 'Mallory',
+          updatedAt: Timestamp.fromDate(new Date('2026-03-18T01:00:00.000Z')),
+        }),
       );
-    };
-
-    if (processRef.exitCode !== null || processRef.signalCode !== null) {
-      onExit(processRef.exitCode, processRef.signalCode);
-      return;
-    }
-
-    processRef.once('error', onError);
-    processRef.once('exit', onExit);
-    void waitForPortOpen(host, port, timeoutMs).then(resolve, reject);
-  });
-
-const stopEmulator = async (processRef: ChildProcess) => {
-  if (processRef.pid === undefined || processRef.exitCode !== null || processRef.signalCode !== null) return;
-
-  processRef.kill('SIGINT');
-
-  await new Promise<void>((resolvePromise, rejectPromise) => {
-    const timer = setTimeout(() => {
-      processRef.kill('SIGKILL');
-      resolvePromise();
-    }, 5000);
-
-    processRef.once('exit', () => {
-      clearTimeout(timer);
-      resolvePromise();
     });
 
-    processRef.once('error', (error) => {
-      clearTimeout(timer);
-      rejectPromise(error);
-    });
-  });
-};
+    test('悪意のあるクライアントが任意の stripeCustomerId でユーザードキュメントを作成できない', async () => {
+      const maliciousDb = testEnv.firestore('user_malicious');
 
-const userDoc = (overrides: Record<string, unknown> = {}) => ({
-  id: 'user_1',
-  name: 'Alice',
-  avatarUrl: 'https://example.com/avatar.png',
-  plan: 'free',
-  createdAt: now,
-  updatedAt: now,
-  stripeCustomerId: '',
-  stripeSubscriptionId: '',
-  analysisCount: 0,
-  analysisCountSyncAnalysisId: null,
-  ...overrides,
-});
-
-const ownerSnapshot = (overrides: Record<string, unknown> = {}) => ({
-  id: 'user_1',
-  name: 'Alice',
-  avatarUrl: 'https://example.com/avatar.png',
-  plan: 'free',
-  createdAt: now,
-  updatedAt: now,
-  ...overrides,
-});
-
-const analysisDoc = (analysisId: string, ownerUid: string, overrides: Record<string, unknown> = {}) => ({
-  id: analysisId,
-  title: 'Session 1',
-  ownerUid,
-  systemId: 'CoC7th',
-  visibilityLevel: 'private',
-  showRecordDetails: false,
-  characterResults: [
-    {
-      id: 'all',
-      summary: {
-        deviationScore: 0,
-      },
-    },
-  ],
-  sessionDate: now,
-  createdAt: now,
-  updatedAt: now,
-  primaryDeviationScore: 0,
-  owner: ownerSnapshot({ id: ownerUid }),
-  ...overrides,
-});
-
-type TestFirestore = ReturnType<ReturnType<RulesTestEnvironment['authenticatedContext']>['firestore']>;
-
-const saveAnalysisWithCountSync = async (
-  db: TestFirestore,
-  uid: string,
-  analysisId: string,
-  overrides: Record<string, unknown> = {},
-) => {
-  const batch = writeBatch(db);
-  batch.set(doc(db, `analyses/${analysisId}`), analysisDoc(analysisId, uid, overrides));
-  batch.set(
-    doc(db, `users/${uid}`),
-    {
-      analysisCount: increment(1),
-      analysisCountSyncAnalysisId: analysisId,
-      updatedAt: Timestamp.fromDate(new Date('2026-03-18T03:00:00.000Z')),
-    },
-    { merge: true },
-  );
-  await batch.commit();
-};
-
-const deleteAnalysisWithCountSync = async (db: TestFirestore, uid: string, analysisId: string) => {
-  const batch = writeBatch(db);
-  batch.delete(doc(db, `analyses/${analysisId}`));
-  batch.set(
-    doc(db, `users/${uid}`),
-    {
-      analysisCount: increment(-1),
-      analysisCountSyncAnalysisId: analysisId,
-      updatedAt: Timestamp.fromDate(new Date('2026-03-18T03:10:00.000Z')),
-    },
-    { merge: true },
-  );
-  await batch.commit();
-};
-
-describe('Firestore セキュリティルール', () => {
-  let testEnv: RulesTestEnvironment;
-  let emulatorProcess: ChildProcess | null = null;
-  let startedByTest = false;
-
-  const errorSpy = spyOn(console, 'error');
-
-  beforeAll(async () => {
-    errorSpy.mockImplementation(() => {});
-    const firestoreRunning = await isPortOpen(FIRESTORE_EMULATOR_HOST, FIRESTORE_EMULATOR_PORT);
-    const storageRunning = await isPortOpen(STORAGE_EMULATOR_HOST, STORAGE_EMULATOR_PORT);
-
-    // assertFails のテスト実行時にもエラーログが出るので、抑制
-    setLogLevel('silent');
-
-    if (!firestoreRunning || !storageRunning) {
-      const emulators: string[] = [];
-      if (!firestoreRunning) emulators.push('firestore');
-      if (!storageRunning) emulators.push('storage');
-
-      emulatorProcess = spawn(
-        'firebase',
-        [
-          'emulators:start',
-          '--only',
-          emulators.join(','),
-          '--project',
-          PROJECT_ID,
-          '--config',
-          'firebase/firebase.json',
-        ],
-        {
-          cwd: process.cwd(),
-          stdio: 'inherit',
-        },
+      await assertFails(
+        setDoc(doc(maliciousDb, 'users/user_malicious'), userDoc({ stripeCustomerId: 'cus_stolen_id_123' })),
       );
-      startedByTest = true;
-      try {
-        if (!firestoreRunning) {
-          await waitForPortOrProcessExit(
-            emulatorProcess,
-            'Firestore Emulator',
-            FIRESTORE_EMULATOR_HOST,
-            FIRESTORE_EMULATOR_PORT,
-            30000,
-          );
-        }
-        if (!storageRunning) {
-          await waitForPortOrProcessExit(
-            emulatorProcess,
-            'Storage Emulator',
-            STORAGE_EMULATOR_HOST,
-            STORAGE_EMULATOR_PORT,
-            30000,
-          );
-        }
-      } catch (error) {
-        await stopEmulator(emulatorProcess);
-        emulatorProcess = null;
-        startedByTest = false;
-        throw error;
+    });
+
+    test('本人でも plan と Stripe の ID は直接変更できない', async () => {
+      await testEnv.seedFirestore(seedUser());
+
+      await assertFails(
+        updateDoc(doc(ownerDb, 'users/user_1'), {
+          plan: 'pro',
+          updatedAt: Timestamp.fromDate(new Date('2026-03-18T01:00:00.000Z')),
+        }),
+      );
+
+      await assertFails(
+        updateDoc(doc(ownerDb, 'users/user_1'), {
+          stripeCustomerId: 'cus_hacked',
+          updatedAt: Timestamp.fromDate(new Date('2026-03-18T01:00:00.000Z')),
+        }),
+      );
+
+      await assertFails(
+        updateDoc(doc(ownerDb, 'users/user_1'), {
+          stripeSubscriptionId: 'sub_hacked',
+          updatedAt: Timestamp.fromDate(new Date('2026-03-18T01:00:00.000Z')),
+        }),
+      );
+    });
+  });
+
+  describe('ccfoliaCharacters', () => {
+    test('本人はキャラクターを作成・一覧取得・更新・削除できる', async () => {
+      await testEnv.seedFirestore(seedUser());
+
+      const characterRef = doc(ownerDb, 'users/user_1/ccfoliaCharacters/c1');
+
+      await assertSucceeds(
+        saveCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'c1', {
+          clipboardExtensions: { angle: 90, secret: true, owner: null },
+        }),
+      );
+      await assertSucceeds(getDoc(characterRef));
+      await assertSucceeds(getDocs(query(collection(ownerDb, 'users/user_1/ccfoliaCharacters'), limit(50))));
+      await assertSucceeds(
+        updateDoc(characterRef, {
+          name: '探索者A（更新）',
+          initiative: null,
+          revision: 2,
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertSucceeds(deleteCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'c1'));
+    });
+
+    test('保存件数がない旧ユーザーも初回保存時にカウンターを追加できる', async () => {
+      const {
+        ccfoliaCharacterCount: _ccfoliaCharacterCount,
+        ccfoliaCharacterCountSyncCharacterId: _ccfoliaCharacterCountSyncCharacterId,
+        ...legacyUser
+      } = userDoc();
+      await testEnv.seedFirestore(seed('users/user_1', legacyUser));
+
+      await assertSucceeds(saveCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'c1'));
+
+      const savedUser = await getDoc(doc(ownerDb, 'users/user_1'));
+      expect(savedUser.data()?.ccfoliaCharacterCount).toBe(1);
+    });
+
+    test('未ログインユーザーと他人は読み書きできない', async () => {
+      await testEnv.seedFirestore(seedUser('user_1', { ccfoliaCharacterCount: 1 }), seedCharacter('c1'));
+
+      const anonymousDb = testEnv.anonymousFirestore();
+      const otherDb = testEnv.firestore('user_2');
+
+      await assertFails(getDoc(doc(anonymousDb, 'users/user_1/ccfoliaCharacters/c1')));
+      await assertFails(getDocs(query(collection(otherDb, 'users/user_1/ccfoliaCharacters'), limit(50))));
+      await assertFails(setDoc(doc(otherDb, 'users/user_1/ccfoliaCharacters/c2'), ccfoliaCharacterDoc('c2')));
+    });
+
+    test('不正な形式と createdAt の変更は拒否される', async () => {
+      await testEnv.seedFirestore(seedUser());
+
+      const characterRef = doc(ownerDb, 'users/user_1/ccfoliaCharacters/c1');
+
+      await assertFails(saveCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'c1', { id: 'different-id' }));
+      await assertFails(saveCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'c1', { unexpected: true }));
+      await assertFails(
+        saveCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'c1', {
+          clipboardExtensions: { secret: 'true', unexpected: true },
+        }),
+      );
+      await assertSucceeds(saveCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'c1'));
+      await assertFails(
+        updateDoc(characterRef, {
+          createdAt: Timestamp.fromDate(new Date('2026-03-19T00:00:00.000Z')),
+          revision: 2,
+          updatedAt: serverTimestamp(),
+        }),
+      );
+    });
+
+    test('非有限数は保存されない', async () => {
+      await testEnv.seedFirestore(seedUser());
+
+      const invalidOverrides = [
+        { initiative: Number.POSITIVE_INFINITY },
+        { initiative: Number.NaN },
+        { clipboardExtensions: { angle: Number.NEGATIVE_INFINITY } },
+        { clipboardExtensions: { width: Number.NaN } },
+        { clipboardExtensions: { height: Number.POSITIVE_INFINITY } },
+      ];
+
+      for (const overrides of invalidOverrides) {
+        await assertFails(saveCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'invalid-number', overrides));
       }
-    }
-
-    testEnv = await initializeTestEnvironment({
-      projectId: PROJECT_ID,
-      firestore: {
-        host: FIRESTORE_EMULATOR_HOST,
-        port: FIRESTORE_EMULATOR_PORT,
-        rules: readFileSync(resolve(process.cwd(), 'firebase/firestore.rules'), 'utf8'),
-      },
-      storage: {
-        host: STORAGE_EMULATOR_HOST,
-        port: STORAGE_EMULATOR_PORT,
-        rules: readFileSync(resolve(process.cwd(), 'firebase/storage.rules'), 'utf8'),
-      },
-    });
-  });
-
-  afterEach(async () => {
-    if (!testEnv) return;
-    await testEnv.clearFirestore();
-    await testEnv.clearStorage();
-  });
-
-  afterAll(async () => {
-    errorSpy.mockRestore();
-
-    if (testEnv) {
-      await testEnv.cleanup();
-    }
-
-    if (startedByTest && emulatorProcess) {
-      await stopEmulator(emulatorProcess);
-      emulatorProcess = null;
-    }
-  });
-
-  test('users: 本人は自分のユーザードキュメントを作成・取得できる', async () => {
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    await assertSucceeds(setDoc(doc(ownerDb, 'users/user_1'), userDoc()));
-    await assertSucceeds(getDoc(doc(ownerDb, 'users/user_1')));
-  });
-
-  test('users: アバターなしでも自分のユーザードキュメントを作成できる', async () => {
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-    const { avatarUrl: _avatarUrl, ...documentWithoutAvatar } = userDoc();
-
-    await assertSucceeds(setDoc(doc(ownerDb, 'users/user_1'), documentWithoutAvatar));
-  });
-
-  test('users: ドキュメント ID と data.id が一致しない作成は拒否される', async () => {
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    await assertFails(setDoc(doc(ownerDb, 'users/user_1'), userDoc({ id: 'other_user' })));
-  });
-
-  test('users: 他人のユーザードキュメントは取得・更新できない', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-    });
-
-    const otherDb = testEnv.authenticatedContext('user_2').firestore();
-
-    await assertFails(getDoc(doc(otherDb, 'users/user_1')));
-    await assertFails(
-      updateDoc(doc(otherDb, 'users/user_1'), {
-        name: 'Mallory',
-        updatedAt: Timestamp.fromDate(new Date('2026-03-18T01:00:00.000Z')),
-      }),
-    );
-  });
-
-  test('users: 悪意のあるクライアントが任意の stripeCustomerId でユーザードキュメントを作成できない', async () => {
-    const maliciousDb = testEnv.authenticatedContext('user_malicious').firestore();
-
-    await assertFails(
-      setDoc(doc(maliciousDb, 'users/user_malicious'), userDoc({ stripeCustomerId: 'cus_stolen_id_123' })),
-    );
-  });
-
-  test('users: 本人でも plan と Stripe の ID は直接変更できない', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-    });
-
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    await assertFails(
-      updateDoc(doc(ownerDb, 'users/user_1'), {
-        plan: 'pro',
-        updatedAt: Timestamp.fromDate(new Date('2026-03-18T01:00:00.000Z')),
-      }),
-    );
-
-    await assertFails(
-      updateDoc(doc(ownerDb, 'users/user_1'), {
-        stripeCustomerId: 'cus_hacked',
-        updatedAt: Timestamp.fromDate(new Date('2026-03-18T01:00:00.000Z')),
-      }),
-    );
-
-    await assertFails(
-      updateDoc(doc(ownerDb, 'users/user_1'), {
-        stripeSubscriptionId: 'sub_hacked',
-        updatedAt: Timestamp.fromDate(new Date('2026-03-18T01:00:00.000Z')),
-      }),
-    );
-  });
-
-  test('analyses: 所有者は正しい形式の解析ドキュメントを作成できる', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-    });
-
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    await assertSucceeds(saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1'));
-  });
-
-  test('analyses: SW2.5の解析ドキュメントを作成できる', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-    });
-
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    await assertSucceeds(
-      saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1', {
-        systemId: 'SwordWorld2.5',
-      }),
-    );
-  });
-
-  test('analyses: owner スナップショットが users と不一致なら作成できない', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-    });
-
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    await assertFails(
-      saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1', {
-        owner: ownerSnapshot({ name: 'Tampered Name' }),
-      }),
-    );
-  });
-
-  test('analyses: 無料プランは3件まで作成でき、4件目は拒否される', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/free_user'), userDoc({ plan: 'free', analysisCount: 0 }));
-    });
-
-    const freeUserDb = testEnv.authenticatedContext('free_user').firestore();
-
-    await assertSucceeds(saveAnalysisWithCountSync(freeUserDb, 'free_user', 'a1'));
-    await assertSucceeds(saveAnalysisWithCountSync(freeUserDb, 'free_user', 'a2'));
-    await assertSucceeds(saveAnalysisWithCountSync(freeUserDb, 'free_user', 'a3'));
-    await assertFails(saveAnalysisWithCountSync(freeUserDb, 'free_user', 'a4'));
-  });
-
-  test('analyses: pro プランは3件を超えても作成できる', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/pro_user'), userDoc({ id: 'pro_user', plan: 'pro', analysisCount: 0 }));
-    });
-
-    const proUserDb = testEnv.authenticatedContext('pro_user').firestore();
-    const proOwner = { owner: ownerSnapshot({ id: 'pro_user', plan: 'pro' }) };
-
-    await assertSucceeds(saveAnalysisWithCountSync(proUserDb, 'pro_user', 'a1', proOwner));
-    await assertSucceeds(saveAnalysisWithCountSync(proUserDb, 'pro_user', 'a2', proOwner));
-    await assertSucceeds(saveAnalysisWithCountSync(proUserDb, 'pro_user', 'a3', proOwner));
-    await assertSucceeds(saveAnalysisWithCountSync(proUserDb, 'pro_user', 'a4', proOwner));
-  });
-
-  test('analyses: カウンタ同期なしの単独作成は拒否される', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-    });
-
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    await assertFails(setDoc(doc(ownerDb, 'analyses/a1'), analysisDoc('a1', 'user_1')));
-  });
-
-  test('analyses: 解析を削除せず analysisCount だけ減らす更新は拒否される', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc({ analysisCount: 1 }));
-      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
-    });
-
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    await assertFails(
-      updateDoc(doc(ownerDb, 'users/user_1'), {
-        analysisCount: 0,
-        analysisCountSyncAnalysisId: 'a1',
-        updatedAt: Timestamp.fromDate(new Date('2026-03-18T03:00:00.000Z')),
-      }),
-    );
-  });
-
-  test('analyses: 全体集計がない解析ドキュメントの作成は拒否される', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-    });
-
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    await assertFails(saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1', { characterResults: [] }));
-  });
-
-  test('analyses: 削除時にカウンタ同期がなければ拒否される', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc({ analysisCount: 1 }));
-      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
-    });
-
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    await assertFails(deleteDoc(doc(ownerDb, 'analyses/a1')));
-    await assertSucceeds(deleteAnalysisWithCountSync(ownerDb, 'user_1', 'a1'));
-  });
-
-  test('analyses: 可視性設定に応じて読み取り可否が制御される', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/owner'), userDoc());
-      await setDoc(doc(adminDb, 'analyses/private1'), analysisDoc('private1', 'owner', { visibilityLevel: 'private' }));
-      await setDoc(
-        doc(adminDb, 'analyses/unlisted1'),
-        analysisDoc('unlisted1', 'owner', { visibilityLevel: 'unlisted' }),
+      await assertSucceeds(
+        saveCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'finite-number', {
+          initiative: Number.MAX_VALUE,
+          clipboardExtensions: { angle: -90, width: 2, height: 3 },
+        }),
       );
-      await setDoc(doc(adminDb, 'analyses/public1'), analysisDoc('public1', 'owner', { visibilityLevel: 'public' }));
     });
 
-    const anonDb = testEnv.unauthenticatedContext().firestore();
+    test('一覧取得には50件以下の limit が必要', async () => {
+      await testEnv.seedFirestore(seedUser());
 
-    await assertFails(getDoc(doc(anonDb, 'analyses/private1')));
-    await assertSucceeds(getDoc(doc(anonDb, 'analyses/unlisted1')));
-    await assertSucceeds(getDoc(doc(anonDb, 'analyses/public1')));
-  });
+      const characters = collection(ownerDb, 'users/user_1/ccfoliaCharacters');
 
-  test('analyses: 一覧取得は public のみ許可され、unlisted は一覧取得できない', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/owner'), userDoc());
-      await setDoc(
-        doc(adminDb, 'analyses/unlisted1'),
-        analysisDoc('unlisted1', 'owner', { visibilityLevel: 'unlisted' }),
+      await assertFails(getDocs(characters));
+      await assertFails(getDocs(query(characters, limit(51))));
+      await assertSucceeds(getDocs(query(characters, limit(50))));
+    });
+
+    test('親ユーザーとカウンタ同期がなければ作成・削除できない', async () => {
+      await assertFails(saveCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'c1'));
+
+      await testEnv.seedFirestore(seedUser());
+
+      const characterRef = doc(ownerDb, 'users/user_1/ccfoliaCharacters/c1');
+      await assertFails(
+        setDoc(characterRef, {
+          ...ccfoliaCharacterDoc('c1'),
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        }),
       );
-      await setDoc(doc(adminDb, 'analyses/public1'), analysisDoc('public1', 'owner', { visibilityLevel: 'public' }));
+      await assertSucceeds(saveCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'c1'));
+      await assertFails(deleteDoc(characterRef));
     });
 
-    const anonDb = testEnv.unauthenticatedContext().firestore();
+    test('読み込めない保存データもカウンタ同期で削除できる', async () => {
+      await testEnv.seedFirestore(
+        seedUser('user_1', { ccfoliaCharacterCount: 1 }),
+        seed('users/user_1/ccfoliaCharacters/broken', {
+          schemaVersion: 999,
+          unsupported: true,
+        }),
+      );
 
-    await assertSucceeds(getDocs(query(collection(anonDb, 'analyses'), where('visibilityLevel', '==', 'public'))));
-    await assertFails(getDocs(query(collection(anonDb, 'analyses'), where('visibilityLevel', '==', 'unlisted'))));
+      await assertSucceeds(deleteCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'broken'));
+    });
+
+    test('freeプランは3件を超える作成を拒否する', async () => {
+      await testEnv.seedFirestore(seedUser('user_1', { ccfoliaCharacterCount: 3 }));
+
+      await assertFails(saveCcfoliaCharacterWithCountSync(ownerDb, 'user_1', 'c4'));
+    });
+
+    test('proプランは3件を超えても作成できる', async () => {
+      await testEnv.seedFirestore(seedUser('pro_user', { plan: 'pro', ccfoliaCharacterCount: 100 }));
+
+      const proDb = testEnv.firestore('pro_user');
+      await assertSucceeds(saveCcfoliaCharacterWithCountSync(proDb, 'pro_user', 'c101'));
+    });
+
+    test('stale revision とクライアント指定時刻は拒否される', async () => {
+      await testEnv.seedFirestore(seedUser('user_1', { ccfoliaCharacterCount: 1 }), seedCharacter('c1'));
+
+      const characterRef = doc(ownerDb, 'users/user_1/ccfoliaCharacters/c1');
+
+      await assertFails(updateDoc(characterRef, { name: 'stale', revision: 1, updatedAt: serverTimestamp() }));
+      await assertFails(
+        updateDoc(characterRef, {
+          name: 'client time',
+          revision: 2,
+          updatedAt: Timestamp.fromDate(new Date('2026-03-19T00:00:00.000Z')),
+        }),
+      );
+    });
   });
 
-  test('analyses: 所有者でも許可されたメタ項目のみ更新できる', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
+  describe('analyses', () => {
+    beforeEach(async () => {
+      await testEnv.seedFirestore(seedUser());
     });
 
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
+    test('所有者は正しい形式の解析ドキュメントを作成できる', async () => {
+      await assertSucceeds(saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1'));
+    });
 
-    await assertSucceeds(
-      updateDoc(doc(ownerDb, 'analyses/a1'), {
-        title: 'Updated title',
-        visibilityLevel: 'public',
-        showRecordDetails: true,
-        sessionDate: Timestamp.fromDate(new Date('2026-03-17T00:00:00.000Z')),
-        updatedAt: Timestamp.fromDate(new Date('2026-03-18T02:00:00.000Z')),
-      }),
-    );
+    test('SW2.5の解析ドキュメントを作成できる', async () => {
+      await assertSucceeds(
+        saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1', {
+          systemId: 'SwordWorld2.5',
+        }),
+      );
+    });
 
-    await assertFails(
-      updateDoc(doc(ownerDb, 'analyses/a1'), {
-        sessionDate: null,
-        updatedAt: Timestamp.fromDate(new Date('2026-03-18T02:10:00.000Z')),
-      }),
-    );
+    test('owner スナップショットが users と不一致なら作成できない', async () => {
+      await assertFails(
+        saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1', {
+          owner: ownerSnapshot({ name: 'Tampered Name' }),
+        }),
+      );
+    });
 
-    await assertFails(
-      updateDoc(doc(ownerDb, 'analyses/a1'), {
-        ownerUid: 'user_2',
-      }),
-    );
+    test('無料プランは3件まで作成でき、4件目は拒否される', async () => {
+      await testEnv.seedFirestore(seedUser('free_user'));
+
+      const freeUserDb = testEnv.firestore('free_user');
+
+      await assertSucceeds(saveAnalysisWithCountSync(freeUserDb, 'free_user', 'a1'));
+      await assertSucceeds(saveAnalysisWithCountSync(freeUserDb, 'free_user', 'a2'));
+      await assertSucceeds(saveAnalysisWithCountSync(freeUserDb, 'free_user', 'a3'));
+      await assertFails(saveAnalysisWithCountSync(freeUserDb, 'free_user', 'a4'));
+    });
+
+    test('pro プランは3件を超えても作成できる', async () => {
+      await testEnv.seedFirestore(seedUser('pro_user', { plan: 'pro' }));
+
+      const proUserDb = testEnv.firestore('pro_user');
+      const proOwner = { owner: ownerSnapshot({ id: 'pro_user', plan: 'pro' }) };
+
+      await assertSucceeds(saveAnalysisWithCountSync(proUserDb, 'pro_user', 'a1', proOwner));
+      await assertSucceeds(saveAnalysisWithCountSync(proUserDb, 'pro_user', 'a2', proOwner));
+      await assertSucceeds(saveAnalysisWithCountSync(proUserDb, 'pro_user', 'a3', proOwner));
+      await assertSucceeds(saveAnalysisWithCountSync(proUserDb, 'pro_user', 'a4', proOwner));
+    });
+
+    test('カウンタ同期なしの単独作成は拒否される', async () => {
+      await assertFails(setDoc(doc(ownerDb, 'analyses/a1'), analysisDoc('a1', 'user_1')));
+    });
+
+    test('解析を削除せず analysisCount だけ減らす更新は拒否される', async () => {
+      await testEnv.seedFirestore(seedUser('user_1', { analysisCount: 1 }), seedAnalysis('a1'));
+
+      await assertFails(
+        updateDoc(doc(ownerDb, 'users/user_1'), {
+          analysisCount: 0,
+          analysisCountSyncAnalysisId: 'a1',
+          updatedAt: Timestamp.fromDate(new Date('2026-03-18T03:00:00.000Z')),
+        }),
+      );
+    });
+
+    test('全体集計がない解析ドキュメントの作成は拒否される', async () => {
+      await assertFails(saveAnalysisWithCountSync(ownerDb, 'user_1', 'a1', { characterResults: [] }));
+    });
+
+    test('削除時にカウンタ同期がなければ拒否される', async () => {
+      await testEnv.seedFirestore(seedUser('user_1', { analysisCount: 1 }), seedAnalysis('a1'));
+
+      await assertFails(deleteDoc(doc(ownerDb, 'analyses/a1')));
+      await assertSucceeds(deleteAnalysisWithCountSync(ownerDb, 'user_1', 'a1'));
+    });
+
+    test('可視性設定に応じて読み取り可否が制御される', async () => {
+      await testEnv.seedFirestore(
+        seedUser('owner'),
+        seedAnalysis('private1', 'owner', { visibilityLevel: 'private' }),
+        seedAnalysis('unlisted1', 'owner', { visibilityLevel: 'unlisted' }),
+        seedAnalysis('public1', 'owner', { visibilityLevel: 'public' }),
+      );
+
+      const anonDb = testEnv.anonymousFirestore();
+
+      await assertFails(getDoc(doc(anonDb, 'analyses/private1')));
+      await assertSucceeds(getDoc(doc(anonDb, 'analyses/unlisted1')));
+      await assertSucceeds(getDoc(doc(anonDb, 'analyses/public1')));
+    });
+
+    test('一覧取得は public のみ許可され、unlisted は一覧取得できない', async () => {
+      await testEnv.seedFirestore(
+        seedUser('owner'),
+        seedAnalysis('unlisted1', 'owner', { visibilityLevel: 'unlisted' }),
+        seedAnalysis('public1', 'owner', { visibilityLevel: 'public' }),
+      );
+
+      const anonDb = testEnv.anonymousFirestore();
+
+      await assertSucceeds(getDocs(query(collection(anonDb, 'analyses'), where('visibilityLevel', '==', 'public'))));
+      await assertFails(getDocs(query(collection(anonDb, 'analyses'), where('visibilityLevel', '==', 'unlisted'))));
+    });
+
+    test('所有者でも許可されたメタ項目のみ更新できる', async () => {
+      await testEnv.seedFirestore(seedAnalysis('a1'));
+
+      await assertSucceeds(
+        updateDoc(doc(ownerDb, 'analyses/a1'), {
+          title: 'Updated title',
+          visibilityLevel: 'public',
+          showRecordDetails: true,
+          sessionDate: Timestamp.fromDate(new Date('2026-03-17T00:00:00.000Z')),
+          updatedAt: Timestamp.fromDate(new Date('2026-03-18T02:00:00.000Z')),
+        }),
+      );
+
+      await assertFails(
+        updateDoc(doc(ownerDb, 'analyses/a1'), {
+          sessionDate: null,
+          updatedAt: Timestamp.fromDate(new Date('2026-03-18T02:10:00.000Z')),
+        }),
+      );
+
+      await assertFails(
+        updateDoc(doc(ownerDb, 'analyses/a1'), {
+          ownerUid: 'user_2',
+        }),
+      );
+    });
   });
 
-  test('analysisRecords: Firestore コレクションへのアクセスはすべて拒否される', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/owner'), userDoc({ id: 'owner' }));
-      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'owner', { owner: ownerSnapshot({ id: 'owner' }) }));
+  describe('analysisRecords', () => {
+    test('Firestore コレクションへのアクセスはすべて拒否される', async () => {
+      await testEnv.seedFirestore(seedUser('owner'), seedAnalysis('a1', 'owner'));
+
+      const ownerDb = testEnv.firestore('owner');
+
+      await assertFails(
+        setDoc(doc(ownerDb, 'analysisRecords/a1'), {
+          analysisId: 'a1',
+          ownerUid: 'owner',
+          isPublic: false,
+        }),
+      );
+      await assertFails(getDoc(doc(ownerDb, 'analysisRecords/a1')));
+      await assertFails(deleteDoc(doc(ownerDb, 'analysisRecords/a1')));
     });
-
-    const ownerDb = testEnv.authenticatedContext('owner').firestore();
-
-    await assertFails(
-      setDoc(doc(ownerDb, 'analysisRecords/a1'), {
-        analysisId: 'a1',
-        ownerUid: 'owner',
-        isPublic: false,
-      }),
-    );
-    await assertFails(getDoc(doc(ownerDb, 'analysisRecords/a1')));
-    await assertFails(deleteDoc(doc(ownerDb, 'analysisRecords/a1')));
   });
 
-  test('users+analyses: name/avatarUrl 更新後に analyses.owner を batch で同期更新できる', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
-      await setDoc(doc(adminDb, 'analyses/a2'), analysisDoc('a2', 'user_1', { title: 'Session 2' }));
+  describe('users と analyses の同期', () => {
+    beforeEach(async () => {
+      await testEnv.seedFirestore(seedUser(), seedAnalysis('a1'));
     });
 
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-    const updatedAt = Timestamp.fromDate(new Date('2026-03-18T04:00:00.000Z'));
+    test('name/avatarUrl 更新後に analyses.owner を batch で同期更新できる', async () => {
+      await testEnv.seedFirestore(seedAnalysis('a2', 'user_1', { title: 'Session 2' }));
 
-    const userBatch = writeBatch(ownerDb);
-    userBatch.update(doc(ownerDb, 'users/user_1'), {
-      name: 'Alice Updated',
-      avatarUrl: 'https://example.com/avatar-updated.png',
-      updatedAt,
-    });
-    await assertSucceeds(userBatch.commit());
+      const updatedAt = Timestamp.fromDate(new Date('2026-03-18T04:00:00.000Z'));
 
-    const analysesBatch = writeBatch(ownerDb);
-    analysesBatch.update(doc(ownerDb, 'analyses/a1'), {
-      owner: ownerSnapshot({
+      const userBatch = writeBatch(ownerDb);
+      userBatch.update(doc(ownerDb, 'users/user_1'), {
         name: 'Alice Updated',
         avatarUrl: 'https://example.com/avatar-updated.png',
         updatedAt,
-      }),
-      updatedAt,
-    });
-    analysesBatch.update(doc(ownerDb, 'analyses/a2'), {
-      owner: ownerSnapshot({
-        name: 'Alice Updated',
-        avatarUrl: 'https://example.com/avatar-updated.png',
+      });
+      await assertSucceeds(userBatch.commit());
+
+      const analysesBatch = writeBatch(ownerDb);
+      analysesBatch.update(doc(ownerDb, 'analyses/a1'), {
+        owner: ownerSnapshot({
+          name: 'Alice Updated',
+          avatarUrl: 'https://example.com/avatar-updated.png',
+          updatedAt,
+        }),
         updatedAt,
-      }),
-      updatedAt,
-    });
-    await assertSucceeds(analysesBatch.commit());
-  });
-
-  test('users+analyses: users のみ更新する batch は許可される', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
-    });
-
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    const batch = writeBatch(ownerDb);
-    batch.update(doc(ownerDb, 'users/user_1'), {
-      name: 'Alice Updated',
-      avatarUrl: 'https://example.com/avatar-updated.png',
-      updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:10:00.000Z')),
-    });
-    await assertSucceeds(batch.commit());
-  });
-
-  test('users+analyses: analyses.owner のみ更新して users 同期がない batch は拒否される', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
+      });
+      analysesBatch.update(doc(ownerDb, 'analyses/a2'), {
+        owner: ownerSnapshot({
+          name: 'Alice Updated',
+          avatarUrl: 'https://example.com/avatar-updated.png',
+          updatedAt,
+        }),
+        updatedAt,
+      });
+      await assertSucceeds(analysesBatch.commit());
     });
 
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-
-    const batch = writeBatch(ownerDb);
-    batch.update(doc(ownerDb, 'analyses/a1'), {
-      owner: ownerSnapshot({
+    test('users のみ更新する batch は許可される', async () => {
+      const batch = writeBatch(ownerDb);
+      batch.update(doc(ownerDb, 'users/user_1'), {
         name: 'Alice Updated',
         avatarUrl: 'https://example.com/avatar-updated.png',
+        updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:10:00.000Z')),
+      });
+      await assertSucceeds(batch.commit());
+    });
+
+    test('analyses.owner のみ更新して users 同期がない batch は拒否される', async () => {
+      const batch = writeBatch(ownerDb);
+      batch.update(doc(ownerDb, 'analyses/a1'), {
+        owner: ownerSnapshot({
+          name: 'Alice Updated',
+          avatarUrl: 'https://example.com/avatar-updated.png',
+          updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:20:00.000Z')),
+        }),
         updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:20:00.000Z')),
-      }),
-      updatedAt: Timestamp.fromDate(new Date('2026-03-18T04:20:00.000Z')),
-    });
-    await assertFails(batch.commit());
-  });
-
-  test('users+analyses: updateName 相当(users.name + analyses.owner.name 同時更新)は許可される', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
-      await setDoc(doc(adminDb, 'analyses/a2'), analysisDoc('a2', 'user_1', { title: 'Session 2' }));
+      });
+      await assertFails(batch.commit());
     });
 
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-    const updatedAt = Timestamp.fromDate(new Date('2026-03-18T04:30:00.000Z'));
+    test('updateName 相当(users.name + analyses.owner.name 同時更新)は許可される', async () => {
+      await testEnv.seedFirestore(seedAnalysis('a2', 'user_1', { title: 'Session 2' }));
 
-    const batch = writeBatch(ownerDb);
-    batch.set(doc(ownerDb, 'users/user_1'), { name: 'Alice Updated', updatedAt }, { merge: true });
-    batch.set(
-      doc(ownerDb, 'analyses/a1'),
-      {
-        owner: ownerSnapshot({
-          name: 'Alice Updated',
+      const updatedAt = Timestamp.fromDate(new Date('2026-03-18T04:30:00.000Z'));
+
+      const batch = writeBatch(ownerDb);
+      batch.set(doc(ownerDb, 'users/user_1'), { name: 'Alice Updated', updatedAt }, { merge: true });
+      batch.set(
+        doc(ownerDb, 'analyses/a1'),
+        {
+          owner: ownerSnapshot({
+            name: 'Alice Updated',
+            updatedAt,
+          }),
           updatedAt,
-        }),
-        updatedAt,
-      },
-      { merge: true },
-    );
-    batch.set(
-      doc(ownerDb, 'analyses/a2'),
-      {
-        owner: ownerSnapshot({
-          name: 'Alice Updated',
+        },
+        { merge: true },
+      );
+      batch.set(
+        doc(ownerDb, 'analyses/a2'),
+        {
+          owner: ownerSnapshot({
+            name: 'Alice Updated',
+            updatedAt,
+          }),
           updatedAt,
-        }),
-        updatedAt,
-      },
-      { merge: true },
-    );
+        },
+        { merge: true },
+      );
 
-    await assertSucceeds(batch.commit());
-  });
-
-  test('users+analyses: updateAvatarUrl 相当(users.avatarUrl + analyses.owner.avatarUrl 同時更新)は許可される', async () => {
-    await testEnv.withSecurityRulesDisabled(async (context) => {
-      const adminDb = context.firestore();
-      await setDoc(doc(adminDb, 'users/user_1'), userDoc());
-      await setDoc(doc(adminDb, 'analyses/a1'), analysisDoc('a1', 'user_1'));
-      await setDoc(doc(adminDb, 'analyses/a2'), analysisDoc('a2', 'user_1', { title: 'Session 2' }));
+      await assertSucceeds(batch.commit());
     });
 
-    const ownerDb = testEnv.authenticatedContext('user_1').firestore();
-    const updatedAt = Timestamp.fromDate(new Date('2026-03-18T04:40:00.000Z'));
+    test('updateAvatarUrl 相当(users.avatarUrl + analyses.owner.avatarUrl 同時更新)は許可される', async () => {
+      await testEnv.seedFirestore(seedAnalysis('a2', 'user_1', { title: 'Session 2' }));
 
-    const batch = writeBatch(ownerDb);
-    batch.set(
-      doc(ownerDb, 'users/user_1'),
-      {
-        avatarUrl: 'https://example.com/avatar-updated.png',
-        updatedAt,
-      },
-      { merge: true },
-    );
-    batch.set(
-      doc(ownerDb, 'analyses/a1'),
-      {
-        owner: ownerSnapshot({
+      const updatedAt = Timestamp.fromDate(new Date('2026-03-18T04:40:00.000Z'));
+
+      const batch = writeBatch(ownerDb);
+      batch.set(
+        doc(ownerDb, 'users/user_1'),
+        {
           avatarUrl: 'https://example.com/avatar-updated.png',
           updatedAt,
-        }),
-        updatedAt,
-      },
-      { merge: true },
-    );
-    batch.set(
-      doc(ownerDb, 'analyses/a2'),
-      {
-        owner: ownerSnapshot({
-          avatarUrl: 'https://example.com/avatar-updated.png',
+        },
+        { merge: true },
+      );
+      batch.set(
+        doc(ownerDb, 'analyses/a1'),
+        {
+          owner: ownerSnapshot({
+            avatarUrl: 'https://example.com/avatar-updated.png',
+            updatedAt,
+          }),
           updatedAt,
-        }),
-        updatedAt,
-      },
-      { merge: true },
-    );
+        },
+        { merge: true },
+      );
+      batch.set(
+        doc(ownerDb, 'analyses/a2'),
+        {
+          owner: ownerSnapshot({
+            avatarUrl: 'https://example.com/avatar-updated.png',
+            updatedAt,
+          }),
+          updatedAt,
+        },
+        { merge: true },
+      );
 
-    await assertSucceeds(batch.commit());
+      await assertSucceeds(batch.commit());
+    });
   });
 
-  test('storage/analysis-records: 所有者は自分のパスへ JSON を書き込める', async () => {
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+  describe('Storage セキュリティルール', () => {
+    let ownerStorage: ReturnType<typeof testEnv.storage>;
 
-    await assertSucceeds(
-      ownerStorage
-        .ref('analysis-records/owner/a1')
-        .putString('{"characterRecords":[]}', 'raw', {
-          contentType: 'application/json; charset=utf-8',
-          customMetadata: {
-            visibilityLevel: 'private',
-            showRecordDetails: 'false',
-          },
-        })
-        .then(() => undefined),
-    );
-  });
+    beforeEach(() => {
+      ownerStorage = testEnv.storage('owner');
+    });
 
-  test('storage/analysis-records: 他人のパスへの書き込みは拒否される', async () => {
-    const otherStorage = testEnv.authenticatedContext('other').storage(STORAGE_BUCKET);
+    describe('analysis-records', () => {
+      test('所有者は自分のパスへ JSON を書き込める', async () => {
+        await assertSucceeds(
+          ownerStorage
+            .ref('analysis-records/owner/a1')
+            .putString('{"characterRecords":[]}', 'raw', {
+              contentType: 'application/json; charset=utf-8',
+              customMetadata: {
+                visibilityLevel: 'private',
+                showRecordDetails: 'false',
+              },
+            })
+            .then(() => undefined),
+        );
+      });
 
-    await assertFails(
-      otherStorage
-        .ref('analysis-records/owner/a1')
-        .putString('{"characterRecords":[]}', 'raw', {
-          contentType: 'application/json; charset=utf-8',
-          customMetadata: {
-            visibilityLevel: 'private',
-            showRecordDetails: 'false',
-          },
-        })
-        .then(() => undefined),
-    );
-  });
+      test('他人のパスへの書き込みは拒否される', async () => {
+        const otherStorage = testEnv.storage('other');
 
-  test('storage/analysis-records: 公開設定 metadata がない書き込みは拒否される', async () => {
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+        await assertFails(
+          otherStorage
+            .ref('analysis-records/owner/a1')
+            .putString('{"characterRecords":[]}', 'raw', {
+              contentType: 'application/json; charset=utf-8',
+              customMetadata: {
+                visibilityLevel: 'private',
+                showRecordDetails: 'false',
+              },
+            })
+            .then(() => undefined),
+        );
+      });
 
-    await assertFails(
-      ownerStorage
-        .ref('analysis-records/owner/a1')
-        .putString('{"characterRecords":[]}', 'raw', { contentType: 'application/json' })
-        .then(() => undefined),
-    );
-  });
+      test('公開設定 metadata がない書き込みは拒否される', async () => {
+        await assertFails(
+          ownerStorage
+            .ref('analysis-records/owner/a1')
+            .putString('{"characterRecords":[]}', 'raw', { contentType: 'application/json' })
+            .then(() => undefined),
+        );
+      });
 
-  test('storage/analysis-records: metadata に visibilityLevel=public + showRecordDetails=true が埋め込まれている場合、他ユーザーも読み取りできる', async () => {
-    const analysisId = 'storage_public_detail_true';
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+      test('metadata に visibilityLevel=public + showRecordDetails=true が埋め込まれている場合、他ユーザーも読み取りできる', async () => {
+        const analysisId = 'storage_public_detail_true';
 
-    await assertSucceeds(
-      ownerStorage
-        .ref(`analysis-records/owner/${analysisId}`)
-        .putString('{"characterRecords":[]}', 'raw', {
-          contentType: 'application/json; charset=utf-8',
-          customMetadata: {
-            visibilityLevel: 'public',
-            showRecordDetails: 'true',
-          },
-        })
-        .then(() => undefined),
-    );
+        await assertSucceeds(
+          ownerStorage
+            .ref(`analysis-records/owner/${analysisId}`)
+            .putString('{"characterRecords":[]}', 'raw', {
+              contentType: 'application/json; charset=utf-8',
+              customMetadata: {
+                visibilityLevel: 'public',
+                showRecordDetails: 'true',
+              },
+            })
+            .then(() => undefined),
+        );
 
-    const otherStorage = testEnv.authenticatedContext('other').storage(STORAGE_BUCKET);
-    await assertSucceeds(otherStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
-  });
+        const otherStorage = testEnv.storage('other');
+        await assertSucceeds(otherStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
+      });
 
-  test('storage/analysis-records: metadata に visibilityLevel=public + showRecordDetails=false が埋め込まれている場合、他ユーザーは読み取りできない', async () => {
-    const analysisId = 'storage_public_detail_false';
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+      test('metadata に visibilityLevel=public + showRecordDetails=false が埋め込まれている場合、他ユーザーは読み取りできない', async () => {
+        const analysisId = 'storage_public_detail_false';
 
-    await assertSucceeds(
-      ownerStorage
-        .ref(`analysis-records/owner/${analysisId}`)
-        .putString('{"characterRecords":[]}', 'raw', {
-          contentType: 'application/json; charset=utf-8',
-          customMetadata: {
-            visibilityLevel: 'public',
-            showRecordDetails: 'false',
-          },
-        })
-        .then(() => undefined),
-    );
+        await assertSucceeds(
+          ownerStorage
+            .ref(`analysis-records/owner/${analysisId}`)
+            .putString('{"characterRecords":[]}', 'raw', {
+              contentType: 'application/json; charset=utf-8',
+              customMetadata: {
+                visibilityLevel: 'public',
+                showRecordDetails: 'false',
+              },
+            })
+            .then(() => undefined),
+        );
 
-    const anonStorage = testEnv.unauthenticatedContext().storage(STORAGE_BUCKET);
-    await assertFails(anonStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
-  });
+        const anonStorage = testEnv.anonymousStorage();
+        await assertFails(anonStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
+      });
 
-  test('storage/analysis-records: metadata に visibilityLevel=unlisted + showRecordDetails=true が埋め込まれている場合、他ユーザーも読み取りできる', async () => {
-    const analysisId = 'storage_unlisted_detail_true';
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+      test('metadata に visibilityLevel=unlisted + showRecordDetails=true が埋め込まれている場合、他ユーザーも読み取りできる', async () => {
+        const analysisId = 'storage_unlisted_detail_true';
 
-    await assertSucceeds(
-      ownerStorage
-        .ref(`analysis-records/owner/${analysisId}`)
-        .putString('{"characterRecords":[]}', 'raw', {
-          contentType: 'application/json; charset=utf-8',
-          customMetadata: {
-            visibilityLevel: 'unlisted',
-            showRecordDetails: 'true',
-          },
-        })
-        .then(() => undefined),
-    );
+        await assertSucceeds(
+          ownerStorage
+            .ref(`analysis-records/owner/${analysisId}`)
+            .putString('{"characterRecords":[]}', 'raw', {
+              contentType: 'application/json; charset=utf-8',
+              customMetadata: {
+                visibilityLevel: 'unlisted',
+                showRecordDetails: 'true',
+              },
+            })
+            .then(() => undefined),
+        );
 
-    const otherStorage = testEnv.authenticatedContext('other').storage(STORAGE_BUCKET);
-    await assertSucceeds(otherStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
-  });
+        const otherStorage = testEnv.storage('other');
+        await assertSucceeds(otherStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
+      });
 
-  test('storage/analysis-records: metadata に visibilityLevel=private + showRecordDetails=true が埋め込まれている場合、他ユーザーは読み取りできない', async () => {
-    const analysisId = 'storage_private_detail_true';
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+      test('metadata に visibilityLevel=private + showRecordDetails=true が埋め込まれている場合、他ユーザーは読み取りできない', async () => {
+        const analysisId = 'storage_private_detail_true';
 
-    await assertSucceeds(
-      ownerStorage
-        .ref(`analysis-records/owner/${analysisId}`)
-        .putString('{"characterRecords":[]}', 'raw', {
-          contentType: 'application/json; charset=utf-8',
-          customMetadata: {
-            visibilityLevel: 'private',
-            showRecordDetails: 'true',
-          },
-        })
-        .then(() => undefined),
-    );
+        await assertSucceeds(
+          ownerStorage
+            .ref(`analysis-records/owner/${analysisId}`)
+            .putString('{"characterRecords":[]}', 'raw', {
+              contentType: 'application/json; charset=utf-8',
+              customMetadata: {
+                visibilityLevel: 'private',
+                showRecordDetails: 'true',
+              },
+            })
+            .then(() => undefined),
+        );
 
-    const anonStorage = testEnv.unauthenticatedContext().storage(STORAGE_BUCKET);
-    await assertFails(anonStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
-  });
+        const anonStorage = testEnv.anonymousStorage();
+        await assertFails(anonStorage.ref(`analysis-records/owner/${analysisId}`).getMetadata());
+      });
+    });
 
-  test('storage/analysis-og-images: 所有者は ownerUid metadata を持つ画像を書き込める', async () => {
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+    describe('analysis-og-images', () => {
+      test('所有者は ownerUid metadata を持つ画像を書き込める', async () => {
+        await assertSucceeds(
+          ownerStorage
+            .ref('analysis-og-images/a1')
+            .putString('data:image/png;base64,AA==', 'data_url', {
+              contentType: 'image/png',
+              customMetadata: {
+                ownerUid: 'owner',
+                visibilityLevel: 'private',
+              },
+            })
+            .then(() => undefined),
+        );
+      });
 
-    await assertSucceeds(
-      ownerStorage
-        .ref('analysis-og-images/a1')
-        .putString('data:image/png;base64,AA==', 'data_url', {
-          contentType: 'image/png',
-          customMetadata: {
-            ownerUid: 'owner',
-            visibilityLevel: 'private',
-          },
-        })
-        .then(() => undefined),
-    );
-  });
+      test('ownerUid metadata が認証ユーザーと不一致なら拒否される', async () => {
+        const otherStorage = testEnv.storage('other');
 
-  test('storage/analysis-og-images: ownerUid metadata が認証ユーザーと不一致なら拒否される', async () => {
-    const otherStorage = testEnv.authenticatedContext('other').storage(STORAGE_BUCKET);
+        await assertFails(
+          otherStorage
+            .ref('analysis-og-images/a1')
+            .putString('data:image/png;base64,AA==', 'data_url', {
+              contentType: 'image/png',
+              customMetadata: {
+                ownerUid: 'owner',
+                visibilityLevel: 'private',
+              },
+            })
+            .then(() => undefined),
+        );
+      });
 
-    await assertFails(
-      otherStorage
-        .ref('analysis-og-images/a1')
-        .putString('data:image/png;base64,AA==', 'data_url', {
-          contentType: 'image/png',
-          customMetadata: {
-            ownerUid: 'owner',
-            visibilityLevel: 'private',
-          },
-        })
-        .then(() => undefined),
-    );
-  });
+      test('visibilityLevel=public なら他ユーザーが読み取りできる', async () => {
+        const analysisId = 'og_public';
 
-  test('storage/analysis-og-images: visibilityLevel=public なら他ユーザーが読み取りできる', async () => {
-    const analysisId = 'og_public';
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+        await assertSucceeds(
+          ownerStorage
+            .ref(`analysis-og-images/${analysisId}`)
+            .putString('data:image/png;base64,AA==', 'data_url', {
+              contentType: 'image/png',
+              customMetadata: {
+                ownerUid: 'owner',
+                visibilityLevel: 'public',
+              },
+            })
+            .then(() => undefined),
+        );
 
-    await assertSucceeds(
-      ownerStorage
-        .ref(`analysis-og-images/${analysisId}`)
-        .putString('data:image/png;base64,AA==', 'data_url', {
-          contentType: 'image/png',
-          customMetadata: {
-            ownerUid: 'owner',
-            visibilityLevel: 'public',
-          },
-        })
-        .then(() => undefined),
-    );
+        const otherStorage = testEnv.storage('other');
+        await assertSucceeds(otherStorage.ref(`analysis-og-images/${analysisId}`).getMetadata());
+      });
 
-    const otherStorage = testEnv.authenticatedContext('other').storage(STORAGE_BUCKET);
-    await assertSucceeds(otherStorage.ref(`analysis-og-images/${analysisId}`).getMetadata());
-  });
+      test('visibilityLevel=private なら他ユーザーは読み取りできない', async () => {
+        const analysisId = 'og_private';
 
-  test('storage/analysis-og-images: visibilityLevel=private なら他ユーザーは読み取りできない', async () => {
-    const analysisId = 'og_private';
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+        await assertSucceeds(
+          ownerStorage
+            .ref(`analysis-og-images/${analysisId}`)
+            .putString('data:image/png;base64,AA==', 'data_url', {
+              contentType: 'image/png',
+              customMetadata: {
+                ownerUid: 'owner',
+                visibilityLevel: 'private',
+              },
+            })
+            .then(() => undefined),
+        );
 
-    await assertSucceeds(
-      ownerStorage
-        .ref(`analysis-og-images/${analysisId}`)
-        .putString('data:image/png;base64,AA==', 'data_url', {
-          contentType: 'image/png',
-          customMetadata: {
-            ownerUid: 'owner',
-            visibilityLevel: 'private',
-          },
-        })
-        .then(() => undefined),
-    );
+        const anonStorage = testEnv.anonymousStorage();
+        await assertFails(anonStorage.ref(`analysis-og-images/${analysisId}`).getMetadata());
+      });
+    });
 
-    const anonStorage = testEnv.unauthenticatedContext().storage(STORAGE_BUCKET);
-    await assertFails(anonStorage.ref(`analysis-og-images/${analysisId}`).getMetadata());
-  });
+    describe('shared-images', () => {
+      test('認証済みユーザーだけが PNG を書き込める', async () => {
+        const anonStorage = testEnv.anonymousStorage();
 
-  test('storage/shared-images: 認証済みユーザーだけが PNG を書き込める', async () => {
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
-    const anonStorage = testEnv.unauthenticatedContext().storage(STORAGE_BUCKET);
+        await assertSucceeds(
+          ownerStorage
+            .ref('shared-images/log-analysis/authenticated.png')
+            .putString('data:image/png;base64,AA==', 'data_url', { contentType: 'image/png' })
+            .then(() => undefined),
+        );
+        await assertFails(
+          anonStorage
+            .ref('shared-images/log-analysis/anonymous.png')
+            .putString('data:image/png;base64,AA==', 'data_url', { contentType: 'image/png' })
+            .then(() => undefined),
+        );
+        await assertFails(
+          ownerStorage
+            .ref('shared-images/log-analysis/vector.svg')
+            .putString('<svg></svg>', 'raw', { contentType: 'image/svg+xml' })
+            .then(() => undefined),
+        );
+      });
+    });
 
-    await assertSucceeds(
-      ownerStorage
-        .ref('shared-images/log-analysis/authenticated.png')
-        .putString('data:image/png;base64,AA==', 'data_url', { contentType: 'image/png' })
-        .then(() => undefined),
-    );
-    await assertFails(
-      anonStorage
-        .ref('shared-images/log-analysis/anonymous.png')
-        .putString('data:image/png;base64,AA==', 'data_url', { contentType: 'image/png' })
-        .then(() => undefined),
-    );
-    await assertFails(
-      ownerStorage
-        .ref('shared-images/log-analysis/vector.svg')
-        .putString('<svg></svg>', 'raw', { contentType: 'image/svg+xml' })
-        .then(() => undefined),
-    );
-  });
+    describe('avatars', () => {
+      test('所有者は 1MiB 以下の JPEG/PNG/WebP を書き込める', async () => {
+        await assertSucceeds(
+          ownerStorage
+            .ref('avatars/owner/profile.png')
+            .put(new Uint8Array(1 * 1024 * 1024), {
+              contentType: 'image/png',
+            })
+            .then(() => undefined),
+        );
+      });
 
-  test('storage/avatars: 所有者は 1MiB 以下の JPEG/PNG/WebP を書き込める', async () => {
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+      test('1MiB を超える書き込みは拒否される', async () => {
+        await assertFails(
+          ownerStorage
+            .ref('avatars/owner/too-large.png')
+            .put(new Uint8Array(1 * 1024 * 1024 + 1), {
+              contentType: 'image/png',
+            })
+            .then(() => undefined),
+        );
+      });
 
-    await assertSucceeds(
-      ownerStorage
-        .ref('avatars/owner/profile.png')
-        .put(new Uint8Array(1 * 1024 * 1024), {
-          contentType: 'image/png',
-        })
-        .then(() => undefined),
-    );
-  });
+      test('非対応のファイル形式は拒否される', async () => {
+        await assertFails(
+          ownerStorage
+            .ref('avatars/owner/unsupported.gif')
+            .putString('gif-data', 'raw', {
+              contentType: 'image/gif',
+            })
+            .then(() => undefined),
+        );
+      });
+    });
 
-  test('storage/avatars: 1MiB を超える書き込みは拒否される', async () => {
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
+    test('avatars と analysis-records と analysis-og-images の list 操作は拒否される', async () => {
+      await assertSucceeds(
+        ownerStorage
+          .ref('avatars/owner')
+          .putString('avatar', 'raw', {
+            contentType: 'image/png',
+          })
+          .then(() => undefined),
+      );
+      await assertSucceeds(
+        ownerStorage
+          .ref('analysis-records/owner/a1')
+          .putString('{"characterRecords":[]}', 'raw', {
+            contentType: 'application/json; charset=utf-8',
+            customMetadata: {
+              visibilityLevel: 'private',
+              showRecordDetails: 'false',
+            },
+          })
+          .then(() => undefined),
+      );
+      await assertSucceeds(
+        ownerStorage
+          .ref('analysis-og-images/a1')
+          .putString('data:image/png;base64,AA==', 'data_url', {
+            contentType: 'image/png',
+            customMetadata: {
+              ownerUid: 'owner',
+              visibilityLevel: 'private',
+            },
+          })
+          .then(() => undefined),
+      );
 
-    await assertFails(
-      ownerStorage
-        .ref('avatars/owner/too-large.png')
-        .put(new Uint8Array(1 * 1024 * 1024 + 1), {
-          contentType: 'image/png',
-        })
-        .then(() => undefined),
-    );
-  });
-
-  test('storage/avatars: 非対応のファイル形式は拒否される', async () => {
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
-
-    await assertFails(
-      ownerStorage
-        .ref('avatars/owner/unsupported.gif')
-        .putString('gif-data', 'raw', {
-          contentType: 'image/gif',
-        })
-        .then(() => undefined),
-    );
-  });
-
-  test('storage: avatars と analysis-records と analysis-og-images の list 操作は拒否される', async () => {
-    const ownerStorage = testEnv.authenticatedContext('owner').storage(STORAGE_BUCKET);
-
-    await assertSucceeds(
-      ownerStorage
-        .ref('avatars/owner')
-        .putString('avatar', 'raw', {
-          contentType: 'image/png',
-        })
-        .then(() => undefined),
-    );
-    await assertSucceeds(
-      ownerStorage
-        .ref('analysis-records/owner/a1')
-        .putString('{"characterRecords":[]}', 'raw', {
-          contentType: 'application/json; charset=utf-8',
-          customMetadata: {
-            visibilityLevel: 'private',
-            showRecordDetails: 'false',
-          },
-        })
-        .then(() => undefined),
-    );
-    await assertSucceeds(
-      ownerStorage
-        .ref('analysis-og-images/a1')
-        .putString('data:image/png;base64,AA==', 'data_url', {
-          contentType: 'image/png',
-          customMetadata: {
-            ownerUid: 'owner',
-            visibilityLevel: 'private',
-          },
-        })
-        .then(() => undefined),
-    );
-
-    await assertFails(storageList(storageRef(ownerStorage, 'avatars')));
-    await assertFails(storageList(storageRef(ownerStorage, 'analysis-records/owner')));
-    await assertFails(storageList(storageRef(ownerStorage, 'analysis-og-images')));
+      await assertFails(storageList(storageRef(ownerStorage, 'avatars')));
+      await assertFails(storageList(storageRef(ownerStorage, 'analysis-records/owner')));
+      await assertFails(storageList(storageRef(ownerStorage, 'analysis-og-images')));
+    });
   });
 });
