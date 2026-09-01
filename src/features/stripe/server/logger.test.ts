@@ -170,6 +170,19 @@ describe('sendStripeLog', () => {
     expect(content).toContain('一時的に利用できません');
   });
 
+  test('JSONに変換できないエラーも監査ログに残す', async () => {
+    await sendStripeLog({
+      level: 'error',
+      eventType: 'test.undefined-json',
+      message: 'JSON変換エラーのテスト',
+      error: { toJSON: () => undefined },
+    });
+
+    const content = String(requests[0]?.body.content);
+    const auditLog = JSON.parse(content.slice(1, -1)) as { error: { message: string } };
+    expect(JSON.parse(auditLog.error.message)).toEqual({ serializationError: 'undefined' });
+  });
+
   test('通知タイトルを Discord の文字数制限内に収める', async () => {
     await sendStripeLog({
       level: 'success',

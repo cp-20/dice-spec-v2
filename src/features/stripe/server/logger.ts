@@ -80,7 +80,7 @@ const truncate = (value: string, maxLength: number): string => {
 
 const stringifyJson = (value: unknown): string => {
   try {
-    return JSON.stringify(value);
+    return JSON.stringify(value) ?? JSON.stringify({ serializationError: 'undefined' });
   } catch {
     return JSON.stringify({ serializationError: String(value) });
   }

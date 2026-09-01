@@ -35,13 +35,23 @@ const lookupFirebaseUserByIdToken = async (idToken: string) => {
   }
 
   if (!response.ok) {
-    const body = await response.text();
+    let body: string;
+    try {
+      body = await response.text();
+    } catch (error) {
+      throw new FirebaseAuthServiceError('Failed to read Firebase ID token verification response', { cause: error });
+    }
     const message = `Firebase ID token verification failed with status ${response.status}: ${body}`;
     if (response.status === 429 || response.status >= 500) throw new FirebaseAuthServiceError(message);
     throw new Error(message);
   }
 
-  const payload = (await response.json()) as IdentityToolkitLookupResponse;
+  let payload: IdentityToolkitLookupResponse;
+  try {
+    payload = (await response.json()) as IdentityToolkitLookupResponse;
+  } catch (error) {
+    throw new FirebaseAuthServiceError('Failed to parse Firebase ID token verification response', { cause: error });
+  }
   return payload.users?.[0] ?? null;
 };
 
