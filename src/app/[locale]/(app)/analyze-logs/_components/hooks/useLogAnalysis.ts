@@ -7,7 +7,6 @@ import { detectSystem } from '@/features/log-analysis/ccfolia/detector';
 import { parseHtmlLog } from '@/features/log-analysis/ccfolia/htmlParser';
 import { systemStats } from '@/features/log-analysis/ccfolia/messageParser';
 import type { DiceResultForCharacter, System } from '@/features/log-analysis/model';
-import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { ALL_CHARACTER_ID } from '../constants';
@@ -148,21 +147,19 @@ export const useLogAnalysis = () => {
     if (result === null) return;
 
     if (result.type === 'error') {
-      sendEvent('analyzeLogsError');
+      sendEvent('analyze_log', { success: false, ...(system && { game_system: system }) });
       return;
     }
 
     const allResult = result.results.find((p) => p.id === ALL_CHARACTER_ID);
     if (allResult === undefined || system === null) return;
 
-    const { average, deviationScore, successRate, diceRollCount } = allResult.summary;
-    sendEvent('analyzeLogs', [
-      system,
-      `${round(average, 3)}`,
-      `${round(deviationScore, 3)}`,
-      `${round(successRate, 3)}`,
-      `${diceRollCount}`,
-    ]);
+    sendEvent('analyze_log', {
+      success: true,
+      game_system: system,
+      character_count: Math.max(0, result.results.length - 1),
+      dice_roll_count: allResult.summary.diceRollCount,
+    });
   }, [result, system, sendEvent]);
 
   return {

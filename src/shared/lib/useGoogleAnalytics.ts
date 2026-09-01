@@ -1,32 +1,16 @@
-import { useCallback, useEffect } from 'react';
-
 declare global {
   interface Window {
     dataLayer: unknown[];
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
-const getParamObject = (params?: string | string[]) => {
-  if (params === undefined) return {};
-  if (typeof params === 'string') return { param: params };
-  return Object.fromEntries(params.map((param, i) => [[`params-${i}`], param]));
+type EventParameters = Record<string, unknown>;
+
+export const sendGoogleAnalyticsEvent = (event: string, parameters: EventParameters = {}) => {
+  window.dataLayer ??= [];
+  window.gtag ??= (...args: unknown[]) => window.dataLayer.push(args);
+  window.gtag('event', event, parameters);
 };
 
-export const useGoogleAnalytics = () => {
-  useEffect(() => {
-    window.dataLayer = window.dataLayer || [];
-  }, []);
-
-  const sendEvent = useCallback((event: string, params?: string | string[]) => {
-    window.dataLayer.push({
-      event,
-      ...getParamObject(params),
-    });
-  }, []);
-
-  const sendRawEvent = useCallback((event: Record<string, unknown>) => {
-    window.dataLayer.push(event);
-  }, []);
-
-  return { sendEvent, sendRawEvent };
-};
+export const useGoogleAnalytics = () => ({ sendEvent: sendGoogleAnalyticsEvent });

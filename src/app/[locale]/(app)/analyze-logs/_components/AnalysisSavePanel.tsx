@@ -22,6 +22,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useAnalysisOgImage } from './hooks/useAnalysisOgImage';
 import { useLogAnalysis } from './hooks/useLogAnalysis';
@@ -52,6 +53,7 @@ export const AnalysisSavePanel: FC = () => {
   useUserAnalyses(authUser?.uid);
   const analyses = useAtomValue(myAnalysesAtom);
   const { me } = useMeStore();
+  const { sendEvent } = useGoogleAnalytics();
 
   const [visibility, setVisibility] = useState<AnalysisVisibilityLevel>('private');
   const [title, setTitle] = useState('');
@@ -95,8 +97,15 @@ export const AnalysisSavePanel: FC = () => {
       };
 
       const analysisId = await saveAnalysis(payload);
+      sendEvent('save_analysis', {
+        success: true,
+        visibility,
+        show_record_details: showRecordDetails,
+        plan: me.plan,
+      });
       router.push(t('link', { href: `/analyze-logs/${analysisId}` }));
     } catch (err) {
+      sendEvent('save_analysis', { success: false, visibility, plan: me.plan });
       console.error(err);
       toast({
         title: t('analyze-logs:save.failed.title'),

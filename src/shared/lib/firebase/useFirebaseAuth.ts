@@ -11,6 +11,8 @@ import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { useCallback } from 'react';
 
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
+
 import { getFirebaseAuth } from './client';
 
 const internalAuthUserLoadingAtom = atom(true);
@@ -36,20 +38,24 @@ export const useFirebaseAuth = () => {
   const auth = getFirebaseAuth();
   const authUser = useAtomValue(internalAuthUserAtom);
   const loading = useAtomValue(internalAuthUserLoadingAtom);
+  const { sendEvent } = useGoogleAnalytics();
 
   const signInWithGoogle = useCallback(async () => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
+      sendEvent('login', { method: 'Google' });
     } catch (err) {
       if (isExpectedSignInCancellation(err)) return;
+      sendEvent('login_error', { method: 'Google' });
       throw err;
     }
-  }, [auth]);
+  }, [auth, sendEvent]);
 
   const signOutUser = useCallback(async () => {
     await signOut(auth);
-  }, [auth]);
+    sendEvent('logout');
+  }, [auth, sendEvent]);
 
   return {
     authUser,

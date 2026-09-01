@@ -11,6 +11,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { PricingCards } from './PricingCards';
 
@@ -19,6 +20,7 @@ export const PlanManagementSection = () => {
   const { me } = useMeStore();
   const { toast } = useToast();
   const [managingSubscription, setManagingSubscription] = useState(false);
+  const { sendEvent } = useGoogleAnalytics();
 
   const handleOpenPortal = async () => {
     if (me === null) return;
@@ -40,8 +42,10 @@ export const PlanManagementSection = () => {
         throw new Error('Stripe portal URL not found');
       }
 
+      sendEvent('open_billing_portal', { success: true });
       window.location.href = data.url;
     } catch (error) {
+      sendEvent('open_billing_portal', { success: false });
       console.error('Error opening subscription portal:', error);
       toast({
         title: t('profile:toast.manage-subscription-error-title'),

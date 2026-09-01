@@ -16,6 +16,7 @@ import { useToast } from '@/shared/components/ui/use-toast';
 import { getFirebaseStorage } from '@/shared/lib/firebase/client';
 import { AvatarPreparationError, uploadAvatarFromFileToStorage } from '@/shared/lib/firebase/storage/avatars';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 export const ProfileSettingsSection = () => {
   const storage = getFirebaseStorage();
@@ -26,6 +27,7 @@ export const ProfileSettingsSection = () => {
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
+  const { sendEvent } = useGoogleAnalytics();
 
   useEffect(() => {
     setDisplayName(me?.name ?? '');
@@ -39,7 +41,9 @@ export const ProfileSettingsSection = () => {
       try {
         const avatarUrl = await uploadAvatarFromFileToStorage(storage, authUser.uid, file);
         await updateAvatarUrl(avatarUrl);
+        sendEvent('update_profile', { field: 'avatar', success: true });
       } catch (err) {
+        sendEvent('update_profile', { field: 'avatar', success: false });
         console.error('Failed to upload avatar', err);
 
         let description = t('profile:toast.avatar-upload-error-description');
@@ -62,7 +66,7 @@ export const ProfileSettingsSection = () => {
         setUploading(false);
       }
     },
-    [authUser?.uid, storage, updateAvatarUrl, toast],
+    [authUser?.uid, sendEvent, storage, updateAvatarUrl, toast],
   );
 
   const dropHandler = useCallback(
@@ -82,11 +86,13 @@ export const ProfileSettingsSection = () => {
     setSaving(true);
     try {
       await updateName(displayName);
+      sendEvent('update_profile', { field: 'name', success: true });
       toast({
         title: t('profile:toast.save-success-title'),
         description: t('profile:toast.save-success-description'),
       });
     } catch (err) {
+      sendEvent('update_profile', { field: 'name', success: false });
       console.error('Failed to save profile', err);
       toast({
         title: t('profile:toast.save-error-title'),

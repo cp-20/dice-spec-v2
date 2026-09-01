@@ -12,6 +12,7 @@ import { getFirebaseAuth, getFirebaseFirestore, getFirebaseStorage } from '@/sha
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { uploadAvatarFromUrlToStorage } from '@/shared/lib/firebase/storage/avatars';
 import { authUserAtom, authUserLoadingAtom } from '@/shared/lib/firebase/useFirebaseAuth';
+import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
 
 const internalMeLoadingAtom = atom(true);
 
@@ -65,6 +66,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
           analysisCountSyncAnalysisId: null,
         };
         await setDoc(userRef, newUserDocument);
+        sendGoogleAnalyticsEvent('sign_up', { method: 'Google' });
       } catch (error) {
         console.error('Failed to create user document:', error);
         toast({

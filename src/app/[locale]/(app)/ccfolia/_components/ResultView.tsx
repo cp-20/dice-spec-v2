@@ -7,15 +7,18 @@ import { type FC, useCallback, useState } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Textarea } from '@/shared/components/ui/textarea';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useFormResult } from './hooks/useFormResult';
 
 export const ResultView: FC = () => {
   const { formResult } = useFormResult();
   const [done, setDone] = useState(false);
+  const { sendEvent } = useGoogleAnalytics();
 
   const handleCopyToClipboard = useCallback(async () => {
     await navigator.clipboard.writeText(formResult);
+    sendEvent('copy_ccfolia_character');
 
     setDone(true);
     const timeout = setTimeout(() => setDone(false), 1000);
@@ -23,7 +26,7 @@ export const ResultView: FC = () => {
       setDone(false);
       clearTimeout(timeout);
     };
-  }, [formResult]);
+  }, [formResult, sendEvent]);
 
   return (
     <div className="space-y-2">

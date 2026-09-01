@@ -22,6 +22,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useAnalysisOgImage } from '../../_components/hooks/useAnalysisOgImage';
 import { analysisIdAtom, currentAnalysisAtom } from './atoms';
@@ -49,6 +50,7 @@ export const useEditAnalysisDialog = () => {
   const { generateOgImage } = useAnalysisOgImage();
   const { updateAnalysis, updating } = useUpdateAnalysis(generateOgImage);
   const { toast } = useToast();
+  const { sendEvent } = useGoogleAnalytics();
 
   const isValid = analysisId !== undefined && title.trim().length > 0;
 
@@ -72,8 +74,10 @@ export const useEditAnalysisDialog = () => {
         showRecordDetails: showRecordDetails,
         sessionDate: Timestamp.fromDate(new Date(sessionDate)),
       });
+      sendEvent('update_analysis', { success: true, visibility });
       setIsOpen(false);
     } catch (error) {
+      sendEvent('update_analysis', { success: false, visibility });
       console.error(error);
       toast({ title: t('analyze-logs:edit-dialog.failed'), variant: 'destructive' });
     }

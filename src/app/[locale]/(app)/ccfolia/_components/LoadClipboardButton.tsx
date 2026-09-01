@@ -8,6 +8,7 @@ import * as v from 'valibot';
 
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { InputFormSchema, useInputForm } from './hooks/useInputForm';
 
@@ -44,12 +45,14 @@ export const LoadClipboardButton: FC = () => {
   const { form } = useInputForm();
   const [done, setDone] = useState(false);
   const { toast } = useToast();
+  const { sendEvent } = useGoogleAnalytics();
 
   const handleCopyFromClipboard = useCallback(async () => {
     try {
       const text = await navigator.clipboard.readText();
       const json = v.parse(InputFormValueSchema, JSON.parse(text));
       form.reset(json);
+      sendEvent('load_ccfolia_character', { success: true });
 
       setDone(true);
       const timeout = setTimeout(() => setDone(false), 1000);
@@ -58,6 +61,7 @@ export const LoadClipboardButton: FC = () => {
         clearTimeout(timeout);
       };
     } catch (err) {
+      sendEvent('load_ccfolia_character', { success: false });
       console.error('Failed to load from clipboard', err);
       toast({
         title: t('ccfolia:load-clipboard.error'),
@@ -65,7 +69,7 @@ export const LoadClipboardButton: FC = () => {
         variant: 'destructive',
       });
     }
-  }, [form, toast]);
+  }, [form, sendEvent, toast]);
 
   return (
     <Button

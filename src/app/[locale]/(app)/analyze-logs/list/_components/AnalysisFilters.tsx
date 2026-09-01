@@ -4,6 +4,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import type { FC } from 'react';
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import {
   ALL_SYSTEM_ID,
@@ -24,6 +25,7 @@ export const AnalysisFilters: FC = () => {
   const [selectedCharacterId, setSelectedCharacterId] = useAtom(selectedCharacterIdAtom);
   const [sortOption, setSortOption] = useAtom(sortOptionAtom);
   const allCharacterNames = useAtomValue(allCharactersAtom);
+  const { sendEvent } = useGoogleAnalytics();
 
   const isPublicTab = activeTab === 'public';
   const availableSortOptions = isPublicTab ? sortOptions : sortOptions;
@@ -31,7 +33,13 @@ export const AnalysisFilters: FC = () => {
   return (
     <div className="@container">
       <div className="flex @max-2xl:flex-col flex-row gap-3">
-        <Select value={selectedSystem} onValueChange={(v) => setSelectedSystem(v as SystemFilterOption)}>
+        <Select
+          value={selectedSystem}
+          onValueChange={(value) => {
+            setSelectedSystem(value as SystemFilterOption);
+            sendEvent('filter_analysis_list', { list_type: activeTab, filter: 'system', value });
+          }}
+        >
           <SelectTrigger className="flex-1 @max-2xl:w-full">
             <SelectValue placeholder={t('analyze-logs:list.filters.system-placeholder')} />
           </SelectTrigger>
@@ -45,7 +53,13 @@ export const AnalysisFilters: FC = () => {
         </Select>
 
         {!isPublicTab && (
-          <Select value={selectedCharacterId} onValueChange={setSelectedCharacterId}>
+          <Select
+            value={selectedCharacterId}
+            onValueChange={(value) => {
+              setSelectedCharacterId(value);
+              sendEvent('filter_analysis_list', { list_type: activeTab, filter: 'character' });
+            }}
+          >
             <SelectTrigger className="w-64 @max-2xl:w-full">
               <div className="flex items-center gap-2">
                 <IconUser className="size-4" />
@@ -62,7 +76,13 @@ export const AnalysisFilters: FC = () => {
           </Select>
         )}
 
-        <Select value={sortOption} onValueChange={(v) => setSortOption(v as SortOption)}>
+        <Select
+          value={sortOption}
+          onValueChange={(value) => {
+            setSortOption(value as SortOption);
+            sendEvent('filter_analysis_list', { list_type: activeTab, filter: 'sort', value });
+          }}
+        >
           <SelectTrigger className="w-48 @max-2xl:w-full">
             <div className="flex items-center gap-2">
               <SelectValue placeholder={t('analyze-logs:list.filters.sort-placeholder')} />

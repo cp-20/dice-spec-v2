@@ -8,6 +8,7 @@ import { GoogleSignInAgreement } from '@/shared/components/elements/GoogleSignIn
 import { GoogleSignInButton } from '@/shared/components/elements/GoogleSignInButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { AnalysisFilters } from './AnalysisFilters';
 import { activeTabAtom } from './atoms';
@@ -16,6 +17,7 @@ import { PublicAnalysisList } from './PublicAnalysisList';
 
 export const AnalysisListContainer: FC = () => {
   const { authUser } = useFirebaseAuth();
+  const { sendEvent } = useGoogleAnalytics();
 
   const [activeTab, setActiveTab] = useAtom(activeTabAtom);
 
@@ -32,7 +34,14 @@ export const AnalysisListContainer: FC = () => {
   }
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+    <Tabs
+      value={activeTab}
+      onValueChange={(listType) => {
+        setActiveTab(listType as typeof activeTab);
+        sendEvent('view_analysis_list', { list_type: listType });
+      }}
+      className="w-full"
+    >
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="mine" disabled={!authUser}>
           {t('analyze-logs:list.tab-mine')}
