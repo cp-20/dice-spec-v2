@@ -21,7 +21,12 @@ export const getBearerToken = (authorizationHeader: string | undefined) => {
 };
 
 const lookupFirebaseUserByIdToken = async (idToken: string) => {
-  const apiKey = runtimeEnv.firebase.webApiKey;
+  let apiKey: string;
+  try {
+    apiKey = runtimeEnv.firebase.webApiKey;
+  } catch (error) {
+    throw new FirebaseAuthServiceError('Firebase ID token verification is not configured', { cause: error });
+  }
 
   let response: Response;
   try {

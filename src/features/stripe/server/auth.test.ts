@@ -34,6 +34,16 @@ describe('getBearerToken', () => {
 });
 
 describe('getAuthenticatedUser', () => {
+  test('Firebase APIキーがない場合はサービスエラーとして記録する', async () => {
+    delete process.env.FIREBASE_WEB_API_KEY;
+    const scheduleStripeLog = vi.spyOn(logger, 'scheduleStripeLog').mockImplementation(() => undefined);
+
+    expect(await getAuthenticatedUser('Bearer token', 'checkout')).toBeNull();
+    expect(scheduleStripeLog).toHaveBeenCalledWith(
+      expect.objectContaining({ level: 'error', eventType: 'checkout', error: expect.any(Error) }),
+    );
+  });
+
   test('エラーレスポンスの本文を読めない場合はサービスエラーとして記録する', async () => {
     const body = new ReadableStream({
       start(controller) {
