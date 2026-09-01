@@ -29,6 +29,8 @@ jobs:
             run: bun run stylelint
           - name: Typecheck
             run: bun run typecheck
+          - name: Check formatting
+            run: bun run format:check
 
   test:
     runs-on: ubuntu-latest
