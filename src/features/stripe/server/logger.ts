@@ -18,6 +18,23 @@ const DISCORD_MAX_CONTENT_LENGTH = 2000;
 const DISCORD_MAX_TITLE_LENGTH = 256;
 const DISCORD_MAX_DESCRIPTION_LENGTH = 4096;
 const MAX_ERROR_MESSAGE_LENGTH = 240;
+const STRIPE_ZERO_DECIMAL_CURRENCIES = new Set([
+  'BIF',
+  'CLP',
+  'DJF',
+  'GNF',
+  'JPY',
+  'KMF',
+  'KRW',
+  'MGA',
+  'PYG',
+  'RWF',
+  'VND',
+  'VUV',
+  'XAF',
+  'XOF',
+  'XPF',
+]);
 
 const getLevelColor = (level: StripeLogLevel): number => {
   switch (level) {
@@ -90,12 +107,14 @@ const formatAmount = (amount: number, currency: string | null): string => {
   if (!currency) return `${amount}（最小通貨単位）`;
 
   try {
+    const normalizedCurrency = currency.toUpperCase();
     const formatter = new Intl.NumberFormat('ja-JP', {
       style: 'currency',
-      currency,
+      currency: normalizedCurrency,
       currencyDisplay: 'code',
     });
-    const fractionDigits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
+    // ISK と UGX は zero-decimal 通貨だが、Stripe API では後方互換性のため2桁で表す。
+    const fractionDigits = STRIPE_ZERO_DECIMAL_CURRENCIES.has(normalizedCurrency) ? 0 : 2;
     return formatter.format(amount / 10 ** fractionDigits);
   } catch {
     return `${amount} ${currency}（最小通貨単位）`;
@@ -163,6 +182,9 @@ const buildNotificationDescription = (log: StripeLog): string => {
 
   const failureMessage = readDetail(details, 'failureMessage');
   if (failureMessage) lines.push(`理由: ${truncate(failureMessage, 500)}`);
+
+  const hostedInvoiceUrl = readDetail(details, 'hostedInvoiceUrl');
+  if (hostedInvoiceUrl) lines.push(`[請求書を開く](${hostedInvoiceUrl})`);
 
   if (log.error) {
     const error = getErrorSummary(log.error);

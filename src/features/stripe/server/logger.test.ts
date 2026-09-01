@@ -85,6 +85,36 @@ describe('sendStripeLog', () => {
     expect(embeds[0]?.description).toContain('500');
   });
 
+  test('Stripe が2桁で扱う ISK を正しい金額で表示する', async () => {
+    await sendStripeLog({
+      level: 'success',
+      eventType: 'invoice.paid',
+      message: '支払いが完了しました',
+      notify: true,
+      details: { amountPaid: 500, currency: 'ISK' },
+    });
+
+    const notification = requests.find(({ url }) => url === 'https://discord.test/notification');
+    const embeds = notification?.body.embeds as { description: string }[];
+    expect(embeds[0]?.description).toContain('ISK');
+    expect(embeds[0]?.description).toContain('5');
+    expect(embeds[0]?.description).not.toContain('500');
+  });
+
+  test('追加認証通知には請求書へのリンクを表示する', async () => {
+    await sendStripeLog({
+      level: 'warning',
+      eventType: 'invoice.payment_action_required',
+      message: '追加認証が必要です',
+      notify: true,
+      details: { hostedInvoiceUrl: 'https://invoice.stripe.test/i/acct_1/inv_1' },
+    });
+
+    const notification = requests.find(({ url }) => url === 'https://discord.test/notification');
+    const embeds = notification?.body.embeds as { description: string }[];
+    expect(embeds[0]?.description).toContain('[請求書を開く](https://invoice.stripe.test/i/acct_1/inv_1)');
+  });
+
   test('エラーログは明示指定なしでも通常ログへ送る', async () => {
     await sendStripeLog({
       level: 'error',
