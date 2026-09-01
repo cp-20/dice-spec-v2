@@ -10,6 +10,8 @@ type IdentityToolkitLookupResponse = {
   }>;
 };
 
+class FirebaseAuthServiceError extends Error {}
+
 export const getBearerToken = (authorizationHeader: string | undefined) => {
   if (!authorizationHeader) return null;
 
@@ -20,17 +22,23 @@ export const getBearerToken = (authorizationHeader: string | undefined) => {
 
 const lookupFirebaseUserByIdToken = async (idToken: string) => {
   const apiKey = runtimeEnv.firebase.webApiKey;
-  if (!apiKey) throw new Error('Missing Firebase API key in environment variables');
 
-  const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ idToken }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+    });
+  } catch (error) {
+    throw new FirebaseAuthServiceError('Firebase ID token verification request failed', { cause: error });
+  }
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Firebase ID token verification failed with status ${response.status}: ${body}`);
+    const message = `Firebase ID token verification failed with status ${response.status}: ${body}`;
+    if (response.status >= 500) throw new FirebaseAuthServiceError(message);
+    throw new Error(message);
   }
 
   const payload = (await response.json()) as IdentityToolkitLookupResponse;
@@ -62,8 +70,9 @@ export const getAuthenticatedUser = async (authorizationHeader: string | undefin
     };
   } catch (error) {
     console.error('Failed to verify Firebase ID token:', error);
+    const serviceFailure = error instanceof FirebaseAuthServiceError;
     scheduleStripeLog({
-      level: 'warning',
+      level: serviceFailure ? 'error' : 'warning',
       eventType,
       message: 'Firebase ID token verification failed',
       error,

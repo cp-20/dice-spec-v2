@@ -61,6 +61,14 @@ const truncate = (value: string, maxLength: number): string => {
   return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
 };
 
+const stringifyJson = (value: unknown): string => {
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return JSON.stringify({ serializationError: String(value) }, null, 2);
+  }
+};
+
 const getErrorSummary = (error: Error | unknown): Record<string, unknown> => {
   if (error instanceof Error) {
     return {
@@ -71,15 +79,26 @@ const getErrorSummary = (error: Error | unknown): Record<string, unknown> => {
 
   return {
     type: typeof error,
-    message: truncate(String(error), MAX_ERROR_MESSAGE_LENGTH),
+    message: truncate(
+      typeof error === 'object' && error !== null ? stringifyJson(error) : String(error),
+      MAX_ERROR_MESSAGE_LENGTH,
+    ),
   };
 };
 
-const stringifyJson = (value: unknown): string => {
+const formatAmount = (amount: number, currency: string | null): string => {
+  if (!currency) return `${amount}（最小通貨単位）`;
+
   try {
-    return JSON.stringify(value, null, 2);
+    const formatter = new Intl.NumberFormat('ja-JP', {
+      style: 'currency',
+      currency,
+      currencyDisplay: 'code',
+    });
+    const fractionDigits = formatter.resolvedOptions().maximumFractionDigits ?? 2;
+    return formatter.format(amount / 10 ** fractionDigits);
   } catch {
-    return JSON.stringify({ serializationError: String(value) }, null, 2);
+    return `${amount} ${currency}（最小通貨単位）`;
   }
 };
 
@@ -132,9 +151,9 @@ const buildNotificationDescription = (log: StripeLog): string => {
   const billingInterval = readDetail(details, 'billingInterval');
   if (billingInterval) lines.push(`契約間隔: \`${billingInterval}\``);
 
-  const amount = details?.amountPaid ?? details?.amountDue;
+  const amount = details?.amountPaid ?? details?.amountDue ?? details?.amountTotal;
   const currency = readDetail(details, 'currency');
-  if (typeof amount === 'number') lines.push(`金額: \`${amount}${currency ? ` ${currency}` : ''}\``);
+  if (typeof amount === 'number') lines.push(`金額: \`${formatAmount(amount, currency)}\``);
 
   const cancelAt = readDetail(details, 'cancelAt');
   if (cancelAt) lines.push(`終了予定: \`${cancelAt}\``);

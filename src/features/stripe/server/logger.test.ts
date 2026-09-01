@@ -58,15 +58,31 @@ describe('sendStripeLog', () => {
       message: 'サブスクリプションが自動更新されました',
       notify: true,
       userId: 'user_1',
-      details: { amountPaid: 500, currency: 'JPY', billingInterval: 'monthly' },
+      details: { amountPaid: 500, currency: 'USD', billingInterval: 'monthly' },
     });
 
     expect(requests).toHaveLength(2);
     const notification = requests.find(({ url }) => url === 'https://discord.test/notification');
     const embeds = notification?.body.embeds as { title: string; description: string; fields?: unknown[] }[];
     expect(embeds[0]?.title).toContain('サブスクリプションが自動更新されました');
-    expect(embeds[0]?.description).toContain('500 JPY');
+    expect(embeds[0]?.description).toContain('USD');
+    expect(embeds[0]?.description).toContain('5.00');
     expect(embeds[0]?.fields).toBeUndefined();
+  });
+
+  test('0桁通貨は金額を割らずに表示する', async () => {
+    await sendStripeLog({
+      level: 'success',
+      eventType: 'checkout.session.completed',
+      message: 'ユーザーがプロプランを契約しました',
+      notify: true,
+      details: { amountTotal: 500, currency: 'JPY' },
+    });
+
+    const notification = requests.find(({ url }) => url === 'https://discord.test/notification');
+    const embeds = notification?.body.embeds as { description: string }[];
+    expect(embeds[0]?.description).toContain('JPY');
+    expect(embeds[0]?.description).toContain('500');
   });
 
   test('エラーログは明示指定なしでも通常ログへ送る', async () => {
@@ -106,6 +122,19 @@ describe('sendStripeLog', () => {
     const content = String(requests[0]?.body.content);
     expect(content.length).toBeLessThanOrEqual(2000);
     expect(content).toContain(`"name": "${'a'.repeat(237)}..."`);
+  });
+
+  test('Error 以外のオブジェクトも監査ログに残す', async () => {
+    await sendStripeLog({
+      level: 'error',
+      eventType: 'test.object-error',
+      message: 'オブジェクトエラーのテスト',
+      error: { code: 'service_unavailable', message: '一時的に利用できません' },
+    });
+
+    const content = String(requests[0]?.body.content);
+    expect(content).toContain('service_unavailable');
+    expect(content).toContain('一時的に利用できません');
   });
 
   test('通知タイトルを Discord の文字数制限内に収める', async () => {
