@@ -73,6 +73,8 @@ type LogAnalysisError = {
   type: 'error';
 };
 
+const expectedAnalysisErrorMessages = new Set(['Invalid log format', 'No logs detected', 'No valid dice rolls found']);
+
 const logAnalysisResultAtom = atom<LogAnalysisResult>((get) => {
   const fileContent = get(fileContentAtom);
   const system = get(logAnalysisSystemAtom);
@@ -86,7 +88,7 @@ const logAnalysisResultAtom = atom<LogAnalysisResult>((get) => {
     return { type: 'success', results: result };
   } catch (err) {
     console.error('Failed to analyze log:', err);
-    captureClientException(err);
+    if (!(err instanceof Error) || !expectedAnalysisErrorMessages.has(err.message)) captureClientException(err);
     return { type: 'error' };
   }
 });

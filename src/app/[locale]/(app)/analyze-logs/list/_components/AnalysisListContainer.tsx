@@ -2,7 +2,7 @@
 
 import { t } from 'i18next';
 import { useAtom } from 'jotai';
-import type { FC } from 'react';
+import { type FC, useEffect } from 'react';
 
 import { GoogleSignInAgreement } from '@/shared/components/elements/GoogleSignInAgreement';
 import { GoogleSignInButton } from '@/shared/components/elements/GoogleSignInButton';
@@ -21,6 +21,10 @@ export const AnalysisListContainer: FC = () => {
 
   const [activeTab, setActiveTab] = useAtom(activeTabAtom);
 
+  useEffect(() => {
+    if (authUser) sendEvent('view_analysis_list', { list_type: activeTab });
+  }, [activeTab, authUser, sendEvent]);
+
   if (!authUser) {
     return (
       <div className="flex flex-col items-center gap-4 py-8">
@@ -38,7 +42,6 @@ export const AnalysisListContainer: FC = () => {
       value={activeTab}
       onValueChange={(listType) => {
         setActiveTab(listType as typeof activeTab);
-        sendEvent('view_analysis_list', { list_type: listType });
       }}
       className="w-full"
     >
