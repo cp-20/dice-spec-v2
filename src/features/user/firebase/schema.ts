@@ -18,6 +18,8 @@ export const userDocumentSchema = v.object({
   stripeSubscriptionId: v.optional(v.string(), ''),
   analysisCount: v.number(),
   analysisCountSyncAnalysisId: v.nullable(v.string()),
+  ccfoliaCharacterCount: v.optional(v.number(), 0),
+  ccfoliaCharacterCountSyncCharacterId: v.optional(v.nullable(v.string()), null),
 });
 
 export type UserDocument = v.InferOutput<typeof userDocumentSchema>;

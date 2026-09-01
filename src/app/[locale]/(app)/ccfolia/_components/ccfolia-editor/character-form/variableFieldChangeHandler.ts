@@ -7,7 +7,7 @@ type VariableFieldValue = {
 type VariableFieldChangeHandler<Field extends VariableFieldValue> = <InputType>(
   field: Field,
   key: string,
-  formatter?: (rawValue: string, field: Field) => InputType,
+  formatter?: (rawValue: string) => InputType,
 ) => ChangeEventHandler<HTMLInputElement>;
 
 type VariableFieldChangeHandlerGenerator = <Field extends VariableFieldValue>(
@@ -26,24 +26,13 @@ export const variableFieldChangeHandlerGenerator: VariableFieldChangeHandlerGene
         return { ...f, [key]: e.target.value };
       }
 
-      return { ...f, [key]: formatter(e.target.value, f) };
+      return { ...f, [key]: formatter(e.target.value) };
     });
 
     onChange(newValue);
   };
 
-export const numberFormatterGenerator =
-  <Field extends VariableFieldValue>(key: keyof Field) =>
-  (rawValue: string, field: Field) => {
-    if (rawValue === '') {
-      return undefined;
-    }
-
-    const value = Number.parseInt(rawValue, 10);
-
-    if (Number.isNaN(value)) {
-      return field[key];
-    }
-
-    return value;
-  };
+export const numberFormatter = (rawValue: string) => {
+  const value = Number.parseInt(rawValue, 10);
+  return Number.isNaN(value) ? undefined : value;
+};

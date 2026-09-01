@@ -33,6 +33,8 @@ service cloud.firestore {
         'stripeSubscriptionId',
         'analysisCount',
         'analysisCountSyncAnalysisId',
+        'ccfoliaCharacterCount',
+        'ccfoliaCharacterCountSyncCharacterId',
       ];
     }
 
@@ -42,6 +44,18 @@ service cloud.firestore {
 
     function isValidAnalysisCount(value) {
       return value is int && value >= 0;
+    }
+
+    function ccfoliaCharacterCountOf(userData) {
+      return 'ccfoliaCharacterCount' in userData ? userData.ccfoliaCharacterCount : 0;
+    }
+
+    function isValidCcfoliaCharacterCount(value) {
+      return value is int && value >= 0;
+    }
+
+    function isFiniteNumber(value) {
+      return value is number && !math.isNaN(value) && !math.isNaN(value - value);
     }
 
     function isValidUserDocument(data) {
@@ -57,7 +71,72 @@ service cloud.firestore {
         && (!('analysisCount' in data) || isValidAnalysisCount(data.analysisCount))
         && (!('analysisCountSyncAnalysisId' in data)
           || data.analysisCountSyncAnalysisId == null
-          || data.analysisCountSyncAnalysisId is string);
+          || data.analysisCountSyncAnalysisId is string)
+        && (!('ccfoliaCharacterCount' in data) || isValidCcfoliaCharacterCount(data.ccfoliaCharacterCount))
+        && (!('ccfoliaCharacterCountSyncCharacterId' in data)
+          || data.ccfoliaCharacterCountSyncCharacterId == null
+          || data.ccfoliaCharacterCountSyncCharacterId is string);
+    }
+
+    function requiredCcfoliaCharacterKeys() {
+      return [
+        'id',
+        'schemaVersion',
+        'revision',
+        'name',
+        'memo',
+        'initiative',
+        'externalUrl',
+        'status',
+        'params',
+        'color',
+        'commands',
+        'clipboardExtensions',
+        'createdAt',
+        'updatedAt',
+      ];
+    }
+
+    function isValidCcfoliaClipboardExtensions(data) {
+      return data is map
+        && hasOnlyKeys(data, ['angle', 'width', 'height', 'secret', 'invisible', 'hideStatus', 'owner'])
+        && (!('angle' in data) || isFiniteNumber(data.angle))
+        && (!('width' in data) || isFiniteNumber(data.width))
+        && (!('height' in data) || isFiniteNumber(data.height))
+        && (!('secret' in data) || data.secret is bool)
+        && (!('invisible' in data) || data.invisible is bool)
+        && (!('hideStatus' in data) || data.hideStatus is bool)
+        && (!('owner' in data) || data.owner == null || (data.owner is string && data.owner.size() <= 2048));
+    }
+
+    function isValidCcfoliaCharacterDocument(data, characterId) {
+      return hasOnlyKeys(data, requiredCcfoliaCharacterKeys())
+        && data.id is string
+        && data.id == characterId
+        && data.schemaVersion == 1
+        && data.revision is int
+        && data.revision >= 1
+        && data.name is string
+        && data.name.size() > 0
+        && data.name.size() <= 100
+        && data.memo is string
+        && data.memo.size() <= 50000
+        && (data.initiative == null || isFiniteNumber(data.initiative))
+        && data.externalUrl is string
+        && data.externalUrl.size() <= 2048
+        // Security Rules では可変長リストの全要素を汎用的に検証できないため、所有者だけが書けるここでは
+        // リスト型と件数を制限し、要素のスキーマは保存前と読み取り時にクライアントで検証する。
+        && data.status is list
+        && data.status.size() <= 100
+        && data.params is list
+        && data.params.size() <= 200
+        && data.color is string
+        && data.color.matches('^#[0-9a-fA-F]{6}$')
+        && data.commands is string
+        && data.commands.size() <= 100000
+        && (!('clipboardExtensions' in data) || isValidCcfoliaClipboardExtensions(data.clipboardExtensions))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
     }
 
     function isValidPublicOwner(owner) {
@@ -170,6 +249,33 @@ service cloud.firestore {
         );
     }
 
+    function isUserCcfoliaCharacterCountSyncUpdate() {
+      let nextCount = ccfoliaCharacterCountOf(request.resource.data);
+      let prevCount = ccfoliaCharacterCountOf(resource.data);
+      let syncCharacterId =
+        ('ccfoliaCharacterCountSyncCharacterId' in request.resource.data
+          && request.resource.data.ccfoliaCharacterCountSyncCharacterId is string)
+          ? request.resource.data.ccfoliaCharacterCountSyncCharacterId
+          : '';
+      let characterPath =
+        /databases/$(database)/documents/users/$(request.auth.uid)/ccfoliaCharacters/$(syncCharacterId);
+      let characterCreated = !exists(characterPath) && existsAfter(characterPath);
+      let characterDeleted = exists(characterPath) && !existsAfter(characterPath);
+
+      return affectedKeys().hasOnly([
+          'ccfoliaCharacterCount',
+          'ccfoliaCharacterCountSyncCharacterId',
+          'updatedAt',
+        ])
+        && isValidCcfoliaCharacterCount(nextCount)
+        && syncCharacterId.size() > 0
+        && request.resource.data.updatedAt == request.time
+        && (
+          (nextCount == prevCount + 1 && characterCreated)
+          || (nextCount == prevCount - 1 && characterDeleted)
+        );
+    }
+
     function isAnalysisMetaUpdateOnly() {
       return affectedKeys().hasOnly(['title', 'visibilityLevel', 'showRecordDetails', 'sessionDate', 'updatedAt'])
         && request.resource.data.title is string
@@ -221,6 +327,41 @@ service cloud.firestore {
         && userAfter.data.analysisCountSyncAnalysisId == analysisId;
     }
 
+    function isCcfoliaCharacterCountIncrementSynced(uid, characterId) {
+      let userBefore = linkedUser(uid);
+      let userAfter = linkedUserAfter(uid);
+
+      return userBefore.data != null
+        && userAfter.data != null
+        && isValidCcfoliaCharacterCount(ccfoliaCharacterCountOf(userBefore.data))
+        && isValidCcfoliaCharacterCount(ccfoliaCharacterCountOf(userAfter.data))
+        && ccfoliaCharacterCountOf(userAfter.data) == ccfoliaCharacterCountOf(userBefore.data) + 1
+        && userAfter.data.ccfoliaCharacterCountSyncCharacterId is string
+        && userAfter.data.ccfoliaCharacterCountSyncCharacterId == characterId;
+    }
+
+    function isCcfoliaCharacterCountDecrementSynced(uid, characterId) {
+      let userBefore = linkedUser(uid);
+      let userAfter = linkedUserAfter(uid);
+
+      return userBefore.data != null
+        && userAfter.data != null
+        && isValidCcfoliaCharacterCount(ccfoliaCharacterCountOf(userBefore.data))
+        && isValidCcfoliaCharacterCount(ccfoliaCharacterCountOf(userAfter.data))
+        && ccfoliaCharacterCountOf(userAfter.data) == ccfoliaCharacterCountOf(userBefore.data) - 1
+        && userAfter.data.ccfoliaCharacterCountSyncCharacterId is string
+        && userAfter.data.ccfoliaCharacterCountSyncCharacterId == characterId;
+    }
+
+    function isCcfoliaCharacterCreateWithinLimit(uid) {
+      let userBefore = linkedUser(uid);
+      return userBefore.data != null
+        && (
+          userBefore.data.plan != 'free'
+          || ccfoliaCharacterCountOf(userBefore.data) < 3
+        );
+    }
+
     function isFreePlanCreateWithinLimit(uid) {
       let userBefore = linkedUser(uid);
       return userBefore.data != null
@@ -239,15 +380,46 @@ service cloud.firestore {
         && request.resource.data.id == userId
         && request.resource.data.plan == 'free'
         && request.resource.data.analysisCount == 0
+        && ccfoliaCharacterCountOf(request.resource.data) == 0
         && request.resource.data.stripeCustomerId == ''
         && (!('stripeSubscriptionId' in request.resource.data) || request.resource.data.stripeSubscriptionId == '')
-        && request.resource.data.analysisCountSyncAnalysisId == null;
+        && request.resource.data.analysisCountSyncAnalysisId == null
+        && (!('ccfoliaCharacterCountSyncCharacterId' in request.resource.data)
+          || request.resource.data.ccfoliaCharacterCountSyncCharacterId == null);
 
       allow update: if isSelf(userId)
         && isValidUserDocument(request.resource.data)
-        && (isUserProfileUpdateOnly() || isUserAnalysisCountSyncUpdate());
+        && (
+          isUserProfileUpdateOnly()
+          || isUserAnalysisCountSyncUpdate()
+          || isUserCcfoliaCharacterCountSyncUpdate()
+        );
 
       allow delete: if false;
+    }
+
+    match /users/{userId}/ccfoliaCharacters/{characterId} {
+      allow get: if isSelf(userId);
+      allow list: if isSelf(userId)
+        && request.query.limit != null
+        && request.query.limit <= 50;
+
+      allow create: if isSelf(userId)
+        && isValidCcfoliaCharacterDocument(request.resource.data, characterId)
+        && request.resource.data.revision == 1
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && isCcfoliaCharacterCreateWithinLimit(userId)
+        && isCcfoliaCharacterCountIncrementSynced(userId, characterId);
+
+      allow update: if isSelf(userId)
+        && isValidCcfoliaCharacterDocument(request.resource.data, characterId)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.revision == resource.data.revision + 1;
+
+      allow delete: if isSelf(userId)
+        && isCcfoliaCharacterCountDecrementSynced(userId, characterId);
     }
 
     match /analyses/{analysisId} {

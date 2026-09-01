@@ -48,8 +48,9 @@ jobs:
 
   deploy-firebase:
     if: github.event_name == 'push'
-    needs: test
+    needs: [quality, test, build]
     runs-on: ubuntu-latest
+    environment: Production
     permissions:
       contents: read
       id-token: write

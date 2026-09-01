@@ -3,7 +3,7 @@
     "database": "dice-spec-v2",
     "location": "asia-northeast1",
     "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "indexes": "firestore.indexes.jsonc"
   },
   "storage": {
     "target": "dice-spec-v2",
