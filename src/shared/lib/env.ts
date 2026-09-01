@@ -48,8 +48,6 @@ const readEnv = <S extends EnvScope>(key: EnvKeyMap[S], scope: S): string | unde
   return scopedReaders[key]();
 };
 
-export const getAllProcessEnv = (): NodeJS.ProcessEnv => process.env;
-
 const checkEnv = <S extends EnvScope>(key: EnvKeyMap[S], scope: S): void => {
   const catalog = envVariableCatalog[scope] as readonly string[];
   if (!catalog.includes(key)) {
@@ -153,6 +151,69 @@ export const clientEnv = {
     return requiredEnv('NEXT_PUBLIC_DISCORD_WEBHOOK_URL', 'client');
   },
 };
+
+const createTestEnv = () => {
+  const firebaseProjectId = process.env.TEST_FIREBASE_PROJECT_ID ?? 'demo-dice-spec-v2';
+  const emulatorHost = '127.0.0.1';
+  const requiredTestEnv = (name: string, value: string | undefined): string => {
+    if (!value) throw new Error(`[env:test] Missing required environment variable: ${name}`);
+    return value;
+  };
+
+  return {
+    firebase: {
+      projectId: firebaseProjectId,
+      apiKey: process.env.TEST_FIREBASE_API_KEY ?? 'e2e-api-key',
+      authDomain: process.env.TEST_FIREBASE_AUTH_DOMAIN ?? `${firebaseProjectId}.firebaseapp.com`,
+      storageBucket: process.env.TEST_FIREBASE_STORAGE_BUCKET ?? `${firebaseProjectId}.appspot.com`,
+      appId: process.env.TEST_FIREBASE_APP_ID ?? 'e2e-app-id',
+      firestoreDatabaseId: 'dice-spec-v2-e2e',
+      emulators: {
+        auth: {
+          host: emulatorHost,
+          port: 19099,
+          get url(): string {
+            return `http://${this.host}:${this.port}`;
+          },
+        },
+        firestore: {
+          host: emulatorHost,
+          rulesPort: 18080,
+          e2ePort: 18081,
+        },
+        storage: {
+          host: emulatorHost,
+          port: 9199,
+        },
+        get client(): { authUrl: string; firestoreHost: string; firestorePort: number } | undefined {
+          if (process.env.NEXT_PUBLIC_FIREBASE_USE_EMULATORS !== 'true') return undefined;
+
+          return {
+            authUrl: requiredTestEnv(
+              'NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_URL',
+              process.env.NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_URL,
+            ),
+            firestoreHost: requiredTestEnv(
+              'NEXT_PUBLIC_FIREBASE_FIRESTORE_EMULATOR_HOST',
+              process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_EMULATOR_HOST,
+            ),
+            // テストで管理する設定値なので、接続に必要な数値変換だけを行う。
+            firestorePort: Number.parseInt(
+              requiredTestEnv(
+                'NEXT_PUBLIC_FIREBASE_FIRESTORE_EMULATOR_PORT',
+                process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_EMULATOR_PORT,
+              ),
+              10,
+            ),
+          };
+        },
+      },
+    },
+  };
+};
+
+// テスト時のみ使うので、本番環境のコードから削られるようにする
+export const testEnv = process.env.NODE_ENV === 'production' ? undefined : createTestEnv();
 
 export const runtimeEnv = {
   get appOrigin(): string {

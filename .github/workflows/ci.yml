@@ -34,6 +34,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
+      - run: bun test --path-ignore-patterns='firebase/*.rules.test.ts'
+
+  firebase-rules-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Detect Firebase Rules test changes
+        id: changes
+        env:
+          CI_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          CI_HEAD_SHA: ${{ github.sha }}
+        run: |
+          if ! git cat-file -e "${CI_BASE_SHA}^{commit}"; then
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "$CI_BASE_SHA" "$CI_HEAD_SHA" | rg -q '^firebase/([^/]+\.rules(\.test\.ts)?|firebase\.json|test/.*)$|^src/shared/lib/env\.ts$|^(package\.json|bun\.lock|\.github/actions/setup/.*)$'; then
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Setup Java
+        if: steps.changes.outputs.changed == 'true'
+        id: java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: ./.github/actions/setup
+        if: steps.changes.outputs.changed == 'true'
+      - if: steps.changes.outputs.changed == 'true'
+        run: bun test firebase/*.rules.test.ts
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
       - name: Setup Java
         id: java
         uses: actions/setup-java@v5
@@ -43,12 +81,27 @@ jobs:
         background: true
       - uses: ./.github/actions/setup
       - wait: java
-      - run: bun install --global firebase-tools@15.23.0
-      - run: bun test
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('bun.lock') }}
+      - run: bunx playwright install --with-deps chromium
+      - run: bun run test:e2e
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 7
 
   deploy-firebase:
     if: github.event_name == 'push'
-    needs: [quality, test, build]
+    needs: [quality, test, firebase-rules-test, e2e, build]
     runs-on: ubuntu-latest
     environment: Production
     permissions:
