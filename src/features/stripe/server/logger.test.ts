@@ -35,7 +35,7 @@ afterEach(() => {
 });
 
 describe('sendStripeLog', () => {
-  test('監査ログは embed を使わず JSON コードブロックで送る', async () => {
+  test('監査ログは embed を使わず1行の JSON inline code で送る', async () => {
     await sendStripeLog({
       level: 'info',
       eventType: 'customer.created',
@@ -47,8 +47,11 @@ describe('sendStripeLog', () => {
     expect(requests).toHaveLength(1);
     expect(requests[0]?.url).toBe('https://discord.test/audit');
     expect(requests[0]?.body.embeds).toBeUndefined();
-    expect(requests[0]?.body.content).toContain('```json');
-    expect(requests[0]?.body.content).toContain('"customerId": "cus_1"');
+    const content = String(requests[0]?.body.content);
+    expect(content.startsWith('`')).toBe(true);
+    expect(content.endsWith('`')).toBe(true);
+    expect(content).not.toContain('\n');
+    expect(content).toContain('"customerId":"cus_1"');
   });
 
   test('通知対象の決済ログだけを簡潔な embed として通常ログへ送る', async () => {
@@ -138,7 +141,7 @@ describe('sendStripeLog', () => {
 
     const content = String(requests[0]?.body.content);
     expect(content.length).toBeLessThanOrEqual(2000);
-    expect(content.match(/```/g)).toHaveLength(2);
+    expect(content.match(/`/g)).toHaveLength(2);
     expect(content).toContain('\\u0060\\u0060\\u0060');
     expect(content).toContain('Discord の文字数制限により省略');
   });
@@ -151,7 +154,7 @@ describe('sendStripeLog', () => {
 
     const content = String(requests[0]?.body.content);
     expect(content.length).toBeLessThanOrEqual(2000);
-    expect(content).toContain(`"name": "${'a'.repeat(237)}..."`);
+    expect(content).toContain(`"name":"${'a'.repeat(237)}..."`);
   });
 
   test('Error 以外のオブジェクトも監査ログに残す', async () => {

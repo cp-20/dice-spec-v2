@@ -39,16 +39,16 @@ const STRIPE_ZERO_DECIMAL_CURRENCIES = new Set([
 const getLevelColor = (level: StripeLogLevel): number => {
   switch (level) {
     case 'success':
-      return 0x28a745;
+      return 0x28a745; // Green
     case 'error':
-      return 0xdc3545;
+      return 0xdc3545; // Red
     case 'warning':
-      return 0xffc107;
+      return 0xffc107; // Yellow
     case 'info':
-      return 0x007bff;
+      return 0x007bff; // Blue
     default: {
       const _: never = level;
-      return 0x6c757d;
+      return 0x6c757d; // Gray
     }
   }
 };
@@ -80,9 +80,9 @@ const truncate = (value: string, maxLength: number): string => {
 
 const stringifyJson = (value: unknown): string => {
   try {
-    return JSON.stringify(value, null, 2);
+    return JSON.stringify(value);
   } catch {
-    return JSON.stringify({ serializationError: String(value) }, null, 2);
+    return JSON.stringify({ serializationError: String(value) });
   }
 };
 
@@ -131,15 +131,15 @@ const buildAuditContent = (log: StripeLog, timestamp: string): string => {
     details: log.details,
     error: log.error ? getErrorSummary(log.error) : undefined,
   };
-  const maxJsonLength = DISCORD_MAX_CONTENT_LENGTH - '```json\n\n```'.length;
-  let json = stringifyJson(payload).replaceAll('```', '\\u0060\\u0060\\u0060');
+  const maxJsonLength = DISCORD_MAX_CONTENT_LENGTH - 2;
+  let json = stringifyJson(payload).replaceAll('`', '\\u0060');
 
   if (json.length > maxJsonLength) {
     json = stringifyJson({
       ...payload,
       details: log.details ? truncate(stringifyJson(log.details), 600) : undefined,
       truncated: true,
-    }).replaceAll('```', '\\u0060\\u0060\\u0060');
+    }).replaceAll('`', '\\u0060');
   }
 
   if (json.length > maxJsonLength) {
@@ -150,10 +150,10 @@ const buildAuditContent = (log: StripeLog, timestamp: string): string => {
       message: truncate(log.message, 160),
       details: 'Discord の文字数制限により省略',
       truncated: true,
-    }).replaceAll('```', '\\u0060\\u0060\\u0060');
+    }).replaceAll('`', '\\u0060');
   }
 
-  return `\`\`\`json\n${json}\n\`\`\``;
+  return `\`${json}\``;
 };
 
 const readDetail = (details: Record<string, unknown> | undefined, key: string): string | null => {
