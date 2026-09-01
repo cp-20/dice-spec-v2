@@ -105,7 +105,14 @@ const buildAuditContent = (log: StripeLog, timestamp: string): string => {
   }
 
   if (json.length > maxJsonLength) {
-    json = stringifyJson({ ...payload, details: 'Discord の文字数制限により省略', truncated: true });
+    json = stringifyJson({
+      timestamp,
+      level: log.level,
+      eventType: truncate(log.eventType, 80),
+      message: truncate(log.message, 160),
+      details: 'Discord の文字数制限により省略',
+      truncated: true,
+    }).replaceAll('```', '\\u0060\\u0060\\u0060');
   }
 
   return `\`\`\`json\n${json}\n\`\`\``;

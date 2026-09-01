@@ -83,13 +83,18 @@ describe('sendStripeLog', () => {
   test('長い監査ログも Discord の文字数制限内に収める', async () => {
     await sendStripeLog({
       level: 'info',
-      eventType: 'test.large',
-      message: '長い監査ログ',
-      details: { value: `\`\`\`${'a'.repeat(4000)}` },
+      eventType: `test.large.${'\\'.repeat(400)}`,
+      message: `\`\`\`${'\\'.repeat(400)}`,
+      userId: '\\'.repeat(400),
+      details: { value: '\\'.repeat(4000) },
+      error: new Error('\\'.repeat(400)),
     });
 
-    expect(String(requests[0]?.body.content).length).toBeLessThanOrEqual(2000);
-    expect(String(requests[0]?.body.content).match(/```/g)).toHaveLength(2);
+    const content = String(requests[0]?.body.content);
+    expect(content.length).toBeLessThanOrEqual(2000);
+    expect(content.match(/```/g)).toHaveLength(2);
+    expect(content).toContain('\\u0060\\u0060\\u0060');
+    expect(content).toContain('Discord の文字数制限により省略');
   });
 
   test('エラー名を監査ログの文字数制限内に収める', async () => {
