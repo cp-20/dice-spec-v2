@@ -44,6 +44,7 @@ export const PlanManagementSection = () => {
       }
 
       sendEventBeforeNavigation('open_billing_portal', {}, () => {
+        setManagingSubscription(false);
         window.location.href = data.url;
       });
     } catch (error) {

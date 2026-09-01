@@ -29,7 +29,7 @@ export const useDiceRollOption = () => {
         sendEvent('change_game_system', { game_system: system });
       } catch (err) {
         console.error(err);
-        captureClientException(err);
+        if (system) captureClientException(err);
       }
     },
     [getGameSystemInfo, sendEvent, setOptions],

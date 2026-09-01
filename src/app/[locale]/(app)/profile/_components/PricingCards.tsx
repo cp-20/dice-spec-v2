@@ -39,6 +39,7 @@ export const PricingCards = () => {
           items: [{ item_id: `pro_${interval}`, item_name: 'Pro', price: value, quantity: 1 }],
         },
         () => {
+          setLoading(false);
           window.location.href = data.url;
         },
       );
