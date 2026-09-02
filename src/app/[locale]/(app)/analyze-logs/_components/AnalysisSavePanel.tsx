@@ -71,7 +71,8 @@ export const AnalysisSavePanel: FC = () => {
     system !== null &&
     !limitReached &&
     !saving &&
-    title.trim() !== '';
+    title.trim() !== '' &&
+    !Number.isNaN(new Date(sessionDate).getTime());
 
   const handleSave = async () => {
     if (!canSave) return;

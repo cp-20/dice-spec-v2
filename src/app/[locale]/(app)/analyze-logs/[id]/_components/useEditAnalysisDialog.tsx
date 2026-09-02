@@ -53,7 +53,7 @@ export const useEditAnalysisDialog = () => {
   const { toast } = useToast();
   const { sendEvent } = useGoogleAnalytics();
 
-  const isValid = analysisId !== undefined && title.trim().length > 0;
+  const isValid = analysisId !== undefined && title.trim().length > 0 && !Number.isNaN(new Date(sessionDate).getTime());
 
   const analysisSessionDate = analysis?.sessionDate
     ? new Date(analysis.sessionDate.seconds * 1000).toISOString().split('T')[0]
