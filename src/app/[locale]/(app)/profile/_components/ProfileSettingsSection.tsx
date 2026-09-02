@@ -46,7 +46,11 @@ export const ProfileSettingsSection = () => {
       } catch (err) {
         console.error('Failed to upload avatar', err);
 
-        if (!(err instanceof AvatarPreparationError)) captureClientException(err);
+        if (err instanceof AvatarPreparationError && err.code !== 'PROCESSING_FAILED') {
+          sendEvent('update_profile_error', { field: 'avatar', reason: err.code });
+        } else {
+          captureClientException(err);
+        }
 
         let description = t('profile:toast.avatar-upload-error-description');
         if (err instanceof AvatarPreparationError) {

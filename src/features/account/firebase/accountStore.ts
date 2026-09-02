@@ -12,6 +12,7 @@ import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { signOutWithGuard } from '@/shared/lib/firebase/signOut';
 import { uploadAvatarFromUrlToStorage } from '@/shared/lib/firebase/storage/avatars';
 import { authUserAtom, authUserLoadingAtom } from '@/shared/lib/firebase/useFirebaseAuth';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
 
 const internalMeLoadingAtom = atom(true);
@@ -50,6 +51,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
             avatarUrl = await uploadAvatarFromUrlToStorage(storage, authUser.uid, authUser.photoURL);
           } catch (err) {
             console.error('Failed to upload Google avatar to Storage:', err);
+            captureClientException(err);
           }
         }
 
@@ -71,6 +73,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
         sendGoogleAnalyticsEvent('sign_up', { method: 'Google' });
       } catch (error) {
         console.error('Failed to create user document:', error);
+        captureClientException(error);
         toast({
           title: t('profile:toast.sign-in-error-title'),
           description: t('profile:toast.sign-in-error-description'),
@@ -81,6 +84,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
           if (!(await signOutWithGuard(auth))) return;
         } catch (signOutError) {
           console.error('Failed to sign out after user document creation failure:', signOutError);
+          captureClientException(signOutError);
         }
 
         set(internalMeAtom, null);
@@ -92,6 +96,7 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
         await createCustomer();
       } catch (error) {
         console.error('Failed to create Stripe customer:', error);
+        captureClientException(error);
       }
       return;
     }

@@ -165,6 +165,7 @@ export const saveCharacterAtom = atom(
     } catch (saveError) {
       if (!operationIsCurrent()) return;
       if (saveError instanceof CcfoliaCharacterConflictError || saveError instanceof CcfoliaCharacterNotFoundError) {
+        sendGoogleAnalyticsEvent('save_ccfolia_character_error', { action: intent, reason: 'conflict' });
         if (operationStillOwnsEditor()) {
           set(remoteConflictAtom, saveError instanceof CcfoliaCharacterNotFoundError ? 'deleted' : 'updated');
           toast({
@@ -174,12 +175,14 @@ export const saveCharacterAtom = atom(
           });
         }
       } else if (saveError instanceof CcfoliaCharacterLimitError) {
+        sendGoogleAnalyticsEvent('save_ccfolia_character_error', { action: intent, reason: 'limit' });
         toast({
           title: t('ccfolia:saved.limit-reached'),
           description: t('ccfolia:saved.limit-save-error'),
           variant: 'destructive',
         });
       } else if (saveError instanceof CcfoliaCharacterTooLargeError) {
+        sendGoogleAnalyticsEvent('save_ccfolia_character_error', { action: intent, reason: 'too_large' });
         toast({
           title: t('ccfolia:saved.too-large-title'),
           description: t('ccfolia:saved.too-large-description'),

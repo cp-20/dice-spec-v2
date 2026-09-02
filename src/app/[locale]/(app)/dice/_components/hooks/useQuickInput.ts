@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import type { InferInput } from 'valibot';
 import * as v from 'valibot';
 
+import { formatDiceCommand } from '@/shared/lib/formatDiceCommand';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
 
@@ -51,7 +52,8 @@ export const useQuickInput = () => {
 
   const updateItem = useCallback(
     (item: QuickInputItem) => {
-      sendEvent('update_quick_input', { action: item.isFavorite ? 'favorite' : 'unfavorite' });
+      const eventName = item.isFavorite ? 'favoriteCommand' : 'unfavoriteCommand';
+      sendEvent(eventName, formatDiceCommand(item.command));
       updateItems((prev) => [item, ...prev.filter((i) => i.command !== item.command)]);
     },
     [sendEvent, updateItems],

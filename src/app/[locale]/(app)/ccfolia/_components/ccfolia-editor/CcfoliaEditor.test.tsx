@@ -57,7 +57,6 @@ const createCharacter = vi.fn();
 const updateCharacter = vi.fn();
 const deleteCharacter = vi.fn();
 const toastMock = vi.fn();
-const sendGoogleAnalyticsEvent = vi.fn();
 const remoteQueryListeners = new Set<() => void>();
 const testAuthUserAtom = atom<{ uid: string } | null>({ uid: 'user-1' });
 const testAuthUserLoadingAtom = atom(false);
@@ -156,10 +155,6 @@ mock.module('@/shared/components/ui/use-toast', () => ({
   toast: toastMock,
   useToast: () => ({ toast: toastMock }),
 }));
-mock.module('@/shared/lib/useGoogleAnalytics', () => ({
-  sendGoogleAnalyticsEvent,
-  useGoogleAnalytics: () => ({ sendEvent: sendGoogleAnalyticsEvent }),
-}));
 describe('CcfoliaEditor', () => {
   beforeEach(() => {
     setListedCharacterIds([character.id]);
@@ -173,7 +168,6 @@ describe('CcfoliaEditor', () => {
     remoteTargetCharacterId = undefined;
     remoteCharacter = undefined;
     toastMock.mockClear();
-    sendGoogleAnalyticsEvent.mockClear();
     takeNavigationFallbackDraft('user-1');
   });
 
@@ -456,7 +450,6 @@ describe('CcfoliaEditor', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
 
-    expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('load_saved_ccfolia_character');
     expect((screen.getByRole('button', { name: 'アカウントに新規保存' }) as HTMLButtonElement).disabled).toBe(false);
     expect((screen.getByRole('button', { name: '上書き保存' }) as HTMLButtonElement).disabled).toBe(true);
     expect(screen.queryByText('保存済みです')).toBeNull();
@@ -598,8 +591,6 @@ describe('CcfoliaEditor', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'クリップボードから読み込む' }));
     await waitFor(() => expect(nameInput.value).toBe('読み込んだキャラ'));
-    expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('delete_saved_ccfolia_character');
-    expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('load_ccfolia_character');
     await act(async () => resolveUpdate(2));
     expect(nameInput.value).toBe('読み込んだキャラ');
     readText.mockRestore();
@@ -660,9 +651,6 @@ describe('CcfoliaEditor', () => {
     fireEvent.click(screen.getByRole('button', { name: '上書き保存' }));
 
     await waitFor(() => expect(screen.getByRole('button', { name: '保存しました' })).toBeTruthy());
-    expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('save_ccfolia_character', {
-      action: 'overwrite',
-    });
   });
 
   test('同じキャラクターを連続で出力しても最新の操作から成功表示時間を数える', async () => {
@@ -682,7 +670,6 @@ describe('CcfoliaEditor', () => {
     act(() => vi.advanceTimersByTime(600));
 
     expect(screen.getByRole('button', { name: `コピーしました: ${character.name}` })).toBeTruthy();
-    expect(sendGoogleAnalyticsEvent).toHaveBeenCalledWith('export_saved_ccfolia_character');
     writeText.mockRestore();
   });
 

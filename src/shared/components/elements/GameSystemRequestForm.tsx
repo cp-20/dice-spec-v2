@@ -8,20 +8,17 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { captureClientException } from '@/shared/lib/sentryClient';
-import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { sendGameSystemRequest } from '@/shared/lib/webhook';
 
 export const GameSystemRequestForm: FC = () => {
   const { toast } = useToast();
   const [system, setSystem] = useState('');
   const [logFile, setLogFile] = useState<File | null>(null);
-  const { sendEvent } = useGoogleAnalytics();
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await sendGameSystemRequest({ system, logFile });
-      sendEvent('request_game_system', { has_log_file: logFile !== null });
       toast({
         title: t('analyze-logs:game-system-request:submitted'),
         description: t('analyze-logs:game-system-request:submitted-description'),

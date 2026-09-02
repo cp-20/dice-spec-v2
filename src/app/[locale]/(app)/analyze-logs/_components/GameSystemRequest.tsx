@@ -9,7 +9,6 @@ import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { captureClientException } from '@/shared/lib/sentryClient';
-import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 import { sendGameSystemRequest } from '@/shared/lib/webhook';
 
 export const useGameSystemRequestDialog = () => {
@@ -18,7 +17,6 @@ export const useGameSystemRequestDialog = () => {
   const [system, setSystem] = useState('');
   const [logFile, setLogFile] = useState<File | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { sendEvent } = useGoogleAnalytics();
 
   const validate = (value: string) => {
     if (/(CoC|クトゥルフ|エモクロア|シノビガミ|ネクロニカ|ソード[・･]?ワールド|SW2\.5)/i.test(value)) {
@@ -32,7 +30,6 @@ export const useGameSystemRequestDialog = () => {
     e.preventDefault();
     try {
       await sendGameSystemRequest({ system, logFile });
-      sendEvent('request_game_system', { has_log_file: logFile !== null });
       setIsOpen(false);
       toast({
         title: t('analyze-logs:game-system-request:submitted'),

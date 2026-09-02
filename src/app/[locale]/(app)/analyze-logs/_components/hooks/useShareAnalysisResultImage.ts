@@ -46,7 +46,7 @@ export const useShareAnalysisResultImage = () => {
       );
 
       if (sharingImageDataUrl === null || authUser === null) {
-        sendEvent('share', { method: 'X', content_type: 'analysis', authenticated: authUser !== null });
+        sendEvent('shareImage', '');
         const url = encodeURIComponent('https://dicespec.app/analyze-logs');
         const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
         window.open(href, '_blank');
@@ -56,8 +56,13 @@ export const useShareAnalysisResultImage = () => {
       startTransition(async () => {
         try {
           const imageId = nanoid(32);
-          await uploadSharedImageToStorage(storage, SHARED_IMAGE_SCOPES['analyze-logs'], imageId, sharingImageDataUrl);
-          sendEvent('share', { method: 'X', content_type: 'analysis_image', authenticated: true });
+          const imageUrl = await uploadSharedImageToStorage(
+            storage,
+            SHARED_IMAGE_SCOPES['analyze-logs'],
+            imageId,
+            sharingImageDataUrl,
+          );
+          sendEvent('shareImage', imageUrl);
           const ogp = encodeOgImageId(imageId);
           const url = encodeURIComponent(`https://dicespec.app/analyze-logs?ogp=${ogp}`);
           const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
@@ -65,6 +70,7 @@ export const useShareAnalysisResultImage = () => {
 
           onCompleted?.();
         } catch (err) {
+          sendEvent('shareImageFailed');
           console.error(err);
           captureClientException(err);
 

@@ -218,6 +218,9 @@ export const deleteCharacterAtom = atom(null, async (get, set, character: Ccfoli
   } catch (deleteError) {
     if (!operationIsCurrent()) return;
     if (deleteError instanceof CcfoliaCharacterConflictError || deleteError instanceof CcfoliaCharacterNotFoundError) {
+      sendGoogleAnalyticsEvent('delete_saved_ccfolia_character_error', {
+        reason: deleteError instanceof CcfoliaCharacterNotFoundError ? 'not_found' : 'conflict',
+      });
       if (deleteError instanceof CcfoliaCharacterNotFoundError) hideCharacter(set, character.id);
       const currentSelection = get(selectionAtom);
       if (currentSelection.characterId === character.id && currentSelection.revision === character.revision) {

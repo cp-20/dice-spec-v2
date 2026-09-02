@@ -2,13 +2,12 @@
 
 import { t } from 'i18next';
 import { useAtom } from 'jotai';
-import { type FC, useEffect } from 'react';
+import type { FC } from 'react';
 
 import { GoogleSignInAgreement } from '@/shared/components/elements/GoogleSignInAgreement';
 import { GoogleSignInButton } from '@/shared/components/elements/GoogleSignInButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
-import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { AnalysisFilters } from './AnalysisFilters';
 import { activeTabAtom } from './atoms';
@@ -17,13 +16,8 @@ import { PublicAnalysisList } from './PublicAnalysisList';
 
 export const AnalysisListContainer: FC = () => {
   const { authUser } = useFirebaseAuth();
-  const { sendEvent } = useGoogleAnalytics();
 
   const [activeTab, setActiveTab] = useAtom(activeTabAtom);
-
-  useEffect(() => {
-    if (authUser) sendEvent('view_analysis_list', { list_type: activeTab });
-  }, [activeTab, authUser, sendEvent]);
 
   if (!authUser) {
     return (
@@ -38,13 +32,7 @@ export const AnalysisListContainer: FC = () => {
   }
 
   return (
-    <Tabs
-      value={activeTab}
-      onValueChange={(listType) => {
-        setActiveTab(listType as typeof activeTab);
-      }}
-      className="w-full"
-    >
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="mine" disabled={!authUser}>
           {t('analyze-logs:list.tab-mine')}

@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { type FC, type ReactNode, useState } from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
-import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
+import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
 
 type DiceRollModeTabsProps = {
   simpleTabContent: ReactNode;
@@ -19,14 +19,13 @@ const AdvancedDiceRollPanel = dynamic(
 
 export const DiceRollModeTabs: FC<DiceRollModeTabsProps> = ({ simpleTabContent }) => {
   const [value, setValue] = useState('simple');
-  const { sendEvent } = useGoogleAnalytics();
 
   return (
     <Tabs
       value={value}
       onValueChange={(value) => {
         setValue(value);
-        sendEvent('select_dice_mode', { mode: value });
+        sendGoogleAnalyticsEvent('select_dice_mode', { mode: value });
       }}
     >
       <TabsList

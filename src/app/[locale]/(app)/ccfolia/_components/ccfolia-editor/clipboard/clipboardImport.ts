@@ -1,5 +1,6 @@
 import { t } from 'i18next';
 import { atom } from 'jotai';
+import { ValiError } from 'valibot';
 
 import { parseCcfoliaClipboardCharacter } from '@/features/ccfolia/model';
 import { toast } from '@/shared/components/ui/use-toast';
@@ -34,7 +35,11 @@ export const loadClipboardCharacterAtom = atom(null, async (get, set): Promise<b
   } catch (loadError) {
     if (!operationIsCurrent()) return false;
     console.error('CCFOLIA_CLIPBOARD_LOAD_FAILED');
-    captureClientException(loadError);
+    if (loadError instanceof SyntaxError || loadError instanceof ValiError) {
+      sendGoogleAnalyticsEvent('load_ccfolia_character_error', { reason: 'invalid_clipboard' });
+    } else {
+      captureClientException(loadError);
+    }
     toast({
       title: t('ccfolia:load-clipboard.error'),
       description: t('ccfolia:load-clipboard.error-description'),

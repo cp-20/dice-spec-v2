@@ -11,11 +11,12 @@ export const WebVitals: FC = () => {
   useReportWebVitals((metric) => {
     const { id, name, value, rating } = metric;
 
-    sendEvent('web_vital', {
-      metric_id: id,
-      metric_name: name,
+    sendEvent(name, {
+      event_label: id,
+      event_action: name,
       non_interaction: true,
       value: Math.round(name === 'CLS' ? value * 1000 : value),
+      event_category: 'Web Vitals',
       rating,
     });
   });

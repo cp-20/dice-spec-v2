@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 
 import { useToast } from '@/shared/components/ui/use-toast';
 import type { DiceRollResult } from '@/shared/lib/bcdice/getDiceRoll';
+import { formatDiceCommand } from '@/shared/lib/formatDiceCommand';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useBcdiceApi } from './useBcdiceApi';
@@ -103,11 +104,12 @@ export const useDiceRoll = () => {
 
   const diceRoll = useCallback(
     async (command: string) => {
+      sendEvent('diceRoll', [system, formatDiceCommand(command)]);
       const result = await diceRollCore(command);
-      if (result.ok) sendEvent('roll_dice', { mode: 'advanced', game_system: system });
       play();
 
       if (!result.ok) {
+        sendEvent('diceRollFailed', [system, command]);
         toast({
           title: t('dice:advanced.error'),
           variant: 'destructive',

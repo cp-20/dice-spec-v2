@@ -43,12 +43,13 @@ export const useSimpleDiceRoll = () => {
       const result = simpleDiceRollCore(dices);
       if (result === null) return;
 
-      const selectedDices = Object.values(dices).filter((count) => count > 0);
-      sendEvent('roll_dice', {
-        mode: 'simple',
-        dice_type_count: selectedDices.length,
-        dice_count: selectedDices.reduce((sum, count) => sum + count, 0),
-      });
+      sendEvent(
+        'simpleDiceRoll',
+        Object.entries(dices)
+          .filter(([, count]) => count > 0)
+          .map(([dice, count]) => `${count}D${dice}`)
+          .join('+'),
+      );
 
       setOutput({
         key: Date.now().toString(36) + Math.random().toString(36).slice(2),

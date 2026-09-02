@@ -9,15 +9,22 @@ declare global {
 }
 
 type EventParameters = Record<string, unknown>;
+type EventInput = EventParameters | string | string[];
 const NAVIGATION_EVENT_TIMEOUT = 2000;
 
-export const sendGoogleAnalyticsEvent = (event: string, parameters: EventParameters = {}) => {
+const getEventParameters = (input: EventInput): EventParameters => {
+  if (typeof input === 'string') return { param: input };
+  if (Array.isArray(input)) return Object.fromEntries(input.map((param, index) => [`params-${index}`, param]));
+  return input;
+};
+
+export const sendGoogleAnalyticsEvent = (event: string, input: EventInput = {}) => {
   try {
     window.dataLayer ??= [];
     window.gtag ??= function () {
       window.dataLayer.push(arguments);
     };
-    window.gtag('event', event, parameters);
+    window.gtag('event', event, getEventParameters(input));
     return true;
   } catch (error) {
     console.error('Failed to send Google Analytics event:', error);

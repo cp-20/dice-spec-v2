@@ -23,13 +23,19 @@ export const useDiceRollOption = () => {
 
   const setSystem = useCallback(
     async (system: string) => {
+      sendEvent('setSystem', system);
+      if (system === '') {
+        sendEvent('getGameSystemInfoFailed', system);
+        return;
+      }
+
       try {
         const systemInfo = await getGameSystemInfo(system);
         setOptions((prev) => ({ ...prev, system, systemInfo }));
-        sendEvent('change_game_system', { game_system: system });
       } catch (err) {
+        sendEvent('getGameSystemInfoFailed', system);
         console.error(err);
-        if (system) captureClientException(err);
+        captureClientException(err);
       }
     },
     [getGameSystemInfo, sendEvent, setOptions],
