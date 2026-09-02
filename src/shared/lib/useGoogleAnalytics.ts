@@ -14,7 +14,7 @@ const NAVIGATION_EVENT_TIMEOUT = 2000;
 
 const getEventParameters = (input: EventInput): EventParameters => {
   if (typeof input === 'string') return { param: input };
-  if (Array.isArray(input)) return Object.fromEntries(input.map((param, index) => [`params-${index}`, param]));
+  if (Array.isArray(input)) return Object.fromEntries(input.map((param, index) => [`params_${index}`, param]));
   return input;
 };
 
