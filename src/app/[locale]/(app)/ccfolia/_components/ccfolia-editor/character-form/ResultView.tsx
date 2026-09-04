@@ -9,6 +9,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { captureClientException } from '@/shared/lib/sentryClient';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useTimedFeedback } from '../useTimedFeedback';
 
@@ -18,6 +19,7 @@ export const ResultView: FC<ResultViewProps> = ({ formResult }) => {
   const { visible: done, show: showDone } = useTimedFeedback(1_000);
   const headingId = useId();
   const { toast } = useToast();
+  const { sendEvent } = useGoogleAnalytics();
 
   const handleCopyToClipboard = useCallback(async () => {
     try {
@@ -29,8 +31,9 @@ export const ResultView: FC<ResultViewProps> = ({ formResult }) => {
       return;
     }
 
+    sendEvent('copy_ccfolia_character');
     showDone();
-  }, [formResult, showDone, toast]);
+  }, [formResult, sendEvent, showDone, toast]);
 
   return (
     <div className="space-y-2">

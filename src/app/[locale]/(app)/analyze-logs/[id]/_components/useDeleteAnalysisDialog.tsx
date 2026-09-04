@@ -17,6 +17,8 @@ import {
   DialogTitle,
 } from '@/shared/components/ui/dialog';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { captureClientException } from '@/shared/lib/sentryClient';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { analysisIdAtom } from './atoms';
 
@@ -26,14 +28,17 @@ export const useDeleteAnalysisDialog = () => {
   const { deleteAnalysis, deleting } = useDeleteAnalysis();
   const router = useRouter();
   const { toast } = useToast();
+  const { sendEvent } = useGoogleAnalytics();
 
   const handleDelete = async () => {
     if (!analysisId) return;
     try {
       await deleteAnalysis(analysisId);
+      sendEvent('delete_analysis');
       router.push(t('link', { href: '/analyze-logs/list' }));
     } catch (error) {
       console.error(error);
+      captureClientException(error);
       toast({ title: t('analyze-logs:delete-dialog.failed'), variant: 'destructive' });
     }
   };

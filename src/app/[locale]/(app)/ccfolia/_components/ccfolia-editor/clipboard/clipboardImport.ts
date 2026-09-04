@@ -1,10 +1,12 @@
 import { t } from 'i18next';
 import { atom } from 'jotai';
+import { ValiError } from 'valibot';
 
 import { parseCcfoliaClipboardCharacter } from '@/features/ccfolia/model';
 import { toast } from '@/shared/components/ui/use-toast';
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 import { captureClientException } from '@/shared/lib/sentryClient';
+import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
 
 import { formPortAtom } from '../character-form/editorForm';
 import {
@@ -28,11 +30,16 @@ export const loadClipboardCharacterAtom = atom(null, async (get, set): Promise<b
     set(selectionAtom, { characterId: null, revision: null });
     set(remoteConflictAtom, null);
     resetEditorAsUnsavedNew(form, character);
+    sendGoogleAnalyticsEvent('load_ccfolia_character');
     return true;
-  } catch {
+  } catch (loadError) {
     if (!operationIsCurrent()) return false;
     console.error('CCFOLIA_CLIPBOARD_LOAD_FAILED');
-    captureClientException(new Error('CCFOLIA_CLIPBOARD_LOAD_FAILED'));
+    if (loadError instanceof SyntaxError || loadError instanceof ValiError) {
+      sendGoogleAnalyticsEvent('load_ccfolia_character_error', { reason: 'invalid_clipboard' });
+    } else {
+      captureClientException(loadError);
+    }
     toast({
       title: t('ccfolia:load-clipboard.error'),
       description: t('ccfolia:load-clipboard.error-description'),

@@ -1,6 +1,8 @@
 import type { InferInput } from 'valibot';
 import { array, boolean, literal, number, object, optional, parse, string, union } from 'valibot';
 
+import { captureClientException } from '../sentryClient';
+
 const diceRollResultSchema = union([
   object({
     ok: literal(false),
@@ -42,6 +44,7 @@ export const getDiceRollGenerator = (bcdiceApiEndpoint: string) => async (comman
     return result;
   } catch (err) {
     console.error('Failed to get dice roll result', err);
+    captureClientException(err);
     return {
       ok: false,
     } as const;

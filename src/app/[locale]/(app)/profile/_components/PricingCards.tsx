@@ -9,7 +9,9 @@ import type { BillingInterval } from '@/features/stripe/contract';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { cn } from '@/shared/lib/shadcn-utils';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 const MONTHLY_PRICE = 300;
 const YEARLY_PRICE = 3000;
@@ -22,20 +24,33 @@ export const PricingCards = () => {
   const { toast } = useToast();
   const [interval, setInterval] = useState<BillingInterval>('yearly');
   const [loading, setLoading] = useState(false);
+  const { sendEventBeforeNavigation } = useGoogleAnalytics();
 
   const handleUpgrade = async () => {
     setLoading(true);
     try {
       const data = await createCheckoutSession({ interval });
-      window.location.href = data.url;
+      const value = interval === 'monthly' ? MONTHLY_PRICE : YEARLY_PRICE;
+      sendEventBeforeNavigation(
+        'begin_checkout',
+        {
+          currency: 'JPY',
+          value,
+          items: [{ item_id: `pro_${interval}`, item_name: 'Pro', price: value, quantity: 1 }],
+        },
+        () => {
+          setLoading(false);
+          window.location.href = data.url;
+        },
+      );
     } catch (error) {
       console.error('Error upgrading:', error);
+      captureClientException(error);
       toast({
         title: t('profile:toast.upgrade-error-title'),
         description: t('profile:toast.upgrade-error-description'),
         variant: 'destructive',
       });
-    } finally {
       setLoading(false);
     }
   };

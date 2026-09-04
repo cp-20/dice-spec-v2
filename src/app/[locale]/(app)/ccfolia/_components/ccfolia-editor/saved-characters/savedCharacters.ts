@@ -23,6 +23,7 @@ import {
 import { toast } from '@/shared/components/ui/use-toast';
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 import { captureClientException } from '@/shared/lib/sentryClient';
+import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
 
 import { type EditorFormPort, formPortAtom, formSnapshotAtom } from '../character-form/editorForm';
 import { savingCharacterIdsAtom } from '../character-save/saveOperation';
@@ -144,6 +145,7 @@ export const resetToNewAtom = atom(null, (get, set) => {
   const form = get(formPortAtom);
   if (!form || !confirmDiscardChanges(get)) return;
   resetEditorToNew(set, form);
+  sendGoogleAnalyticsEvent('start_new_ccfolia_character');
 });
 
 export const selectCharacterAtom = atom(null, (get, set, characterId: string) => {
@@ -158,17 +160,19 @@ export const selectCharacterAtom = atom(null, (get, set, characterId: string) =>
   set(selectionAtom, { characterId: character.id, revision: character.revision });
   set(remoteConflictAtom, null);
   form.reset(toCcfoliaEditorCharacter(character));
+  sendGoogleAnalyticsEvent('load_saved_ccfolia_character');
 });
 
 export const exportCharacterAtom = atom(null, async (_get, _set, character: CcfoliaCharacterDocument) => {
   try {
     await navigator.clipboard.writeText(stringifyCcfoliaClipboardCharacter(toCcfoliaEditorCharacter(character)));
-  } catch {
+  } catch (exportError) {
     console.error('CCFOLIA_SAVED_CHARACTER_EXPORT_FAILED');
-    captureClientException(new Error('CCFOLIA_SAVED_CHARACTER_EXPORT_FAILED'));
+    captureClientException(exportError);
     toast({ title: t('ccfolia:copy-error'), variant: 'destructive' });
     return false;
   }
+  sendGoogleAnalyticsEvent('export_saved_ccfolia_character');
   return true;
 });
 
@@ -192,6 +196,7 @@ export const deleteCharacterAtom = atom(null, async (get, set, character: Ccfoli
       expectedRevision: character.revision,
     });
     if (!operationIsCurrent()) return;
+    sendGoogleAnalyticsEvent('delete_saved_ccfolia_character');
     hideCharacter(set, character.id);
     if (get(selectionAtom).characterId === character.id) {
       const currentForm = get(formPortAtom);
@@ -213,6 +218,9 @@ export const deleteCharacterAtom = atom(null, async (get, set, character: Ccfoli
   } catch (deleteError) {
     if (!operationIsCurrent()) return;
     if (deleteError instanceof CcfoliaCharacterConflictError || deleteError instanceof CcfoliaCharacterNotFoundError) {
+      sendGoogleAnalyticsEvent('delete_saved_ccfolia_character_error', {
+        reason: deleteError instanceof CcfoliaCharacterNotFoundError ? 'not_found' : 'conflict',
+      });
       if (deleteError instanceof CcfoliaCharacterNotFoundError) hideCharacter(set, character.id);
       const currentSelection = get(selectionAtom);
       if (currentSelection.characterId === character.id && currentSelection.revision === character.revision) {
@@ -253,6 +261,7 @@ export const loadLatestCharacterAtom = atom(null, (get, set) => {
   set(selectionAtom, { characterId: selection.characterId, revision: remote.character.revision });
   set(remoteConflictAtom, null);
   form.reset(toCcfoliaEditorCharacter(remote.character));
+  sendGoogleAnalyticsEvent('resolve_ccfolia_character_conflict', { action: 'load_latest' });
 });
 
 export const continueAsNewAtom = atom(null, (get, set) => {
@@ -262,6 +271,7 @@ export const continueAsNewAtom = atom(null, (get, set) => {
   set(selectionAtom, { characterId: null, revision: null });
   set(remoteConflictAtom, null);
   resetEditorAsUnsavedNew(form, character);
+  sendGoogleAnalyticsEvent('resolve_ccfolia_character_conflict', { action: 'continue_as_new' });
 });
 
 export const loadMoreCharactersAtom = loadMoreCharactersQueryAtom;

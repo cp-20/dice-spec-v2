@@ -6,6 +6,8 @@ import { type FC, useCallback, useRef } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { captureClientException } from '@/shared/lib/sentryClient';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useDropzone } from './hooks/useDropzone';
 import { useLogFiles, useLogTabSelect } from './hooks/useLogAnalysis';
@@ -30,6 +32,7 @@ export const UploadLogFileButton: FC = () => {
   const { toast } = useToast();
   const { logFiles, setLogFiles } = useLogFiles();
   const { resetSelectedTabs } = useLogTabSelect();
+  const { sendEvent } = useGoogleAnalytics();
 
   const dropHandler = useCallback(
     async (files: File[]) => {
@@ -42,14 +45,16 @@ export const UploadLogFileButton: FC = () => {
         );
         setLogFiles((prev) => [...prev, ...readFiles]);
         resetSelectedTabs();
+        sendEvent('upload_log', { file_count: files.length });
       } catch (error) {
         console.error('Failed to read log file:', error);
+        captureClientException(error);
         toast({ title: t('analyze-logs:error'), variant: 'destructive' });
       } finally {
         if (inputRef.current) inputRef.current.value = '';
       }
     },
-    [resetSelectedTabs, setLogFiles, toast],
+    [resetSelectedTabs, sendEvent, setLogFiles, toast],
   );
 
   const { containerProps, inputProps, isDraggedOver } = useDropzone(dropHandler);
