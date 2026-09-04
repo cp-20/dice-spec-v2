@@ -10,16 +10,12 @@ type IdentityToolkitLookupResponse = {
   }>;
 };
 
-class FirebaseAuthServiceError extends Error {}
+class FirebaseUserError extends Error {}
 
-const isFirebaseApiKeyError = (body: string): boolean => {
+const isFirebaseUserError = (body: string): boolean => {
   try {
-    const payload = JSON.parse(body) as { error?: { message?: unknown; details?: unknown } };
-    const values = [payload.error?.message];
-    if (Array.isArray(payload.error?.details)) {
-      values.push(...payload.error.details.map((detail: { reason?: unknown }) => detail.reason));
-    }
-    return values.some((value) => typeof value === 'string' && /API[ _-]?KEY/i.test(value));
+    const payload = JSON.parse(body) as { error?: { message?: unknown } };
+    return payload.error?.message === 'INVALID_ID_TOKEN' || payload.error?.message === 'USER_NOT_FOUND';
   } catch {
     return false;
   }
@@ -34,44 +30,22 @@ export const getBearerToken = (authorizationHeader: string | undefined) => {
 };
 
 const lookupFirebaseUserByIdToken = async (idToken: string) => {
-  let apiKey: string;
-  try {
-    apiKey = runtimeEnv.firebase.webApiKey;
-  } catch (error) {
-    throw new FirebaseAuthServiceError('Firebase ID token verification is not configured', { cause: error });
-  }
-
-  let response: Response;
-  try {
-    response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`, {
+  const response = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${runtimeEnv.firebase.webApiKey}`,
+    {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ idToken }),
-    });
-  } catch (error) {
-    throw new FirebaseAuthServiceError('Firebase ID token verification request failed', { cause: error });
-  }
+    },
+  );
 
   if (!response.ok) {
-    let body: string;
-    try {
-      body = await response.text();
-    } catch (error) {
-      throw new FirebaseAuthServiceError('Failed to read Firebase ID token verification response', { cause: error });
-    }
+    const body = await response.text();
     const message = `Firebase ID token verification failed with status ${response.status}: ${body}`;
-    if (response.status === 429 || response.status >= 500 || isFirebaseApiKeyError(body)) {
-      throw new FirebaseAuthServiceError(message);
-    }
-    throw new Error(message);
+    throw isFirebaseUserError(body) ? new FirebaseUserError(message) : new Error(message);
   }
 
-  let payload: IdentityToolkitLookupResponse;
-  try {
-    payload = (await response.json()) as IdentityToolkitLookupResponse;
-  } catch (error) {
-    throw new FirebaseAuthServiceError('Failed to parse Firebase ID token verification response', { cause: error });
-  }
+  const payload = (await response.json()) as IdentityToolkitLookupResponse;
   return payload.users?.[0] ?? null;
 };
 
@@ -100,13 +74,11 @@ export const getAuthenticatedUser = async (authorizationHeader: string | undefin
     };
   } catch (error) {
     console.error('Failed to verify Firebase ID token:', error);
-    const serviceFailure = error instanceof FirebaseAuthServiceError;
-    const logError = serviceFailure ? (error.cause ?? error) : error;
     scheduleStripeLog({
-      level: serviceFailure ? 'error' : 'warning',
+      level: error instanceof FirebaseUserError ? 'warning' : 'error',
       eventType,
       message: 'Firebase ID token verification failed',
-      error: logError,
+      error,
     });
     return null;
   }

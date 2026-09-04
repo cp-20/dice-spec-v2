@@ -69,7 +69,7 @@ describe('sendStripeLog', () => {
     const embeds = notification?.body.embeds as { title: string; description: string; fields?: unknown[] }[];
     expect(embeds[0]?.title).toContain('サブスクリプションが自動更新されました');
     expect(embeds[0]?.description).toContain('USD');
-    expect(embeds[0]?.description).toContain('5.00');
+    expect(embeds[0]?.description).toContain('USD 500（最小通貨単位）');
     expect(embeds[0]?.fields).toBeUndefined();
   });
 
@@ -88,7 +88,7 @@ describe('sendStripeLog', () => {
     expect(embeds[0]?.description).toContain('500');
   });
 
-  test('Stripe が2桁で扱う ISK を正しい金額で表示する', async () => {
+  test('JPY以外の通貨は最小通貨単位の元金額で表示する', async () => {
     await sendStripeLog({
       level: 'success',
       eventType: 'invoice.paid',
@@ -100,8 +100,7 @@ describe('sendStripeLog', () => {
     const notification = requests.find(({ url }) => url === 'https://discord.test/notification');
     const embeds = notification?.body.embeds as { description: string }[];
     expect(embeds[0]?.description).toContain('ISK');
-    expect(embeds[0]?.description).toContain('5');
-    expect(embeds[0]?.description).not.toContain('500');
+    expect(embeds[0]?.description).toContain('ISK 500（最小通貨単位）');
   });
 
   test('追加認証通知には請求書へのリンクを表示する', async () => {

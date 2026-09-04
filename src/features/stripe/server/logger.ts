@@ -18,23 +18,6 @@ const DISCORD_MAX_CONTENT_LENGTH = 2000;
 const DISCORD_MAX_TITLE_LENGTH = 256;
 const DISCORD_MAX_DESCRIPTION_LENGTH = 4096;
 const MAX_ERROR_MESSAGE_LENGTH = 240;
-const STRIPE_ZERO_DECIMAL_CURRENCIES = new Set([
-  'BIF',
-  'CLP',
-  'DJF',
-  'GNF',
-  'JPY',
-  'KMF',
-  'KRW',
-  'MGA',
-  'PYG',
-  'RWF',
-  'VND',
-  'VUV',
-  'XAF',
-  'XOF',
-  'XPF',
-]);
 
 const getLevelColor = (level: StripeLogLevel): number => {
   switch (level) {
@@ -106,19 +89,18 @@ const getErrorSummary = (error: Error | unknown): Record<string, unknown> => {
 const formatAmount = (amount: number, currency: string | null): string => {
   if (!currency) return `${amount}（最小通貨単位）`;
 
-  try {
-    const normalizedCurrency = currency.toUpperCase();
+  const normalizedCurrency = currency.toUpperCase();
+  if (normalizedCurrency === 'JPY') {
     const formatter = new Intl.NumberFormat('ja-JP', {
       style: 'currency',
-      currency: normalizedCurrency,
+      currency: 'JPY',
       currencyDisplay: 'code',
     });
-    // ISK と UGX は zero-decimal 通貨だが、Stripe API では後方互換性のため2桁で表す。
-    const fractionDigits = STRIPE_ZERO_DECIMAL_CURRENCIES.has(normalizedCurrency) ? 0 : 2;
-    return formatter.format(amount / 10 ** fractionDigits);
-  } catch {
-    return `${amount} ${currency}（最小通貨単位）`;
+    return formatter.format(amount);
   }
+
+  // ISK など JPY 以外は換算せず、最小通貨単位の元の金額を表示する。
+  return `${currency} ${amount}（最小通貨単位）`;
 };
 
 const buildAuditContent = (log: StripeLog, timestamp: string): string => {
