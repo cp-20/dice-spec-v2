@@ -71,8 +71,7 @@ export const AnalysisSavePanel: FC = () => {
     system !== null &&
     !limitReached &&
     !saving &&
-    title.trim() !== '' &&
-    !Number.isNaN(new Date(sessionDate).getTime());
+    title.trim() !== '';
 
   const handleSave = async () => {
     if (!canSave) return;
@@ -107,7 +106,11 @@ export const AnalysisSavePanel: FC = () => {
       router.push(t('link', { href: `/analyze-logs/${analysisId}` }));
     } catch (err) {
       console.error(err);
-      captureClientException(err);
+      if (Number.isNaN(new Date(sessionDate).getTime())) {
+        sendEvent('save_analysis_error', { reason: 'invalid_date' });
+      } else {
+        captureClientException(err);
+      }
       toast({
         title: t('analyze-logs:save.failed.title'),
         description: t('analyze-logs:save.failed.description'),

@@ -53,7 +53,7 @@ export const useEditAnalysisDialog = () => {
   const { toast } = useToast();
   const { sendEvent } = useGoogleAnalytics();
 
-  const isValid = analysisId !== undefined && title.trim().length > 0 && !Number.isNaN(new Date(sessionDate).getTime());
+  const isValid = analysisId !== undefined && title.trim().length > 0;
 
   const analysisSessionDate = analysis?.sessionDate
     ? new Date(analysis.sessionDate.seconds * 1000).toISOString().split('T')[0]
@@ -79,7 +79,11 @@ export const useEditAnalysisDialog = () => {
       setIsOpen(false);
     } catch (error) {
       console.error(error);
-      captureClientException(error);
+      if (Number.isNaN(new Date(sessionDate).getTime())) {
+        sendEvent('update_analysis_error', { visibility, reason: 'invalid_date' });
+      } else {
+        captureClientException(error);
+      }
       toast({ title: t('analyze-logs:edit-dialog.failed'), variant: 'destructive' });
     }
   };
