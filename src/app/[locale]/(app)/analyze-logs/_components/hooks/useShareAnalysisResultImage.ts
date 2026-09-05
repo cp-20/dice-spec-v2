@@ -12,6 +12,7 @@ import { round } from '@/shared/lib/round';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { encodeOgImageId } from '../og';
+import { getShareUrl, type ShareDestination } from '../shareUrl';
 import { sharingImageDataUrlAtom } from './shareAnalysisImageAtoms';
 import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
 import { useCharacterSelect } from './useCharacterSelect';
@@ -27,7 +28,7 @@ export const useShareAnalysisResultImage = () => {
   const { sendEvent } = useGoogleAnalytics();
 
   const shareImage = useCallback(
-    (onCompleted?: () => void) => {
+    (destination: ShareDestination, onCompleted?: () => void) => {
       if (!result) return;
 
       const { average, deviationScore, successRate, evaluatedRollCount, diceRollCount } = result.summary;
@@ -35,37 +36,31 @@ export const useShareAnalysisResultImage = () => {
       const averageStr = round(average, 2);
       const deviationScoreStr = round(deviationScore, 2);
       const successRateStr = evaluatedRollCount === 0 ? '-' : `${round(successRate, 2)}%`;
-      const text = encodeURIComponent(
-        t('analyze-logs:share-analysis-result.share-text', {
-          average: averageStr,
-          deviationScore: deviationScoreStr,
-          successRate: successRateStr,
-          diceRollCount: round(diceRollCount, 2),
-        }),
-      );
-
-      if (sharingImageDataUrl === null || authUser === null) {
-        sendEvent('shareImage', '');
-        const url = encodeURIComponent('https://dicespec.app/analyze-logs');
-        const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
-        window.open(href, '_blank');
-        return;
-      }
+      const text = t('analyze-logs:share-analysis-result.share-text', {
+        average: averageStr,
+        deviationScore: deviationScoreStr,
+        successRate: successRateStr,
+        diceRollCount: round(diceRollCount, 2),
+      });
 
       startTransition(async () => {
         try {
-          const imageId = nanoid(32);
-          const imageUrl = await uploadSharedImageToStorage(
-            storage,
-            SHARED_IMAGE_SCOPES['analyze-logs'],
-            imageId,
-            sharingImageDataUrl,
-          );
-          sendEvent('shareImage', imageUrl);
-          const ogp = encodeOgImageId(imageId);
-          const url = encodeURIComponent(`https://dicespec.app/analyze-logs?ogp=${ogp}`);
-          const href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
-          window.open(href, '_blank');
+          let url = 'https://dicespec.app/analyze-logs';
+          if (sharingImageDataUrl !== null && authUser !== null) {
+            const imageId = nanoid(32);
+            const imageUrl = await uploadSharedImageToStorage(
+              storage,
+              SHARED_IMAGE_SCOPES['analyze-logs'],
+              imageId,
+              sharingImageDataUrl,
+            );
+            sendEvent('shareImage', imageUrl);
+            url += `?ogp=${encodeOgImageId(imageId)}`;
+          } else {
+            sendEvent('shareImage', '');
+          }
+
+          window.open(getShareUrl(destination, text, url), '_blank', 'noopener,noreferrer');
 
           onCompleted?.();
         } catch (err) {
