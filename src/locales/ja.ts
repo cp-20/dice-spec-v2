@@ -252,6 +252,8 @@ export const ja = {
       'scenario-name-description': '画像のタイトル部分に表示されます',
       'scenario-name-default': 'ログ解析結果',
       'share-image': '解析結果をシェア',
+      'share-to': '{{destination}}でシェア',
+      'other-destinations': 'ほかのシェア先',
       'image-alt': '解析結果シェア画像のプレビュー',
       'share-text':
         '▼あなたのダイス結果を分析した結果▼\n\n平均: {{average}}\nダイス偏差値: {{deviationScore}}\n成功率: {{successRate}}\nダイスを振った回数: {{diceRollCount}}回\n\n#ダイススペック\n',

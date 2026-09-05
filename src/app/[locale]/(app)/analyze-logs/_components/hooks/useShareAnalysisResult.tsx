@@ -7,6 +7,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
 
 import { SharingAnalysisResultScreen } from '../SharingAnalysisResultScreen';
 import {
@@ -49,6 +50,7 @@ const SharingImagePreview: FC = () => {
 
 export const useShareAnalysisResult = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [shareOptionsOpen, setShareOptionsOpen] = useState(false);
   const scenarioName = useAtomValue(scenarioNameAtom);
   const setScenarioName = useSetAtom(debouncedScenarioNameAtom);
   const { isSharingImage, shareImage } = useShareAnalysisResultImage();
@@ -77,20 +79,46 @@ export const useShareAnalysisResult = () => {
 
                 <SharingImagePreview />
 
-                <Button
-                  className="w-full"
-                  onClick={() => shareImage(() => setDialogOpen(false))}
-                  disabled={isSharingImage}
-                >
-                  {isSharingImage ? (
-                    <span className="opacity-70 inline-flex gap-2 items-center">
-                      <IconLoader className="animate-spin size-5" />
-                      {t('analyze-logs:share-analysis-result:share-image')}
-                    </span>
-                  ) : (
-                    <span>{t('analyze-logs:share-analysis-result:share-image')}</span>
-                  )}
-                </Button>
+                <div className="flex">
+                  <Button
+                    className="flex-1 rounded-r-none"
+                    onClick={() => shareImage('X', () => setDialogOpen(false))}
+                    disabled={isSharingImage}
+                  >
+                    {isSharingImage ? (
+                      <span className="opacity-70 inline-flex gap-2 items-center">
+                        <IconLoader className="animate-spin size-5" />
+                        {t('analyze-logs:share-analysis-result:share-to', { destination: 'X' })}
+                      </span>
+                    ) : (
+                      <span>{t('analyze-logs:share-analysis-result:share-to', { destination: 'X' })}</span>
+                    )}
+                  </Button>
+                  <Popover open={shareOptionsOpen} onOpenChange={setShareOptionsOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        className="rounded-l-none border-l border-primary-foreground/30 px-3"
+                        disabled={isSharingImage}
+                        aria-label={t('analyze-logs:share-analysis-result:other-destinations')}
+                      >
+                        <span aria-hidden="true">▼</span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-56 p-1">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        disabled={isSharingImage}
+                        onClick={() => {
+                          setShareOptionsOpen(false);
+                          shareImage('Bluesky', () => setDialogOpen(false));
+                        }}
+                      >
+                        {t('analyze-logs:share-analysis-result:share-to', { destination: 'Bluesky' })}
+                      </Button>
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
             </div>
           </DialogContent>
