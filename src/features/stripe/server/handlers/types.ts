@@ -29,6 +29,7 @@ type HandlerLog = {
   level: HandlerLogLevel;
   eventType: string;
   message: string;
+  notify?: boolean;
   userId?: string;
   details?: Record<string, unknown>;
 };

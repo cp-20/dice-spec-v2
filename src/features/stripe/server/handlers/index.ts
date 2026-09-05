@@ -1,6 +1,11 @@
 import { createCheckoutHandler } from './checkout';
 import { createCustomerCreatedHandler } from './customer';
-import { createInvoicePaidHandler, createInvoicePaymentFailedHandler } from './invoice';
+import {
+  createInvoiceFinalizationFailedHandler,
+  createInvoicePaidHandler,
+  createInvoicePaymentActionRequiredHandler,
+  createInvoicePaymentFailedHandler,
+} from './invoice';
 import {
   createSubscriptionCreatedHandler,
   createSubscriptionDeletedHandler,
@@ -17,5 +22,7 @@ export const createStripeHandlers = (deps: HandlerDeps) => {
     handleCustomerCreated: createCustomerCreatedHandler(deps),
     handleInvoicePaid: createInvoicePaidHandler(deps),
     handleInvoicePaymentFailed: createInvoicePaymentFailedHandler(deps),
+    handleInvoicePaymentActionRequired: createInvoicePaymentActionRequiredHandler(deps),
+    handleInvoiceFinalizationFailed: createInvoiceFinalizationFailedHandler(deps),
   };
 };

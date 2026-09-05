@@ -1,7 +1,7 @@
 import type { HandlerDeps, SubscriptionPayload } from './handlers/types';
 
 export const planForSubscriptionStatus = (status: SubscriptionPayload['status']) =>
-  status === 'active' || status === 'trialing' ? 'pro' : 'free';
+  status === 'active' || status === 'trialing' || status === 'past_due' ? 'pro' : 'free';
 
 export const currentSubscriptionIdOf = (userDoc: Record<string, unknown> | null) => {
   const value = userDoc?.stripeSubscriptionId;

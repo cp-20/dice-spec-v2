@@ -98,6 +98,7 @@ export const createCheckoutHandler = ({ getUserById, updateUserById, getSubscrip
           level: 'success',
           eventType: 'checkout.session.completed',
           message: getCheckoutMessage(billingInterval),
+          notify: true,
           userId,
           details: {
             action: 'subscription_started',

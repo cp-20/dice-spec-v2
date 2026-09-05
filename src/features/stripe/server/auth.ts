@@ -10,6 +10,17 @@ type IdentityToolkitLookupResponse = {
   }>;
 };
 
+class FirebaseUserError extends Error {}
+
+const isFirebaseUserError = (body: string): boolean => {
+  try {
+    const payload = JSON.parse(body) as { error?: { message?: unknown } };
+    return payload.error?.message === 'INVALID_ID_TOKEN' || payload.error?.message === 'USER_NOT_FOUND';
+  } catch {
+    return false;
+  }
+};
+
 export const getBearerToken = (authorizationHeader: string | undefined) => {
   if (!authorizationHeader) return null;
 
@@ -19,18 +30,19 @@ export const getBearerToken = (authorizationHeader: string | undefined) => {
 };
 
 const lookupFirebaseUserByIdToken = async (idToken: string) => {
-  const apiKey = runtimeEnv.firebase.webApiKey;
-  if (!apiKey) throw new Error('Missing Firebase API key in environment variables');
-
-  const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ idToken }),
-  });
+  const response = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${runtimeEnv.firebase.webApiKey}`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+    },
+  );
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Firebase ID token verification failed with status ${response.status}: ${body}`);
+    const message = `Firebase ID token verification failed with status ${response.status}: ${body}`;
+    throw isFirebaseUserError(body) ? new FirebaseUserError(message) : new Error(message);
   }
 
   const payload = (await response.json()) as IdentityToolkitLookupResponse;
@@ -63,7 +75,7 @@ export const getAuthenticatedUser = async (authorizationHeader: string | undefin
   } catch (error) {
     console.error('Failed to verify Firebase ID token:', error);
     scheduleStripeLog({
-      level: 'warning',
+      level: error instanceof FirebaseUserError ? 'warning' : 'error',
       eventType,
       message: 'Firebase ID token verification failed',
       error,
