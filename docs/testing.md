@@ -3,7 +3,7 @@
 ## E2E テスト
 
 - アプリの主要な利用経路を押さえ、一つの機能の正常系だけで網羅したと判断しない。ユーザー操作から結果の確認までを通し、機能間の遷移や保存後の再読み込みなど、利用上重要な状態遷移も検証する。
-- 変更時は、影響する利用経路を既存のE2Eと照合して不足を補う。変更と独立したテスト拡充は別PRへ分ける。
+- 変更時は、影響する利用経路を既存のE2Eと照合して不足を補う。
 
 ## テストデータ
 
@@ -26,10 +26,4 @@ bun test --path-ignore-patterns='firebase/*.rules.test.ts'
 bun test firebase/*.rules.test.ts
 ```
 
-Firebase Emulator のテスト設定は次の環境変数で上書きできる。未指定時は `src/shared/lib/env.ts` のテスト用デフォルト値を使う。
-
-- `TEST_FIREBASE_PROJECT_ID`
-- `TEST_FIREBASE_API_KEY`
-- `TEST_FIREBASE_AUTH_DOMAIN`
-- `TEST_FIREBASE_STORAGE_BUCKET`
-- `TEST_FIREBASE_APP_ID`
+Firebase Emulator の環境変数とデフォルト値は [src/shared/lib/env.ts](../src/shared/lib/env.ts) を参照する。
