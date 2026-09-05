@@ -7,7 +7,6 @@ export const imageRefAtom = atom<React.RefObject<HTMLDivElement | null> | undefi
 export const { currentValueAtom: scenarioNameAtom, debouncedValueAtom: debouncedScenarioNameAtom } = atomWithDebounce(
   '',
   300,
-  true,
 );
 export const sharingImageVersionAtom = atom(0);
 

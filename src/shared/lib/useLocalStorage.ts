@@ -1,6 +1,6 @@
 import type { PrimitiveAtom } from 'jotai';
 import { useAtom } from 'jotai';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import type { BaseIssue, BaseSchema } from 'valibot';
 import * as v from 'valibot';
 
@@ -18,22 +18,6 @@ const getLocalStorageValue = <T>(key: string, initValue: T, schema: Schema<T>) =
     console.error(err);
     return initValue;
   }
-};
-
-export const useLocalStorage = <T>(key: string, initValue: T, schema: Schema<T>) => {
-  const [value, setValue] = useState(() => getLocalStorageValue(key, initValue, schema));
-
-  const setLocalStorageValue = useCallback(
-    (setStateAction: T | ((prevState: T) => T)) => {
-      const newValue = setStateAction instanceof Function ? setStateAction(value) : setStateAction;
-
-      localStorage.setItem(key, JSON.stringify(newValue));
-      setValue(newValue);
-    },
-    [key, value],
-  );
-
-  return [value, setLocalStorageValue] as const;
 };
 
 export const useLocalStorageAtom = <T>(key: string, atom: PrimitiveAtom<T>, schema: Schema<T>, rawInitValue?: T) => {
