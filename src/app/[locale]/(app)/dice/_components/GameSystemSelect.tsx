@@ -2,6 +2,7 @@
 
 import clsx from 'clsx';
 import { t } from 'i18next';
+import { useStore } from 'jotai';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import type { FC } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -9,9 +10,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/shared/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
+import { gameSystems } from '@/shared/lib/bcdice/loader';
 import { cn } from '@/shared/lib/shadcn-utils';
 
-import { useDiceRollOption } from './hooks/useDiceRollOption';
+import { diceRollOptionAtom, useDiceRollOption } from './hooks/useDiceRollOption';
 import { useGameSystemList } from './hooks/useGameSystemList';
 
 import styles from './GameSystemSelect.module.css';
@@ -21,12 +23,18 @@ export const GameSystemSelect: FC = () => {
   const { gameSystemList: systems, selectSystem } = useGameSystemList();
 
   const {
-    option: { system },
+    option: { system, systemInfo, error },
     setSystem,
   } = useDiceRollOption();
+  const store = useStore();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const selected = store.get(diceRollOptionAtom);
+    if (!selected.systemInfo && !selected.error) void setSystem(selected.system);
+  }, [setSystem, store]);
 
   // システムを変更する関数
   const changeSystem = useCallback(
@@ -48,39 +56,60 @@ export const GameSystemSelect: FC = () => {
   });
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" aria-expanded={open} className="w-full justify-between" ref={buttonRef}>
-          {systems && system ? (
-            systems.find((s) => s.id === system)?.name
-          ) : (
-            <span className="text-slate-600">{t('dice:advanced.game-system.button')}</span>
-          )}
-          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className={clsx('h-60 p-0', styles['popover-content'])} ref={popoverRef}>
-        {/* フィルタリングアルゴリズムをいい感じに上書きして最近使ったのを上に出す */}
-        <Command className="h-full">
-          <CommandInput placeholder={t('dice:advanced.game-system.search')} />
-          <CommandEmpty>{t('dice:advanced.game-system.no-result')}</CommandEmpty>
-          <CommandGroup className={clsx('h-fit overflow-y-auto', scrollbarStyles['pretty-scrollbar'])}>
-            {systems?.map((s) => (
-              <CommandItem
-                key={s.id}
-                value={s.name}
-                onSelect={() => {
-                  changeSystem(s.id === system ? '' : s.id);
-                  setOpen(false);
-                }}
-              >
-                <Check className={cn('mr-2 size-4', system !== s.id && 'invisible')} />
-                {s.name}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <div className="space-y-2">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            aria-expanded={open}
+            className="w-full justify-between"
+            ref={buttonRef}
+            aria-busy={!systemInfo && !error}
+          >
+            {systems && system ? (
+              systems.find((s) => s.id === system)?.name
+            ) : (
+              <span className="text-slate-600">{t('dice:advanced.game-system.button')}</span>
+            )}
+            <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className={clsx('h-60 p-0', styles['popover-content'])} ref={popoverRef}>
+          {/* フィルタリングアルゴリズムをいい感じに上書きして最近使ったのを上に出す */}
+          <Command className="h-full">
+            <CommandInput placeholder={t('dice:advanced.game-system.search')} />
+            <CommandEmpty>{t('dice:advanced.game-system.no-result')}</CommandEmpty>
+            <CommandGroup className={clsx('h-fit overflow-y-auto', scrollbarStyles['pretty-scrollbar'])}>
+              {systems?.map((s) => (
+                <CommandItem
+                  key={s.id}
+                  value={s.name}
+                  disabled={!gameSystems.some((available) => available.id === s.id)}
+                  onSelect={() => {
+                    changeSystem(s.id);
+                    setOpen(false);
+                  }}
+                >
+                  <Check className={cn('mr-2 size-4', system !== s.id && 'invisible')} />
+                  {s.name}
+                  {!gameSystems.some((available) => available.id === s.id) &&
+                    ` (${t('dice:advanced.game-system.unavailable')})`}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      {!systemInfo && !error && <output className="block text-sm">{t('dice:advanced.game-system.loading')}</output>}
+      {error && (
+        <p role="alert" className="text-sm text-red-500">
+          {t('dice:advanced.game-system.error')}{' '}
+          {/* チャンク取得失敗はランタイムに保持されるため、復旧にはページの再読み込みが必要。 */}
+          <Button variant="link" onClick={() => window.location.reload()}>
+            {t('dice:advanced.game-system.reload')}
+          </Button>
+        </p>
+      )}
+    </div>
   );
 };

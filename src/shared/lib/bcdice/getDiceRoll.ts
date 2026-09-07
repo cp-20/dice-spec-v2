@@ -1,52 +1,21 @@
-import type { InferInput } from 'valibot';
-import { array, boolean, literal, number, object, optional, parse, string, union } from 'valibot';
+import type Result from 'bcdice/lib/result';
 
 import { captureClientException } from '../sentryClient';
+import { loadGameSystem } from './loader';
 
-const diceRollResultSchema = union([
-  object({
-    ok: literal(false),
-    reason: optional(string()),
-  }),
-  object({
-    ok: literal(true),
-    text: string(),
-    secret: boolean(),
-    success: boolean(),
-    failure: boolean(),
-    critical: boolean(),
-    fumble: boolean(),
-    rands: array(
-      object({
-        kind: union([literal('normal'), literal('tens_d10'), literal('d9')]),
-        sides: number(),
-        value: number(),
-      }),
-    ),
-  }),
-]);
+export type DiceRollResult =
+  | { ok: false }
+  | ({ ok: true } & Pick<Result, 'text' | 'secret' | 'success' | 'failure' | 'critical' | 'fumble'>);
 
-export type DiceRollResult = InferInput<typeof diceRollResultSchema>;
-
-export const getDiceRollGenerator = (bcdiceApiEndpoint: string) => async (command: string, system: string) => {
+export const getDiceRoll = async (command: string, id: string): Promise<DiceRollResult> => {
   try {
-    const response = await fetch(
-      `${bcdiceApiEndpoint}/v2/game_system/${system}/roll?command=${encodeURIComponent(command)}`,
-    );
-
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-
-    const json = await response.json();
-    const result = parse(diceRollResultSchema, json);
-
-    return result;
-  } catch (err) {
-    console.error('Failed to get dice roll result', err);
-    captureClientException(err);
-    return {
-      ok: false,
-    } as const;
+    const system = await loadGameSystem(id);
+    const result = system.eval(command);
+    if (!result) return { ok: false };
+    const { text, secret, success, failure, critical, fumble } = result;
+    return { ok: true, text, secret, success, failure, critical, fumble };
+  } catch (error) {
+    captureClientException(error);
+    return { ok: false };
   }
 };

@@ -8,23 +8,3 @@ export const gameSystemSchema = v.object({
 });
 
 export type GameSystem = InferInput<typeof gameSystemSchema>;
-
-const getGameSystemListSchema = v.object({
-  game_system: v.array(gameSystemSchema),
-});
-
-export const getGameSystemListGenerator = (bcdiceApiEndpoint: string) => async () => {
-  try {
-    const res = await fetch(`${bcdiceApiEndpoint}/v2/game_system`);
-    if (!res.ok) throw new Error(res.statusText);
-
-    const maybeGameSystems = await res.json();
-
-    const gameSystems = v.parse(getGameSystemListSchema, maybeGameSystems);
-
-    return gameSystems.game_system;
-  } catch (err) {
-    console.error(err);
-    return [];
-  }
-};

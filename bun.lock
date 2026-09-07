@@ -25,6 +25,7 @@
         "@sentry/nextjs": "10.69.0",
         "@tabler/icons-react": "^3.44.0",
         "@types/mdx": "^2.0.14",
+        "bcdice": "4.10.0",
         "browser-image-compression": "^2.0.2",
         "chart.js": "^4.5.1",
         "class-variance-authority": "^0.7.1",
@@ -90,6 +91,7 @@
   },
   "patchedDependencies": {
     "@firebase/firestore@4.16.0": "patches/@firebase%2Ffirestore@4.16.0.patch",
+    "bcdice@4.10.0": "patches/bcdice@4.10.0.patch",
   },
   "overrides": {
     "protobufjs": "7.6.5",
@@ -1614,6 +1616,8 @@
     "basic-auth-connect": ["basic-auth-connect@1.1.0", "", { "dependencies": { "tsscmp": "^1.0.6" } }, "sha512-rKcWjfiRZ3p5WS9e5q6msXa07s6DaFAMXoyowV+mb2xQG+oYdw2QEUyKi0Xp95JvXzShlM+oGy5QuqSK6TfC1Q=="],
 
     "basic-ftp": ["basic-ftp@5.3.1", "", {}, "sha512-bopVNp6ugyA150DDuZfPFdt1KZ5a94ZDiwX4hMgZDzF+GttD80lEy8kj98kbyhLXnPvhtIo93mdnLIjpCAeeOw=="],
+
+    "bcdice": ["bcdice@4.10.0", "https://npm.flatt.tech/bcdice/-/bcdice-4.10.0.tgz", { "dependencies": { "lodash": "^4.18.1", "source-map-support": "^0.5.21" } }, "sha512-ZYIJBc2yNOsFN+4/GL/HsbHYw/SXTqcI4DGFiTWNLAIltcbsmajhrbCf3gIpO9ORlPs9SgGcvT+iMouML0sHtA=="],
 
     "big.js": ["big.js@5.2.2", "https://npm.flatt.tech/big.js/-/big.js-5.2.2.tgz", {}, "sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ=="],
 

@@ -1,53 +1,50 @@
-import { atom, useAtom } from 'jotai';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback } from 'react';
 
-import { defaultOption } from '@/shared/lib/bcdice/defaultOption';
-import type { GameSystemInfo } from '@/shared/lib/bcdice/getGameSystemInfo';
+import { getGameSystemInfo, type GameSystemInfo } from '@/shared/lib/bcdice/getGameSystemInfo';
 import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
-import { useBcdiceApi } from './useBcdiceApi';
-
 type DiceRollOptions = {
   system: string;
-  systemInfo: GameSystemInfo;
+  systemInfo: GameSystemInfo | null;
+  error: boolean;
 };
 
-const diceRollOptionAtom = atom<DiceRollOptions>(defaultOption);
-const diceRegexpAtom = atom((get) => new RegExp(get(diceRollOptionAtom).systemInfo.command_pattern));
+export const diceRollOptionAtom = atom<DiceRollOptions>({ system: 'DiceBot', systemInfo: null, error: false });
+const setSystemAtom = atom(null, async (get, set, system: string) => {
+  if (!system) return;
+  const pending = { system, systemInfo: null, error: false };
+  set(diceRollOptionAtom, pending);
+  try {
+    const systemInfo = await getGameSystemInfo(system);
+    // 後から選択したシステムを、先行する読み込みの完了で上書きしない。
+    if (get(diceRollOptionAtom) === pending) set(diceRollOptionAtom, { system, systemInfo, error: false });
+  } catch (error) {
+    captureClientException(error);
+    if (get(diceRollOptionAtom) === pending) set(diceRollOptionAtom, { ...pending, error: true });
+  }
+});
 
 export const useDiceRollOption = () => {
-  const { getGameSystemInfo } = useBcdiceApi();
-  const [option, setOptions] = useAtom(diceRollOptionAtom);
+  const option = useAtomValue(diceRollOptionAtom);
+  const selectSystem = useSetAtom(setSystemAtom);
   const { sendEvent } = useGoogleAnalytics();
-
   const setSystem = useCallback(
-    async (system: string) => {
+    (system: string) => {
       sendEvent('setSystem', system);
-      if (system === '') {
-        sendEvent('getGameSystemInfoFailed', system);
-        return;
-      }
-
-      try {
-        const systemInfo = await getGameSystemInfo(system);
-        setOptions((prev) => ({ ...prev, system, systemInfo }));
-      } catch (err) {
-        sendEvent('getGameSystemInfoFailed', system);
-        console.error(err);
-        captureClientException(err);
-      }
+      return selectSystem(system);
     },
-    [getGameSystemInfo, sendEvent, setOptions],
+    [selectSystem, sendEvent],
   );
-
   return { option, setSystem };
 };
 
 export const useDiceRollValidation = () => {
-  const [diceRegexp] = useAtom(diceRegexpAtom);
-
-  const validate = useCallback((command: string) => diceRegexp.test(command), [diceRegexp]);
-
+  const option = useAtomValue(diceRollOptionAtom);
+  const validate = useCallback(
+    (command: string) => option.systemInfo?.command_pattern.test(command) ?? false,
+    [option],
+  );
   return { validate };
 };

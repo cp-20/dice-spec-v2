@@ -11,11 +11,11 @@ import { useDiceRoll } from './hooks/useDiceRoll';
 import { useDiceRollValidation } from './hooks/useDiceRollOption';
 
 export const DiceCommandInput: FC = () => {
-  const { diceRoll } = useDiceRoll();
+  const { diceRoll, disabled } = useDiceRoll();
   const { validate } = useDiceRollValidation();
 
   const [command, setCommand] = useState('');
-  const isValid = command === '' || validate(command);
+  const isValid = disabled || command === '' || validate(command);
 
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -48,7 +48,7 @@ export const DiceCommandInput: FC = () => {
           value={command}
           onChange={(e) => setCommand(e.target.value)}
         />
-        <Button type="submit" className="font-bold" disabled={!isValid}>
+        <Button type="submit" className="font-bold" disabled={disabled || !isValid}>
           {t('dice:advanced.input.roll-dice')}
         </Button>
       </div>

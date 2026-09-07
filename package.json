@@ -46,6 +46,7 @@
     "@sentry/nextjs": "10.69.0",
     "@tabler/icons-react": "^3.44.0",
     "@types/mdx": "^2.0.14",
+    "bcdice": "4.10.0",
     "browser-image-compression": "^2.0.2",
     "chart.js": "^4.5.1",
     "class-variance-authority": "^0.7.1",
@@ -111,6 +112,7 @@
     "protobufjs": "7.6.5"
   },
   "patchedDependencies": {
-    "@firebase/firestore@4.16.0": "patches/@firebase%2Ffirestore@4.16.0.patch"
+    "@firebase/firestore@4.16.0": "patches/@firebase%2Ffirestore@4.16.0.patch",
+    "bcdice@4.10.0": "patches/bcdice@4.10.0.patch"
   }
 }

@@ -11,11 +11,11 @@ import { useDiceRollOption } from './hooks/useDiceRollOption';
 
 export const DiceBotHelp: FC = () => {
   const { option } = useDiceRollOption();
-  const systemName = option.systemInfo.name;
-  const helpMessage = option.systemInfo.help_message;
+  const systemName = option.systemInfo?.name ?? '';
+  const helpMessage = option.systemInfo?.help_message ?? '';
   const { advancedSettings } = useAdvancedSettings();
 
-  if (!advancedSettings.showHelp) {
+  if (!advancedSettings.showHelp || !option.systemInfo) {
     return null;
   }
 

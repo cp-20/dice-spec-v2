@@ -1,12 +1,10 @@
 import { atom } from 'jotai';
-import { useCallback, useEffect } from 'react';
-import useImmutableSWR from 'swr/immutable';
+import { useCallback } from 'react';
 import * as v from 'valibot';
 
 import { type GameSystem, gameSystemSchema } from '@/shared/lib/bcdice/getGameSystemList';
+import { gameSystems } from '@/shared/lib/bcdice/loader';
 import { useLocalStorageAtom } from '@/shared/lib/useLocalStorage';
-
-import { useBcdiceApi } from './useBcdiceApi';
 
 const gameSystemListSchema = v.array(gameSystemSchema);
 
@@ -19,34 +17,23 @@ export const useGameSystemList = () => {
     gameSystemListSchema,
   );
 
-  const { getGameSystemList } = useBcdiceApi();
-  const { data } = useImmutableSWR('bcdice/systems', getGameSystemList);
-
-  useEffect(() => {
-    if (data !== undefined) {
-      const newSystemIds = data.map((system) => system.id);
-      setGameSystemList((prev) => {
-        const prevSystemIds = prev.map((system) => system.id);
-        return prev
-          .filter((system) => newSystemIds.includes(system.id))
-          .concat(data.filter((system) => !prevSystemIds.includes(system.id)));
-      });
-    }
-    // oxlint-disable-next-line eslint-plugin-react-hooks/exhaustive-deps setGameSystemListをdependency arrayに入れると無限ループする (setGameSystemListがgameSystemListに依存しているため)
-  }, [data]);
+  // 未収録の保存済み ID も最近使用順とともに保持する。
+  const systems = gameSystemList
+    .map((saved) => gameSystems.find((system) => system.id === saved.id) ?? saved)
+    .concat(gameSystems.filter((system) => !gameSystemList.some((saved) => saved.id === system.id)));
 
   const selectSystem = useCallback(
     (systemId: string) => {
-      const system = gameSystemList.find((system) => system.id === systemId);
+      const system = systems.find((system) => system.id === systemId);
       if (system === undefined) return;
 
       setGameSystemList((prev) => [system, ...prev.filter((system) => system.id !== systemId)]);
     },
-    [gameSystemList, setGameSystemList],
+    [systems, setGameSystemList],
   );
 
   return {
-    gameSystemList,
+    gameSystemList: systems,
     selectSystem,
   };
 };

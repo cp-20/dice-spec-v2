@@ -1,0 +1,101 @@
+{
+  "baseCommit": "1747c51b701ce93db1d2bfe68b3a5efca0e86997",
+  "packageVersions": {
+    "bcdice": "4.10.0",
+    "bcdiceInternal": "3.17.0",
+    "next": "16.2.12",
+    "bun": "1.3.14",
+    "node": "v24.18.0"
+  },
+  "api": {
+    "endpoint": "https://bcdice.onlinesession.app",
+    "version": {
+      "api": "3.0.0",
+      "bcdice": "3.17.0"
+    },
+    "systemCount": 336,
+    "removedIds": [],
+    "addedIds": [],
+    "metadataDifferences": 0
+  },
+  "conditions": {
+    "repeatsPerCondition": 5,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "normal": {
+      "latencyMs": 0,
+      "downloadBitsPerSecond": "unlimited",
+      "uploadBitsPerSecond": "unlimited",
+      "cpuSlowdown": 1
+    },
+    "mobile": {
+      "latencyMs": 150,
+      "downloadBitsPerSecond": 1600000,
+      "uploadBitsPerSecond": 750000,
+      "cpuSlowdown": 4
+    },
+    "serviceWorker": "blocked",
+    "cold": "新規ブラウザーコンテキスト・HTTPキャッシュ消去",
+    "warm": "同一コンテキストでページ再読み込み・HTTPキャッシュ保持・ページ内モジュールキャッシュは初期化",
+    "switchBack": "同一ページのモジュールキャッシュを保持",
+    "compression": "gzipSync default (level 6), brotliCompressSync default (quality 11)",
+    "timings": "navigation/open: Playwright操作と待機を含む。navigationはnetworkidleの500ms待機を含む。operationMs: click捕捉からDOM更新後のrequestAnimationFrameまで。各値のp95はnearest-rank（5回では最大値）。",
+    "network": "CDPのencodedDataLength（ヘッダーを含む受信量）。ScriptDurationとネットワーク区間は重なるため差引不可。",
+    "redaction": "外部計測サービスのクエリのみ除外（時刻・転送量は原値）"
+  },
+  "measurements": {
+    "api": {
+      "startedAt": "2026-09-07T01:31:09.202Z",
+      "completedAt": "2026-09-07T01:33:48.222Z",
+      "browser": "151.0.7922.34",
+      "os": "Linux 6.6.87.2-microsoft-standard-WSL2",
+      "cpu": "AMD Ryzen 9 6900HS with Radeon Graphics",
+      "sha256": "d70db197e383efa423a81d3f7bfdfe0209a0923fc66362fb1cad0e4db9d21554"
+    },
+    "static": {
+      "startedAt": "2026-09-07T01:22:26.832Z",
+      "completedAt": "2026-09-07T01:27:00.513Z",
+      "browser": "151.0.7922.34",
+      "os": "Linux 6.6.87.2-microsoft-standard-WSL2",
+      "cpu": "AMD Ryzen 9 6900HS with Radeon Graphics",
+      "sha256": "cab13b14b8e164001c45203cded565539b78268191078754417038f756028492"
+    },
+    "dynamic": {
+      "startedAt": "2026-09-07T01:40:35.839Z",
+      "completedAt": "2026-09-07T01:43:30.316Z",
+      "browser": "151.0.7922.34",
+      "os": "Linux 6.6.87.2-microsoft-standard-WSL2",
+      "cpu": "AMD Ryzen 9 6900HS with Radeon Graphics",
+      "sha256": "70f7a679a1914ab3180d5a178649ae338b7a9e3ff7fa15e33f3a58ef1f2fe624"
+    }
+  },
+  "bundleAnalysis": {
+    "static": {
+      "engine": "/_next/static/chunks/2ur28w1dor98d.js",
+      "contains": ["Opal", "system list", "all game systems"],
+      "fetchedAt": "open"
+    },
+    "dynamic": {
+      "opal": "/_next/static/chunks/3fvmjsa1kffd1.js",
+      "listAndCommonCommands": "/_next/static/chunks/3_5xbjnnseh78.js",
+      "diceBot": "/_next/static/chunks/0risyz542au3v.js",
+      "cthulhu7th": "/_next/static/chunks/2jji2f3qm222a.js",
+      "swordWorld25": [
+        "/_next/static/chunks/2akf8bxfqwwsl.js",
+        "/_next/static/chunks/2153pnljrjull.js",
+        "/_next/static/chunks/002h0xo4qq9-z.js",
+        "/_next/static/chunks/2d6h33o935q-l.js"
+      ],
+      "fetchedAt": {
+        "opal": "open",
+        "listAndCommonCommands": "open",
+        "diceBot": "open",
+        "cthulhu7th": "select-first",
+        "swordWorld25": "switch-new"
+      }
+    }
+  },
+  "benchmarkScriptSha256": "d750e9b774aca76b210d9467e9e5024bc48b130add11e44d200d3153f3306f88"
+}

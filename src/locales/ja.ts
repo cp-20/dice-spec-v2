@@ -67,6 +67,11 @@ export const ja = {
     advanced: {
       label: 'アドバンスド',
       'game-system': {
+        unavailable: 'このバージョンでは利用できません',
+        loading: '読み込み中…',
+        error: 'ゲームシステムを読み込めませんでした。',
+        reload: 'ページを再読み込み',
+
         label: 'ゲームシステム',
         button: 'ゲームシステムを選択',
         search: 'ゲームシステムを検索',
@@ -92,7 +97,6 @@ export const ja = {
         'show-help': 'ヘルプを表示する',
         'enable-sound': 'サウンドを再生する',
         volume: '音量',
-        'bcdice-server': 'BCDiceサーバー',
         'migration-announcement':
           '<l>旧アプリ</l>からの移行に際して設定は引き継がれていません。必要であれば<l>旧アプリ</l>を参考に再設定をお願いします。',
       },
@@ -123,7 +127,7 @@ export const ja = {
         empty: '解析結果がありません',
       },
       'load-more': 'もっと見る',
-      retry: '再試行',
+      reload: 'ページを再読み込み',
       card: {
         'deviation-score': 'ダイス偏差値',
       },

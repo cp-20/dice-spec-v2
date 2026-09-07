@@ -1,53 +1,26 @@
-import { afterEach, beforeEach, describe, expect, mock, test, vi } from 'bun:test';
+import { afterEach, describe, expect, test } from 'bun:test';
 
 import { act, renderHook } from '@testing-library/react';
-import * as useImmutableSWR from 'swr/immutable';
+import { createStore, Provider } from 'jotai';
+import { createElement, type ReactNode } from 'react';
+
+import { gameSystems } from '@/shared/lib/bcdice/loader';
 
 import { useGameSystemList } from './useGameSystemList';
 
+const wrapper = ({ children }: { children: ReactNode }) => createElement(Provider, { store: createStore() }, children);
+afterEach(() => localStorage.clear());
+
 describe('useGameSystemList', () => {
-  beforeEach(() => {
-    mock.module('swr/immutable', () => ({
-      default: vi.fn(),
-    }));
-
-    const spy = vi.spyOn(useImmutableSWR, 'default');
-    spy.mockReturnValue({
-      data: [
-        { id: 'DiceBot', name: 'DiceBot', sort_key: '*たいすほつと' },
-        { id: 'EarthDawn', name: 'アースドーン', sort_key: 'ああすとおん' },
-        { id: 'Ayabito', name: 'あやびと', sort_key: 'あやひと' },
-      ],
-      isLoading: false,
-      mutate: vi.fn(),
-      error: undefined,
-      isValidating: false,
-    });
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  test('ゲームシステムの一覧を取得してくる', () => {
-    const { result } = renderHook(() => useGameSystemList());
-
-    expect(result.current.gameSystemList).toEqual([
-      { id: 'DiceBot', name: 'DiceBot', sort_key: '*たいすほつと' },
-      { id: 'EarthDawn', name: 'アースドーン', sort_key: 'ああすとおん' },
-      { id: 'Ayabito', name: 'あやびと', sort_key: 'あやひと' },
-    ]);
+  test('ローカルのゲームシステム一覧を取得する', () => {
+    const { result } = renderHook(useGameSystemList, { wrapper });
+    expect(result.current.gameSystemList).toEqual(gameSystems);
   });
 
   test('選択したゲームシステムは一番上に表示される', () => {
-    const { result } = renderHook(() => useGameSystemList());
-
+    const { result } = renderHook(useGameSystemList, { wrapper });
     act(() => result.current.selectSystem('Ayabito'));
-
-    expect(result.current.gameSystemList).toEqual([
-      { id: 'Ayabito', name: 'あやびと', sort_key: 'あやひと' },
-      { id: 'DiceBot', name: 'DiceBot', sort_key: '*たいすほつと' },
-      { id: 'EarthDawn', name: 'アースドーン', sort_key: 'ああすとおん' },
-    ]);
+    expect(result.current.gameSystemList[0].id).toBe('Ayabito');
+    expect(result.current.gameSystemList.slice(1)).toEqual(gameSystems.filter((s) => s.id !== 'Ayabito'));
   });
 });

@@ -1,25 +1,14 @@
-import type { InferInput } from 'valibot';
-import * as v from 'valibot';
+import { loadGameSystem } from './loader';
 
-const gameSystemInfoSchema = v.object({
-  id: v.string(),
-  name: v.string(),
-  sort_key: v.string(),
-  command_pattern: v.string(),
-  help_message: v.string(),
-});
-
-export type GameSystemInfo = InferInput<typeof gameSystemInfoSchema>;
-
-export const getGameSystemInfoGenerator = (bcdiceApiEndpoint: string) => async (system: string) => {
-  const response = await fetch(`${bcdiceApiEndpoint}/v2/game_system/${system}`);
-
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-
-  const json = await response.json();
-  const systemInfo = v.parse(gameSystemInfoSchema, json);
-
-  return systemInfo;
+export const getGameSystemInfo = async (id: string) => {
+  const system = await loadGameSystem(id);
+  return {
+    id: system.ID,
+    name: system.NAME,
+    sort_key: system.SORT_KEY,
+    command_pattern: system.COMMAND_PATTERN,
+    help_message: system.HELP_MESSAGE,
+  };
 };
+
+export type GameSystemInfo = Awaited<ReturnType<typeof getGameSystemInfo>>;
