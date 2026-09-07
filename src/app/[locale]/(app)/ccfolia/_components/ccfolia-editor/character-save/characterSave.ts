@@ -19,6 +19,7 @@ import {
 import { toast } from '@/shared/components/ui/use-toast';
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 import { captureClientException } from '@/shared/lib/sentryClient';
+import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
 
 import { editorContentVersionAtom, formPortAtom, formSnapshotAtom } from '../character-form/editorForm';
 import {
@@ -142,6 +143,7 @@ export const saveCharacterAtom = atom(
       }
 
       if (!operationIsCurrent()) return;
+      sendGoogleAnalyticsEvent('save_ccfolia_character', { action: intent });
       set(successfulSaveFeedbacksAtom, (current) => {
         const feedbackKey = saveFeedbackKey(intent, characterId);
         const previous = current.get(feedbackKey);
@@ -163,6 +165,7 @@ export const saveCharacterAtom = atom(
     } catch (saveError) {
       if (!operationIsCurrent()) return;
       if (saveError instanceof CcfoliaCharacterConflictError || saveError instanceof CcfoliaCharacterNotFoundError) {
+        sendGoogleAnalyticsEvent('save_ccfolia_character_error', { action: intent, reason: 'conflict' });
         if (operationStillOwnsEditor()) {
           set(remoteConflictAtom, saveError instanceof CcfoliaCharacterNotFoundError ? 'deleted' : 'updated');
           toast({
@@ -172,12 +175,14 @@ export const saveCharacterAtom = atom(
           });
         }
       } else if (saveError instanceof CcfoliaCharacterLimitError) {
+        sendGoogleAnalyticsEvent('save_ccfolia_character_error', { action: intent, reason: 'limit' });
         toast({
           title: t('ccfolia:saved.limit-reached'),
           description: t('ccfolia:saved.limit-save-error'),
           variant: 'destructive',
         });
       } else if (saveError instanceof CcfoliaCharacterTooLargeError) {
+        sendGoogleAnalyticsEvent('save_ccfolia_character_error', { action: intent, reason: 'too_large' });
         toast({
           title: t('ccfolia:saved.too-large-title'),
           description: t('ccfolia:saved.too-large-description'),

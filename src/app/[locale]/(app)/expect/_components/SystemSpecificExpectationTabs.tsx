@@ -3,6 +3,7 @@
 import type { FC } from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
+import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
 
 import { Cthulhu6thOpposedPanel } from './systemSpecific/panels/Cthulhu6thOpposedPanel';
 import { Cthulhu7thPanel } from './systemSpecific/panels/Cthulhu7thPanel';
@@ -10,7 +11,10 @@ import { DoubleCross3rdPanel } from './systemSpecific/panels/DoubleCross3rdPanel
 import { EmoklorePanel } from './systemSpecific/panels/EmoklorePanel';
 
 export const SystemSpecificExpectationTabs: FC = () => (
-  <Tabs defaultValue="Coc6th">
+  <Tabs
+    defaultValue="Coc6th"
+    onValueChange={(gameSystem) => sendGoogleAnalyticsEvent('select_probability_system', { game_system: gameSystem })}
+  >
     <TabsList className="h-auto flex-wrap justify-start">
       <TabsTrigger value="Coc6th">クトゥルフ神話TRPG</TabsTrigger>
       <TabsTrigger value="Coc7th">新クトゥルフ神話TRPG</TabsTrigger>

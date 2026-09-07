@@ -39,6 +39,7 @@ describe('checkout.session.completed handler', () => {
 
     expect(result.ok).toBe(true);
     expect(updates[0]).toMatchObject({ plan: 'pro', stripeSubscriptionId: 'sub_1' });
+    if (result.ok) expect(result.log?.notify).toBe(true);
   });
 
   test('Subscription の最新状態を取得できない場合は Pro に更新しない', async () => {

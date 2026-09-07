@@ -22,6 +22,8 @@ import { Input } from '@/shared/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { useToast } from '@/shared/components/ui/use-toast';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+import { captureClientException } from '@/shared/lib/sentryClient';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useAnalysisOgImage } from './hooks/useAnalysisOgImage';
 import { useLogAnalysis } from './hooks/useLogAnalysis';
@@ -52,6 +54,7 @@ export const AnalysisSavePanel: FC = () => {
   useUserAnalyses(authUser?.uid);
   const analyses = useAtomValue(myAnalysesAtom);
   const { me } = useMeStore();
+  const { sendEvent } = useGoogleAnalytics();
 
   const [visibility, setVisibility] = useState<AnalysisVisibilityLevel>('private');
   const [title, setTitle] = useState('');
@@ -95,9 +98,19 @@ export const AnalysisSavePanel: FC = () => {
       };
 
       const analysisId = await saveAnalysis(payload);
+      sendEvent('save_analysis', {
+        visibility,
+        show_record_details: showRecordDetails,
+        plan: me.plan,
+      });
       router.push(t('link', { href: `/analyze-logs/${analysisId}` }));
     } catch (err) {
       console.error(err);
+      if (Number.isNaN(new Date(sessionDate).getTime())) {
+        sendEvent('save_analysis_error', { reason: 'invalid_date' });
+      } else {
+        captureClientException(err);
+      }
       toast({
         title: t('analyze-logs:save.failed.title'),
         description: t('analyze-logs:save.failed.description'),

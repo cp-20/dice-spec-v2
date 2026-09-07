@@ -8,6 +8,7 @@ import { parseHtmlLog } from '@/features/log-analysis/ccfolia/htmlParser';
 import { systemStats } from '@/features/log-analysis/ccfolia/messageParser';
 import type { DiceResultForCharacter, System } from '@/features/log-analysis/model';
 import { round } from '@/shared/lib/round';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { ALL_CHARACTER_ID } from '../constants';
@@ -73,6 +74,8 @@ type LogAnalysisError = {
   type: 'error';
 };
 
+const expectedAnalysisErrorMessages = new Set(['Invalid log format', 'No logs detected', 'No valid dice rolls found']);
+
 const logAnalysisResultAtom = atom<LogAnalysisResult>((get) => {
   const fileContent = get(fileContentAtom);
   const system = get(logAnalysisSystemAtom);
@@ -86,6 +89,7 @@ const logAnalysisResultAtom = atom<LogAnalysisResult>((get) => {
     return { type: 'success', results: result };
   } catch (err) {
     console.error('Failed to analyze log:', err);
+    if (!(err instanceof Error) || !expectedAnalysisErrorMessages.has(err.message)) captureClientException(err);
     return { type: 'error' };
   }
 });

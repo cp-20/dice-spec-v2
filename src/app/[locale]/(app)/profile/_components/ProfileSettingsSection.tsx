@@ -16,6 +16,8 @@ import { useToast } from '@/shared/components/ui/use-toast';
 import { getFirebaseStorage } from '@/shared/lib/firebase/client';
 import { AvatarPreparationError, uploadAvatarFromFileToStorage } from '@/shared/lib/firebase/storage/avatars';
 import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
+import { captureClientException } from '@/shared/lib/sentryClient';
+import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 export const ProfileSettingsSection = () => {
   const storage = getFirebaseStorage();
@@ -26,6 +28,7 @@ export const ProfileSettingsSection = () => {
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
+  const { sendEvent } = useGoogleAnalytics();
 
   useEffect(() => {
     setDisplayName(me?.name ?? '');
@@ -39,8 +42,15 @@ export const ProfileSettingsSection = () => {
       try {
         const avatarUrl = await uploadAvatarFromFileToStorage(storage, authUser.uid, file);
         await updateAvatarUrl(avatarUrl);
+        sendEvent('update_profile', { field: 'avatar' });
       } catch (err) {
         console.error('Failed to upload avatar', err);
+
+        if (err instanceof AvatarPreparationError && err.code !== 'PROCESSING_FAILED') {
+          sendEvent('update_profile_error', { field: 'avatar', reason: err.code });
+        } else {
+          captureClientException(err);
+        }
 
         let description = t('profile:toast.avatar-upload-error-description');
         if (err instanceof AvatarPreparationError) {
@@ -62,7 +72,7 @@ export const ProfileSettingsSection = () => {
         setUploading(false);
       }
     },
-    [authUser?.uid, storage, updateAvatarUrl, toast],
+    [authUser?.uid, sendEvent, storage, updateAvatarUrl, toast],
   );
 
   const dropHandler = useCallback(
@@ -82,12 +92,14 @@ export const ProfileSettingsSection = () => {
     setSaving(true);
     try {
       await updateName(displayName);
+      sendEvent('update_profile', { field: 'name' });
       toast({
         title: t('profile:toast.save-success-title'),
         description: t('profile:toast.save-success-description'),
       });
     } catch (err) {
       console.error('Failed to save profile', err);
+      captureClientException(err);
       toast({
         title: t('profile:toast.save-error-title'),
         description: t('profile:toast.save-error-description'),

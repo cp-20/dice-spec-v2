@@ -5,7 +5,7 @@ import type { FC, ReactNode } from 'react';
 
 import { NavigationProgress } from '@/shared/components/elements/NavigationProgress';
 import { WebVitals } from '@/shared/components/elements/WebVitals';
-import { GoogleTagManager } from '@/shared/components/GoogleTagManager';
+import { GoogleAnalytics } from '@/shared/components/GoogleAnalytics';
 import { I18nProvider } from '@/shared/i18n/client-layout';
 import type { Locale } from '@/shared/i18n/config';
 import { wrapRootLayout } from '@/shared/i18n/server-layout';
@@ -22,7 +22,7 @@ const RootLayout: FC<{ children: ReactNode; locale: Locale; resource: ResourceLa
     <I18nProvider key={locale} locale={locale} resource={resource}>
       <html lang={locale} className="h-full">
         <body className={clsx('h-full flex flex-col text-slate-700 font-(family-name:--font-main)')}>
-          <GoogleTagManager />
+          <GoogleAnalytics />
           <WebVitals />
           <NavigationProgress />
 
