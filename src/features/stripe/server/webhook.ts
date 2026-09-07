@@ -28,6 +28,7 @@ const processHandlerResult = async (result: HandlerResult, event: Stripe.Event) 
     level: result.error.fatal ? 'error' : 'warning',
     eventType: result.error.eventType,
     message: result.error.message,
+    notify: true,
     userId: result.error.userId,
     details: appendEventContext(result.error.details, event),
     error: result.error.cause ?? result.error,
@@ -72,6 +73,10 @@ export const processStripeEvent = async (event: Stripe.Event) => {
       return processHandlerResult(await handlers.handleInvoicePaid(event.data.object), event);
     case 'invoice.payment_failed':
       return processHandlerResult(await handlers.handleInvoicePaymentFailed(event.data.object), event);
+    case 'invoice.payment_action_required':
+      return processHandlerResult(await handlers.handleInvoicePaymentActionRequired(event.data.object), event);
+    case 'invoice.finalization_failed':
+      return processHandlerResult(await handlers.handleInvoiceFinalizationFailed(event.data.object), event);
     case 'billing_portal.session.created':
       return;
     default:

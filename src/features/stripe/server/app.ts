@@ -136,6 +136,7 @@ export const stripeApp = new Hono()
     const event = await constructStripeEvent(body, signature);
     if (!event) return c.json({ error: 'Invalid signature' }, 400);
 
+    // TODO: event.id の重複排除を追加する場合は、処理成功後だけ記録し、失敗イベントの再配送を妨げないこと。
     try {
       await processStripeEvent(event);
       return c.json({ received: true });

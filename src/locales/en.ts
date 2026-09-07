@@ -250,6 +250,8 @@ export const en = {
       'scenario-name-description': 'Displayed in the title section of the image',
       'scenario-name-default': 'Analysis Results',
       'share-image': 'Share image',
+      'share-to': 'Share on {{destination}}',
+      'other-destinations': 'More sharing options',
       'image-alt': 'Preview of the share image for analysis results',
       'share-text':
         '▼Your analyzed dice results▼\n\nMean: {{average}}\nDice deviation score: {{deviationScore}}\nSuccess rate: {{successRate}}\nDice rolls: {{diceRollCount}}\n\n#DiceSpec\n',

@@ -21,8 +21,10 @@ export const BottomNavigation: FC<ComponentProps<'nav'> & BottomNavigationProps>
   <nav className={twMerge('flex border-t', className)} {...props}>
     {navLinks
       .filter((link) => !link.sideNavOnly)
-      .map(({ href, icon }) => (
-        <BottomNavigationLink key={href} href={t('link', { href })} icon={icon} isActive={href === active} />
+      .map(({ key, href, icon }) => (
+        <BottomNavigationLink key={href} href={t('link', { href })} icon={icon} isActive={href === active}>
+          {t(`common:${key}.title`)}
+        </BottomNavigationLink>
       ))}
   </nav>
 );
@@ -36,6 +38,7 @@ const BottomNavigationLink: FC<CustomLinkProps & SideNavigationLinkProps> = ({
   className,
   icon: Icon,
   isActive,
+  children,
   ...props
 }) => (
   <CustomLink
@@ -49,6 +52,6 @@ const BottomNavigationLink: FC<CustomLinkProps & SideNavigationLinkProps> = ({
     {...props}
   >
     <Icon />
-    <span className="text-xs font-bold text-pretty text-center">{t(`common:${props.href.slice(1)}.title`)}</span>
+    <span className="text-xs font-bold text-pretty text-center">{children}</span>
   </CustomLink>
 );

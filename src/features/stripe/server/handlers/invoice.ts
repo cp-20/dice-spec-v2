@@ -7,6 +7,12 @@ import { type DiscountSummary, summarizeSubscriptionDiscounts } from '../discoun
 import type { HandlerDeps, HandlerResult, InvoicePayload, SubscriptionPayload } from './types';
 import { StripeWebhookHandlerError } from './types';
 
+type InvoiceEventType =
+  | 'invoice.paid'
+  | 'invoice.payment_failed'
+  | 'invoice.payment_action_required'
+  | 'invoice.finalization_failed';
+
 const formatUnixTimeToIso = (unixTime: number | null | undefined): string | null => {
   if (typeof unixTime !== 'number') {
     return null;
@@ -35,7 +41,7 @@ const getInvoiceCurrency = (invoice: InvoicePayload): string | null => {
 
 const loadSubscriptionContext = async (
   deps: HandlerDeps,
-  eventType: 'invoice.paid' | 'invoice.payment_failed',
+  eventType: InvoiceEventType,
   invoice: InvoicePayload,
 ): Promise<
   | {
@@ -153,6 +159,7 @@ export const createInvoicePaidHandler = (deps: HandlerDeps) => {
         level: 'success',
         eventType: 'invoice.paid',
         message: getPaidMessage(invoice.billing_reason),
+        notify: invoice.billing_reason === 'subscription_cycle',
         userId,
         details: {
           action: invoice.billing_reason === 'subscription_cycle' ? 'subscription_renewal_succeeded' : 'invoice_paid',
@@ -188,6 +195,7 @@ export const createInvoicePaymentFailedHandler = (deps: HandlerDeps) => {
         level: 'warning',
         eventType: 'invoice.payment_failed',
         message: getPaymentFailedMessage(invoice.billing_reason),
+        notify: true,
         userId,
         details: {
           action: 'subscription_payment_failed',
@@ -207,3 +215,57 @@ export const createInvoicePaymentFailedHandler = (deps: HandlerDeps) => {
     };
   };
 };
+
+const createInvoiceAttentionHandler = (
+  deps: HandlerDeps,
+  eventType: 'invoice.payment_action_required' | 'invoice.finalization_failed',
+) => {
+  return async (invoice: InvoicePayload): Promise<HandlerResult> => {
+    const context = await loadSubscriptionContext(deps, eventType, invoice);
+
+    if (!context.ok) {
+      return context.result;
+    }
+
+    const { userId, subscriptionId, billingInterval, discounts } = context.context;
+    const finalizationError = invoice.last_finalization_error;
+
+    return {
+      ok: true,
+      log: {
+        level: 'warning',
+        eventType,
+        message:
+          eventType === 'invoice.payment_action_required'
+            ? 'サブスクリプション決済に追加認証が必要です'
+            : 'サブスクリプション請求書の確定に失敗しました',
+        notify: true,
+        userId,
+        details: {
+          action:
+            eventType === 'invoice.payment_action_required' ? 'payment_action_required' : 'invoice_finalization_failed',
+          invoiceId: invoice.id,
+          invoiceStatus: invoice.status,
+          hostedInvoiceUrl: invoice.hosted_invoice_url,
+          subscriptionId,
+          billingInterval,
+          amountDue: invoice.amount_due,
+          currency: getInvoiceCurrency(invoice),
+          billingReason: invoice.billing_reason,
+          attemptCount: invoice.attempt_count,
+          nextPaymentAttempt: formatUnixTimeToIso(invoice.next_payment_attempt),
+          failureCode: finalizationError?.code,
+          failureMessage: finalizationError?.message,
+          automaticTaxStatus: invoice.automatic_tax?.status,
+          discounts,
+        },
+      },
+    };
+  };
+};
+
+export const createInvoicePaymentActionRequiredHandler = (deps: HandlerDeps) =>
+  createInvoiceAttentionHandler(deps, 'invoice.payment_action_required');
+
+export const createInvoiceFinalizationFailedHandler = (deps: HandlerDeps) =>
+  createInvoiceAttentionHandler(deps, 'invoice.finalization_failed');
