@@ -1,7 +1,7 @@
 'use client';
 
 import type { FC, ReactNode } from 'react';
-import { useId } from 'react';
+import { useId, useState } from 'react';
 
 import type { DistributionResult } from '@/features/dice-expectation/system-specific';
 import { Input } from '@/shared/components/ui/input';
@@ -30,6 +30,7 @@ export const NumberField: FC<{
 }> = ({ id, label, value, min, max, className, onChange }) => {
   const generatedId = useId();
   const fieldId = id ?? generatedId;
+  const [isEmpty, setIsEmpty] = useState(false);
 
   return (
     <div className="space-y-2">
@@ -42,10 +43,15 @@ export const NumberField: FC<{
         type="number"
         min={min}
         max={max}
-        value={value}
+        value={isEmpty ? '' : value}
+        onBlur={() => setIsEmpty(false)}
         onChange={(event) => {
           const next = event.currentTarget.valueAsNumber;
-          if (!Number.isFinite(next)) return;
+          if (!Number.isFinite(next)) {
+            setIsEmpty(true);
+            return;
+          }
+          setIsEmpty(false);
           let clamped = next;
           if (typeof min === 'number') {
             clamped = Math.max(min, clamped);
