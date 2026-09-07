@@ -369,17 +369,44 @@ describe('Firebase セキュリティルール', () => {
       await assertSucceeds(getDoc(doc(anonDb, 'analyses/public1')));
     });
 
-    test('一覧取得は public のみ許可され、unlisted は一覧取得できない', async () => {
+    test('未認証ユーザーは public の一覧を取得できない', async () => {
+      await testEnv.seedFirestore(seedUser('owner'), seedAnalysis('public1', 'owner', { visibilityLevel: 'public' }));
+
+      const anonDb = testEnv.anonymousFirestore();
+
+      await assertFails(getDocs(query(collection(anonDb, 'analyses'), where('visibilityLevel', '==', 'public'))));
+    });
+
+    test('認証済みの非所有者は public のみ一覧取得できる', async () => {
       await testEnv.seedFirestore(
         seedUser('owner'),
+        seedAnalysis('private1', 'owner', { visibilityLevel: 'private' }),
         seedAnalysis('unlisted1', 'owner', { visibilityLevel: 'unlisted' }),
         seedAnalysis('public1', 'owner', { visibilityLevel: 'public' }),
       );
 
-      const anonDb = testEnv.anonymousFirestore();
+      const viewerDb = testEnv.firestore('viewer');
 
-      await assertSucceeds(getDocs(query(collection(anonDb, 'analyses'), where('visibilityLevel', '==', 'public'))));
-      await assertFails(getDocs(query(collection(anonDb, 'analyses'), where('visibilityLevel', '==', 'unlisted'))));
+      await assertSucceeds(getDocs(query(collection(viewerDb, 'analyses'), where('visibilityLevel', '==', 'public'))));
+      await assertFails(getDocs(query(collection(viewerDb, 'analyses'), where('visibilityLevel', '==', 'unlisted'))));
+      await assertFails(getDocs(query(collection(viewerDb, 'analyses'), where('visibilityLevel', '==', 'private'))));
+      await assertFails(getDocs(collection(viewerDb, 'analyses')));
+    });
+
+    test('所有者は公開範囲にかかわらず自分の解析を一覧取得できる', async () => {
+      await testEnv.seedFirestore(
+        seedUser('owner'),
+        seedAnalysis('private1', 'owner', { visibilityLevel: 'private' }),
+        seedAnalysis('unlisted1', 'owner', { visibilityLevel: 'unlisted' }),
+        seedAnalysis('public1', 'owner', { visibilityLevel: 'public' }),
+      );
+
+      const ownerDb = testEnv.firestore('owner');
+      const result = await assertSucceeds(
+        getDocs(query(collection(ownerDb, 'analyses'), where('ownerUid', '==', 'owner'))),
+      );
+
+      expect(result.docs.map((document) => document.id).sort()).toEqual(['private1', 'public1', 'unlisted1']);
     });
 
     test('所有者でも許可されたメタ項目のみ更新できる', async () => {

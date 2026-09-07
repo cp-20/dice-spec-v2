@@ -424,7 +424,8 @@ service cloud.firestore {
 
     match /analyses/{analysisId} {
       allow get: if canReadAnalysisDoc();
-      allow list: if (isSignedIn() && resource.data.ownerUid == request.auth.uid) || resource.data.visibilityLevel == 'public';
+      allow list: if isSignedIn()
+        && (resource.data.ownerUid == request.auth.uid || resource.data.visibilityLevel == 'public');
 
       allow create: if isAnalysisOwnerByRequest()
         && isValidAnalysisDocument(request.resource.data, analysisId)
