@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { sendGameSystemRequest } from '@/shared/lib/webhook';
 
 export const useGameSystemRequestDialog = () => {
@@ -37,6 +38,7 @@ export const useGameSystemRequestDialog = () => {
       });
     } catch (err) {
       console.error(err);
+      captureClientException(err);
       toast({
         title: t('analyze-logs:game-system-request:error'),
         variant: 'destructive',

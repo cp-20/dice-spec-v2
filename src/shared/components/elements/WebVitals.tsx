@@ -6,13 +6,12 @@ import type { FC } from 'react';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 export const WebVitals: FC = () => {
-  const { sendRawEvent } = useGoogleAnalytics();
+  const { sendEvent } = useGoogleAnalytics();
 
   useReportWebVitals((metric) => {
     const { id, name, value, rating } = metric;
 
-    sendRawEvent({
-      event: name,
+    sendEvent(name, {
       event_label: id,
       event_action: name,
       non_interaction: true,

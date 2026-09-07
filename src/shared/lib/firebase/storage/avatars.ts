@@ -16,14 +16,18 @@ const loadImageCompression = async () => {
       .catch((err) => {
         console.error('Failed to load image compression library', err);
         imageCompressionPromise = null;
-        throw new AvatarPreparationError('INVALID_IMAGE', 'Failed to load image compression library');
+        throw new AvatarPreparationError('PROCESSING_FAILED', 'Failed to load image compression library');
       });
   }
 
   return imageCompressionPromise;
 };
 
-export type AvatarPreparationErrorCode = 'UNSUPPORTED_FILE_TYPE' | 'INVALID_IMAGE' | 'FILE_TOO_LARGE_AFTER_COMPRESSION';
+export type AvatarPreparationErrorCode =
+  | 'UNSUPPORTED_FILE_TYPE'
+  | 'INVALID_IMAGE'
+  | 'FILE_TOO_LARGE_AFTER_COMPRESSION'
+  | 'PROCESSING_FAILED';
 
 export class AvatarPreparationError extends Error {
   code: AvatarPreparationErrorCode;
@@ -69,7 +73,7 @@ const createCoveredSquareBlob = async (file: File, outputType: string): Promise<
 
   const ctx = canvas.getContext('2d');
   if (!ctx) {
-    throw new AvatarPreparationError('INVALID_IMAGE', 'Canvas context is not available');
+    throw new AvatarPreparationError('PROCESSING_FAILED', 'Canvas context is not available');
   }
 
   const scale = Math.max(AVATAR_TARGET_SIZE / image.naturalWidth, AVATAR_TARGET_SIZE / image.naturalHeight);
@@ -85,7 +89,7 @@ const createCoveredSquareBlob = async (file: File, outputType: string): Promise<
   });
 
   if (!blob) {
-    throw new AvatarPreparationError('INVALID_IMAGE', 'Failed to convert image');
+    throw new AvatarPreparationError('PROCESSING_FAILED', 'Failed to convert image');
   }
 
   return blob;
