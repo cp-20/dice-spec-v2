@@ -49,47 +49,10 @@ test('複数種類のシンプルダイスをまとめて振り、入力をリ�
 });
 
 test('ゲームシステムを選択してBCDiceのコマンドを実行する', async ({ page }) => {
-  await page.route('https://bcdice.onlinesession.app/v2/game_system**', async (route) => {
-    const url = new URL(route.request().url());
-
-    if (url.pathname === '/v2/game_system') {
-      await route.fulfill({
-        json: {
-          game_system: [
-            { id: 'DiceBot', name: 'DiceBot', sort_key: '*たいすほつと' },
-            { id: 'Cthulhu7th', name: '新クトゥルフ神話TRPG', sort_key: 'しんくとうるふ' },
-          ],
-        },
-      });
-      return;
-    }
-
-    if (url.pathname === '/v2/game_system/Cthulhu7th/roll') {
-      expect(url.searchParams.get('command')).toBe('CC<=60');
-      await route.fulfill({
-        json: {
-          ok: true,
-          text: 'CC<=60 (1D100<=60) ＞ 42 ＞ レギュラー成功',
-          secret: false,
-          success: true,
-          failure: false,
-          critical: false,
-          fumble: false,
-          rands: [{ kind: 'normal', sides: 100, value: 42 }],
-        },
-      });
-      return;
-    }
-
-    await route.fulfill({
-      json: {
-        id: 'Cthulhu7th',
-        name: '新クトゥルフ神話TRPG',
-        sort_key: 'しんくとうるふ',
-        command_pattern: '^CC<=\\d+$',
-        help_message: 'CC<=技能値で判定します。',
-      },
-    });
+  const apiRequests: string[] = [];
+  await page.route('**/v2/game_system**', async (route) => {
+    apiRequests.push(route.request().url());
+    await route.abort();
   });
 
   await page.goto('/ja/dice');
@@ -103,7 +66,13 @@ test('ゲームシステムを選択してBCDiceのコマンドを実行する',
   await page.getByRole('button', { name: 'ダイスを振る' }).click();
 
   await expect(page.getByText('Cthulhu7th', { exact: true })).toBeVisible();
-  await expect(page.getByText('CC<=60 (1D100<=60) ＞ 42 ＞ レギュラー成功')).toBeVisible();
+  const results = page.getByText(/^\(1D100<=60\).*＞/);
+  await expect(results).toHaveCount(1);
+
+  await page.context().setOffline(true);
+  await page.getByRole('button', { name: 'CC<=60', exact: true }).click();
+  await expect(results).toHaveCount(2);
+  expect(apiRequests).toEqual([]);
 });
 
 test('ダイス式の確率と統計を計算する', async ({ page }) => {
