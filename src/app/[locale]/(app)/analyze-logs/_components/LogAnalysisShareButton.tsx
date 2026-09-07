@@ -1,6 +1,6 @@
 'use client';
 
-import { IconBrandX, IconLoader } from '@tabler/icons-react';
+import { IconShare, IconLoader } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { FC } from 'react';
 
@@ -20,7 +20,7 @@ export const LogAnalysisShareButton: FC = () => {
           </div>
         ) : (
           <div className="flex animate-slide-in-top gap-2" key="share-button">
-            <IconBrandX />
+            <IconShare />
             <span>{t('analyze-logs:stats.share')}</span>
           </div>
         )}
