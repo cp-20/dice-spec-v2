@@ -1,4 +1,4 @@
-import { IconLoader } from '@tabler/icons-react';
+import { IconChevronDown, IconLoader } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { type FC, useCallback, useEffect, useState } from 'react';
@@ -7,6 +7,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/dialog';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
 
 import { SharingAnalysisResultScreen } from '../SharingAnalysisResultScreen';
 import {
@@ -19,6 +20,7 @@ import {
 import { useCharacterLogAnalysis } from './useCharacterLogAnalysis';
 import { useCharacterSelect } from './useCharacterSelect';
 import { useShareAnalysisResultImage } from './useShareAnalysisResultImage';
+import { useShareDestination } from './useShareDestination';
 
 const useRegenerateImage = () => {
   const setVersion = useSetAtom(sharingImageVersionAtom);
@@ -48,7 +50,10 @@ const SharingImagePreview: FC = () => {
 };
 
 export const useShareAnalysisResult = () => {
+  const [destination, setDestination] = useShareDestination();
+  const otherDestination = destination === 'X' ? 'Bluesky' : 'X';
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [shareOptionsOpen, setShareOptionsOpen] = useState(false);
   const scenarioName = useAtomValue(scenarioNameAtom);
   const setScenarioName = useSetAtom(debouncedScenarioNameAtom);
   const { isSharingImage, shareImage } = useShareAnalysisResultImage();
@@ -77,20 +82,47 @@ export const useShareAnalysisResult = () => {
 
                 <SharingImagePreview />
 
-                <Button
-                  className="w-full"
-                  onClick={() => shareImage(() => setDialogOpen(false))}
-                  disabled={isSharingImage}
-                >
-                  {isSharingImage ? (
-                    <span className="opacity-70 inline-flex gap-2 items-center">
-                      <IconLoader className="animate-spin size-5" />
-                      {t('analyze-logs:share-analysis-result:share-image')}
-                    </span>
-                  ) : (
-                    <span>{t('analyze-logs:share-analysis-result:share-image')}</span>
-                  )}
-                </Button>
+                <div className="flex">
+                  <Button
+                    className="flex-1 rounded-r-none"
+                    onClick={() => shareImage(destination, () => setDialogOpen(false))}
+                    disabled={isSharingImage}
+                  >
+                    {isSharingImage ? (
+                      <span className="opacity-70 inline-flex gap-2 items-center">
+                        <IconLoader className="animate-spin size-5" />
+                        {t('analyze-logs:share-analysis-result:share-to', { destination })}
+                      </span>
+                    ) : (
+                      <span>{t('analyze-logs:share-analysis-result:share-to', { destination })}</span>
+                    )}
+                  </Button>
+                  <Popover open={shareOptionsOpen} onOpenChange={setShareOptionsOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        className="min-h-11 min-w-11 rounded-l-none border-l border-primary-foreground/30 px-3"
+                        disabled={isSharingImage}
+                        aria-label={t('analyze-logs:share-analysis-result:other-destinations')}
+                      >
+                        <IconChevronDown className="size-4" aria-hidden="true" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-56 p-1">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start"
+                        disabled={isSharingImage}
+                        onClick={() => {
+                          setShareOptionsOpen(false);
+                          setDestination(otherDestination);
+                          shareImage(otherDestination, () => setDialogOpen(false));
+                        }}
+                      >
+                        {t('analyze-logs:share-analysis-result:share-to', { destination: otherDestination })}
+                      </Button>
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
             </div>
           </DialogContent>
