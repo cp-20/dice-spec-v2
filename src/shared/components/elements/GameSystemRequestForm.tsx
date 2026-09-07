@@ -7,6 +7,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { sendGameSystemRequest } from '@/shared/lib/webhook';
 
 export const GameSystemRequestForm: FC = () => {
@@ -25,6 +26,7 @@ export const GameSystemRequestForm: FC = () => {
       });
     } catch (err) {
       console.error(err);
+      captureClientException(err);
       toast({
         title: t('analyze-logs:game-system-request:error'),
         variant: 'destructive',
