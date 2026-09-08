@@ -9,6 +9,8 @@ const { firebase } = testEnv;
 export default defineConfig({
   testDir: './e2e',
   testMatch: '**/*.e2e.ts',
+  // HTTP ステータスと初期 HTML は production build に対して検証する。
+  testIgnore: '**/routing/**',
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
