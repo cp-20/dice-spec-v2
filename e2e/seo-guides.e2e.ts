@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test';
 test('期待値一覧から手動・自動再計算で分布を確認できる', async ({ page }) => {
   await page.goto('/expect');
   await expect(page).toHaveTitle('ダイス予測 - ダイススペック');
+  await expect(page.getByRole('button', { name: '3d6を計算', exact: true })).not.toBeVisible();
+  await page.locator('summary').filter({ hasText: 'ダイス・サイコロの期待値一覧' }).click();
   await page.getByRole('checkbox', { name: '変更時に自動で再計算' }).uncheck();
   await page.getByRole('button', { name: '3d6を計算', exact: true }).click();
   await expect(page.getByPlaceholder('計算式を入力してください')).toHaveValue('3d6');
@@ -28,7 +30,9 @@ test('説明が初期HTMLに含まれ、英語の関連リンクで言語を維�
   await expect(page).toHaveTitle('ココフォリアのログ解析・出目集計 - ダイススペック');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('ココフォリアのログ解析・出目集計');
   await page.goto('/en/analyze-logs');
+  await page.locator('summary').filter({ hasText: 'How to analyze dice results from CCFOLIA logs' }).click();
   await page.getByRole('link', { name: 'Calculate probabilities and expected values for future rolls' }).click();
   await expect(page).toHaveURL(/\/en\/expect$/);
+  await page.locator('summary').filter({ hasText: 'Dice expected values at a glance' }).click();
   await expect(page.getByRole('heading', { name: 'The expected value of 3d6 is 10.5' })).toBeVisible();
 });

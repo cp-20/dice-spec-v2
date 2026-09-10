@@ -14,46 +14,45 @@ const examples = [
 ];
 
 export const ExpectationGuide = () => (
-  <section className="space-y-6" aria-labelledby="expectation-guide-title">
-    <h2 id="expectation-guide-title" className="text-2xl font-bold">
-      {t('expect:guide.title')}
-    </h2>
-    <p>{t('expect:guide.introduction')}</p>
-    <table className="w-full text-left text-sm tabular-nums">
-      <thead>
-        <tr className="border-b">
-          <th scope="col" className="py-3 pr-4">
-            {t('expect:guide.command')}
-          </th>
-          <th scope="col" className="py-3 pr-4">
-            {t('expect:guide.mean')}
-          </th>
-          <th scope="col" className="py-3">
-            {t('expect:guide.range')}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {examples.map(({ command, mean, min, max }) => (
-          <tr key={command} className="border-b">
-            <th scope="row" className="pr-4">
-              <ExampleCommandButton command={command} />
+  <details className="border-t pt-4">
+    <summary className="cursor-pointer font-medium">{t('expect:guide.title')}</summary>
+    <div className="mt-4 space-y-4 text-sm">
+      <p>{t('expect:guide.introduction')}</p>
+      <table className="w-full text-left text-sm tabular-nums">
+        <thead>
+          <tr className="border-b">
+            <th scope="col" className="py-3 pr-4">
+              {t('expect:guide.command')}
             </th>
-            <td className="py-2 pr-4">{mean}</td>
-            <td className="py-2">
-              {min}–{max}
-            </td>
+            <th scope="col" className="py-3 pr-4">
+              {t('expect:guide.mean')}
+            </th>
+            <th scope="col" className="py-3">
+              {t('expect:guide.range')}
+            </th>
           </tr>
-        ))}
-      </tbody>
-    </table>
-    <p>{t('expect:guide.formula')}</p>
-    <div className="space-y-3">
-      <h3 className="text-xl font-bold">{t('expect:guide.3d6-title')}</h3>
-      <p>{t('expect:guide.3d6-description')}</p>
-      <p>{t('expect:guide.3d6-distribution')}</p>
-      <p>{t('expect:guide.3d6-compare')}</p>
-      <ExampleCommandButton command="3d6>=11" />
+        </thead>
+        <tbody>
+          {examples.map(({ command, mean, min, max }) => (
+            <tr key={command} className="border-b">
+              <th scope="row" className="pr-4">
+                <ExampleCommandButton command={command} />
+              </th>
+              <td className="py-2 pr-4">{mean}</td>
+              <td className="py-2">
+                {min}–{max}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p>{t('expect:guide.formula')}</p>
+      <div className="space-y-3">
+        <h3 className="text-xl font-bold">{t('expect:guide.3d6-title')}</h3>
+        <p>{t('expect:guide.3d6-description')}</p>
+        <p>{t('expect:guide.3d6-distribution')}</p>
+        <ExampleCommandButton command="3d6>=11" />
+      </div>
     </div>
-  </section>
+  </details>
 );

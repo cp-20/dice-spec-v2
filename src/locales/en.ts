@@ -33,21 +33,18 @@ export const en = {
   expect: {
     guide: {
       title: 'Dice expected values at a glance',
-      introduction:
-        'These are the expected totals for fair dice. Select a dice expression to fill in the calculator above and display its probability distribution.',
+      introduction: 'Select a dice expression to calculate its expected value and distribution.',
       command: 'Dice expression',
       mean: 'Expected value',
       range: 'Possible totals',
       calculate: 'Calculate {{- command}}',
       formula:
-        'For n dice with m sides (ndm), the expected total is n × (m + 1) ÷ 2. Adding a fixed modifier adds the same amount to the expected value.',
+        'For n fair m-sided dice (ndm), the expected total is n × (m + 1) ÷ 2. Add any fixed modifier to this value.',
       '3d6-title': 'The expected value of 3d6 is 10.5',
       '3d6-description':
-        '3d6 means rolling three six-sided dice and adding their results. Its expected value is 3 × (6 + 1) ÷ 2 = 10.5, with a minimum of 3 and a maximum of 18. This is the long-run average, not a possible individual total.',
+        '3d6 adds three six-sided dice. Its expected value is 3 × 3.5 = 10.5, with totals from 3 to 18.',
       '3d6-distribution':
-        'Of the 216 equally likely outcomes, totals of 10 and 11 each occur in 27 ways (12.5%), making them the most common. Totals of 3 and 18 each occur once (about 0.46%). The chance of rolling at least 11 is 50%.',
-      '3d6-compare':
-        'The expected value of 3d6+3 is 13.5, while 2d6+6 has an expected value of 13. Change the target or modifier to compare success probabilities.',
+        'The most common totals are 10 and 11 (12.5% each). The chance of rolling at least 11 is 50%.',
     },
     usage1:
       'By calculating the expected value of a die, such as `1d6` or `1d100`, you can predict what the result will be when you roll the die.',
@@ -117,21 +114,16 @@ export const en = {
   },
   'analyze-logs': {
     title: 'CCFOLIA log analysis and dice statistics',
-    usage1:
-      'Analyze CCFOLIA logs to see each character’s average roll, success rate and roll count. Review your session’s dice results with distribution charts.',
+    usage1: 'View each character’s average roll, success rate and dice charts from CCFOLIA logs.',
     guide: {
       title: 'How to analyze dice results from CCFOLIA logs',
       step1: 'Open the log export in your CCFOLIA room and save the log as an HTML file.',
-      step2: 'Select the log in the file picker on this page, or drag and drop it. You can load multiple logs.',
-      step3: 'Choose the tabs, game system and character to see average rolls, success rates and charts.',
+      step2: 'Select the HTML log on this page, or drag and drop it.',
+      step3: 'Choose the tabs, game system and character to view the results.',
       'systems-title': 'Supported game systems',
       systems:
         'Supports Call of Cthulhu 6th Edition, Call of Cthulhu 7th Edition, Emoklore, Shinobigami, Nechronica and Sword World 2.5.',
-      'example-title': 'Understanding dice statistics and success rates',
-      example:
-        'For example, five 1D100 skill checks with rolls of 20, 40, 60, 80 and 100 have an average roll of 60. If three checks succeeded, the success rate is 60% (illustrative example).',
-      interpretation:
-        'This success rate summarizes recorded results for rolls with an identifiable success or failure. It is not the probability of succeeding on a future roll. Small samples naturally vary, so an average alone cannot establish dice bias.',
+      interpretation: 'Success rates summarize logged rolls with an identifiable success or failure.',
       prediction: 'Calculate probabilities and expected values for future rolls',
     },
     list: {
