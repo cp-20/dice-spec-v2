@@ -29,6 +29,7 @@ export const DiceCommandInput: FC = () => {
     <div className="space-y-4">
       <div className="flex gap-2">
         <Input
+          id="dice-command"
           className="flex-1"
           placeholder={t('expect:input.placeholder')}
           value={command}
