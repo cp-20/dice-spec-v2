@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 
 test('未保存の変更がある場合はページ離脱を確認し、キャンセルすると編集を保持する', async ({ context, page }) => {
-  test.setTimeout(60_000);
   await page.goto('/ja/ccfolia');
   await page.getByLabel('名前').fill('ページ離脱前の未保存キャラクター');
 
@@ -23,6 +22,5 @@ test('未保存の変更がある場合はページ離脱を確認し、キャ�
     await dialog.accept();
   });
   await leavingPage.getByRole('link', { name: 'ダイスロール' }).first().click();
-  // 開発サーバーではダイス画面の初回コンパイルも遷移時間に含まれる。
-  await expect(leavingPage).toHaveURL('/dice', { timeout: 30_000 });
+  await expect(leavingPage).toHaveURL('/dice');
 });
