@@ -1,28 +1,11 @@
 import type { System } from './';
-import { parseHtmlLog } from './htmlParser';
+import { formatMessage } from './messageFormatter';
 import { parsers } from './messageParser';
 import { isSwordWorld25Message } from './messageParser/swordWorld25';
+import type { StructuredLog } from './structuredLog';
 
-const hash = (str: string): number => {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return hash;
-};
-
-const memorized = new Map<number, System | null>();
-
-export const detectSystem = (html: string): System | null => {
-  const htmlHash = hash(html);
-  if (memorized.has(htmlHash)) {
-    return memorized.get(htmlHash) ?? null;
-  }
-
-  const logs = parseHtmlLog(html);
-  const messages = logs.map((l) => l.message);
+export const detectSystem = (logs: StructuredLog[]): System | null => {
+  const messages = logs.flatMap((log) => formatMessage(log.message));
   const maybeDiceLogs = messages.filter((m) => m.includes('＞'));
 
   const scores = Object.entries(parsers)
@@ -38,8 +21,6 @@ export const detectSystem = (html: string): System | null => {
   const secondScore = scores[1];
   const detectedSystem =
     topScore === undefined || topScore.score === 0 || topScore.score === secondScore?.score ? null : topScore.system;
-
-  memorized.set(htmlHash, detectedSystem);
 
   return detectedSystem;
 };

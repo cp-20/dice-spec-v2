@@ -16,7 +16,7 @@ test('ファイルを読み込めない場合は未処理にせずエラーを�
   class FailingFileReader extends EventTarget {
     error = new DOMException('File not found', 'NotFoundError');
 
-    readAsText() {
+    readAsArrayBuffer() {
       this.dispatchEvent(new ProgressEvent('error'));
     }
   }
@@ -36,7 +36,7 @@ test('ファイルを読み込めない場合は未処理にせずエラーを�
     expect(input).not.toBeNull();
     fireEvent.change(input!, { target: { files: [new File(['log'], 'log.html', { type: 'text/html' })] } });
 
-    expect(await screen.findByText(i18n.t('analyze-logs:error'))).toBeTruthy();
+    expect(await screen.findByText(`log.html: ${i18n.t('analyze-logs:upload.errors.read')}`)).toBeTruthy();
   } finally {
     globalThis.FileReader = OriginalFileReader;
     console.error = originalConsoleError;

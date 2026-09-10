@@ -1,14 +1,14 @@
 import { ALL_CHARACTER_ID, ALL_CHARACTER_NAME, type DiceResultForCharacter, type System } from '../model';
-import { parseHtmlLog } from './htmlParser';
 import { formatMessage } from './messageFormatter';
 import { parseMessage, systemStats } from './messageParser';
+import type { StructuredLog } from './structuredLog';
 import { summarizeResults } from './summarizer';
 import { formatLogTabName } from './tabName';
 
 export type { DiceResultForCharacter, System } from '@/features/log-analysis/model';
 
-export const analyzeCcfoliaLog = (system: System, html: string, tabs?: string[]) => {
-  const logs = parseHtmlLog(html).filter((log) => tabs === undefined || tabs.includes(log.tab));
+export const analyzeCcfoliaLog = (system: System, input: StructuredLog[], tabs?: string[]) => {
+  const logs = input.filter((log) => tabs === undefined || tabs.includes(log.tab));
   if (logs.length === 0) {
     throw new Error('No logs detected');
   }

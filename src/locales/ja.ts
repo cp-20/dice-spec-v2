@@ -204,6 +204,17 @@ export const ja = {
       'already-implemented': 'このゲームシステムは今すぐ使えます',
     },
     upload: {
+      formats: '旧・新HTML、JSON、ZIPに対応。ZIPは解凍せず読み込めます（1ファイル・ZIP展開後ともに256MBまで）。',
+      loading: 'ログを読み込み中…',
+      'remove-file': '{{name}}を削除',
+      duplicates: 'ファイル間で重複するログ{{count}}件を除いて集計しています。',
+      errors: {
+        unsupported: 'HTML・JSON・ZIPのログファイルを選択してください。',
+        invalid: 'ログの形式を読み取れませんでした。ココフォリアから出力し直してください。',
+        empty: '解析できるログが含まれていません。',
+        'too-large': '256MBを超えています。ログを分割するか、ZIP内のファイルを個別に選択してください。',
+        read: 'ファイルを読み込めませんでした。もう一度選択してください。',
+      },
       button: 'クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード',
       'add-button': 'ログを追加',
       'clear-button': '選択したログを削除',

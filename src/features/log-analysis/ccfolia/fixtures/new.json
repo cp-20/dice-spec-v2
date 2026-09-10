@@ -1,0 +1,33 @@
+{
+  "messages": [
+    {
+      "name": "探索者",
+      "color": "#4caf50",
+      "text": "CC<=70 【聞き耳】",
+      "type": "text",
+      "channel": "main",
+      "channelName": "メイン",
+      "createdAt": 1788754800123,
+      "extend": {
+        "roll": {
+          "result": "(1D100<=70) ボーナス・ペナルティダイス[0] ＞ 20 ＞ 20 ＞ ハード成功"
+        }
+      }
+    },
+    {
+      "name": "相棒",
+      "color": "#888888",
+      "text": "CC<=40 【図書館】",
+      "type": "text",
+      "channel": "info",
+      "channelName": "情報",
+      "createdAt": 1788754801123,
+      "extend": {
+        "roll": {
+          "result": "(1D100<=40) ボーナス・ペナルティダイス[0] ＞ 60 ＞ 60 ＞ 失敗"
+        }
+      }
+    }
+  ],
+  "images": {}
+}

@@ -80,8 +80,8 @@ const htmlLog = `<!DOCTYPE html>
 </html>`;
 
 describe('parseHtmlLog', () => {
-  test('同じHTMLは解析結果を再利用する', () => {
-    expect(parseHtmlLog(htmlLog)).toBe(parseHtmlLog(htmlLog));
+  test('同じHTMLを再度読み込んでも同じ結果を返す', () => {
+    expect(parseHtmlLog(htmlLog)).toEqual(parseHtmlLog(htmlLog));
   });
 
   test('正しくパースできる', () => {
@@ -135,4 +135,11 @@ describe('parseHtmlLog', () => {
 
     expect(() => parseHtmlLog(invalidHtmlLog)).toThrow('Invalid log format');
   });
+});
+
+test('旧HTMLの秘匿宛先を本文と取り違えず、改行と標準タブ名を正規化する', () => {
+  const result = parseHtmlLog(
+    `<p><span>[メイン]</span><span>探索者</span> &gt;&gt; <span>KP</span>:<span>1行目<br>2行目</span></p>`,
+  );
+  expect(result[0]).toMatchObject({ tab: '[main]', character: '探索者', message: '1行目\n2行目' });
 });

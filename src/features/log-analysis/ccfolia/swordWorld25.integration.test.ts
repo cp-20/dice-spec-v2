@@ -1,3 +1,4 @@
+import { parseHtmlLog } from './htmlParser';
 import { analyzeCcfoliaLog } from './index';
 
 const htmlLog = `<!DOCTYPE html>
@@ -18,7 +19,7 @@ const htmlLog = `<!DOCTYPE html>
 
 describe('SW2.5ログ解析', () => {
   test('複数回ロールと威力表の回転を含めて集計する', () => {
-    const [allResult, characterResult] = analyzeCcfoliaLog('SwordWorld2.5', htmlLog);
+    const [allResult, characterResult] = analyzeCcfoliaLog('SwordWorld2.5', parseHtmlLog(htmlLog));
 
     expect(allResult.results.map((result) => result.results)).toEqual([[8], [8], [10, 5]]);
     expect(allResult.summary).toMatchObject({

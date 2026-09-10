@@ -2,136 +2,129 @@
 
 import { IconUpload, IconX } from '@tabler/icons-react';
 import { t } from 'i18next';
-import { type FC, useCallback, useRef } from 'react';
+import { type FC, useCallback, useRef, useState } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
-import { useToast } from '@/shared/components/ui/use-toast';
-import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useDropzone } from './hooks/useDropzone';
 import { useLogFiles, useLogTabSelect } from './hooks/useLogAnalysis';
 
-const readFileAsText = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', (e) => {
-      const result = e.target?.result;
-      if (typeof result === 'string') {
-        resolve(result);
-        return;
-      }
-      reject(new Error('Failed to read file'));
-    });
-    reader.addEventListener('error', () => reject(reader.error ?? new Error('Failed to read file')));
-    reader.readAsText(file);
-  });
-
 export const UploadLogFileButton: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
-  const { logFiles, setLogFiles } = useLogFiles();
+  const { logFiles, setLogFiles, isImporting, importFiles, duplicateCount } = useLogFiles();
   const { resetSelectedTabs } = useLogTabSelect();
   const { sendEvent } = useGoogleAnalytics();
+  const [errors, setErrors] = useState<{ name: string; code: string }[]>([]);
 
   const dropHandler = useCallback(
     async (files: File[]) => {
-      try {
-        const readFiles = await Promise.all(
-          files.map(async (file) => ({
-            name: file.name,
-            content: await readFileAsText(file),
-          })),
-        );
-        setLogFiles((prev) => [...prev, ...readFiles]);
-        resetSelectedTabs();
-        sendEvent('upload_log', { file_count: files.length });
-      } catch (error) {
-        console.error('Failed to read log file:', error);
-        captureClientException(error);
-        toast({ title: t('analyze-logs:error'), variant: 'destructive' });
-      } finally {
-        if (inputRef.current) inputRef.current.value = '';
-      }
+      if (isImporting) return;
+      setErrors([]);
+      const failures = await importFiles(files);
+      setErrors(failures);
+      sendEvent('upload_log', { file_count: files.length - failures.length });
+      if (inputRef.current) inputRef.current.value = '';
     },
-    [resetSelectedTabs, sendEvent, setLogFiles, toast],
+    [importFiles, isImporting, sendEvent],
   );
 
   const { containerProps, inputProps, isDraggedOver } = useDropzone(dropHandler);
-
-  const handleRemove = useCallback(() => {
+  const clear = () => {
     setLogFiles([]);
     resetSelectedTabs();
+    setErrors([]);
     if (inputRef.current) inputRef.current.value = '';
-  }, [resetSelectedTabs, setLogFiles]);
-
-  if (logFiles.length === 0) {
-    return (
-      <Button asChild variant="outline">
-        <label
-          htmlFor="log-file-uploader"
-          className="h-fit min-h-20 w-full place-content-center p-4"
-          {...containerProps}
-        >
-          {isDraggedOver ? (
-            <div className="animate-slide-in-top" key="drag-over">
-              {t('analyze-logs:upload.button-mouseover')}
-            </div>
-          ) : (
-            <div className="flex flex-wrap justify-center animate-slide-in-top items-center gap-2" key="content">
-              <IconUpload className="shrink-0" />
-              <span className="text-wrap">{t('analyze-logs:upload.button')}</span>
-            </div>
-          )}
-          <input
-            id="log-file-uploader"
-            type="file"
-            accept="text/html"
-            multiple
-            className="hidden"
-            ref={inputRef}
-            {...inputProps}
-          />
-        </label>
-      </Button>
-    );
-  }
+  };
 
   return (
-    <div
-      className="flex min-h-20 w-full flex-wrap items-center justify-between gap-3 rounded-md border border-input bg-background p-4 text-sm shadow-xs"
-      {...containerProps}
-    >
-      <div className="inline-flex animate-slide-in-top flex-wrap items-center gap-2">
-        <span>{t('analyze-logs:upload.current-file')}: </span>
-        <div className="inline-flex flex-wrap gap-2">
-          {logFiles.map((file, index) => (
-            <span className="rounded-sm bg-muted px-2 py-1 font-bold" key={`${file.name}-${index}`}>
-              {file.name}
-            </span>
+    <div className="space-y-2">
+      <div
+        className="flex min-h-20 flex-wrap items-center justify-between gap-3 rounded-md border border-input p-4 text-sm"
+        {...containerProps}
+        aria-busy={isImporting}
+      >
+        {logFiles.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span>{t('analyze-logs:upload.current-file')}: </span>
+            {logFiles.map((file, index) => (
+              <span
+                className="inline-flex items-center gap-1 rounded-sm bg-muted px-2 py-1"
+                key={`${file.name}-${index}`}
+              >
+                <span className="break-all">{file.name}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-6"
+                  disabled={isImporting}
+                  aria-label={t('analyze-logs:upload.remove-file', { name: file.name })}
+                  onClick={() => {
+                    setLogFiles((previous) => previous.filter((_, i) => i !== index));
+                    resetSelectedTabs();
+                  }}
+                >
+                  <IconX size={14} />
+                </Button>
+              </span>
+            ))}
+          </div>
+        )}
+        <div className={logFiles.length === 0 ? 'w-full' : 'flex items-center gap-2'}>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isImporting}
+            className={logFiles.length === 0 ? 'h-auto w-full whitespace-normal' : undefined}
+            onClick={() => inputRef.current?.click()}
+          >
+            <IconUpload className="shrink-0" size={18} />
+            {isImporting
+              ? t('analyze-logs:upload.loading')
+              : isDraggedOver
+                ? t('analyze-logs:upload.button-mouseover')
+                : t(logFiles.length === 0 ? 'analyze-logs:upload.button' : 'analyze-logs:upload.add-button')}
+          </Button>
+          {logFiles.length > 0 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={clear}
+              disabled={isImporting}
+              aria-label={t('analyze-logs:upload.clear-button')}
+            >
+              <IconX />
+            </Button>
+          )}
+        </div>
+        <input
+          id="log-file-uploader"
+          type="file"
+          accept=".html,.htm,.json,.zip"
+          multiple
+          className="hidden"
+          ref={inputRef}
+          disabled={isImporting}
+          {...inputProps}
+        />
+      </div>
+      <p className="text-sm text-muted-foreground">{t('analyze-logs:upload.formats')}</p>
+      <output className="block text-sm">
+        {isImporting
+          ? t('analyze-logs:upload.loading')
+          : duplicateCount > 0
+            ? t('analyze-logs:upload.duplicates', { count: duplicateCount })
+            : null}
+      </output>
+      {errors.length > 0 && (
+        <div role="alert" className="space-y-1 text-sm text-destructive">
+          {errors.map(({ name, code }, index) => (
+            <p key={`${name}-${index}`}>
+              {name}: {t(`analyze-logs:upload.errors.${code}`)}
+            </p>
           ))}
         </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <Button asChild variant="outline" size="sm">
-          <label htmlFor="log-file-uploader" className="cursor-pointer gap-2">
-            <IconUpload size="18" />
-            <span>{t('analyze-logs:upload.add-button')}</span>
-          </label>
-        </Button>
-        <Button variant="ghost" size="icon" onClick={handleRemove} aria-label={t('analyze-logs:upload.clear-button')}>
-          <IconX />
-        </Button>
-      </div>
-      <input
-        id="log-file-uploader"
-        type="file"
-        accept="text/html"
-        multiple
-        className="hidden"
-        ref={inputRef}
-        {...inputProps}
-      />
+      )}
     </div>
   );
 };
