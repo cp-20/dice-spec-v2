@@ -47,12 +47,6 @@ export const ExpectationGuide = () => (
         </tbody>
       </table>
       <p>{t('expect:guide.formula')}</p>
-      <div className="space-y-3">
-        <h3 className="text-xl font-bold">{t('expect:guide.3d6-title')}</h3>
-        <p>{t('expect:guide.3d6-description')}</p>
-        <p>{t('expect:guide.3d6-distribution')}</p>
-        <ExampleCommandButton command="3d6>=11" />
-      </div>
     </div>
   </details>
 );

@@ -40,11 +40,6 @@ export const en = {
       calculate: 'Calculate {{- command}}',
       formula:
         'For n fair m-sided dice (ndm), the expected total is n × (m + 1) ÷ 2. Add any fixed modifier to this value.',
-      '3d6-title': 'The expected value of 3d6 is 10.5',
-      '3d6-description':
-        '3d6 adds three six-sided dice. Its expected value is 3 × 3.5 = 10.5, with totals from 3 to 18.',
-      '3d6-distribution':
-        'The most common totals are 10 and 11 (12.5% each). The chance of rolling at least 11 is 50%.',
     },
     usage1:
       'By calculating the expected value of a die, such as `1d6` or `1d100`, you can predict what the result will be when you roll the die.',
