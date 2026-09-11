@@ -3,5 +3,6 @@ import staticAssetsIncrementalCache from '@opennextjs/cloudflare/overrides/incre
 
 export default defineCloudflareConfig({
   incrementalCache: staticAssetsIncrementalCache,
-  enableCacheInterception: true,
+  // PPR の動的部分を Next.js で再開するため、静的シェルだけを返す cache interception は無効にする。
+  enableCacheInterception: false,
 });
