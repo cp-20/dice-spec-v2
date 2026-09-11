@@ -4,6 +4,7 @@ import type { ResourceLanguage } from 'i18next';
 import type { FC, ReactNode } from 'react';
 
 import { NavigationProgress } from '@/shared/components/elements/NavigationProgress';
+import { ServiceWorkerRegistration } from '@/shared/components/elements/ServiceWorkerRegistration';
 import { WebVitals } from '@/shared/components/elements/WebVitals';
 import { GoogleAnalytics } from '@/shared/components/GoogleAnalytics';
 import { I18nProvider } from '@/shared/i18n/client-layout';
@@ -25,6 +26,7 @@ const RootLayout: FC<{ children: ReactNode; locale: Locale; resource: ResourceLa
           <GoogleAnalytics />
           <WebVitals />
           <NavigationProgress />
+          <ServiceWorkerRegistration />
 
           {isOldApp && <OldAppMigrationAnnouncementBanner />}
 
