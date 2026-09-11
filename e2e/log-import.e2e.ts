@@ -58,7 +58,7 @@ test('ドラッグ＆ドロップで読み込み、失敗したファイルを�
     { name: 'broken.zip', mimeType: 'application/zip', buffer: Buffer.from('broken') },
     { name: 'new.html', mimeType: 'text/html', buffer: html },
   ]);
-  await expect(page.getByText('broken.zip:', { exact: false })).toContainText('broken.zip');
+  await expect(page.getByText(/^broken\.zip:/)).toBeVisible();
   await expect(count).toContainText('2回');
   await page
     .locator('#log-file-uploader')
