@@ -1,5 +1,3 @@
-import { expect, test, vi } from 'bun:test';
-
 import { createStore } from 'jotai';
 
 import { atomWithDebounce } from './atomWithDebounce';

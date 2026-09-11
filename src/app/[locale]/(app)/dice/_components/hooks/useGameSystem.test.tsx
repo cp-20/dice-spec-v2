@@ -1,5 +1,3 @@
-import { afterEach, describe, expect, spyOn, test } from 'bun:test';
-
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import type { ReactNode } from 'react';
@@ -43,7 +41,7 @@ describe('選択中のゲームシステム', () => {
 
   test('読み込み中の同じ選択を重ねても、進行中の読み込みをやり直さない', async () => {
     const pending = Promise.withResolvers<typeof cthulhu>();
-    const spy = spyOn(bcdice, 'loadGameSystem').mockReturnValueOnce(pending.promise);
+    const spy = vi.spyOn(bcdice, 'loadGameSystem').mockReturnValueOnce(pending.promise);
     try {
       const { result } = setup();
       act(() => result.current.setSystem('Cthulhu7th'));
@@ -63,7 +61,10 @@ describe('選択中のゲームシステム', () => {
 
   test.each(['成功', '失敗'])('先行する読み込みの%sが最新の選択を上書きしない', async (outcome) => {
     const pending = Promise.withResolvers<typeof cthulhu>();
-    const spy = spyOn(bcdice, 'loadGameSystem').mockReturnValueOnce(pending.promise).mockResolvedValueOnce(swordWorld);
+    const spy = vi
+      .spyOn(bcdice, 'loadGameSystem')
+      .mockReturnValueOnce(pending.promise)
+      .mockResolvedValueOnce(swordWorld);
     try {
       const { result } = setup();
       act(() => result.current.setSystem('Cthulhu7th'));
@@ -82,7 +83,8 @@ describe('選択中のゲームシステム', () => {
   });
 
   test('取得失敗を表示できる状態にし、別のシステムを選択して復旧できる', async () => {
-    const spy = spyOn(bcdice, 'loadGameSystem')
+    const spy = vi
+      .spyOn(bcdice, 'loadGameSystem')
       .mockRejectedValueOnce(new Error('チャンク取得失敗'))
       .mockResolvedValueOnce(diceBot);
     try {

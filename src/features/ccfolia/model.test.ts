@@ -1,5 +1,3 @@
-import { describe, expect, test } from 'bun:test';
-
 import { Timestamp } from 'firebase/firestore';
 import * as v from 'valibot';
 
@@ -54,9 +52,9 @@ describe('CCFOLIA character model', () => {
 
     expect(restored.name).toBe('探索者A');
     expect(restored.initiative).toBeUndefined();
-    expect(restored.status[0]?.key).toBeString();
+    expect(restored.status[0]?.key).toEqual(expect.any(String));
     expect(restored.status[0]?.max).toBeUndefined();
-    expect(restored.params[0]?.key).toBeString();
+    expect(restored.params[0]?.key).toEqual(expect.any(String));
   });
 
   test('公式Clipboard API形式で出力し、UI用keyやundefinedを含めない', () => {

@@ -1,5 +1,3 @@
-import { beforeEach, expect, mock, test, vi } from 'bun:test';
-
 import { waitFor } from '@testing-library/react';
 import * as firestore from 'firebase/firestore';
 import { atom, createStore } from 'jotai';
@@ -27,7 +25,7 @@ const getDocsMock = vi.fn(
     }),
 );
 
-mock.module('firebase/firestore', () => ({
+vi.doMock('firebase/firestore', () => ({
   ...firestore,
   collection: vi.fn(() => ({})),
   getDocs: getDocsMock,
@@ -42,11 +40,11 @@ mock.module('firebase/firestore', () => ({
   startAfter: vi.fn(() => ({})),
 }));
 
-mock.module('@/shared/lib/firebase/client', () => ({
+vi.doMock('@/shared/lib/firebase/client', () => ({
   getFirebaseAuth: () => ({}),
   getFirebaseFirestore: () => ({}),
 }));
-mock.module('@/shared/lib/sentryClient', () => ({ captureClientException: vi.fn() }));
+vi.doMock('@/shared/lib/sentryClient', () => ({ captureClientException: vi.fn() }));
 
 const makeDocument = (id: string): TestDocument => {
   const timestamp = firestore.Timestamp.fromMillis(0);

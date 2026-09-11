@@ -1,5 +1,3 @@
-import { expect, test } from 'bun:test';
-
 import { BEFORE_SIGN_OUT_EVENT, signOutWithGuard } from './signOut';
 
 test('ログアウト前イベントをキャンセルすると Firebase からログアウトしない', async () => {

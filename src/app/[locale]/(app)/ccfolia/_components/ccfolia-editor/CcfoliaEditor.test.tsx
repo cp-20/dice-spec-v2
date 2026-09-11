@@ -1,5 +1,3 @@
-import { beforeEach, describe, expect, mock, test, vi } from 'bun:test';
-
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Timestamp } from 'firebase/firestore';
 import { atom, getDefaultStore, type Atom } from 'jotai';
@@ -66,7 +64,7 @@ const emitRemoteQuery = () => {
   for (const listener of remoteQueryListeners) listener();
 };
 
-mock.module('@/features/account/firebase/accountStore', () => ({
+vi.doMock('@/features/account/firebase/accountStore', () => ({
   meAtom: testMeAtom,
   meLoadingAtom: testMeLoadingAtom,
   useMeStore: () => ({
@@ -74,7 +72,7 @@ mock.module('@/features/account/firebase/accountStore', () => ({
     meLoading: false,
   }),
 }));
-mock.module('@/features/ccfolia/firebase/characters', () => ({
+vi.doMock('@/features/ccfolia/firebase/characters', () => ({
   createCcfoliaCharactersQueryAtoms: (authUserAtom: Atom<{ uid: string } | null | undefined>) => {
     const charactersAtom = atom((get) => {
       get(testCharactersRevisionAtom);
@@ -129,7 +127,7 @@ mock.module('@/features/ccfolia/firebase/characters', () => ({
     });
   },
 }));
-mock.module('@/features/ccfolia/firebase/mutations', () => ({
+vi.doMock('@/features/ccfolia/firebase/mutations', () => ({
   CcfoliaCharacterConflictError: TestCcfoliaCharacterConflictError,
   CcfoliaCharacterLimitError: class extends Error {},
   CcfoliaCharacterNotFoundError: TestCcfoliaCharacterNotFoundError,
@@ -143,7 +141,7 @@ mock.module('@/features/ccfolia/firebase/mutations', () => ({
     deleteCharacter(input.characterId, input.expectedRevision),
   ),
 }));
-mock.module('@/shared/lib/firebase/useFirebaseAuth', () => ({
+vi.doMock('@/shared/lib/firebase/useFirebaseAuth', () => ({
   authUserAtom: testAuthUserAtom,
   authUserLoadingAtom: testAuthUserLoadingAtom,
   useFirebaseAuth: () => ({
@@ -151,7 +149,7 @@ mock.module('@/shared/lib/firebase/useFirebaseAuth', () => ({
     loading: getDefaultStore().get(testAuthUserLoadingAtom),
   }),
 }));
-mock.module('@/shared/components/ui/use-toast', () => ({
+vi.doMock('@/shared/components/ui/use-toast', () => ({
   toast: toastMock,
   useToast: () => ({ toast: toastMock }),
 }));

@@ -1,11 +1,9 @@
-import { afterEach, beforeEach, expect, mock, test } from 'bun:test';
-
 import { render, screen } from '@testing-library/react';
 import i18n from 'i18next';
 
 import type { CustomLinkProps } from '@/shared/components/elements/CustomLink';
 
-mock.module('@/shared/components/elements/CustomLink', () => ({
+vi.doMock('@/shared/components/elements/CustomLink', () => ({
   CustomLink: ({ children, ...props }: CustomLinkProps) => <a {...props}>{children}</a>,
 }));
 

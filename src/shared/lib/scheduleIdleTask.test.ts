@@ -1,12 +1,10 @@
-import { expect, mock, test } from 'bun:test';
-
 import { scheduleIdleTask } from './scheduleIdleTask';
 
 test('idle callbackを優先する', async () => {
   const originalRequest = window.requestIdleCallback;
   const originalCancel = window.cancelIdleCallback;
-  const request = mock(() => 42);
-  const cancel = mock(() => undefined);
+  const request = vi.fn(() => 42);
+  const cancel = vi.fn(() => undefined);
   window.requestIdleCallback = request;
   window.cancelIdleCallback = cancel;
 

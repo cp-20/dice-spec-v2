@@ -1,5 +1,3 @@
-import { expect, test } from 'bun:test';
-
 import { createDefaultCcfoliaEditorCharacter } from '@/features/ccfolia/model';
 
 import { retainNavigationFallbackDraft, takeNavigationFallbackDraft } from './navigationFallbackDraft';

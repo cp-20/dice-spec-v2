@@ -7,7 +7,7 @@ index dbb717372328d32b0090f7c3aa3cabddb067c832..f129975a0bb5a86da546517e84d14e26
              return __generator(this, function (_a) {
                  switch (_a.label) {
 -                    case 0: return [4 /*yield*/, Promise.resolve("".concat("../../lib/bcdice/i18n/".concat(baseClassName, ".").concat(locale, ".json"))).then(function (s) { return __importStar(require(s)); })];
-+                    case 0: return [4 /*yield*/, import(`../../lib/bcdice/i18n/${baseClassName}.${locale}.json`)];
++                    case 0: return [4 /*yield*/, import(`../../lib/bcdice/i18n/${baseClassName}.${locale}.json`, { with: { type: 'json' } })];
                      case 1: return [2 /*return*/, (_a.sent()).default];
                  }
              });

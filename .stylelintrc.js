@@ -6,6 +6,7 @@ export default {
       true,
       { ignoreAtRules: ['tailwind', 'layer', 'apply', 'plugin', 'custom-variant', 'theme', 'utility'] },
     ],
+    'at-rule-prelude-no-invalid': [true, { ignoreAtRules: ['apply'] }],
     'function-url-quotes': 'always',
     'hue-degree-notation': 'number',
     'alpha-value-notation': 'number',
