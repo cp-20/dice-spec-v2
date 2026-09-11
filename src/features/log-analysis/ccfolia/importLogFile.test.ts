@@ -40,7 +40,7 @@ for (const [name, content] of [
   });
 }
 
-test('HTML ZIPの全タブ・各タブ・分割ファイルの重複を除く', async () => {
+test('HTML ZIPは全タブの分割ファイルだけを読み込む', async () => {
   const doc = new DOMParser().parseFromString(newHtml, 'text/html');
   const channelHtml = (index: number) =>
     `<main class="message-list"><h1 class="log-title">卓 [タブ]</h1>${doc.querySelectorAll('article')[index].outerHTML}</main>`;
@@ -55,7 +55,23 @@ test('HTML ZIPの全タブ・各タブ・分割ファイルの重複を除く', 
     }),
   );
   expect(result.logs).toHaveLength(2);
-  expect(result.duplicateCount).toBe(2);
+  expect(result.duplicateCount).toBe(0);
+});
+
+test('旧HTML ZIPも「すべて」があれば各タブを読み込まない', async () => {
+  const result = await importLogFile(
+    archive({
+      '卓[すべて].html': oldHtml,
+      '卓[メイン].html': oldHtml,
+      '卓[情報].html': 'invalid',
+    }),
+  );
+  expect(result.logs).toEqual(parseHtmlLog(oldHtml));
+});
+
+test('「すべて」がなければ各タブを読み込む', async () => {
+  const result = await importLogFile(archive({ '卓[メイン].html': oldHtml, '卓[情報].html': oldHtml }));
+  expect(result.logs).toEqual([...parseHtmlLog(oldHtml), ...parseHtmlLog(oldHtml)]);
 });
 
 test('分割JSON ZIPと旧HTML ZIPを読み込む', async () => {

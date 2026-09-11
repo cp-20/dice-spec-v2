@@ -59,7 +59,9 @@ export const importLogFile = async (file: File): Promise<ImportedLogFile> => {
         reject(error instanceof LogImportError ? error : new LogImportError('invalid'));
       }
     });
-    sources = Object.entries(entries)
+    const logEntries = Object.entries(entries);
+    const allTabs = logEntries.filter(([name]) => /\[すべて\](?:_\d+)?\.html?$/i.test(name));
+    sources = (allTabs.length > 0 ? allTabs : logEntries)
       .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
       .map(([name, data]) => parseContent(name, new TextDecoder().decode(data)));
   } else {
