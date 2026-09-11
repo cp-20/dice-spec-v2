@@ -37,6 +37,19 @@ jobs:
       - uses: ./.github/actions/setup
       - run: pnpm test
 
+  integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: ./.github/actions/setup
+      - run: pnpm test:integration
+
   firebase-rules-test:
     runs-on: ubuntu-latest
     steps:
@@ -101,7 +114,7 @@ jobs:
 
   deploy-firebase:
     if: github.event_name == 'push'
-    needs: [quality, test, firebase-rules-test, e2e, build]
+    needs: [quality, test, integration-test, firebase-rules-test, e2e, build]
     runs-on: ubuntu-latest
     environment: Production
     permissions:

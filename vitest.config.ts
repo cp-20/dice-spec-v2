@@ -8,6 +8,7 @@ export default defineConfig({
   },
   test: {
     globals: true,
+    include: ['src/**/*.test.{ts,tsx}', 'firebase/*.rules.test.ts'],
     setupFiles: ['./src/test/happy-dom.ts'],
   },
 });
