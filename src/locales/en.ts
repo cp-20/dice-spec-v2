@@ -76,6 +76,11 @@ export const en = {
     advanced: {
       label: 'Advanced',
       'game-system': {
+        unavailable: 'Unavailable in this version',
+        loading: 'Loading…',
+        error: 'Could not load the game system.',
+        reload: 'Reload page',
+
         label: 'Game System',
         button: 'Select a game system',
         search: 'Search for a game system',
@@ -101,7 +106,6 @@ export const en = {
         'show-help': 'Show Help',
         'enable-sound': 'Play Sound',
         volume: 'Volume',
-        'bcdice-server': 'BCDice Server',
         'migration-announcement':
           '<l>Old App</l> migration does not carry over settings. If necessary, please reconfigure using the <l>Old App</l> as a reference.',
       },

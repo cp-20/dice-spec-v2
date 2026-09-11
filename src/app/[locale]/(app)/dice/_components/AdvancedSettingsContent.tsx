@@ -1,18 +1,15 @@
 'use client';
 
 import { valibotResolver } from '@hookform/resolvers/valibot';
-import { IconRestore } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { type FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans } from 'react-i18next';
 
-import { Button } from '@/shared/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
 import { Slider } from '@/shared/components/ui/slider';
 import { Switch } from '@/shared/components/ui/switch';
-import { bcdiceApiEndpoint, isOldApp } from '@/shared/lib/const';
+import { isOldApp } from '@/shared/lib/const';
 
 import { AdvancedSettingsFormSchema, type AdvancedSettings } from './advancedSettingsSchema';
 import { useAdvancedSettings } from './hooks/useAdvancedSettings';
@@ -24,25 +21,17 @@ export const AdvancedSettingsContent: FC = () => {
     values: advancedSettings,
   });
 
-  const watch = form.watch(['showHelp', 'playSound', 'volume', 'bcdiceApiEndpoint']);
+  const watch = form.watch(['showHelp', 'playSound', 'volume']);
   useEffect(() => {
-    const [showHelp, playSound, volume, bcdiceApiEndpoint] = watch;
+    const [showHelp, playSound, volume] = watch;
     if (
       showHelp !== advancedSettings.showHelp ||
       playSound !== advancedSettings.playSound ||
-      volume !== advancedSettings.volume ||
-      bcdiceApiEndpoint !== advancedSettings.bcdiceApiEndpoint
+      volume !== advancedSettings.volume
     ) {
-      setAdvancedSettings({ showHelp, playSound, volume, bcdiceApiEndpoint });
+      setAdvancedSettings({ showHelp, playSound, volume });
     }
-  }, [
-    advancedSettings.bcdiceApiEndpoint,
-    advancedSettings.playSound,
-    advancedSettings.showHelp,
-    advancedSettings.volume,
-    setAdvancedSettings,
-    watch,
-  ]);
+  }, [advancedSettings.playSound, advancedSettings.showHelp, advancedSettings.volume, setAdvancedSettings, watch]);
 
   return (
     <Form {...form}>
@@ -92,33 +81,6 @@ export const AdvancedSettingsContent: FC = () => {
               </FormItem>
             );
           }}
-        />
-        <FormField
-          control={form.control}
-          name="bcdiceApiEndpoint"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('dice:advanced.advanced-settings.bcdice-server')}</FormLabel>
-              <div className="relative">
-                <FormControl>
-                  <Input
-                    className="pr-13"
-                    placeholder={bcdiceApiEndpoint}
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="hover:slate-100 absolute right-0 top-0 bg-slate-50"
-                  onClick={() => field.onChange(bcdiceApiEndpoint)}
-                >
-                  <IconRestore />
-                </Button>
-              </div>
-            </FormItem>
-          )}
         />
       </form>
       {!isOldApp && (

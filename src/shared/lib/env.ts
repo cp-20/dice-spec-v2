@@ -34,7 +34,6 @@ const envReaders = {
     NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID: () => process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID,
     NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: () => process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: () => process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-    NEXT_PUBLIC_BCDICE_API_ENDPOINT: () => process.env.NEXT_PUBLIC_BCDICE_API_ENDPOINT,
     NEXT_PUBLIC_IS_OLD_APP: () => process.env.NEXT_PUBLIC_IS_OLD_APP,
     NEXT_PUBLIC_DISCORD_WEBHOOK_URL: () => process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL,
   },
@@ -98,7 +97,6 @@ const envVariableCatalog = {
     'NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID',
     'NEXT_PUBLIC_GOOGLE_ANALYTICS_ID',
     'NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION',
-    'NEXT_PUBLIC_BCDICE_API_ENDPOINT',
     'NEXT_PUBLIC_IS_OLD_APP',
     'NEXT_PUBLIC_DISCORD_WEBHOOK_URL',
   ],
@@ -142,9 +140,6 @@ export const clientEnv = {
   },
   get googleSiteVerification(): string | undefined {
     return optionalEnv('NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION', 'client');
-  },
-  get bcdiceApiEndpoint(): string {
-    return optionalEnv('NEXT_PUBLIC_BCDICE_API_ENDPOINT', 'client') ?? 'https://bcdice.onlinesession.app';
   },
   get isOldApp(): boolean {
     return optionalEnv('NEXT_PUBLIC_IS_OLD_APP', 'client') === 'true';

@@ -16,7 +16,7 @@ import styles from '@/shared/styles/pretty-scrollbar.module.css';
 
 export const QuickInput: FC = () => {
   const { items, updateItem } = useQuickInput();
-  const { diceRoll } = useDiceRoll();
+  const { diceRoll, disabled } = useDiceRoll();
 
   return (
     <div>
@@ -36,7 +36,12 @@ export const QuickInput: FC = () => {
             >
               {item.isFavorite ? <IconStarFilled size="16" /> : <IconStar size="16" />}
             </Button>
-            <Button variant="outline" className="h-8 rounded-s-none px-3" onClick={() => diceRoll(item.command)}>
+            <Button
+              variant="outline"
+              className="h-8 rounded-s-none px-3"
+              disabled={disabled}
+              onClick={() => diceRoll(item.command)}
+            >
               {item.command}
             </Button>
           </div>
