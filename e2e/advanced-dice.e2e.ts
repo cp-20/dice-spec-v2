@@ -122,7 +122,12 @@ test('切り替え中は名称・スケルトン・表示領域を保ち、チ�
   expect(await help.evaluate((element) => element.clientHeight)).toBe(helpHeight);
   await page.unroute('**/_next/static/chunks/**');
 
-  await page.route('**/_next/static/chunks/**', (route) => route.abort());
+  await page.route('**/_next/static/chunks/**', async (route) => {
+    // 対象エンジンだけを失敗させ、UIや開発サーバーのHMR用チャンクは遮断しない。
+    const response = await route.fetch();
+    if ((await response.text()).includes('SwordWorld2_5')) await route.abort();
+    else await route.fulfill({ response });
+  });
   await selectSystem(page, '新クトゥルフ神話TRPG', 'ソード・ワールド2.5');
   const error = page.getByRole('alert').filter({ hasText: 'ゲームシステムを読み込めませんでした。' });
   await expect(error).toBeVisible();

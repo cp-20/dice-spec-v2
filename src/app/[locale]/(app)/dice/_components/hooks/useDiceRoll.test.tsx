@@ -1,11 +1,11 @@
-import { afterEach, describe, expect, spyOn, test } from 'bun:test';
+import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test';
 
 import { act, renderHook } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import type { ReactNode } from 'react';
 import * as v from 'valibot';
 
-import { useToast } from '@/shared/components/ui/use-toast';
+import * as toastModule from '@/shared/components/ui/use-toast';
 import * as bcdice from '@/shared/lib/bcdice/loader';
 import { captureClientException } from '@/shared/lib/sentryClient';
 
@@ -150,26 +150,34 @@ describe('ローカルのダイス操作', () => {
       return Promise.resolve();
     });
     const evaluate = spyOn(diceBot, 'eval').mockReturnValueOnce(rollResult).mockReturnValueOnce(null);
+    const notify = mock(() => ({ id: 'test', dismiss: () => undefined, update: () => undefined }));
+    const toast = spyOn(toastModule, 'useToast').mockReturnValue({
+      toast: notify,
+      toasts: [],
+      dismiss: () => undefined,
+    });
     try {
       const store = createStore();
       store.set(gameSystemAtom, { system: 'DiceBot', status: 'ready', engine: diceBot });
-      const { result } = renderHook(() => ({ roll: useDiceRoll(), feedback: useToast() }), {
+      const { result } = renderHook(useDiceRoll, {
         wrapper: ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>,
       });
       act(() => {
-        expect(result.current.roll.diceRoll('1D6')).toBe(rollResult);
+        expect(result.current.diceRoll('1D6')).toBe(rollResult);
       });
       act(() => {
-        expect(result.current.roll.diceRoll('1D6')).toBeNull();
+        expect(result.current.diceRoll('1D6')).toBeNull();
       });
       expect(volumes).toEqual([0.25, 0.25]);
-      expect(result.current.feedback.toasts[0]).toMatchObject({
+      expect(notify).toHaveBeenCalledTimes(1);
+      expect(notify).toHaveBeenCalledWith({
         title: 'ダイスロールに失敗しました',
         variant: 'destructive',
       });
     } finally {
       play.mockRestore();
       evaluate.mockRestore();
+      toast.mockRestore();
     }
   });
 });
