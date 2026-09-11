@@ -34,7 +34,6 @@ const envReaders = {
     NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID: () => process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID,
     NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: () => process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,
     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: () => process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-    NEXT_PUBLIC_IS_OLD_APP: () => process.env.NEXT_PUBLIC_IS_OLD_APP,
     NEXT_PUBLIC_DISCORD_WEBHOOK_URL: () => process.env.NEXT_PUBLIC_DISCORD_WEBHOOK_URL,
   },
 } satisfies EnvReaders;
@@ -97,7 +96,6 @@ const envVariableCatalog = {
     'NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID',
     'NEXT_PUBLIC_GOOGLE_ANALYTICS_ID',
     'NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION',
-    'NEXT_PUBLIC_IS_OLD_APP',
     'NEXT_PUBLIC_DISCORD_WEBHOOK_URL',
   ],
 } as const satisfies {
@@ -140,9 +138,6 @@ export const clientEnv = {
   },
   get googleSiteVerification(): string | undefined {
     return optionalEnv('NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION', 'client');
-  },
-  get isOldApp(): boolean {
-    return optionalEnv('NEXT_PUBLIC_IS_OLD_APP', 'client') === 'true';
   },
   get discordWebhookUrl(): string {
     return requiredEnv('NEXT_PUBLIC_DISCORD_WEBHOOK_URL', 'client');

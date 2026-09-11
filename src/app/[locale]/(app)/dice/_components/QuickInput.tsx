@@ -4,10 +4,8 @@ import { IconStar, IconStarFilled } from '@tabler/icons-react';
 import clsx from 'clsx';
 import { t } from 'i18next';
 import type { FC } from 'react';
-import { Trans } from 'react-i18next';
 
 import { Button } from '@/shared/components/ui/button';
-import { isOldApp } from '@/shared/lib/const';
 
 import { useDiceRoll } from './hooks/useDiceRoll';
 import { useQuickInput } from './hooks/useQuickInput';
@@ -47,22 +45,6 @@ export const QuickInput: FC = () => {
           </div>
         ))}
       </div>
-      {!isOldApp && (
-        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          <Trans
-            i18nKey="dice:advanced.quick-input.migration-announcement"
-            components={{
-              l: (
-                <a
-                  href="https://dicespec.vercel.app/dice?keep-old=true"
-                  aria-label="Dice Spec v1"
-                  className="underline hover:opacity-70"
-                />
-              ),
-            }}
-          />
-        </p>
-      )}
     </div>
   );
 };

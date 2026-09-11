@@ -14,16 +14,6 @@ const nextConfig = {
     // Next.js が設定ファイル経由で読み込むため、静的解析では未使用に見える。
     loaderFile: './src/image-loader.ts',
   },
-  redirects: async () => [
-    {
-      source: '/:path((?!_next/|assets).*)',
-      destination: 'https://dicespec.app/:path',
-      permanent: true,
-      has: [{ type: 'host', value: 'dicespec.vercel.app' }],
-      missing: [{ type: 'query', key: 'keep-old', value: 'true' }],
-      statusCode: 301,
-    },
-  ],
   rewrites: async () => [
     {
       source: '/',
