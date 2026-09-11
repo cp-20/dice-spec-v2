@@ -111,7 +111,7 @@ export const en = {
     title: 'CCFOLIA log analysis and dice statistics',
     usage1: 'View each character’s average roll, success rate and dice charts from CCFOLIA logs.',
     guide: {
-      title: 'How to analyze dice results from CCFOLIA logs',
+      title: 'View detailed instructions',
       step1: 'Open the log export in your CCFOLIA room and save the log as an HTML file.',
       step2: 'Select the HTML log on this page, or drag and drop it.',
       step3: 'Choose the tabs, game system and character to view the results.',

@@ -2,7 +2,7 @@ import { t } from 'i18next';
 import Link from 'next/link';
 
 export const LogAnalysisGuide = () => (
-  <details className="border-t pt-4">
+  <details className="text-sm">
     <summary className="cursor-pointer font-medium">{t('analyze-logs:guide.title')}</summary>
     <div className="mt-4 space-y-4 text-sm">
       <ol className="list-decimal space-y-2 pl-6">

@@ -81,6 +81,7 @@ const AnalyzeLogsPage: NextPage = () => (
       <PageTitle icon={IconTimeline}>{t('analyze-logs:title')}</PageTitle>
       <PageDescriptionContainer>
         <PageDescriptionText>{t('analyze-logs:usage1')}</PageDescriptionText>
+        <LogAnalysisGuide />
       </PageDescriptionContainer>
     </div>
 
@@ -114,8 +115,6 @@ const AnalyzeLogsPage: NextPage = () => (
     <DeferredDiceLogSummary />
 
     <DiceLogList />
-
-    <LogAnalysisGuide />
 
     <div className="my-16">
       <BlogCallout />
