@@ -5,12 +5,9 @@ const loader = new DynamicLoader();
 
 export const gameSystems = loader
   .listAvailableGameSystems()
-  .map(({ id, name, sortKey }) => ({
-    id,
-    name,
-    sort_key: sortKey,
-  }))
-  .sort((a, b) => (a.sort_key < b.sort_key ? -1 : a.sort_key > b.sort_key ? 1 : 0));
+  .toSorted((a, b) => (a.sortKey < b.sortKey ? -1 : a.sortKey > b.sortKey ? 1 : 0));
+
+export const gameSystemsById = new Map(gameSystems.map((system) => [system.id, system]));
 
 // 同時選択で同じシステムを重複初期化しない。取得失敗は次の操作で再試行できるようにする。
 const systems = new Map<string, ReturnType<typeof loader.dynamicLoad>>();

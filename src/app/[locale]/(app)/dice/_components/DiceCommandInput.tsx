@@ -1,6 +1,7 @@
 'use client';
 
 import { t } from 'i18next';
+import { useAtomValue } from 'jotai';
 import type { FC, FormEventHandler } from 'react';
 import { useEffect, useState } from 'react';
 
@@ -8,23 +9,23 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 
 import { useDiceRoll } from './hooks/useDiceRoll';
-import { useDiceRollValidation } from './hooks/useDiceRollOption';
+import { gameSystemAtom } from './hooks/useGameSystem';
 
 export const DiceCommandInput: FC = () => {
   const { diceRoll, disabled } = useDiceRoll();
-  const { validate } = useDiceRollValidation();
+  const { engine } = useAtomValue(gameSystemAtom);
 
   const [command, setCommand] = useState('');
-  const isValid = disabled || command === '' || validate(command);
+  const isValid = disabled || command === '' || !!engine?.COMMAND_PATTERN.test(command);
 
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
+  const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     setCommand('');
-    const result = await diceRoll(command);
+    const result = diceRoll(command);
 
-    if (result.ok) {
+    if (result) {
       setErrorMessage('');
     } else {
       setErrorMessage(t('dice:advanced.input.error-failed'));

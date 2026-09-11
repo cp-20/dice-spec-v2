@@ -2,48 +2,33 @@
 
 import clsx from 'clsx';
 import { t } from 'i18next';
-import { useStore } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { Check, ChevronsUpDown, LoaderCircle } from 'lucide-react';
 import type { FC } from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/shared/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/components/ui/popover';
-import { gameSystems } from '@/shared/lib/bcdice/loader';
+import { gameSystemsById } from '@/shared/lib/bcdice/loader';
 import { cn } from '@/shared/lib/shadcn-utils';
 
-import { diceRollOptionAtom, useDiceRollOption } from './hooks/useDiceRollOption';
-import { useGameSystemList } from './hooks/useGameSystemList';
+import { gameSystemListAtom } from './gameSystemHistory';
+import { useGameSystem } from './hooks/useGameSystem';
 
 import styles from './GameSystemSelect.module.css';
 import scrollbarStyles from '@/shared/styles/pretty-scrollbar.module.css';
 
 export const GameSystemSelect: FC = () => {
-  const { gameSystemList: systems, selectSystem } = useGameSystemList();
+  const systems = useAtomValue(gameSystemListAtom);
 
   const {
-    option: { system, systemInfo, error },
+    selection: { system, status },
     setSystem,
-  } = useDiceRollOption();
-  const store = useStore();
+  } = useGameSystem();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const selected = store.get(diceRollOptionAtom);
-    if (!selected.systemInfo && !selected.error) void setSystem(selected.system);
-  }, [setSystem, store]);
-
-  // システムを変更する関数
-  const changeSystem = useCallback(
-    (id: string) => {
-      setSystem(id);
-      selectSystem(id);
-    },
-    [selectSystem, setSystem],
-  );
 
   // セレクトメニューの幅をボタンの幅に合わせる
   useEffect(() => {
@@ -64,14 +49,14 @@ export const GameSystemSelect: FC = () => {
             aria-expanded={open}
             className="w-full justify-between"
             ref={buttonRef}
-            aria-busy={!systemInfo && !error}
+            aria-busy={status === 'loading'}
           >
             {systems && system ? (
               systems.find((s) => s.id === system)?.name
             ) : (
               <span className="text-slate-600">{t('dice:advanced.game-system.button')}</span>
             )}
-            {!systemInfo && !error ? (
+            {status === 'loading' ? (
               <output className="ml-2 shrink-0">
                 <LoaderCircle aria-hidden="true" className="size-4 motion-safe:animate-spin" />
                 <span className="sr-only">{t('dice:advanced.game-system.loading')}</span>
@@ -91,23 +76,22 @@ export const GameSystemSelect: FC = () => {
                 <CommandItem
                   key={s.id}
                   value={s.name}
-                  disabled={!gameSystems.some((available) => available.id === s.id)}
+                  disabled={!gameSystemsById.has(s.id)}
                   onSelect={() => {
-                    changeSystem(s.id);
+                    setSystem(s.id);
                     setOpen(false);
                   }}
                 >
                   <Check className={cn('mr-2 size-4', system !== s.id && 'invisible')} />
                   {s.name}
-                  {!gameSystems.some((available) => available.id === s.id) &&
-                    ` (${t('dice:advanced.game-system.unavailable')})`}
+                  {!gameSystemsById.has(s.id) && ` (${t('dice:advanced.game-system.unavailable')})`}
                 </CommandItem>
               ))}
             </CommandGroup>
           </Command>
         </PopoverContent>
       </Popover>
-      {error && (
+      {status === 'error' && (
         <p role="alert" className="text-sm text-red-500">
           {t('dice:advanced.game-system.error')}{' '}
           {/* チャンク取得失敗はランタイムに保持されるため、復旧にはページの再読み込みが必要。 */}

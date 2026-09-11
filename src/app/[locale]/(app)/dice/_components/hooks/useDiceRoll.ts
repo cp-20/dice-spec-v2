@@ -1,37 +1,33 @@
+import type Result from 'bcdice/lib/result';
 import { t } from 'i18next';
-import { atom, useAtomValue, useStore } from 'jotai';
+import { useAtomValue, useStore } from 'jotai';
 import { useCallback } from 'react';
 
 import { useToast } from '@/shared/components/ui/use-toast';
-import { getDiceRoll, type DiceRollResult } from '@/shared/lib/bcdice/getDiceRoll';
 import { formatDiceCommand } from '@/shared/lib/formatDiceCommand';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import type { DiceLog } from './useDiceLogs';
 import { useDiceLogs } from './useDiceLogs';
-import { diceRollOptionAtom, useDiceRollOption } from './useDiceRollOption';
 import { useDiceSound } from './useDiceSound';
+import { gameSystemAtom } from './useGameSystem';
 import { useQuickInput } from './useQuickInput';
-
-const rollingAtom = atom(false);
 
 export const useDiceRollCore = () => {
   const store = useStore();
-  const rolling = useAtomValue(rollingAtom);
-  const option = useAtomValue(diceRollOptionAtom);
+  const selection = useAtomValue(gameSystemAtom);
   const { addItem } = useQuickInput();
   const { addDiceLog } = useDiceLogs();
 
   const diceRoll = useCallback(
-    async (command: string): Promise<DiceRollResult> => {
-      const selected = store.get(diceRollOptionAtom);
-      if (store.get(rollingAtom) || !selected.systemInfo?.command_pattern.test(command)) return { ok: false };
-      store.set(rollingAtom, true);
+    (command: string): Result | null => {
+      const selected = store.get(gameSystemAtom);
+      if (!selected.engine?.COMMAND_PATTERN.test(command)) return null;
       try {
         addItem(command);
-        const result = await getDiceRoll(command, selected.system);
-        if (store.get(diceRollOptionAtom) !== selected) return { ok: false };
-        if (result.ok) {
+        const result = selected.engine.eval(command);
+        if (result) {
           const variant =
             result.critical || result.success ? 'success' : result.failure || result.fumble ? 'failed' : 'default';
           const log: DiceLog = {
@@ -43,31 +39,31 @@ export const useDiceRollCore = () => {
           addDiceLog(log);
         }
         return result;
-      } finally {
-        store.set(rollingAtom, false);
+      } catch (error) {
+        captureClientException(error);
+        return null;
       }
     },
     [addDiceLog, addItem, store],
   );
-  return { diceRoll, disabled: rolling || !option.systemInfo };
+  return { diceRoll, disabled: selection.status !== 'ready' };
 };
 
 export const useDiceRoll = () => {
   const { toast } = useToast();
   const { play } = useDiceSound();
   const { diceRoll: diceRollCore, disabled } = useDiceRollCore();
-  const {
-    option: { system },
-  } = useDiceRollOption();
+  const store = useStore();
   const { sendEvent } = useGoogleAnalytics();
 
   const diceRoll = useCallback(
-    async (command: string) => {
+    (command: string) => {
+      const { system } = store.get(gameSystemAtom);
       sendEvent('diceRoll', [system, formatDiceCommand(command)]);
-      const result = await diceRollCore(command);
+      const result = diceRollCore(command);
       play();
 
-      if (!result.ok) {
+      if (!result) {
         sendEvent('diceRollFailed', [system, command]);
         toast({
           title: t('dice:advanced.error'),
@@ -77,7 +73,7 @@ export const useDiceRoll = () => {
 
       return result;
     },
-    [diceRollCore, play, sendEvent, system, toast],
+    [diceRollCore, play, sendEvent, store, toast],
   );
 
   return {

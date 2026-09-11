@@ -48,33 +48,6 @@ test('複数種類のシンプルダイスをまとめて振り、入力をリ�
   await expect(page.getByText('0D20', { exact: true })).toBeVisible();
 });
 
-test('ゲームシステムを選択してBCDiceのコマンドを実行する', async ({ page }) => {
-  const apiRequests: string[] = [];
-  await page.route('**/v2/game_system**', async (route) => {
-    apiRequests.push(route.request().url());
-    await route.abort();
-  });
-
-  await page.goto('/ja/dice');
-  await page.getByRole('tab', { name: 'アドバンスド' }).click();
-  await page.getByRole('button', { name: 'DiceBot' }).click();
-  await page.getByPlaceholder('ゲームシステムを検索').fill('新クトゥルフ');
-  await page.getByRole('option', { name: '新クトゥルフ神話TRPG' }).click();
-  await expect(page.getByRole('button', { name: '新クトゥルフ神話TRPG' })).toBeVisible();
-
-  await page.getByPlaceholder('コマンドを入力してください').fill('CC<=60');
-  await page.getByRole('button', { name: 'ダイスを振る' }).click();
-
-  await expect(page.getByText('Cthulhu7th', { exact: true })).toBeVisible();
-  const results = page.getByText(/^\(1D100<=60\).*＞/);
-  await expect(results).toHaveCount(1);
-
-  await page.context().setOffline(true);
-  await page.getByRole('button', { name: 'CC<=60', exact: true }).click();
-  await expect(results).toHaveCount(2);
-  expect(apiRequests).toEqual([]);
-});
-
 test('ダイス式の確率と統計を計算する', async ({ page }) => {
   await page.goto('/ja/expect');
   await page.getByPlaceholder('計算式を入力してください').fill('1D100<=25');

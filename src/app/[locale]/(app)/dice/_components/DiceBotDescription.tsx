@@ -1,20 +1,20 @@
 'use client';
 
 import { t } from 'i18next';
+import { useAtomValue } from 'jotai';
 import type { FC } from 'react';
 
 import { ContainerSection } from '@/app/[locale]/(app)/_components/ContainerSection';
 import { RichText } from '@/shared/components/elements/RichText';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { gameSystems } from '@/shared/lib/bcdice/loader';
+import { gameSystemsById } from '@/shared/lib/bcdice/loader';
 
 import { useAdvancedSettings } from './hooks/useAdvancedSettings';
-import { useDiceRollOption } from './hooks/useDiceRollOption';
+import { gameSystemAtom } from './hooks/useGameSystem';
 
 export const DiceBotHelp: FC = () => {
-  const { option } = useDiceRollOption();
-  const systemName = gameSystems.find(({ id }) => id === option.system)?.name ?? option.systemInfo?.name ?? '';
-  const helpMessage = option.systemInfo?.help_message ?? '';
+  const { system, engine, status } = useAtomValue(gameSystemAtom);
+  const systemName = gameSystemsById.get(system)?.name ?? '';
   const { advancedSettings } = useAdvancedSettings();
 
   if (!advancedSettings.showHelp) {
@@ -25,12 +25,12 @@ export const DiceBotHelp: FC = () => {
     <ContainerSection
       className="h-64 overflow-y-auto"
       tabIndex={0}
-      aria-busy={!option.systemInfo && !option.error}
+      aria-busy={status === 'loading'}
       label={t('dice:advanced.dicebot-usage', { systemName })}
     >
-      {option.systemInfo ? (
-        <RichText className="text-sm" text={helpMessage} />
-      ) : option.error ? (
+      {engine ? (
+        <RichText className="text-sm" text={engine.HELP_MESSAGE} />
+      ) : status === 'error' ? (
         <p className="text-sm">{t('dice:advanced.game-system.error')}</p>
       ) : (
         <div className="space-y-3" aria-hidden="true">
