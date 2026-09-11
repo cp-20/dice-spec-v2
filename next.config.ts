@@ -7,6 +7,7 @@ import { buildEnv } from './src/shared/lib/env';
 const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
+  experimental: { globalNotFound: true },
   // CI の TypeScript 7 を唯一の型検査にして、next build で同じ検査を重複させない。
   typescript: { ignoreBuildErrors: true },
   images: {
@@ -80,6 +81,11 @@ const nextConfig = {
     {
       source: '/blogs/:category/:slug',
       destination: '/ja/blogs/:category/:slug',
+    },
+    {
+      // 日本語の既存 rewrite と静的ファイルの解決後、未対応 locale を動的ルートへ渡さない。
+      source: '/:locale((?!ja(?:/|$)|en(?:/|$)|api/stripe(?:/|$))[^/]+)/:path*',
+      destination: '/_not-found',
     },
   ],
   pageExtensions: ['md', 'mdx', 'ts', 'tsx'],

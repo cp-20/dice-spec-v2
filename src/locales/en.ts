@@ -31,6 +31,16 @@ export const en = {
     credit: 'Credit',
   },
   expect: {
+    guide: {
+      title: 'Dice expected values at a glance',
+      introduction: 'Select a dice expression to calculate its expected value and distribution.',
+      command: 'Dice expression',
+      mean: 'Expected value',
+      range: 'Possible totals',
+      calculate: 'Calculate {{- command}}',
+      formula:
+        'For n fair m-sided dice (ndm), the expected total is n × (m + 1) ÷ 2. Add any fixed modifier to this value.',
+    },
     usage1:
       'By calculating the expected value of a die, such as `1d6` or `1d100`, you can predict what the result will be when you roll the die.',
     usage2: 'In addition, by entering `1d100<=10` or `2d6>=10`, the probability can also be known.',
@@ -102,7 +112,19 @@ export const en = {
     },
   },
   'analyze-logs': {
-    usage1: 'Analyze the logs of Cocoforia to calculate the expected value of the dice, etc.',
+    title: 'CCFOLIA log analysis and dice statistics',
+    usage1: 'View each character’s average roll, success rate and dice charts from CCFOLIA logs.',
+    guide: {
+      title: 'View detailed instructions',
+      step1: 'Open the log export in your CCFOLIA room and save the log as an HTML file.',
+      step2: 'Select the HTML log on this page, or drag and drop it.',
+      step3: 'Choose the tabs, game system and character to view the results.',
+      'systems-title': 'Supported game systems',
+      systems:
+        'Supports Call of Cthulhu 6th Edition, Call of Cthulhu 7th Edition, Emoklore, Shinobigami, Nechronica and Sword World 2.5.',
+      interpretation: 'Success rates summarize logged rolls with an identifiable success or failure.',
+      prediction: 'Calculate probabilities and expected values for future rolls',
+    },
     list: {
       'sign-in-required': 'Sign in to use this feature.',
       'tab-mine': 'My analyses',
