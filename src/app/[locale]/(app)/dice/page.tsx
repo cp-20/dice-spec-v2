@@ -2,7 +2,6 @@ import { IconDice5 } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
 
-import { BlogCallout } from '@/app/[locale]/(app)/_components/BlogCallout';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
 import { PageTitle } from '@/app/[locale]/(app)/_components/PageTitle';
 import { wrapPage } from '@/shared/i18n/page-layout';
@@ -49,9 +48,6 @@ const DicePage: NextPage = async () => {
           </div>
         }
       />
-      <div className="my-16">
-        <BlogCallout />
-      </div>
     </div>
   );
 };
