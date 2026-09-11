@@ -1,5 +1,3 @@
-import { expect, test } from 'bun:test';
-
 import { updateExistingUserById } from './clients';
 
 test('存在しないユーザーを部分文書として作成しない', async () => {

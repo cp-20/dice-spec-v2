@@ -1,5 +1,3 @@
-import { expect, mock, test, vi } from 'bun:test';
-
 import { act, renderHook, waitFor } from '@testing-library/react';
 import * as firestore from 'firebase/firestore';
 import { atom } from 'jotai';
@@ -34,7 +32,7 @@ const createCustomerMock = vi.fn(async () => {
 });
 const signOutWithGuardMock = vi.fn();
 
-mock.module('firebase/firestore', () => ({
+vi.doMock('firebase/firestore', () => ({
   ...firestore,
   doc: vi.fn(() => ({})),
   onSnapshot: vi.fn((...args: unknown[]) => {
@@ -46,15 +44,15 @@ mock.module('firebase/firestore', () => ({
   setDoc: setDocMock,
 }));
 
-mock.module('@/features/stripe/api', () => ({ createCustomer: createCustomerMock }));
-mock.module('@/shared/lib/firebase/client', () => ({
+vi.doMock('@/features/stripe/api', () => ({ createCustomer: createCustomerMock }));
+vi.doMock('@/shared/lib/firebase/client', () => ({
   getFirebaseAuth: () => ({}),
   getFirebaseFirestore: () => ({}),
   getFirebaseStorage: () => ({}),
 }));
-mock.module('@/shared/lib/firebase/storage/avatars', () => ({ uploadAvatarFromUrlToStorage: uploadAvatarMock }));
-mock.module('@/shared/lib/firebase/signOut', () => ({ signOutWithGuard: signOutWithGuardMock }));
-mock.module('@/shared/lib/firebase/useFirebaseAuth', () => ({
+vi.doMock('@/shared/lib/firebase/storage/avatars', () => ({ uploadAvatarFromUrlToStorage: uploadAvatarMock }));
+vi.doMock('@/shared/lib/firebase/signOut', () => ({ signOutWithGuard: signOutWithGuardMock }));
+vi.doMock('@/shared/lib/firebase/useFirebaseAuth', () => ({
   ...firebaseAuthHook,
   authUserAtom: atom({ uid: 'user_1', displayName: 'User', photoURL: 'https://dicespec.test/avatar.png' }),
   authUserLoadingAtom: atom(false),

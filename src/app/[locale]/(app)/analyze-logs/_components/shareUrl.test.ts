@@ -1,5 +1,3 @@
-import { expect, test } from 'bun:test';
-
 import { getShareUrl } from './shareUrl';
 
 test('各SNSへ日本語・改行・ハッシュタグと画像リンクを欠落なく渡す', () => {

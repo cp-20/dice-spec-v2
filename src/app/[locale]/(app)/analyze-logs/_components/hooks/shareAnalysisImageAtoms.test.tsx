@@ -1,11 +1,9 @@
-import { expect, mock, test } from 'bun:test';
-
 import { act, render, waitFor } from '@testing-library/react';
 import { createStore, Provider, useAtomValue } from 'jotai';
 import { Suspense } from 'react';
 
 let resolveImage: (value: string) => void;
-mock.module('html-to-image', () => ({
+vi.doMock('html-to-image', () => ({
   toPng: () =>
     new Promise<string>((resolve) => {
       resolveImage = resolve;

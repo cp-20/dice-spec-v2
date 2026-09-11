@@ -1,5 +1,3 @@
-import { beforeEach, expect, mock, test, vi } from 'bun:test';
-
 import * as firestore from 'firebase/firestore';
 
 import { createDefaultCcfoliaEditorCharacter, toCcfoliaCharacterData } from '@/features/ccfolia/model';
@@ -19,7 +17,7 @@ const currentData = {
 };
 let transactionData = currentData;
 
-mock.module('firebase/firestore', () => ({
+vi.doMock('firebase/firestore', () => ({
   ...firestore,
   doc: vi.fn(() => ({})),
   runTransaction: vi.fn(async (_database: unknown, updateFunction: (transaction: unknown) => Promise<unknown>) =>
@@ -32,7 +30,7 @@ mock.module('firebase/firestore', () => ({
   ),
   serverTimestamp: vi.fn(() => updatedAt),
 }));
-mock.module('@/shared/lib/firebase/client', () => ({
+vi.doMock('@/shared/lib/firebase/client', () => ({
   getFirebaseAuth: () => ({}),
   getFirebaseFirestore: () => ({}),
 }));

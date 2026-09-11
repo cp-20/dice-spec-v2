@@ -22,8 +22,8 @@ Firebase Emulator を使う Rules テストは、次のファイルが変更さ�
 アプリケーション実装や通常の単体テストだけを変更した場合は再実行しない。通常のテストと Rules テストは次のコマンドで分けて実行する。
 
 ```sh
-bun test --path-ignore-patterns='firebase/*.rules.test.ts'
-bun test firebase/*.rules.test.ts
+pnpm test
+pnpm test:firebase
 ```
 
 Firebase Emulator の環境変数とデフォルト値は [src/shared/lib/env.ts](../src/shared/lib/env.ts) を参照する。

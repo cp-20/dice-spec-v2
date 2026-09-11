@@ -1,5 +1,3 @@
-import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test';
-
 import { act, renderHook } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import type { ReactNode } from 'react';
@@ -40,8 +38,8 @@ afterEach(() => localStorage.clear());
 
 describe('ローカルのダイス操作', () => {
   test('同じエンジンで同期ロールし、呼び出しごとにログを一件だけ追加する', () => {
-    const load = spyOn(bcdice, 'loadGameSystem');
-    const evaluate = spyOn(diceBot, 'eval').mockReturnValue(rollResult);
+    const load = vi.spyOn(bcdice, 'loadGameSystem');
+    const evaluate = vi.spyOn(diceBot, 'eval').mockReturnValue(rollResult);
     try {
       const { result } = setup();
       act(() => {
@@ -67,7 +65,7 @@ describe('ローカルのダイス操作', () => {
     [{ failure: true }, 'failed'],
     [{ fumble: true }, 'failed'],
   ] as const)('判定フラグ %j をログの表示 %s に反映する', (flags, variant) => {
-    const evaluate = spyOn(diceBot, 'eval').mockReturnValue({ ...rollResult, ...flags });
+    const evaluate = vi.spyOn(diceBot, 'eval').mockReturnValue({ ...rollResult, ...flags });
     try {
       const { result } = setup();
       act(() => {
@@ -81,8 +79,8 @@ describe('ローカルのダイス操作', () => {
 
   test('選択直後から旧エンジンでのロールを抑止し、失敗中もログを増やさない', async () => {
     const pending = Promise.withResolvers<typeof diceBot>();
-    const load = spyOn(bcdice, 'loadGameSystem').mockReturnValueOnce(pending.promise);
-    const evaluate = spyOn(diceBot, 'eval');
+    const load = vi.spyOn(bcdice, 'loadGameSystem').mockReturnValueOnce(pending.promise);
+    const evaluate = vi.spyOn(diceBot, 'eval');
     try {
       const { result, store } = setup();
       act(() => {
@@ -106,7 +104,8 @@ describe('ローカルのダイス操作', () => {
 
   test('無効コマンド・評価不能・エンジン例外では成功ログを残さず、次のロールは実行できる', () => {
     const failure = new Error('評価失敗');
-    const evaluate = spyOn(diceBot, 'eval')
+    const evaluate = vi
+      .spyOn(diceBot, 'eval')
       .mockReturnValueOnce(null)
       .mockImplementationOnce(() => {
         throw failure;
@@ -145,13 +144,13 @@ describe('ローカルのダイス操作', () => {
   test('ロール後のサウンドは保存した音量で一度だけ再生し、失敗時の通知も維持する', () => {
     localStorage.setItem('dice-advanced-settings', JSON.stringify({ showHelp: true, playSound: true, volume: 25 }));
     const volumes: number[] = [];
-    const play = spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(function (this: HTMLMediaElement) {
+    const play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(function (this: HTMLMediaElement) {
       volumes.push(this.volume);
       return Promise.resolve();
     });
-    const evaluate = spyOn(diceBot, 'eval').mockReturnValueOnce(rollResult).mockReturnValueOnce(null);
-    const notify = mock(() => ({ id: 'test', dismiss: () => undefined, update: () => undefined }));
-    const toast = spyOn(toastModule, 'useToast').mockReturnValue({
+    const evaluate = vi.spyOn(diceBot, 'eval').mockReturnValueOnce(rollResult).mockReturnValueOnce(null);
+    const notify = vi.fn(() => ({ id: 'test', dismiss: () => undefined, update: () => undefined }));
+    const toast = vi.spyOn(toastModule, 'useToast').mockReturnValue({
       toast: notify,
       toasts: [],
       dismiss: () => undefined,

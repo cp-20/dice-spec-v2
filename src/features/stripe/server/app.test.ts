@@ -1,5 +1,3 @@
-import { expect, mock, test, vi } from 'bun:test';
-
 import * as auth from './auth';
 import * as clients from './clients';
 import * as logger from './logger';
@@ -10,11 +8,11 @@ const updateUserMock = vi.fn(async () => {
   throw new Error('User not found');
 });
 
-mock.module('./auth', () => ({
+vi.doMock('./auth', () => ({
   ...auth,
   getAuthenticatedUser: vi.fn(async () => ({ uid: 'user_1', name: 'User', email: 'user@example.com' })),
 }));
-mock.module('./clients', () => ({
+vi.doMock('./clients', () => ({
   ...clients,
   getPriceId: vi.fn(() => 'price_1'),
   getStripeClient: vi.fn(async () => ({
@@ -25,8 +23,8 @@ mock.module('./clients', () => ({
   getUserById: vi.fn(async () => null),
   updateUserById: updateUserMock,
 }));
-mock.module('./logger', () => ({ ...logger, scheduleStripeLog: vi.fn() }));
-mock.module('./webhook', () => ({
+vi.doMock('./logger', () => ({ ...logger, scheduleStripeLog: vi.fn() }));
+vi.doMock('./webhook', () => ({
   ...webhook,
   appendEventContext: vi.fn(),
   constructStripeEvent: vi.fn(),

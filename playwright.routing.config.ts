@@ -14,7 +14,7 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: 'bun run start --hostname 127.0.0.1 --port 3100',
+        command: 'pnpm start --hostname 127.0.0.1 --port 3100',
         url: appOrigin,
         reuseExistingServer: false,
         timeout: 60_000,

@@ -1,5 +1,3 @@
-import { describe, expect, test } from 'bun:test';
-
 import { shouldCloseAnalysisRecordsBeforeFirestore } from './privacy';
 
 describe('shouldCloseAnalysisRecordsBeforeFirestore', () => {
