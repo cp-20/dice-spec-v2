@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { type ComponentProps, forwardRef, type MouseEvent, Suspense, useEffect, useRef, useState } from 'react';
+import { type ComponentProps, type MouseEvent, Suspense, useEffect, useRef, useState } from 'react';
 
 const START_EVENT = 'dice-spec:navigation-progress-start';
 const COMPLETE_EVENT = 'dice-spec:navigation-progress-complete';
@@ -36,7 +36,7 @@ export const shouldStartNavigation = (
 
 export type ProgressLinkProps = ComponentProps<typeof Link>;
 
-export const ProgressLink = forwardRef<HTMLAnchorElement, ProgressLinkProps>(({ onClick, ...props }, ref) => (
+export const ProgressLink = ({ onClick, ref, ...props }: ProgressLinkProps) => (
   <Link
     {...props}
     ref={ref}
@@ -45,8 +45,7 @@ export const ProgressLink = forwardRef<HTMLAnchorElement, ProgressLinkProps>(({ 
       if (shouldStartNavigation(event)) startNavigationProgress();
     }}
   />
-));
-ProgressLink.displayName = 'ProgressLink';
+);
 
 type ProgressStatus = 'idle' | 'starting' | 'running' | 'complete';
 

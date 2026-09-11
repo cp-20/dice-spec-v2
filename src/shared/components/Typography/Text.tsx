@@ -1,18 +1,10 @@
-import type { ComponentPropsWithoutRef, FC, ForwardRefRenderFunction } from 'react';
-import { forwardRef } from 'react';
+import type { ComponentPropsWithRef, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-const unrefText: ForwardRefRenderFunction<HTMLParagraphElement, ComponentPropsWithoutRef<'p'>> = (
-  { children, className, ...props },
-  ref,
-) => {
+export const Text: FC<ComponentPropsWithRef<'p'>> = ({ children, className, ref, ...props }) => {
   return (
     <p className={twMerge('leading-7 not-first:mt-6', className)} ref={ref} {...props}>
       {children}
     </p>
   );
 };
-
-export const Text: FC<ComponentPropsWithoutRef<'p'>> = forwardRef<HTMLParagraphElement, ComponentPropsWithoutRef<'p'>>(
-  unrefText,
-);

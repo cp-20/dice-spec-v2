@@ -7,22 +7,20 @@ import { cn } from '@/shared/lib/shadcn-utils';
 
 const Tabs = TabsPrimitive.Root;
 
-const TabsList = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.List>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
->(({ className, ...props }, ref) => (
+const TabsList: React.FC<React.ComponentPropsWithRef<typeof TabsPrimitive.List>> = ({ ref, className, ...props }) => (
   <TabsPrimitive.List
     ref={ref}
     className={cn('flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground', className)}
     {...props}
   />
-));
+);
 TabsList.displayName = TabsPrimitive.List.displayName;
 
-const TabsTrigger = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
->(({ className, ...props }, ref) => (
+const TabsTrigger: React.FC<React.ComponentPropsWithRef<typeof TabsPrimitive.Trigger>> = ({
+  ref,
+  className,
+  ...props
+}) => (
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
@@ -31,13 +29,14 @@ const TabsTrigger = React.forwardRef<
     )}
     {...props}
   />
-));
+);
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
-const TabsContent = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, ...props }, ref) => (
+const TabsContent: React.FC<React.ComponentPropsWithRef<typeof TabsPrimitive.Content>> = ({
+  ref,
+  className,
+  ...props
+}) => (
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
@@ -46,7 +45,7 @@ const TabsContent = React.forwardRef<
     )}
     {...props}
   />
-));
+);
 TabsContent.displayName = TabsPrimitive.Content.displayName;
 
 export { Tabs, TabsList, TabsTrigger, TabsContent };

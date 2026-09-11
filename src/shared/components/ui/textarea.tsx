@@ -4,9 +4,9 @@ import { cn } from '@/shared/lib/shadcn-utils';
 
 import styles from '@/shared/styles/pretty-scrollbar.module.css';
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+type TextareaProps = React.ComponentPropsWithRef<'textarea'>;
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ className, ...props }, ref) => {
+const Textarea: React.FC<TextareaProps> = ({ ref, className, ...props }) => {
   return (
     <textarea
       className={cn(
@@ -18,7 +18,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({ classNa
       {...props}
     />
   );
-});
+};
 Textarea.displayName = 'Textarea';
 
 export { Textarea };
