@@ -80,7 +80,14 @@ test('対応するゲームシステム固有の確率計算を切り替えら�
 
 test('ログをアップロードするとゲームシステムを判定して集計する', async ({ page }) => {
   await page.goto('/ja/analyze-logs');
-  await page.locator('#log-file-uploader').setInputFiles({
+  // 非表示 input への直接設定は hydration 前にも実行されるため、実際の選択操作を通す。
+  const fileChooser = page.waitForEvent('filechooser');
+  await page
+    .getByText('クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード', { exact: true })
+    .click();
+  await (
+    await fileChooser
+  ).setFiles({
     name: 'e2e-session.html',
     mimeType: 'text/html',
     buffer: Buffer.from(logHtml),
@@ -96,7 +103,13 @@ test('ログをアップロードするとゲームシステムを判定して�
 
 test('複数ログをタブとキャラクターで絞り込み、選択を解除できる', async ({ page }) => {
   await page.goto('/ja/analyze-logs');
-  await page.locator('#log-file-uploader').setInputFiles([
+  const fileChooser = page.waitForEvent('filechooser');
+  await page
+    .getByText('クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード', { exact: true })
+    .click();
+  await (
+    await fileChooser
+  ).setFiles([
     {
       name: 'e2e-main-session.html',
       mimeType: 'text/html',
@@ -133,7 +146,13 @@ test('複数ログをタブとキャラクターで絞り込み、選択を解�
 test('ログ解析を保存し、タイトル変更後に削除できる', async ({ firebaseUser: _firebaseUser, page }) => {
   test.slow();
   await page.goto('/ja/analyze-logs');
-  await page.locator('#log-file-uploader').setInputFiles({
+  const fileChooser = page.waitForEvent('filechooser');
+  await page
+    .getByText('クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード', { exact: true })
+    .click();
+  await (
+    await fileChooser
+  ).setFiles({
     name: 'e2e-persistence-session.html',
     mimeType: 'text/html',
     buffer: Buffer.from(logHtml),

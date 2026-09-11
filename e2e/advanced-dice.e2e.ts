@@ -124,7 +124,7 @@ test.describe('チャンク通信の制御', () => {
     await expect(help).toContainText('CC');
     expect(await input.evaluate((element) => (element as HTMLElement).offsetTop)).toBe(inputTop);
     expect(await help.evaluate((element) => element.clientHeight)).toBe(helpHeight);
-    await page.unroute('**/_next/static/chunks/**');
+    await page.unrouteAll({ behavior: 'wait' });
 
     await page.route('**/_next/static/chunks/**', async (route) => {
       // 対象エンジンだけを失敗させ、UI用チャンクは遮断しない。
@@ -136,7 +136,8 @@ test.describe('チャンク通信の制御', () => {
     const error = page.getByRole('alert').filter({ hasText: 'ゲームシステムを読み込めませんでした。' });
     await expect(error).toBeVisible();
     await expect(page.getByRole('button', { name: 'ダイスを振る', exact: true })).toBeDisabled();
-    await page.unroute('**/_next/static/chunks/**');
+    // 実行中の fetch/fulfill が再読み込みと競合しないよう、解除時に完了を待つ。
+    await page.unrouteAll({ behavior: 'wait' });
     await error.getByRole('button', { name: 'ページを再読み込み' }).click();
     await page.getByRole('tab', { name: 'アドバンスド' }).click();
     await expect(page.getByRole('button', { name: 'DiceBot', exact: true })).toHaveAttribute('aria-busy', 'false');
