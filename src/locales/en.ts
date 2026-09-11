@@ -453,14 +453,6 @@ export const en = {
       title: 'Analysis List',
       description: 'You can review your saved log analyses here.',
     },
-    'blog-callout': {
-      title: 'Now serializing: "Probability & Statistics for TRPG Players"!',
-      points: {
-        0: 'A gentle 6-part guide to probability and statistics for TRPG players.',
-        1: 'Written with readability first, so you can breeze through it.',
-        2: 'Practical insights you can start using right away.',
-      },
-    },
     ccfolia: { title: 'CCFOLIA Export' },
     error: {
       message: 'An unexpected error occurred.',
