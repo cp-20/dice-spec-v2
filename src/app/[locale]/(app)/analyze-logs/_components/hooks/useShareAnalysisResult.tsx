@@ -57,6 +57,7 @@ export const useShareAnalysisResult = () => {
   const scenarioName = useAtomValue(scenarioNameAtom);
   const setScenarioName = useSetAtom(debouncedScenarioNameAtom);
   const { isSharingImage, shareImage } = useShareAnalysisResultImage();
+  const sharingImageDataUrl = useAtomValue(sharingImageDataUrlAtom);
   const { character } = useCharacterSelect();
   const analysisResult = useCharacterLogAnalysis(character);
   const canShareImage = analysisResult !== null;
@@ -86,7 +87,7 @@ export const useShareAnalysisResult = () => {
                   <Button
                     className="flex-1 rounded-r-none"
                     onClick={() => shareImage(destination, () => setDialogOpen(false))}
-                    disabled={isSharingImage}
+                    disabled={isSharingImage || sharingImageDataUrl === null}
                   >
                     {isSharingImage ? (
                       <span className="opacity-70 inline-flex gap-2 items-center">
@@ -101,7 +102,7 @@ export const useShareAnalysisResult = () => {
                     <PopoverTrigger asChild>
                       <Button
                         className="min-h-11 min-w-11 rounded-l-none border-l border-primary-foreground/30 px-3"
-                        disabled={isSharingImage}
+                        disabled={isSharingImage || sharingImageDataUrl === null}
                         aria-label={t('analyze-logs:share-analysis-result:other-destinations')}
                       >
                         <IconChevronDown className="size-4" aria-hidden="true" />
@@ -111,7 +112,7 @@ export const useShareAnalysisResult = () => {
                       <Button
                         variant="ghost"
                         className="w-full justify-start"
-                        disabled={isSharingImage}
+                        disabled={isSharingImage || sharingImageDataUrl === null}
                         onClick={() => {
                           setShareOptionsOpen(false);
                           setDestination(otherDestination);
