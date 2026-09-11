@@ -92,6 +92,54 @@ test.describe('チャンク通信の制御', () => {
   // Service Worker経由の通信はpage.routeで遮断できない。
   test.use({ serviceWorkers: 'block' });
 
+  test('認証チャンクがオフラインで失敗してもダイス操作を維持し、再読み込みで復旧する', async ({ page }) => {
+    test.setTimeout(60_000);
+    const authChunk = Promise.withResolvers<string>();
+    const disconnect = Promise.withResolvers<void>();
+    let offline = false;
+    await page.route('**/_next/static/chunks/**', async (route) => {
+      if (offline) {
+        await route.continue();
+        return;
+      }
+      const response = await route.fetch();
+      // 本番ビルドではファイル名がハッシュになるため、export名で認証チャンクを特定する。
+      if ((await response.text()).includes('"FirebaseAuthWidget",')) {
+        authChunk.resolve(route.request().url());
+        await disconnect.promise;
+        await route.abort('internetdisconnected');
+      } else {
+        await route.fulfill({ response });
+      }
+    });
+    await openAdvanced(page);
+    const input = page.getByPlaceholder('コマンドを入力してください');
+    await input.fill('1D6');
+    await page.getByRole('button', { name: 'ダイスを振る', exact: true }).click();
+    const results = page.getByText(/^\(1D6\).*＞/);
+    await expect(results).toHaveCount(1);
+
+    const authChunkUrl = await authChunk.promise;
+    offline = true;
+    await page.context().setOffline(true);
+    disconnect.resolve();
+    const reload = page.getByRole('banner').getByRole('button', { name: '再読み込み', exact: true });
+    await expect(reload).toBeVisible();
+    await page.unrouteAll({ behavior: 'wait' });
+    await page.getByRole('button', { name: '1D6', exact: true }).click();
+    await expect(results).toHaveCount(2);
+    await page.getByRole('tab', { name: 'シンプル', exact: true }).click();
+    await page.getByRole('tab', { name: 'アドバンスド', exact: true }).click();
+    await expect(results).toHaveCount(2);
+
+    await page.context().setOffline(false);
+    const [response] = await Promise.all([page.waitForResponse(authChunkUrl), reload.click()]);
+    expect(response.ok()).toBe(true);
+    await expect(reload).toHaveCount(0);
+    await page.getByRole('tab', { name: 'アドバンスド', exact: true }).click();
+    await expect(page.getByRole('button', { name: 'DiceBot', exact: true })).toHaveAttribute('aria-busy', 'false');
+  });
+
   test('切り替え中は名称・スケルトン・表示領域を保ち、チャンク取得失敗から再読み込みで復旧できる', async ({ page }) => {
     test.setTimeout(90_000);
     await page.setViewportSize({ width: 390, height: 844 });
@@ -124,7 +172,7 @@ test.describe('チャンク通信の制御', () => {
     await expect(help).toContainText('CC');
     expect(await input.evaluate((element) => (element as HTMLElement).offsetTop)).toBe(inputTop);
     expect(await help.evaluate((element) => element.clientHeight)).toBe(helpHeight);
-    await page.unroute('**/_next/static/chunks/**');
+    await page.unrouteAll({ behavior: 'wait' });
 
     await page.route('**/_next/static/chunks/**', async (route) => {
       // 対象エンジンだけを失敗させ、UI用チャンクは遮断しない。
@@ -136,8 +184,8 @@ test.describe('チャンク通信の制御', () => {
     const error = page.getByRole('alert').filter({ hasText: 'ゲームシステムを読み込めませんでした。' });
     await expect(error).toBeVisible();
     await expect(page.getByRole('button', { name: 'ダイスを振る', exact: true })).toBeDisabled();
-    await page.unroute('**/_next/static/chunks/**');
-    await error.getByRole('button', { name: 'ページを再読み込み' }).click();
+    await page.unrouteAll({ behavior: 'wait' });
+    await Promise.all([page.waitForEvent('load'), error.getByRole('button', { name: 'ページを再読み込み' }).click()]);
     await page.getByRole('tab', { name: 'アドバンスド' }).click();
     await expect(page.getByRole('button', { name: 'DiceBot', exact: true })).toHaveAttribute('aria-busy', 'false');
     await selectSystem(page, 'DiceBot', 'ソード・ワールド2.5');
