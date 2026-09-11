@@ -19,7 +19,12 @@ export const ExampleCommandButton = ({ command }: { command: string }) => {
       onClick={() => {
         setCommand(command);
         calculateCommand(command);
-        document.getElementById('dice-command')?.focus();
+        const input = document.getElementById('dice-command');
+        input?.focus({ preventScroll: true });
+        input?.scrollIntoView({
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+          block: 'center',
+        });
       }}
     >
       {command}
