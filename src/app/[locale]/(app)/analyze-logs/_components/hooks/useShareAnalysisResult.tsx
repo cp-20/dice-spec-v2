@@ -37,16 +37,18 @@ const SharingImagePreview: FC = () => {
 
   return (
     <ViewTransition name="sharing-image-preview">
-      {sharingImageDataUrl === null ? (
-        <div className="w-full aspect-1200/630 bg-slate-100 border-slate-200 border rounded" />
-      ) : (
-        // oxlint-disable-next-line nextjs/no-img-element dynamically generated image
-        <img
-          src={sharingImageDataUrl}
-          alt={t('analyze-logs:share-analysis-result:image-alt')}
-          className="w-full bg-slate-100 border-slate-200 border rounded"
-        />
-      )}
+      <div className="w-full aspect-1200/630 bg-slate-100 border-slate-200 border rounded overflow-hidden">
+        {sharingImageDataUrl !== null && (
+          // oxlint-disable-next-line nextjs/no-img-element dynamically generated image
+          <img
+            src={sharingImageDataUrl}
+            alt={t('analyze-logs:share-analysis-result:image-alt')}
+            width={1200}
+            height={630}
+            className="w-full h-full object-contain"
+          />
+        )}
+      </div>
     </ViewTransition>
   );
 };
