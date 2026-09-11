@@ -6,10 +6,7 @@ import * as React from 'react';
 
 import { cn } from '@/shared/lib/shadcn-utils';
 
-const Command = React.forwardRef<
-  React.ComponentRef<typeof CommandPrimitive>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive>
->(({ className, ...props }, ref) => (
+const Command: React.FC<React.ComponentPropsWithRef<typeof CommandPrimitive>> = ({ ref, className, ...props }) => (
   <CommandPrimitive
     ref={ref}
     className={cn(
@@ -18,13 +15,14 @@ const Command = React.forwardRef<
     )}
     {...props}
   />
-));
+);
 Command.displayName = CommandPrimitive.displayName;
 
-const CommandInput = React.forwardRef<
-  React.ComponentRef<typeof CommandPrimitive.Input>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
->(({ className, ...props }, ref) => (
+const CommandInput: React.FC<React.ComponentPropsWithRef<typeof CommandPrimitive.Input>> = ({
+  ref,
+  className,
+  ...props
+}) => (
   <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
     <Search className="mr-2 size-4 shrink-0 opacity-50" />
     <CommandPrimitive.Input
@@ -36,21 +34,21 @@ const CommandInput = React.forwardRef<
       {...props}
     />
   </div>
-));
+);
 
 CommandInput.displayName = CommandPrimitive.Input.displayName;
 
-const CommandEmpty = React.forwardRef<
-  React.ComponentRef<typeof CommandPrimitive.Empty>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>
->((props, ref) => <CommandPrimitive.Empty ref={ref} className="py-6 text-center text-sm" {...props} />);
+const CommandEmpty: React.FC<React.ComponentPropsWithRef<typeof CommandPrimitive.Empty>> = ({ ref, ...props }) => (
+  <CommandPrimitive.Empty ref={ref} className="py-6 text-center text-sm" {...props} />
+);
 
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
 
-const CommandGroup = React.forwardRef<
-  React.ComponentRef<typeof CommandPrimitive.Group>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group>
->(({ className, ...props }, ref) => (
+const CommandGroup: React.FC<React.ComponentPropsWithRef<typeof CommandPrimitive.Group>> = ({
+  ref,
+  className,
+  ...props
+}) => (
   <CommandPrimitive.Group
     ref={ref}
     className={cn(
@@ -59,14 +57,15 @@ const CommandGroup = React.forwardRef<
     )}
     {...props}
   />
-));
+);
 
 CommandGroup.displayName = CommandPrimitive.Group.displayName;
 
-const CommandItem = React.forwardRef<
-  React.ComponentRef<typeof CommandPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>
->(({ className, ...props }, ref) => (
+const CommandItem: React.FC<React.ComponentPropsWithRef<typeof CommandPrimitive.Item>> = ({
+  ref,
+  className,
+  ...props
+}) => (
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
@@ -75,7 +74,7 @@ const CommandItem = React.forwardRef<
     )}
     {...props}
   />
-));
+);
 
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 

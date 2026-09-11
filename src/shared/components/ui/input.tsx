@@ -2,9 +2,9 @@ import * as React from 'react';
 
 import { cn } from '@/shared/lib/shadcn-utils';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+type InputProps = React.ComponentPropsWithRef<'input'>;
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, ...props }, ref) => {
+const Input: React.FC<InputProps> = ({ ref, className, type, ...props }) => {
   return (
     <input
       type={type}
@@ -16,7 +16,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
       {...props}
     />
   );
-});
+};
 Input.displayName = 'Input';
 
 export { Input };

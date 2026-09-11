@@ -6,10 +6,11 @@ import * as React from 'react';
 
 import { cn } from '@/shared/lib/shadcn-utils';
 
-const Checkbox = React.forwardRef<
-  React.ComponentRef<typeof CheckboxPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
->(({ className, ...props }, ref) => (
+const Checkbox: React.FC<React.ComponentPropsWithRef<typeof CheckboxPrimitive.Root>> = ({
+  ref,
+  className,
+  ...props
+}) => (
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
@@ -22,7 +23,7 @@ const Checkbox = React.forwardRef<
       <Check className="size-4" />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
-));
+);
 Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
 export { Checkbox };
