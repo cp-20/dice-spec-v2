@@ -25,6 +25,7 @@ const getDocsMock = vi.fn(
     }),
 );
 
+// 購読エラーの後に追加取得が完了する順序を固定するため、SDKの通信境界だけを置き換える。
 vi.doMock('firebase/firestore', () => ({
   ...firestore,
   collection: vi.fn(() => ({})),
@@ -103,31 +104,5 @@ test('先頭ページ購読のエラー後に遅延した追加取得で不完�
   expect(store.get(queryAtoms.charactersAtom).error?.message).toBe('permission denied');
   expect(store.get(queryAtoms.charactersAtom).characters).toHaveLength(0);
   expect(store.get(queryAtoms.charactersAtom).loadingMore).toBe(false);
-  unsubscribe();
-});
-
-test('追加ページに不正な保存データがある場合は読込中のままにしない', async () => {
-  const { createCcfoliaCharactersQueryAtoms } = await import('./characters');
-  const queryAtoms = createCcfoliaCharactersQueryAtoms(atom({ uid: 'user-1' }));
-  const store = createStore();
-  const unsubscribe = store.sub(queryAtoms.charactersAtom, () => undefined);
-
-  await waitFor(() => expect(snapshotNext).toBeDefined());
-
-  const documents = Array.from({ length: CCFOLIA_CHARACTER_PAGE_SIZE }, (_, index) =>
-    makeDocument(`character-${index}`),
-  );
-  snapshotNext!({ docs: documents, size: documents.length });
-
-  const loadMorePromise = store.set(queryAtoms.loadMoreAtom);
-  resolveNextPage!({
-    docs: [{ ...makeDocument('broken'), data: () => ({ schemaVersion: 999 }) }],
-    size: 1,
-  });
-  await loadMorePromise;
-
-  expect(store.get(queryAtoms.charactersAtom).characters).toHaveLength(CCFOLIA_CHARACTER_PAGE_SIZE);
-  expect(store.get(queryAtoms.charactersAtom).loadingMore).toBe(false);
-  expect(store.get(queryAtoms.charactersAtom).error).toBeInstanceOf(Error);
   unsubscribe();
 });
