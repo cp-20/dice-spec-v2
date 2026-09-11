@@ -1,5 +1,3 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'bun:test';
-
 import { getAuthenticatedUser, getBearerToken } from './auth';
 import * as logger from './logger';
 

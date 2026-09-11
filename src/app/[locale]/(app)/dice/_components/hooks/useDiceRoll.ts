@@ -1,114 +1,69 @@
+import type Result from 'bcdice/lib/result';
 import { t } from 'i18next';
+import { useAtomValue, useStore } from 'jotai';
 import { useCallback } from 'react';
 
 import { useToast } from '@/shared/components/ui/use-toast';
-import type { DiceRollResult } from '@/shared/lib/bcdice/getDiceRoll';
 import { formatDiceCommand } from '@/shared/lib/formatDiceCommand';
+import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
-import { useBcdiceApi } from './useBcdiceApi';
 import type { DiceLog } from './useDiceLogs';
 import { useDiceLogs } from './useDiceLogs';
-import { useDiceRollOption, useDiceRollValidation } from './useDiceRollOption';
 import { useDiceSound } from './useDiceSound';
+import { gameSystemAtom } from './useGameSystem';
 import { useQuickInput } from './useQuickInput';
 
-const useValidateAndRoll = () => {
-  const { getDiceRoll } = useBcdiceApi();
-  const { validate } = useDiceRollValidation();
-  const {
-    option: { system },
-  } = useDiceRollOption();
-
-  const validateAndRoll = useCallback(
-    async (command: string): Promise<DiceRollResult> => {
-      if (!validate(command)) {
-        return {
-          ok: false,
-        };
-      }
-
-      const result = await getDiceRoll(command, system);
-      return result;
-    },
-    [getDiceRoll, system, validate],
-  );
-
-  return { validateAndRoll };
-};
-
-const useConvertResultToLog = () => {
-  const {
-    option: { system },
-  } = useDiceRollOption();
-
-  const convertResultToLog = useCallback(
-    (result: DiceRollResult) => {
-      if (!result.ok) return;
-
-      const randomKey = Date.now().toString(36) + Math.random().toString().slice(2);
-
-      const variant = (() => {
-        if (result.critical || result.success) return 'success';
-        if (result.failure || result.fumble) return 'failed';
-        return 'default';
-      })();
-
-      const diceLog: DiceLog = {
-        key: randomKey,
-        system,
-        log: result.text,
-        variant,
-      };
-
-      return diceLog;
-    },
-    [system],
-  );
-
-  return { convertResultToLog };
-};
-
 export const useDiceRollCore = () => {
+  const store = useStore();
+  const selection = useAtomValue(gameSystemAtom);
   const { addItem } = useQuickInput();
-  const { validateAndRoll } = useValidateAndRoll();
-  const { convertResultToLog } = useConvertResultToLog();
   const { addDiceLog } = useDiceLogs();
 
   const diceRoll = useCallback(
-    async (command: string) => {
-      addItem(command);
-      const result = await validateAndRoll(command);
-      const log = convertResultToLog(result);
-      if (log === undefined) return result;
-      addDiceLog(log);
-
-      return result;
+    (command: string): Result | null => {
+      const selected = store.get(gameSystemAtom);
+      if (!selected.engine?.COMMAND_PATTERN.test(command)) return null;
+      try {
+        addItem(command);
+        const result = selected.engine.eval(command);
+        if (result) {
+          const variant =
+            result.critical || result.success ? 'success' : result.failure || result.fumble ? 'failed' : 'default';
+          const log: DiceLog = {
+            key: Date.now().toString(36) + Math.random().toString().slice(2),
+            system: selected.system,
+            log: result.text,
+            variant,
+          };
+          addDiceLog(log);
+        }
+        return result;
+      } catch (error) {
+        captureClientException(error);
+        return null;
+      }
     },
-    [addDiceLog, addItem, convertResultToLog, validateAndRoll],
+    [addDiceLog, addItem, store],
   );
-
-  return {
-    diceRoll,
-  };
+  return { diceRoll, disabled: selection.status !== 'ready' };
 };
 
 export const useDiceRoll = () => {
   const { toast } = useToast();
   const { play } = useDiceSound();
-  const { diceRoll: diceRollCore } = useDiceRollCore();
-  const {
-    option: { system },
-  } = useDiceRollOption();
+  const { diceRoll: diceRollCore, disabled } = useDiceRollCore();
+  const store = useStore();
   const { sendEvent } = useGoogleAnalytics();
 
   const diceRoll = useCallback(
-    async (command: string) => {
+    (command: string) => {
+      const { system } = store.get(gameSystemAtom);
       sendEvent('diceRoll', [system, formatDiceCommand(command)]);
-      const result = await diceRollCore(command);
+      const result = diceRollCore(command);
       play();
 
-      if (!result.ok) {
+      if (!result) {
         sendEvent('diceRollFailed', [system, command]);
         toast({
           title: t('dice:advanced.error'),
@@ -118,10 +73,11 @@ export const useDiceRoll = () => {
 
       return result;
     },
-    [diceRollCore, play, sendEvent, system, toast],
+    [diceRollCore, play, sendEvent, store, toast],
   );
 
   return {
     diceRoll,
+    disabled,
   };
 };

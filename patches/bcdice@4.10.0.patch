@@ -1,0 +1,22 @@
+diff --git a/lib/loader/dynamic_loader.js b/lib/loader/dynamic_loader.js
+index dbb717372328d32b0090f7c3aa3cabddb067c832..f129975a0bb5a86da546517e84d14e2601b26a0e 100644
+--- a/lib/loader/dynamic_loader.js
++++ b/lib/loader/dynamic_loader.js
+@@ -97,7 +97,7 @@ var DynamicLoader = /** @class */ (function (_super) {
+         return __awaiter(this, void 0, void 0, function () {
+             return __generator(this, function (_a) {
+                 switch (_a.label) {
+-                    case 0: return [4 /*yield*/, Promise.resolve("".concat("../../lib/bcdice/i18n/".concat(baseClassName, ".").concat(locale, ".json"))).then(function (s) { return __importStar(require(s)); })];
++                    case 0: return [4 /*yield*/, import(`../../lib/bcdice/i18n/${baseClassName}.${locale}.json`, { with: { type: 'json' } })];
+                     case 1: return [2 /*return*/, (_a.sent()).default];
+                 }
+             });
+@@ -107,7 +107,7 @@ var DynamicLoader = /** @class */ (function (_super) {
+         return __awaiter(this, void 0, void 0, function () {
+             return __generator(this, function (_a) {
+                 switch (_a.label) {
+-                    case 0: return [4 /*yield*/, Promise.resolve("".concat("../../lib/bcdice/game_system/".concat(className))).then(function (s) { return __importStar(require(s)); })];
++                    case 0: return [4 /*yield*/, import(`../../lib/bcdice/game_system/${className}.js`)];
+                     case 1:
+                         _a.sent();
+                         return [2 /*return*/];

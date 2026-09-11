@@ -1,5 +1,3 @@
-import { expect, test } from 'bun:test';
-
 import type { MouseEvent } from 'react';
 
 import { shouldStartNavigation } from './NavigationProgress';

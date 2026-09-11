@@ -22,7 +22,7 @@
       "@/*": ["./src/*"],
       "/public/*": ["./public/*"]
     },
-    "types": ["web", "bun-types"]
+    "types": ["web", "vitest/globals"]
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx", ".next/dev/types/**/*.ts"],
   "exclude": ["node_modules"]

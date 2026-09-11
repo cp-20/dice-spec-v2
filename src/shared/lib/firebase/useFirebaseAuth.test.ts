@@ -1,5 +1,3 @@
-import { expect, test } from 'bun:test';
-
 import { FirebaseError } from 'firebase/app';
 import { AuthErrorCodes } from 'firebase/auth';
 

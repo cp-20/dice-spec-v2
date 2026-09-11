@@ -1,5 +1,3 @@
-import { expect, test, vi } from 'bun:test';
-
 import { act, render } from '@testing-library/react';
 import { createRef, type ReactElement, type Ref } from 'react';
 

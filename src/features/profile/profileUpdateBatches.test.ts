@@ -1,5 +1,3 @@
-import { describe, expect, test } from 'bun:test';
-
 import { MAX_ANALYSES_PER_PROFILE_BATCH, splitProfileUpdateBatches } from './profileUpdateBatches';
 
 describe('splitProfileUpdateBatches', () => {

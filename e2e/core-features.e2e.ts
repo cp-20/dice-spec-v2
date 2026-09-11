@@ -48,64 +48,6 @@ test('複数種類のシンプルダイスをまとめて振り、入力をリ�
   await expect(page.getByText('0D20', { exact: true })).toBeVisible();
 });
 
-test('ゲームシステムを選択してBCDiceのコマンドを実行する', async ({ page }) => {
-  await page.route('https://bcdice.onlinesession.app/v2/game_system**', async (route) => {
-    const url = new URL(route.request().url());
-
-    if (url.pathname === '/v2/game_system') {
-      await route.fulfill({
-        json: {
-          game_system: [
-            { id: 'DiceBot', name: 'DiceBot', sort_key: '*たいすほつと' },
-            { id: 'Cthulhu7th', name: '新クトゥルフ神話TRPG', sort_key: 'しんくとうるふ' },
-          ],
-        },
-      });
-      return;
-    }
-
-    if (url.pathname === '/v2/game_system/Cthulhu7th/roll') {
-      expect(url.searchParams.get('command')).toBe('CC<=60');
-      await route.fulfill({
-        json: {
-          ok: true,
-          text: 'CC<=60 (1D100<=60) ＞ 42 ＞ レギュラー成功',
-          secret: false,
-          success: true,
-          failure: false,
-          critical: false,
-          fumble: false,
-          rands: [{ kind: 'normal', sides: 100, value: 42 }],
-        },
-      });
-      return;
-    }
-
-    await route.fulfill({
-      json: {
-        id: 'Cthulhu7th',
-        name: '新クトゥルフ神話TRPG',
-        sort_key: 'しんくとうるふ',
-        command_pattern: '^CC<=\\d+$',
-        help_message: 'CC<=技能値で判定します。',
-      },
-    });
-  });
-
-  await page.goto('/ja/dice');
-  await page.getByRole('tab', { name: 'アドバンスド' }).click();
-  await page.getByRole('button', { name: 'DiceBot' }).click();
-  await page.getByPlaceholder('ゲームシステムを検索').fill('新クトゥルフ');
-  await page.getByRole('option', { name: '新クトゥルフ神話TRPG' }).click();
-  await expect(page.getByRole('button', { name: '新クトゥルフ神話TRPG' })).toBeVisible();
-
-  await page.getByPlaceholder('コマンドを入力してください').fill('CC<=60');
-  await page.getByRole('button', { name: 'ダイスを振る' }).click();
-
-  await expect(page.getByText('Cthulhu7th', { exact: true })).toBeVisible();
-  await expect(page.getByText('CC<=60 (1D100<=60) ＞ 42 ＞ レギュラー成功')).toBeVisible();
-});
-
 test('ダイス式の確率と統計を計算する', async ({ page }) => {
   await page.goto('/ja/expect');
   await page.getByPlaceholder('計算式を入力してください').fill('1D100<=25');

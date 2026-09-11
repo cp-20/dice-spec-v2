@@ -5,10 +5,7 @@ import * as React from 'react';
 
 import { cn } from '@/shared/lib/shadcn-utils';
 
-const Slider = React.forwardRef<
-  React.ComponentRef<typeof SliderPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
->(({ className, ...props }, ref) => (
+const Slider: React.FC<React.ComponentPropsWithRef<typeof SliderPrimitive.Root>> = ({ ref, className, ...props }) => (
   <SliderPrimitive.Root
     ref={ref}
     className={cn('relative flex w-full touch-none select-none items-center', className)}
@@ -19,7 +16,7 @@ const Slider = React.forwardRef<
     </SliderPrimitive.Track>
     <SliderPrimitive.Thumb className="block size-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
   </SliderPrimitive.Root>
-));
+);
 Slider.displayName = SliderPrimitive.Root.displayName;
 
 export { Slider };

@@ -1,5 +1,3 @@
-import { expect, test } from 'bun:test';
-
 import { numberFormatter } from './variableFieldChangeHandler';
 
 test('数値入力は整数部分だけを解釈する', () => {

@@ -1,5 +1,3 @@
-import { afterEach, expect, test, vi } from 'bun:test';
-
 import { act, renderHook } from '@testing-library/react';
 
 import { useTimedFeedback } from './useTimedFeedback';

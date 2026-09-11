@@ -1,5 +1,3 @@
-import { expect, test } from 'bun:test';
-
 import { fireEvent, render, screen } from '@testing-library/react';
 import i18n from 'i18next';
 

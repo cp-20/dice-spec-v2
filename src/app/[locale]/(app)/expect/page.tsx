@@ -16,6 +16,7 @@ import {
 } from '@/shared/lib/metadataGenerator';
 
 import { DiceCommandInput } from './_components/DiceCommandInput';
+import { ExpectationGuide } from './_components/ExpectationGuide';
 import { ExpectResultDistributionChart } from './_components/ExpectResultDistributionChart';
 import { ExpectResultStats } from './_components/ExpectResultStats';
 import { SystemSpecificExpectations } from './_components/SystemSpecificExpectations';
@@ -72,6 +73,8 @@ const ExpectPage: NextPage = () => (
     <ExpectResultDistributionChart />
 
     <SystemSpecificExpectations />
+
+    <ExpectationGuide />
 
     <div className="my-16">
       <BlogCallout />

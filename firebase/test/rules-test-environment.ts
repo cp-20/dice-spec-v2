@@ -1,4 +1,3 @@
-import { afterAll, afterEach, beforeAll, setDefaultTimeout, spyOn } from 'bun:test';
 import { type ChildProcess, spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import net from 'node:net';
@@ -23,7 +22,7 @@ export const STORAGE_BUCKET = `gs://${testEnv.firebase.storageBucket}`;
 export type TestFirestore = ReturnType<ReturnType<RulesTestEnvironment['authenticatedContext']>['firestore']>;
 export type SeedDocument = { path: string; data: Record<string, unknown> };
 
-setDefaultTimeout(60_000);
+vi.setConfig({ hookTimeout: 60_000, testTimeout: 60_000 });
 
 const isPortOpen = (host: string, port: number): Promise<boolean> =>
   new Promise((resolvePromise) => {
@@ -115,7 +114,7 @@ export const setupRulesTestEnvironment = () => {
   let testEnv: RulesTestEnvironment | undefined;
   let emulatorProcess: ChildProcess | undefined;
   let startedByTest = false;
-  const errorSpy = spyOn(console, 'error');
+  const errorSpy = vi.spyOn(console, 'error');
 
   const environment = () => {
     if (!testEnv) throw new Error('RulesTestEnvironment が初期化されていません');

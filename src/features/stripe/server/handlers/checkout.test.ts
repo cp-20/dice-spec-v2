@@ -1,5 +1,3 @@
-import { describe, expect, test } from 'bun:test';
-
 import type Stripe from 'stripe';
 
 import { createCheckoutHandler } from './checkout';
