@@ -1,6 +1,6 @@
 import LogoIcon from '/public/icon.svg';
 import { t } from 'i18next';
-import { FC, forwardRef, ReactNode } from 'react';
+import { FC, ReactNode, Ref } from 'react';
 
 import type { DiceResultForCharacter } from '@/features/log-analysis/model';
 import { TitleLogo } from '@/shared/components/elements/TitleLogo';
@@ -29,53 +29,52 @@ const Stats: FC<StatsProps> = ({ label, number, unit, small }) => {
 };
 
 interface Props {
+  ref?: Ref<HTMLDivElement>;
   scenarioName?: string;
   analysisResult: Pick<DiceResultForCharacter, 'summary'>;
 }
 
-export const SharingAnalysisResultScreen = forwardRef<HTMLDivElement, Props>(
-  ({ scenarioName, analysisResult }, ref) => {
-    const evaluatedRollCount = analysisResult.summary.evaluatedRollCount;
-    const evaluatedRollCountLabel =
-      evaluatedRollCount !== undefined && evaluatedRollCount !== analysisResult.summary.diceRollCount
-        ? t('analyze-logs:stats.evaluated-roll-count', { count: evaluatedRollCount })
-        : undefined;
+export const SharingAnalysisResultScreen = ({ scenarioName, analysisResult, ref }: Props) => {
+  const evaluatedRollCount = analysisResult.summary.evaluatedRollCount;
+  const evaluatedRollCountLabel =
+    evaluatedRollCount !== undefined && evaluatedRollCount !== analysisResult.summary.diceRollCount
+      ? t('analyze-logs:stats.evaluated-roll-count', { count: evaluatedRollCount })
+      : undefined;
 
-    return (
-      <div ref={ref} className="p-12 pl-24 bg-white aspect-1200/630 relative flex flex-col gap-20 w-full">
-        <div className="text-4xl font-bold text-slate-900">
-          {scenarioName || t('analyze-logs:share-analysis-result.scenario-name-default')}
+  return (
+    <div ref={ref} className="p-12 pl-24 bg-white aspect-1200/630 relative flex flex-col gap-20 w-full">
+      <div className="text-4xl font-bold text-slate-900">
+        {scenarioName || t('analyze-logs:share-analysis-result.scenario-name-default')}
+      </div>
+
+      <div className="flex gap-12 min-h-0 flex-1">
+        <div className="space-y-8">
+          <Stats label={t('analyze-logs:stats.mean')} number={round(analysisResult.summary.average, 2)} />
+          <Stats
+            label={t('analyze-logs:stats.success-rate')}
+            number={evaluatedRollCount === 0 ? '-' : round(analysisResult.summary.successRate, 2)}
+            unit={evaluatedRollCount === 0 ? undefined : '%'}
+            small={evaluatedRollCountLabel}
+          />
+          <Stats
+            label={t('analyze-logs:stats.roll-count')}
+            number={round(analysisResult.summary.diceRollCount, 2)}
+            unit={t('analyze-logs:stats.roll-count-unit')}
+            small={
+              analysisResult.summary.diceCount !== analysisResult.summary.diceRollCount &&
+              `${analysisResult.summary.diceCount}${t('analyze-logs:stats.dice-count-unit')}`
+            }
+          />
         </div>
 
-        <div className="flex gap-12 min-h-0 flex-1">
-          <div className="space-y-8">
-            <Stats label={t('analyze-logs:stats.mean')} number={round(analysisResult.summary.average, 2)} />
-            <Stats
-              label={t('analyze-logs:stats.success-rate')}
-              number={evaluatedRollCount === 0 ? '-' : round(analysisResult.summary.successRate, 2)}
-              unit={evaluatedRollCount === 0 ? undefined : '%'}
-              small={evaluatedRollCountLabel}
-            />
-            <Stats
-              label={t('analyze-logs:stats.roll-count')}
-              number={round(analysisResult.summary.diceRollCount, 2)}
-              unit={t('analyze-logs:stats.roll-count-unit')}
-              small={
-                analysisResult.summary.diceCount !== analysisResult.summary.diceRollCount &&
-                `${analysisResult.summary.diceCount}${t('analyze-logs:stats.dice-count-unit')}`
-              }
-            />
-          </div>
-
-          <div className="flex-1 space-y-4">
-            <LogAnalysisRankingChartView score={analysisResult.summary.deviationScore} className="-mt-16" />
-          </div>
-        </div>
-        <div className="flex items-center gap-1 justify-end absolute bottom-4 right-4">
-          <LogoIcon className="size-8" />
-          <TitleLogo className="h-6" />
+        <div className="flex-1 space-y-4">
+          <LogAnalysisRankingChartView score={analysisResult.summary.deviationScore} className="-mt-16" />
         </div>
       </div>
-    );
-  },
-);
+      <div className="flex items-center gap-1 justify-end absolute bottom-4 right-4">
+        <LogoIcon className="size-8" />
+        <TitleLogo className="h-6" />
+      </div>
+    </div>
+  );
+};
