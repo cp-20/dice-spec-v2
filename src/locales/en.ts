@@ -229,6 +229,13 @@ export const en = {
       'already-implemented': 'This game system has already been implemented.',
     },
     upload: {
+      errors: {
+        unsupported: 'Select an HTML, JSON or ZIP log file.',
+        invalid: 'Could not read the log format. Export it again from CCFOLIA.',
+        empty: 'No messages were found in this file.',
+        'too-large': 'Exceeds 256 MB. Split the log or select files from the ZIP individually.',
+        read: 'Could not read the file. Please select it again.',
+      },
       button: 'Click to upload or drag and drop to upload',
       'add-button': 'Add log',
       'clear-button': 'Remove selected logs',

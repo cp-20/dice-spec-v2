@@ -1,6 +1,8 @@
 import { detectSystem } from './detector';
+import { parseHtmlLog } from './htmlParser';
 
-const htmlLog = (message: string) => `<!DOCTYPE html>
+const htmlLog = (message: string) =>
+  parseHtmlLog(`<!DOCTYPE html>
 <html lang="ja">
   <body>
     <p style="color:#4caf50;">
@@ -9,7 +11,7 @@ const htmlLog = (message: string) => `<!DOCTYPE html>
       <span>${message}</span>
     </p>
   </body>
-</html>`;
+</html>`);
 
 describe('detectSystem', () => {
   test('威力表があるログをSW2.5と判定する', () => {

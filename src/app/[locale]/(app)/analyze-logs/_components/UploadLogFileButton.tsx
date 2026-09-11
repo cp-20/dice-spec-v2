@@ -6,55 +6,35 @@ import { type FC, useCallback, useRef } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
-import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useDropzone } from './hooks/useDropzone';
 import { useLogFiles, useLogTabSelect } from './hooks/useLogAnalysis';
 
-const readFileAsText = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', (e) => {
-      const result = e.target?.result;
-      if (typeof result === 'string') {
-        resolve(result);
-        return;
-      }
-      reject(new Error('Failed to read file'));
-    });
-    reader.addEventListener('error', () => reject(reader.error ?? new Error('Failed to read file')));
-    reader.readAsText(file);
-  });
-
 export const UploadLogFileButton: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const { logFiles, setLogFiles } = useLogFiles();
+  const { logFiles, setLogFiles, isImporting, importFiles } = useLogFiles();
   const { resetSelectedTabs } = useLogTabSelect();
   const { sendEvent } = useGoogleAnalytics();
 
   const dropHandler = useCallback(
     async (files: File[]) => {
-      try {
-        const readFiles = await Promise.all(
-          files.map(async (file) => ({
-            name: file.name,
-            content: await readFileAsText(file),
-          })),
-        );
-        setLogFiles((prev) => [...prev, ...readFiles]);
-        resetSelectedTabs();
-        sendEvent('upload_log', { file_count: files.length });
-      } catch (error) {
-        console.error('Failed to read log file:', error);
-        captureClientException(error);
-        toast({ title: t('analyze-logs:error'), variant: 'destructive' });
-      } finally {
-        if (inputRef.current) inputRef.current.value = '';
+      if (isImporting) return;
+      const failures = await importFiles(files);
+      if (failures.length > 0) {
+        toast({
+          title: t('analyze-logs:error'),
+          description: failures
+            .map(({ name, code }) => `${name}: ${t(`analyze-logs:upload.errors.${code}`)}`)
+            .join('\n'),
+          variant: 'destructive',
+        });
       }
+      sendEvent('upload_log', { file_count: files.length - failures.length });
+      if (inputRef.current) inputRef.current.value = '';
     },
-    [resetSelectedTabs, sendEvent, setLogFiles, toast],
+    [importFiles, isImporting, sendEvent, toast],
   );
 
   const { containerProps, inputProps, isDraggedOver } = useDropzone(dropHandler);
@@ -72,6 +52,7 @@ export const UploadLogFileButton: FC = () => {
           htmlFor="log-file-uploader"
           className="h-fit min-h-20 w-full place-content-center p-4"
           {...containerProps}
+          aria-busy={isImporting}
         >
           {isDraggedOver ? (
             <div className="animate-slide-in-top" key="drag-over">
@@ -86,10 +67,11 @@ export const UploadLogFileButton: FC = () => {
           <input
             id="log-file-uploader"
             type="file"
-            accept="text/html"
+            accept=".html,.htm,.json,.zip"
             multiple
             className="hidden"
             ref={inputRef}
+            disabled={isImporting}
             {...inputProps}
           />
         </label>
@@ -101,6 +83,7 @@ export const UploadLogFileButton: FC = () => {
     <div
       className="flex min-h-20 w-full flex-wrap items-center justify-between gap-3 rounded-md border border-input bg-background p-4 text-sm shadow-xs"
       {...containerProps}
+      aria-busy={isImporting}
     >
       <div className="inline-flex animate-slide-in-top flex-wrap items-center gap-2">
         <span>{t('analyze-logs:upload.current-file')}: </span>
@@ -119,17 +102,24 @@ export const UploadLogFileButton: FC = () => {
             <span>{t('analyze-logs:upload.add-button')}</span>
           </label>
         </Button>
-        <Button variant="ghost" size="icon" onClick={handleRemove} aria-label={t('analyze-logs:upload.clear-button')}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleRemove}
+          disabled={isImporting}
+          aria-label={t('analyze-logs:upload.clear-button')}
+        >
           <IconX />
         </Button>
       </div>
       <input
         id="log-file-uploader"
         type="file"
-        accept="text/html"
+        accept=".html,.htm,.json,.zip"
         multiple
         className="hidden"
         ref={inputRef}
+        disabled={isImporting}
         {...inputProps}
       />
     </div>

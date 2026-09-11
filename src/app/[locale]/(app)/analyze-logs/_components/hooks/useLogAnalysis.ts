@@ -4,8 +4,14 @@ import { useCallback, useEffect } from 'react';
 
 import { analyzeCcfoliaLog } from '@/features/log-analysis/ccfolia';
 import { detectSystem } from '@/features/log-analysis/ccfolia/detector';
-import { parseHtmlLog } from '@/features/log-analysis/ccfolia/htmlParser';
+import {
+  importLogFile,
+  LogImportError,
+  type ImportedLogFile,
+  type LogImportErrorCode,
+} from '@/features/log-analysis/ccfolia/importLogFile';
 import { systemStats } from '@/features/log-analysis/ccfolia/messageParser';
+import { mergeStructuredLogs } from '@/features/log-analysis/ccfolia/structuredLog';
 import type { DiceResultForCharacter, System } from '@/features/log-analysis/model';
 import { round } from '@/shared/lib/round';
 import { captureClientException } from '@/shared/lib/sentryClient';
@@ -13,34 +19,41 @@ import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { ALL_CHARACTER_ID } from '../constants';
 
-type LogFile = {
-  name: string;
-  content: string;
-};
+const logFilesAtom = atom<ImportedLogFile[]>([]);
+const importingLogsAtom = atom(false);
+const mergedLogsAtom = atom((get) => mergeStructuredLogs(get(logFilesAtom).map(({ logs }) => logs)));
+const importLogsAtom = atom(null, async (get, set, files: File[]) => {
+  if (get(importingLogsAtom)) return [];
+  set(importingLogsAtom, true);
+  const errors: { name: string; code: LogImportErrorCode }[] = [];
+  const importedFiles: ImportedLogFile[] = [];
+  try {
+    for (const file of files) {
+      try {
+        const imported = await importLogFile(file);
+        importedFiles.push(imported);
+      } catch (error) {
+        errors.push({ name: file.name, code: error instanceof LogImportError ? error.code : 'read' });
+      }
+    }
+    if (importedFiles.length > 0) {
+      set(logFilesAtom, (previous) => [...previous, ...importedFiles]);
+      set(selectedLogTabsAtom, null);
+    }
+  } finally {
+    set(importingLogsAtom, false);
+  }
+  return errors;
+});
 
-const logFilesAtom = atom<LogFile[]>([]);
-
-const mergeLogContents = (contents: string[]) => {
-  if (contents.length <= 1) return contents[0] ?? '';
-
-  const parser = new DOMParser();
-  const mergedLogs = contents
-    .flatMap((content) => Array.from(parser.parseFromString(content, 'text/html').querySelectorAll('body > p')))
-    .map((el) => el.outerHTML)
-    .join('\n');
-
-  return `<html><body>${mergedLogs}</body></html>`;
-};
-
-const fileContentAtom = atom((get) => mergeLogContents(get(logFilesAtom).map(({ content }) => content)));
 const selectedLogTabsAtom = atom<string[] | null>(null);
 
 const logTabOptionsAtom = atom((get) => {
-  const fileContent = get(fileContentAtom);
-  if (fileContent === '') return [];
+  const { logs } = get(mergedLogsAtom);
+  if (logs.length === 0) return [];
 
   try {
-    return takeUnique(parseHtmlLog(fileContent).map(({ tab }) => tab));
+    return takeUnique(logs.map(({ tab }) => tab));
   } catch (err) {
     console.error('Failed to parse log tabs:', err);
     return [];
@@ -48,17 +61,18 @@ const logTabOptionsAtom = atom((get) => {
 });
 
 const logAnalysisSystemAtom = withAtomEffect(atom<System | null>(null), (get, set) => {
-  const fileContent = get(fileContentAtom);
+  const { logs } = get(mergedLogsAtom);
 
-  if (fileContent === '') {
+  if (logs.length === 0) {
     set(logAnalysisSystemAtom, null);
     return;
   }
 
   try {
-    const detectedSystem = detectSystem(fileContent);
+    const detectedSystem = detectSystem(logs);
     set(logAnalysisSystemAtom, detectedSystem);
   } catch (err) {
+    set(logAnalysisSystemAtom, null);
     console.error('Failed to detect system:', err);
   }
 });
@@ -77,15 +91,15 @@ type LogAnalysisError = {
 const expectedAnalysisErrorMessages = new Set(['Invalid log format', 'No logs detected', 'No valid dice rolls found']);
 
 const logAnalysisResultAtom = atom<LogAnalysisResult>((get) => {
-  const fileContent = get(fileContentAtom);
+  const { logs } = get(mergedLogsAtom);
   const system = get(logAnalysisSystemAtom);
   const selectedTabs = get(selectedLogTabsAtom);
   const tabs = selectedTabs ?? undefined;
 
-  if (fileContent === '' || system === null) return null;
+  if (logs.length === 0 || system === null) return null;
   if (selectedTabs !== null && selectedTabs.length === 0) return null;
   try {
-    const result = analyzeCcfoliaLog(system, fileContent, tabs);
+    const result = analyzeCcfoliaLog(system, logs, tabs);
     return { type: 'success', results: result };
   } catch (err) {
     console.error('Failed to analyze log:', err);
@@ -102,7 +116,14 @@ const systemStatsAtom = atom((get) => {
 
 export const useLogFiles = () => {
   const [logFiles, setLogFiles] = useAtom(logFilesAtom);
-  return { logFiles, setLogFiles };
+  const [isImporting] = useAtom(importingLogsAtom);
+  const [, importFiles] = useAtom(importLogsAtom);
+  return {
+    logFiles,
+    setLogFiles,
+    isImporting,
+    importFiles,
+  };
 };
 
 export const useLogTabSelect = () => {
