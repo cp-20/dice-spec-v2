@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
-import type { FC, ReactNode } from 'react';
+import { type FC, type ReactNode, Suspense } from 'react';
 
 import { BottomNavigation } from '@/shared/components/Layout/BottomNavigation';
 import { Footer } from '@/shared/components/Layout/Footer';
@@ -20,7 +20,7 @@ type AppLayout = {
   children?: ReactNode;
 };
 
-const AppLayout: FC<AppLayout> = ({ children }) => {
+const AppLayoutContent: FC<AppLayout> = ({ children }) => {
   const pathname = usePathname();
   const normalized = normalizePathname(pathname);
 
@@ -48,5 +48,12 @@ const AppLayout: FC<AppLayout> = ({ children }) => {
     </div>
   );
 };
+
+// fallback にページを描画すると、解決時の再マウントで入力やクライアント状態が失われる。
+const AppLayout: FC<AppLayout> = ({ children }) => (
+  <Suspense fallback={null}>
+    <AppLayoutContent>{children}</AppLayoutContent>
+  </Suspense>
+);
 
 export default AppLayout;

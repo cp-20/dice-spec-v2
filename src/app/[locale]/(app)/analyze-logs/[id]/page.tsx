@@ -2,6 +2,8 @@ import type { FirebaseOptions } from 'firebase/app';
 import { FirebaseError, getApp, getApps, initializeApp } from 'firebase/app';
 import { getDownloadURL, getStorage, ref } from 'firebase/storage';
 import { t } from 'i18next';
+import { io } from 'next/cache';
+import { Suspense } from 'react';
 
 import { wrapPage } from '@/shared/i18n/page-layout';
 import { mixedEnv, testEnv } from '@/shared/lib/env';
@@ -14,9 +16,11 @@ import {
   viewportGenerator,
 } from '@/shared/lib/metadataGenerator';
 
+import { RequestMetadata } from '../_components/RequestMetadata';
 import AnalyzeLogDetailPageClient from './_components/AnalyzeLogDetailPageClient';
 
 const getAnalysisOgpUrl = async (analysisId: string) => {
+  await io();
   const firebaseConfig: FirebaseOptions = {
     storageBucket: mixedEnv.firebaseStorageBucket,
   };
@@ -59,4 +63,13 @@ export const generateMetadata: MetadataGenerator = async (props) => {
 
 export const viewport = viewportGenerator();
 
-export default wrapPage(AnalyzeLogDetailPageClient);
+const AnalyzeLogDetailPage = () => (
+  <>
+    <Suspense fallback={null}>
+      <RequestMetadata />
+    </Suspense>
+    <AnalyzeLogDetailPageClient />
+  </>
+);
+
+export default wrapPage(AnalyzeLogDetailPage);

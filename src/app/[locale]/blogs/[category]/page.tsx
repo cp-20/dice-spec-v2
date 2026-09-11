@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 import { metadataHelper } from '@/shared/lib/metadataGenerator';
 
@@ -13,7 +14,7 @@ type Params = {
 export const generateMetadata = async ({ params }: { params: Promise<Params> }): Promise<Metadata> => {
   const { category } = await params;
   const cat = contents.find((c) => c.category === category);
-  if (!cat) throw new Error(`Category not found: ${category}`);
+  if (!cat) notFound();
 
   return metadataHelper({
     title: `${cat.name} - ダイススペックブログ`,
@@ -26,6 +27,7 @@ export const generateMetadata = async ({ params }: { params: Promise<Params> }):
 const CategoryPage = async ({ params }: { params: Promise<Params> }) => {
   const { category } = await params;
   const currentCategory = contents.find((c) => c.category === category);
+  if (!currentCategory) notFound();
 
   return (
     <div className="mx-auto max-w-5xl p-6">
@@ -51,5 +53,3 @@ export const generateStaticParams = async () => {
   const categories = [...new Set(contents.map((c) => c.category))];
   return categories.map((category) => ({ category }));
 };
-
-export const dynamicParams = false;

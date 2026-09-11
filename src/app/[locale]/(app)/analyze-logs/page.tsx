@@ -1,6 +1,7 @@
 import { IconChevronsRight, IconTimeline } from '@tabler/icons-react';
 import { t } from 'i18next';
 import type { NextPage } from 'next';
+import { Suspense } from 'react';
 
 import { BlogCallout } from '@/app/[locale]/(app)/_components/BlogCallout';
 import { PageDescriptionContainer, PageDescriptionText } from '@/app/[locale]/(app)/_components/PageDescription';
@@ -30,6 +31,7 @@ import { LogAnalysisRankingChart } from './_components/LogAnalysisRankingChart';
 import { LogAnalysisStats } from './_components/LogAnalysisStats';
 import { LogTabSelect } from './_components/LogTabSelect';
 import { decodeOgImageId } from './_components/og';
+import { RequestMetadata } from './_components/RequestMetadata';
 import { UploadLogFileButton } from './_components/UploadLogFileButton';
 
 // @opennextjs/aws のバグによって `%2F` のエンコーディングが勝手に `/` に変換されるので、`/` を含むパスだと上手く行かない
@@ -77,6 +79,9 @@ export const viewport = viewportGenerator();
 
 const AnalyzeLogsPage: NextPage = () => (
   <div className="space-y-12">
+    <Suspense fallback={null}>
+      <RequestMetadata />
+    </Suspense>
     <div>
       <PageTitle icon={IconTimeline}>{t('analyze-logs:title')}</PageTitle>
       <PageDescriptionContainer>

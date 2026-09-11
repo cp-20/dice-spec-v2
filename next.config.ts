@@ -5,6 +5,8 @@ import { buildEnv } from './src/shared/lib/env';
 
 const nextConfig = {
   output: 'standalone',
+  cacheComponents: true,
+  partialPrefetching: true,
   reactStrictMode: true,
   experimental: { globalNotFound: true },
   // CI の TypeScript 7 を唯一の型検査にして、next build で同じ検査を重複させない。

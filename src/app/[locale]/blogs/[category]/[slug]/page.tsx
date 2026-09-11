@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
 
 import { BlogBreadCrumb } from '@/app/[locale]/blogs/_components/BlogBreadCrumb';
 import { appBaseUrl, metadataHelper } from '@/shared/lib/metadataGenerator';
@@ -15,7 +16,7 @@ export const generateMetadata = async ({ params }: { params: Promise<Params> }):
   const { slug, category } = await params;
   const cat = contents.find((c) => c.category === category);
   const article = cat?.articles.find((a) => a.slug === slug);
-  if (!article) throw new Error(`Article not found: ${category}/${slug}`);
+  if (!article) notFound();
   const { title, description } = article;
 
   const og = `${appBaseUrl}/assets/blog-images/og/${category}/${slug}.png`;
@@ -45,7 +46,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   const { slug, category } = await params;
   const cat = contents.find((c) => c.category === category);
   const article = cat?.articles.find((a) => a.slug === slug);
-  if (!article) throw new Error(`Article not found: ${category}/${slug}`);
+  if (!article) notFound();
 
   const Post = (await import(`./_contents/${category}/${slug}.mdx`)).default;
 
@@ -92,5 +93,3 @@ export const generateStaticParams = async () => {
       .map((article) => ({ category, slug: article.slug, locale: 'ja' })),
   );
 };
-
-export const dynamicParams = false;
