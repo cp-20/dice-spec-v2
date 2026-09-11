@@ -35,12 +35,11 @@ for (const [name, buffer] of [
     await expect(page.getByRole('combobox', { name: 'ゲームシステムを選択' })).toContainText('新クトゥルフ神話TRPG');
     await expect(page.getByText('成功率', { exact: true }).first().locator('..')).toContainText('50%');
     await expect(page.getByText(/\[メイン\].*聞き耳/)).toBeVisible();
-    if (name === 'session.zip') await expect(page.getByRole('status')).toContainText('重複するログ2件');
     await page.getByRole('checkbox', { name: '[情報]' }).click();
     await expect(count).toContainText('1回');
-    await page.getByRole('button', { name: `${name}を削除`, exact: true }).click();
+    await page.getByRole('button', { name: '選択したログを削除', exact: true }).click();
     await expect(
-      page.getByRole('button', { name: 'クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード' }),
+      page.getByText('クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード', { exact: true }),
     ).toBeVisible();
   });
 }
@@ -59,15 +58,11 @@ test('ドラッグ＆ドロップで読み込み、失敗したファイルを�
     { name: 'broken.zip', mimeType: 'application/zip', buffer: Buffer.from('broken') },
     { name: 'new.html', mimeType: 'text/html', buffer: html },
   ]);
-  await expect(page.getByRole('alert').filter({ hasText: 'broken.zip' })).toContainText('broken.zip');
-  await expect(count).toContainText('2回');
-  await expect(page.getByRole('status')).toContainText('重複するログ2件');
-  await page.getByRole('button', { name: 'first.jsonを削除' }).click();
+  await expect(page.getByText('broken.zip:', { exact: false })).toContainText('broken.zip');
   await expect(count).toContainText('2回');
   await page
     .locator('#log-file-uploader')
     .setInputFiles({ name: 'fixed.json', mimeType: 'application/json', buffer: json });
-  await expect(page.getByRole('alert').filter({ hasText: 'broken.zip' })).toHaveCount(0);
   await expect(count).toContainText('2回');
 });
 

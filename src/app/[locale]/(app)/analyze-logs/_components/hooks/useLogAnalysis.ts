@@ -118,13 +118,11 @@ export const useLogFiles = () => {
   const [logFiles, setLogFiles] = useAtom(logFilesAtom);
   const [isImporting] = useAtom(importingLogsAtom);
   const [, importFiles] = useAtom(importLogsAtom);
-  const { duplicateCount } = useAtomValue(mergedLogsAtom);
   return {
     logFiles,
     setLogFiles,
     isImporting,
     importFiles,
-    duplicateCount: duplicateCount + logFiles.reduce((sum, file) => sum + file.duplicateCount, 0),
   };
 };
 

@@ -229,10 +229,6 @@ export const en = {
       'already-implemented': 'This game system has already been implemented.',
     },
     upload: {
-      formats: 'Supports old/new HTML, JSON and ZIP. No need to extract ZIP files (256 MB per file or extracted ZIP).',
-      loading: 'Reading logs…',
-      'remove-file': 'Remove {{name}}',
-      duplicates: 'Excluded {{count}} overlapping messages across files.',
       errors: {
         unsupported: 'Select an HTML, JSON or ZIP log file.',
         invalid: 'Could not read the log format. Export it again from CCFOLIA.',
