@@ -448,3 +448,16 @@
   --font-main:
     'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', 'meiryo', 'arial', sans-serif;
 }
+
+::view-transition-old(sharing-image-preview),
+::view-transition-new(sharing-image-preview) {
+  animation-duration: 180ms;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(sharing-image-preview),
+  ::view-transition-new(sharing-image-preview) {
+    animation-duration: 0.01ms;
+  }
+}

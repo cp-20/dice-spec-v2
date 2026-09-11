@@ -1,7 +1,7 @@
 import { IconChevronDown, IconLoader } from '@tabler/icons-react';
 import { t } from 'i18next';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { type FC, useCallback, useEffect, useState } from 'react';
+import { type FC, useCallback, useDeferredValue, useEffect, useState, ViewTransition } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/shared/components/ui/dialog';
@@ -33,19 +33,21 @@ const useRegenerateImage = () => {
 };
 
 const SharingImagePreview: FC = () => {
-  const sharingImageDataUrl = useAtomValue(sharingImageDataUrlAtom);
-
-  if (sharingImageDataUrl === null) {
-    return <div className="w-full aspect-1200/630 bg-slate-100 border-slate-200 border rounded" />;
-  }
+  const sharingImageDataUrl = useDeferredValue(useAtomValue(sharingImageDataUrlAtom));
 
   return (
-    // oxlint-disable-next-line nextjs/no-img-element dynamically generated image
-    <img
-      src={sharingImageDataUrl}
-      alt={t('analyze-logs:share-analysis-result:image-alt')}
-      className="w-full bg-slate-100 border-slate-200 border rounded"
-    />
+    <ViewTransition name="sharing-image-preview">
+      {sharingImageDataUrl === null ? (
+        <div className="w-full aspect-1200/630 bg-slate-100 border-slate-200 border rounded" />
+      ) : (
+        // oxlint-disable-next-line nextjs/no-img-element dynamically generated image
+        <img
+          src={sharingImageDataUrl}
+          alt={t('analyze-logs:share-analysis-result:image-alt')}
+          className="w-full bg-slate-100 border-slate-200 border rounded"
+        />
+      )}
+    </ViewTransition>
   );
 };
 
