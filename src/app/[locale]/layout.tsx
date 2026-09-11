@@ -10,9 +10,6 @@ import { GoogleAnalytics } from '@/shared/components/GoogleAnalytics';
 import { I18nProvider } from '@/shared/i18n/client-layout';
 import type { Locale } from '@/shared/i18n/config';
 import { wrapRootLayout } from '@/shared/i18n/server-layout';
-import { isOldApp } from '@/shared/lib/const';
-
-import { OldAppMigrationAnnouncementBanner } from './_components/OldAppMigrationAnnouncementBanner';
 
 const RootLayout: FC<{ children: ReactNode; locale: Locale; resource: ResourceLanguage }> = ({
   children,
@@ -27,8 +24,6 @@ const RootLayout: FC<{ children: ReactNode; locale: Locale; resource: ResourceLa
           <WebVitals />
           <NavigationProgress />
           <ServiceWorkerRegistration />
-
-          {isOldApp && <OldAppMigrationAnnouncementBanner />}
 
           <div className="flex-1">{children}</div>
         </body>
