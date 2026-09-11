@@ -90,8 +90,6 @@ export const en = {
       'quick-input': {
         'add-favorite': 'Save {{command}} to favorite',
         'remove-favorite': 'Remove {{command}} from favorite',
-        'migration-announcement':
-          '<l>Old App</l> migration does not carry over history or favorites. If necessary, please re-register using the <l>Old App</l> as a reference.',
       },
       input: {
         'error-failed': 'Roll failed. Please review the command',
@@ -106,8 +104,6 @@ export const en = {
         'show-help': 'Show Help',
         'enable-sound': 'Play Sound',
         volume: 'Volume',
-        'migration-announcement':
-          '<l>Old App</l> migration does not carry over settings. If necessary, please reconfigure using the <l>Old App</l> as a reference.',
       },
     },
   },
@@ -417,10 +413,6 @@ export const en = {
     'copy-error': 'Failed to copy to the clipboard',
   },
   common: {
-    announcement: {
-      label: 'Announcement',
-      oldAppMigration: 'Your app is an old version. The latest DiceSpec has migrated to <target>{{target}}</target>.',
-    },
     header: {
       'app-name': 'DiceSpec',
       'feedback-button': 'Feedback',
