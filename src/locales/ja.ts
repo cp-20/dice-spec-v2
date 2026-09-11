@@ -127,7 +127,7 @@ export const ja = {
         empty: '解析結果がありません',
       },
       'load-more': 'もっと見る',
-      reload: 'ページを再読み込み',
+      retry: '再試行',
       card: {
         'deviation-score': 'ダイス偏差値',
       },

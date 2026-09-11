@@ -126,7 +126,7 @@ export const en = {
         empty: 'No analyses yet.',
       },
       'load-more': 'Load more',
-      reload: 'Reload page',
+      retry: 'Retry',
       card: {
         'deviation-score': 'Dice Deviation Score',
       },
