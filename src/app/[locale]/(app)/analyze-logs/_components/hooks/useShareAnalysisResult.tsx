@@ -44,6 +44,8 @@ const SharingImagePreview: FC = () => {
     <img
       src={sharingImageDataUrl}
       alt={t('analyze-logs:share-analysis-result:image-alt')}
+      width={1200}
+      height={630}
       className="w-full bg-slate-100 border-slate-200 border rounded"
     />
   );
