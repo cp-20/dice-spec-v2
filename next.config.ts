@@ -1,6 +1,5 @@
 import withMDXFn from '@next/mdx';
 import { withSentryConfig } from '@sentry/nextjs/config';
-import withPWAFn from 'next-pwa';
 
 import { buildEnv } from './src/shared/lib/env';
 
@@ -100,13 +99,6 @@ const nextConfig = {
   htmlLimitedBots: /Google-Site-Verification/,
 };
 
-const withPWA = withPWAFn({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: buildEnv.nodeEnv === 'development',
-});
-
 const withMDX = withMDXFn({});
 
 const sentryConfig = {
@@ -141,7 +133,7 @@ const sentryConfig = {
 };
 
 // @ts-expect-error
-let config = withMDX(withPWA(nextConfig));
+let config = withMDX(nextConfig);
 
 config = withSentryConfig(config, sentryConfig);
 
