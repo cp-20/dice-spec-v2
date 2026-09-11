@@ -3,7 +3,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
-import { clientEnv } from '@/shared/lib/env';
+import { clientEnv, testEnv } from '@/shared/lib/env';
 import {
   connectFirebaseAuthEmulator,
   connectFirebaseFirestoreEmulator,
@@ -23,17 +23,17 @@ const getFirebaseApp = () =>
 
 export const getFirebaseAuth = () => {
   const auth = getAuth(getFirebaseApp());
-  if (process.env.NODE_ENV !== 'production') connectFirebaseAuthEmulator(auth);
+  if (testEnv) connectFirebaseAuthEmulator(auth);
   return auth;
 };
 
 export const getFirebaseFirestore = () => {
   const firestore = getFirestore(getFirebaseApp(), clientEnv.firebaseFirestoreDatabaseId);
-  if (process.env.NODE_ENV !== 'production') connectFirebaseFirestoreEmulator(firestore);
+  if (testEnv) connectFirebaseFirestoreEmulator(firestore);
   return firestore;
 };
 export const getFirebaseStorage = () => {
   const storage = getStorage(getFirebaseApp());
-  if (process.env.NODE_ENV !== 'production') connectFirebaseStorageEmulator(storage);
+  if (testEnv) connectFirebaseStorageEmulator(storage);
   return storage;
 };

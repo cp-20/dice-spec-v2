@@ -88,59 +88,64 @@ test('システム・入力検証・判定表示・お気に入りを維持し�
   await expect(page.getByRole('option', { name: /保存済みシステム/ })).toHaveAttribute('aria-disabled', 'true');
 });
 
-test('切り替え中は名称・スケルトン・表示領域を保ち、チャンク取得失敗から再読み込みで復旧できる', async ({ page }) => {
-  test.setTimeout(90_000);
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await openAdvanced(page);
-  const input = page.getByPlaceholder('コマンドを入力してください');
-  const inputTop = await input.evaluate((element) => (element as HTMLElement).offsetTop);
-  const help = page.getByText(/の使い方$/, { exact: false }).locator('..');
-  const helpHeight = await help.evaluate((element) => element.clientHeight);
-  const gate = Promise.withResolvers<void>();
-  await page.route('**/_next/static/chunks/**', async (route) => {
-    await gate.promise;
-    await route.continue();
-  });
-  try {
-    await selectSystem(page, 'DiceBot', '新クトゥルフ神話TRPG');
-    await expect(page.getByRole('button', { name: /新クトゥルフ神話TRPG/ })).toHaveAttribute('aria-busy', 'true');
-    await expect(page.getByText('「新クトゥルフ神話TRPG」の使い方', { exact: true })).toBeVisible();
-    await expect(help.locator('[aria-hidden="true"]')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'ダイスを振る', exact: true })).toBeDisabled();
+test.describe('チャンク通信の制御', () => {
+  // Service Worker経由の通信はpage.routeで遮断できない。
+  test.use({ serviceWorkers: 'block' });
+
+  test('切り替え中は名称・スケルトン・表示領域を保ち、チャンク取得失敗から再読み込みで復旧できる', async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await openAdvanced(page);
+    const input = page.getByPlaceholder('コマンドを入力してください');
+    const inputTop = await input.evaluate((element) => (element as HTMLElement).offsetTop);
+    const help = page.getByText(/の使い方$/, { exact: false }).locator('..');
+    const helpHeight = await help.evaluate((element) => element.clientHeight);
+    const gate = Promise.withResolvers<void>();
+    await page.route('**/_next/static/chunks/**', async (route) => {
+      await gate.promise;
+      await route.continue();
+    });
+    try {
+      await selectSystem(page, 'DiceBot', '新クトゥルフ神話TRPG');
+      await expect(page.getByRole('button', { name: /新クトゥルフ神話TRPG/ })).toHaveAttribute('aria-busy', 'true');
+      await expect(page.getByText('「新クトゥルフ神話TRPG」の使い方', { exact: true })).toBeVisible();
+      await expect(help.locator('[aria-hidden="true"]')).toBeVisible();
+      await expect(page.getByRole('button', { name: 'ダイスを振る', exact: true })).toBeDisabled();
+      expect(await input.evaluate((element) => (element as HTMLElement).offsetTop)).toBe(inputTop);
+      expect(await help.evaluate((element) => element.clientHeight)).toBe(helpHeight);
+    } finally {
+      gate.resolve();
+    }
+    await expect(page.getByRole('button', { name: '新クトゥルフ神話TRPG', exact: true })).toHaveAttribute(
+      'aria-busy',
+      'false',
+    );
+    await expect(help).toContainText('CC');
     expect(await input.evaluate((element) => (element as HTMLElement).offsetTop)).toBe(inputTop);
     expect(await help.evaluate((element) => element.clientHeight)).toBe(helpHeight);
-  } finally {
-    gate.resolve();
-  }
-  await expect(page.getByRole('button', { name: '新クトゥルフ神話TRPG', exact: true })).toHaveAttribute(
-    'aria-busy',
-    'false',
-  );
-  await expect(help).toContainText('CC');
-  expect(await input.evaluate((element) => (element as HTMLElement).offsetTop)).toBe(inputTop);
-  expect(await help.evaluate((element) => element.clientHeight)).toBe(helpHeight);
-  await page.unroute('**/_next/static/chunks/**');
+    await page.unroute('**/_next/static/chunks/**');
 
-  await page.route('**/_next/static/chunks/**', async (route) => {
-    // 対象エンジンだけを失敗させ、UIや開発サーバーのHMR用チャンクは遮断しない。
-    const response = await route.fetch();
-    if ((await response.text()).includes('SwordWorld2_5')) await route.abort();
-    else await route.fulfill({ response });
+    await page.route('**/_next/static/chunks/**', async (route) => {
+      // 対象エンジンだけを失敗させ、UI用チャンクは遮断しない。
+      const response = await route.fetch();
+      if ((await response.text()).includes('SwordWorld2_5')) await route.abort();
+      else await route.fulfill({ response });
+    });
+    await selectSystem(page, '新クトゥルフ神話TRPG', 'ソード・ワールド2.5');
+    const error = page.getByRole('alert').filter({ hasText: 'ゲームシステムを読み込めませんでした。' });
+    await expect(error).toBeVisible();
+    await expect(page.getByRole('button', { name: 'ダイスを振る', exact: true })).toBeDisabled();
+    await page.unroute('**/_next/static/chunks/**');
+    await error.getByRole('button', { name: 'ページを再読み込み' }).click();
+    await page.getByRole('tab', { name: 'アドバンスド' }).click();
+    await expect(page.getByRole('button', { name: 'DiceBot', exact: true })).toHaveAttribute('aria-busy', 'false');
+    await selectSystem(page, 'DiceBot', 'ソード・ワールド2.5');
+    await input.fill('K20+5');
+    await page.getByRole('button', { name: 'ダイスを振る', exact: true }).click();
+    await expect(page.getByText('SwordWorld2.5', { exact: true })).toBeVisible();
+    await expect(error).toHaveCount(0);
   });
-  await selectSystem(page, '新クトゥルフ神話TRPG', 'ソード・ワールド2.5');
-  const error = page.getByRole('alert').filter({ hasText: 'ゲームシステムを読み込めませんでした。' });
-  await expect(error).toBeVisible();
-  await expect(page.getByRole('button', { name: 'ダイスを振る', exact: true })).toBeDisabled();
-  await page.unroute('**/_next/static/chunks/**');
-  await error.getByRole('button', { name: 'ページを再読み込み' }).click();
-  await page.getByRole('tab', { name: 'アドバンスド' }).click();
-  await expect(page.getByRole('button', { name: 'DiceBot', exact: true })).toHaveAttribute('aria-busy', 'false');
-  await selectSystem(page, 'DiceBot', 'ソード・ワールド2.5');
-  await input.fill('K20+5');
-  await page.getByRole('button', { name: 'ダイスを振る', exact: true }).click();
-  await expect(page.getByText('SwordWorld2.5', { exact: true })).toBeVisible();
-  await expect(error).toHaveCount(0);
 });
 
 test('旧設定のヘルプ・音量を読み込み、設定変更を再読み込み後も保持する', async ({ page }) => {
