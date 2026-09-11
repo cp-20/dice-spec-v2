@@ -164,6 +164,7 @@ const clipboardCharacterSchema = v.object({
 export const createDefaultCcfoliaEditorCharacter = (): CcfoliaEditorCharacter => ({
   name: '',
   memo: '',
+  initiative: undefined,
   externalUrl: '',
   status: [
     { key: nanoid(), label: 'HP', value: 0, max: 0 },

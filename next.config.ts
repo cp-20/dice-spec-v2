@@ -1,5 +1,5 @@
 import withMDXFn from '@next/mdx';
-import { withSentryConfig } from '@sentry/nextjs';
+import { withSentryConfig } from '@sentry/nextjs/config';
 import withPWAFn from 'next-pwa';
 
 import { buildEnv } from './src/shared/lib/env';
