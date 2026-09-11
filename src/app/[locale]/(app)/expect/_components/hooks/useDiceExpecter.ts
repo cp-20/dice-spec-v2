@@ -30,17 +30,22 @@ export const useRecalculation = () => {
   const setResult = useSetAtom(resultAtom);
   const { sendEvent } = useGoogleAnalytics();
 
-  const recalculate = useCallback(() => {
-    if (command === '') {
-      return setResult(null);
-    }
+  const calculateCommand = useCallback(
+    (value: string) => {
+      if (value === '') {
+        return setResult(null);
+      }
 
-    sendEvent('diceExpecter', command);
-    setResult(diceExpecter(command));
-  }, [command, sendEvent, setResult]);
+      sendEvent('diceExpecter', value);
+      setResult(diceExpecter(value));
+    },
+    [sendEvent, setResult],
+  );
+  const recalculate = useCallback(() => calculateCommand(command), [calculateCommand, command]);
 
   return {
     recalculate,
+    calculateCommand,
   };
 };
 

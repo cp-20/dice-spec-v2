@@ -25,6 +25,7 @@ import {
 import { DiceLogList } from './_components/DiceLogList';
 import { GameSystemSelect } from './_components/GameSystemSelect';
 import { LogAnalysisCharts } from './_components/LogAnalysisCharts';
+import { LogAnalysisGuide } from './_components/LogAnalysisGuide';
 import { LogAnalysisRankingChart } from './_components/LogAnalysisRankingChart';
 import { LogAnalysisStats } from './_components/LogAnalysisStats';
 import { LogTabSelect } from './_components/LogTabSelect';
@@ -56,10 +57,10 @@ const getOgImageUrl = (ogp: string | string[] | undefined) => {
 
 export const generateMetadata: MetadataGenerator = async (props) => {
   const searchParams = await props.searchParams;
-  const title = t('common:analyze-logs.title');
+  const locale = await localeHelper(props);
+  const title = t('analyze-logs:title');
   const description = t('analyze-logs:usage1');
   const ogp = getOgImageUrl(searchParams.ogp);
-  const locale = await localeHelper(props);
 
   const metadata = metadataHelper({
     title,
@@ -77,9 +78,10 @@ export const viewport = viewportGenerator();
 const AnalyzeLogsPage: NextPage = () => (
   <div className="space-y-12">
     <div>
-      <PageTitle icon={IconTimeline}>{t('common:analyze-logs.title')}</PageTitle>
+      <PageTitle icon={IconTimeline}>{t('analyze-logs:title')}</PageTitle>
       <PageDescriptionContainer>
         <PageDescriptionText>{t('analyze-logs:usage1')}</PageDescriptionText>
+        <LogAnalysisGuide />
       </PageDescriptionContainer>
     </div>
 
