@@ -1,8 +1,10 @@
+minimumReleaseAgeStrict: true
+
 overrides:
   protobufjs: 7.6.5
 
 patchedDependencies:
-  '@firebase/firestore@4.16.0': patches/@firebase%2Ffirestore@4.16.0.patch
+  '@firebase/firestore@4.17.2': patches/@firebase%2Ffirestore@4.17.2.patch
   bcdice@4.10.0: patches/bcdice@4.10.0.patch
 
 allowBuilds:
