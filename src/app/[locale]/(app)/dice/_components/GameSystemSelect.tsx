@@ -3,7 +3,7 @@
 import clsx from 'clsx';
 import { t } from 'i18next';
 import { useStore } from 'jotai';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, LoaderCircle } from 'lucide-react';
 import type { FC } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -71,7 +71,14 @@ export const GameSystemSelect: FC = () => {
             ) : (
               <span className="text-slate-600">{t('dice:advanced.game-system.button')}</span>
             )}
-            <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+            {!systemInfo && !error ? (
+              <output className="ml-2 shrink-0">
+                <LoaderCircle aria-hidden="true" className="size-4 motion-safe:animate-spin" />
+                <span className="sr-only">{t('dice:advanced.game-system.loading')}</span>
+              </output>
+            ) : (
+              <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className={clsx('h-60 p-0', styles['popover-content'])} ref={popoverRef}>
@@ -100,7 +107,6 @@ export const GameSystemSelect: FC = () => {
           </Command>
         </PopoverContent>
       </Popover>
-      {!systemInfo && !error && <output className="block text-sm">{t('dice:advanced.game-system.loading')}</output>}
       {error && (
         <p role="alert" className="text-sm text-red-500">
           {t('dice:advanced.game-system.error')}{' '}

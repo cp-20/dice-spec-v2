@@ -15,13 +15,24 @@ export const DiceBotHelp: FC = () => {
   const helpMessage = option.systemInfo?.help_message ?? '';
   const { advancedSettings } = useAdvancedSettings();
 
-  if (!advancedSettings.showHelp || !option.systemInfo) {
+  if (!advancedSettings.showHelp) {
     return null;
   }
 
   return (
-    <ContainerSection label={t('dice:advanced.dicebot-usage', { systemName })}>
-      <RichText className="text-sm" text={helpMessage} />
+    <ContainerSection
+      className="h-64 overflow-y-auto"
+      tabIndex={0}
+      aria-busy={!option.systemInfo && !option.error}
+      label={t('dice:advanced.dicebot-usage', { systemName })}
+    >
+      {option.systemInfo ? (
+        <RichText className="text-sm" text={helpMessage} />
+      ) : (
+        <p className="text-sm">
+          {t(option.error ? 'dice:advanced.game-system.error' : 'dice:advanced.game-system.loading')}
+        </p>
+      )}
     </ContainerSection>
   );
 };
