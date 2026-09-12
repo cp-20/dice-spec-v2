@@ -1,0 +1,77 @@
+import LogoIcon from '/public/icon.svg';
+import { FC, ReactNode, Ref } from 'react';
+
+import type { DiceResultForCharacter } from '@/features/log-analysis/model';
+import { TitleLogo } from '@/shared/components/elements/TitleLogo';
+import { round } from '@/shared/lib/round';
+
+import { LogAnalysisRankingChartView } from './LogAnalysisRankingChartView';
+
+interface StatsProps {
+  label: ReactNode;
+  number: ReactNode;
+  unit?: ReactNode;
+  small?: ReactNode;
+}
+
+const Stats: FC<StatsProps> = ({ label, number, unit, small }) => {
+  return (
+    <div>
+      <div className="text-slate-500 mb-1 font-bold text-xl">{label}</div>
+      <div className="flex items-baseline">
+        <span className="text-6xl font-bold text-slate-900">{number}</span>
+        {unit && <span className="ml-1 text-2xl text-slate-700 font-bold">{unit}</span>}
+        {small && <div className="text-xl text-slate-400 font-bold ml-2">{`/ ${small}`}</div>}
+      </div>
+    </div>
+  );
+};
+
+interface Props {
+  ref?: Ref<HTMLDivElement>;
+  scenarioName?: string;
+  analysisResult: Pick<DiceResultForCharacter, 'summary'>;
+}
+
+export const SharingAnalysisResultScreen = ({ scenarioName, analysisResult, ref }: Props) => {
+  const evaluatedRollCount = analysisResult.summary.evaluatedRollCount;
+  const evaluatedRollCountLabel =
+    evaluatedRollCount !== undefined && evaluatedRollCount !== analysisResult.summary.diceRollCount
+      ? `${evaluatedRollCount}回を評価`
+      : undefined;
+
+  return (
+    <div ref={ref} className="p-12 pl-24 bg-white aspect-1200/630 relative flex flex-col gap-20 w-full">
+      <div className="text-4xl font-bold text-slate-900">{scenarioName || 'ログ解析結果'}</div>
+
+      <div className="flex gap-12 min-h-0 flex-1">
+        <div className="space-y-8">
+          <Stats label="平均" number={round(analysisResult.summary.average, 2)} />
+          <Stats
+            label="成功率"
+            number={evaluatedRollCount === 0 ? '-' : round(analysisResult.summary.successRate, 2)}
+            unit={evaluatedRollCount === 0 ? undefined : '%'}
+            small={evaluatedRollCountLabel}
+          />
+          <Stats
+            label="ダイスを振った回数"
+            number={round(analysisResult.summary.diceRollCount, 2)}
+            unit="回"
+            small={
+              analysisResult.summary.diceCount !== analysisResult.summary.diceRollCount &&
+              `${analysisResult.summary.diceCount}${'個'}`
+            }
+          />
+        </div>
+
+        <div className="flex-1 space-y-4">
+          <LogAnalysisRankingChartView score={analysisResult.summary.deviationScore} className="-mt-16" />
+        </div>
+      </div>
+      <div className="flex items-center gap-1 justify-end absolute bottom-4 right-4">
+        <LogoIcon className="size-8" />
+        <TitleLogo className="h-6" />
+      </div>
+    </div>
+  );
+};

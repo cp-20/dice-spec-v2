@@ -28,7 +28,7 @@ for (const [name, buffer] of [
   ['split.zip', splitZip],
 ] as const) {
   test(`${name}を読み込み、重複せず集計してタブで絞り込める`, async ({ page }) => {
-    await page.goto('/ja/analyze-logs');
+    await page.goto('/analyze-logs');
     await page.locator('#log-file-uploader').setInputFiles({ name, mimeType: 'application/octet-stream', buffer });
     const count = page.getByText('ダイスを振った回数', { exact: true }).first().locator('..');
     await expect(count).toContainText('2回');
@@ -45,7 +45,7 @@ for (const [name, buffer] of [
 }
 
 test('ドラッグ＆ドロップで読み込み、失敗したファイルを示して既存の結果を維持する', async ({ page }) => {
-  await page.goto('/ja/analyze-logs');
+  await page.goto('/analyze-logs');
   const transfer = await page.evaluateHandle((text) => {
     const data = new DataTransfer();
     data.items.add(new File([text], 'first.json', { type: 'application/json' }));
@@ -68,7 +68,7 @@ test('ドラッグ＆ドロップで読み込み、失敗したファイルを�
 
 test('ZIPの解析結果を保存して再読み込みできる', async ({ firebaseUser: _firebaseUser, page }) => {
   test.slow();
-  await page.goto('/ja/analyze-logs');
+  await page.goto('/analyze-logs');
   await page
     .locator('#log-file-uploader')
     .setInputFiles({ name: 'session.zip', mimeType: 'application/zip', buffer: zip });

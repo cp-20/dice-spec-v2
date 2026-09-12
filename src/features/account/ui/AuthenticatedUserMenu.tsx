@@ -1,7 +1,6 @@
 'use client';
 
 import { IconLogout, IconUser, IconUserCircle } from '@tabler/icons-react';
-import { t } from 'i18next';
 import type { FC } from 'react';
 
 import { useMeStore } from '@/features/account/firebase/accountStore';
@@ -32,7 +31,7 @@ export const AuthenticatedUserMenu: FC<AuthenticatedUserMenuProps> = ({ email, s
         <button
           type="button"
           className="relative size-8 overflow-hidden rounded-full border-2 border-slate-300 transition-all hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
-          aria-label={t('profile:menu.aria-label')}
+          aria-label="ユーザーメニュー"
         >
           {me.avatarUrl ? (
             // oxlint-disable-next-line nextjs/no-img-element 外部URLの画像を表示するため、imgタグを使用 (そしてアップロード時に圧縮されているはず)
@@ -64,9 +63,9 @@ export const AuthenticatedUserMenu: FC<AuthenticatedUserMenuProps> = ({ email, s
           </div>
 
           <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-            <CustomLink href={t('link', { href: '/profile' })}>
+            <CustomLink href="/profile">
               <IconUser className="size-4" />
-              <span>{t('profile:menu.profile')}</span>
+              <span>プロフィール</span>
             </CustomLink>
           </Button>
 
@@ -77,7 +76,7 @@ export const AuthenticatedUserMenu: FC<AuthenticatedUserMenuProps> = ({ email, s
             onClick={signOut}
           >
             <IconLogout className="size-4" />
-            <span>{t('profile:menu.sign-out')}</span>
+            <span>ログアウト</span>
           </Button>
         </div>
       </PopoverContent>

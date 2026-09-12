@@ -14,68 +14,10 @@ const nextConfig = {
     // Next.js が設定ファイル経由で読み込むため、静的解析では未使用に見える。
     loaderFile: './src/image-loader.ts',
   },
-  rewrites: async () => [
-    {
-      source: '/',
-      destination: '/ja/',
-    },
-    {
-      source: '/terms',
-      destination: '/ja/terms',
-    },
-    {
-      source: '/privacy-policy',
-      destination: '/ja/privacy-policy',
-    },
-    {
-      source: '/specified-commercial-transactions',
-      destination: '/ja/specified-commercial-transactions',
-    },
-    {
-      source: '/expect',
-      destination: '/ja/expect',
-    },
-    {
-      source: '/dice',
-      destination: '/ja/dice',
-    },
-    {
-      source: '/analyze-logs',
-      destination: '/ja/analyze-logs',
-    },
-    {
-      source: '/analyze-logs/list',
-      destination: '/ja/analyze-logs/list',
-    },
-    {
-      source: '/analyze-logs/:id',
-      destination: '/ja/analyze-logs/:id',
-    },
-    {
-      source: '/ccfolia',
-      destination: '/ja/ccfolia',
-    },
-    {
-      source: '/profile',
-      destination: '/ja/profile',
-    },
-    {
-      source: '/blogs',
-      destination: '/ja/blogs',
-    },
-    {
-      source: '/blogs/:category',
-      destination: '/ja/blogs/:category',
-    },
-    {
-      source: '/blogs/:category/:slug',
-      destination: '/ja/blogs/:category/:slug',
-    },
-    {
-      // 日本語の既存 rewrite と静的ファイルの解決後、未対応 locale を動的ルートへ渡さない。
-      source: '/:locale((?!ja(?:/|$)|en(?:/|$)|api/stripe(?:/|$))[^/]+)/:path*',
-      destination: '/_not-found',
-    },
+  redirects: async () => [
+    // OpenNext では空のワイルドカードが転送先に残るため、トップは個別に指定する。
+    { source: '/en', destination: '/', permanent: true },
+    { source: '/en/:path*', destination: '/:path*', permanent: true },
   ],
   pageExtensions: ['md', 'mdx', 'ts', 'tsx'],
   turbopack: {

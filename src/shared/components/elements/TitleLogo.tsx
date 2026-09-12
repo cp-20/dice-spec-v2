@@ -1,6 +1,4 @@
-import TitleLogoEN from '/public/title-logo-en.svg';
-import TitleLogoJP from '/public/title-logo.svg';
-import { t } from 'i18next';
+import Logo from '/public/title-logo.svg';
 import type { FC } from 'react';
 
 interface TitleLogoProps {
@@ -8,6 +6,5 @@ interface TitleLogoProps {
 }
 
 export const TitleLogo: FC<TitleLogoProps> = (props) => {
-  const Logo = t('lang') === 'en' ? TitleLogoEN : TitleLogoJP;
   return <Logo {...props} />;
 };
