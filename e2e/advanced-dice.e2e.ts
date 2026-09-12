@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const openAdvanced = async (page: Page) => {
-  await page.goto('/ja/dice');
+  await page.goto('/dice');
   await page.getByRole('tab', { name: 'アドバンスド' }).click();
   await expect(page.getByRole('button', { name: 'DiceBot', exact: true })).toHaveAttribute('aria-busy', 'false');
 };

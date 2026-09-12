@@ -1,6 +1,5 @@
 import type { IconProps } from '@tabler/icons-react';
 import clsx from 'clsx';
-import { t } from 'i18next';
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -21,9 +20,9 @@ export const BottomNavigation: FC<ComponentProps<'nav'> & BottomNavigationProps>
   <nav className={twMerge('flex border-t', className)} {...props}>
     {navLinks
       .filter((link) => !link.sideNavOnly)
-      .map(({ key, href, icon }) => (
-        <BottomNavigationLink key={href} href={t('link', { href })} icon={icon} isActive={href === active}>
-          {t(`common:${key}.title`)}
+      .map(({ label, href, icon }) => (
+        <BottomNavigationLink key={href} href={href} icon={icon} isActive={href === active}>
+          {label}
         </BottomNavigationLink>
       ))}
   </nav>

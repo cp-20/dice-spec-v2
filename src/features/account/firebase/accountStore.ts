@@ -1,5 +1,4 @@
 import { doc, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore';
-import { t } from 'i18next';
 import { atom, useAtomValue } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import * as v from 'valibot';
@@ -75,8 +74,8 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
         console.error('Failed to create user document:', error);
         captureClientException(error);
         toast({
-          title: t('profile:toast.sign-in-error-title'),
-          description: t('profile:toast.sign-in-error-description'),
+          title: 'ログインに失敗しました',
+          description: 'アカウントの初期化に失敗しました。時間をおいて再度お試しください。',
           variant: 'destructive',
         });
 

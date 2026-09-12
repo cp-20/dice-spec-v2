@@ -1,6 +1,5 @@
 'use client';
 
-import { t } from 'i18next';
 import type { FC } from 'react';
 
 import { CustomLink } from '@/shared/components/elements/CustomLink';
@@ -13,18 +12,15 @@ type GoogleSignInAgreementProps = {
 export const GoogleSignInAgreement: FC<GoogleSignInAgreementProps> = ({ className }) => {
   return (
     <p className={cn('mx-auto px-2 text-center text-xs leading-relaxed text-slate-500', className)}>
-      {t('profile:agreement.prefix')}
-      <CustomLink href={t('link', { href: '/terms' })} className="underline underline-offset-2 hover:text-slate-700">
-        {t('profile:agreement.terms')}
+      アカウントを作成すると、
+      <CustomLink href="/terms" className="underline underline-offset-2 hover:text-slate-700">
+        利用規約
       </CustomLink>
-      {t('profile:agreement.conjunction')}
-      <CustomLink
-        href={t('link', { href: '/privacy-policy' })}
-        className="underline underline-offset-2 hover:text-slate-700"
-      >
-        {t('profile:agreement.privacy')}
+      および
+      <CustomLink href="/privacy-policy" className="underline underline-offset-2 hover:text-slate-700">
+        プライバシーポリシー
       </CustomLink>
-      {t('profile:agreement.suffix')}
+      に同意したものとみなされます。
     </p>
   );
 };

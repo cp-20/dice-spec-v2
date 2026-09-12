@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { t } from 'i18next';
 import type { ComponentProps, FC } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -13,9 +12,9 @@ type SideNavigationProps = {
 
 export const SideNavigation: FC<ComponentProps<'nav'> & SideNavigationProps> = ({ className, active, ...props }) => (
   <nav className={twMerge('flex w-60 flex-col border-r', className)} {...props}>
-    {navLinks.map(({ key, href, icon }) => (
-      <SideNavigationLink key={href} icon={icon} href={t('link', { href })} isActive={href === active}>
-        <span>{t(`common:${key}.title`)}</span>
+    {navLinks.map(({ label, href, icon }) => (
+      <SideNavigationLink key={href} icon={icon} href={href} isActive={href === active}>
+        <span>{label}</span>
       </SideNavigationLink>
     ))}
   </nav>

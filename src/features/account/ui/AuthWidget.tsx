@@ -1,6 +1,5 @@
 'use client';
 
-import { t } from 'i18next';
 import { RotateCw } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { Component, type FC, type ReactNode, useEffect, useState } from 'react';
@@ -35,7 +34,7 @@ class AuthWidgetBoundary extends Component<{ children: ReactNode }, { failed: bo
         variant="outline"
         size="icon"
         className="size-8"
-        title={t('common:error.reload')}
+        title="再読み込み"
         onClick={() => window.location.reload()}
       >
         <RotateCw className="size-4" aria-hidden="true" />

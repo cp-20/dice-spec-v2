@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('負の修正値を逐次入力でき、未完了入力と上下限を扱える', async ({ page }) => {
-  await page.goto('/ja/expect');
+  await page.goto('/expect');
   await page.getByRole('tab', { name: 'ダブルクロス3rd' }).click();
 
   const modifier = page.getByLabel('修正値', { exact: true });

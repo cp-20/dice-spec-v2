@@ -18,7 +18,7 @@ test('クリップボードから読み込み、編集結果をココフォリ�
   await context.grantPermissions(['clipboard-read', 'clipboard-write'], {
     origin: 'http://127.0.0.1:3100',
   });
-  await page.goto('/ja/ccfolia');
+  await page.goto('/ccfolia');
   await page.waitForFunction(() => typeof window.__diceSpecFirebaseEmulatorSignIn === 'function');
   await expect(page.getByText('Googleでログインすると、キャラクターをアカウントに保存できます。')).toBeVisible();
 

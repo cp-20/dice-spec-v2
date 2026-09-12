@@ -1,7 +1,7 @@
 import { expect, test } from '../fixtures/firebase';
 
 test('キャラクターを新規保存し、再読み込み後も編集できる', async ({ firebaseUser: _firebaseUser, page }) => {
-  await page.goto('/ja/ccfolia');
+  await page.goto('/ccfolia');
   await expect(page.getByText('0 / 3件保存中')).toBeVisible();
 
   await page.getByLabel('名前').fill('E2E新規保存キャラクター');
@@ -24,7 +24,7 @@ test('無料プランの保存上限では新しいキャラクターを保存�
     { id: 'limit-character-2', name: '保存上限キャラクター2' },
     { id: 'limit-character-3', name: '保存上限キャラクター3' },
   ]);
-  await page.goto('/ja/ccfolia');
+  await page.goto('/ccfolia');
 
   await expect(page.getByText('3 / 3件保存中')).toBeVisible();
   await expect(page.getByText('空のフォームから作成(アカウント保存は上限)')).toBeVisible();
@@ -39,7 +39,7 @@ test('保存済みキャラクターの編集内容を新しいキャラクタ�
   await firebaseUser.seedCharacters([
     { id: 'clone-source-character', name: '複製元キャラクター', memo: '複製元のメモ' },
   ]);
-  await page.goto('/ja/ccfolia');
+  await page.goto('/ccfolia');
 
   await page.getByRole('article', { name: '複製元キャラクター' }).getByRole('button').first().click();
   await page.getByLabel('名前').fill('複製したキャラクター');
@@ -60,7 +60,7 @@ test('保存済みキャラクターの編集内容を新しいキャラクタ�
 
 test('削除確認をキャンセルすると保存済みキャラクターを削除しない', async ({ firebaseUser, page }) => {
   await firebaseUser.seedCharacters([{ id: 'delete-cancel-character', name: '削除キャンセル対象' }]);
-  await page.goto('/ja/ccfolia');
+  await page.goto('/ccfolia');
 
   page.once('dialog', async (dialog) => {
     expect(dialog.message()).toBe('削除キャンセル対象 をアカウントから削除しますか？');
@@ -86,7 +86,7 @@ test('保存済みキャラクターを上書き・出力・削除できる', as
   await context.grantPermissions(['clipboard-read', 'clipboard-write'], {
     origin: 'http://127.0.0.1:3100',
   });
-  await page.goto('/ja/ccfolia');
+  await page.goto('/ccfolia');
 
   await page.getByRole('article', { name: '保存済みキャラクター' }).getByRole('button').first().click();
   await page.getByLabel('名前').fill('上書き後キャラクター');

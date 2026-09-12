@@ -1,6 +1,5 @@
 'use client';
 
-import { t } from 'i18next';
 import { type ReactNode, useState } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
@@ -26,8 +25,8 @@ export const FeedbackForm = ({ header, onSubmitted }: { header?: ReactNode; onSu
         feedback: e.currentTarget['feedback-form-feedback'].value,
       });
       toast({
-        title: t('common:header.feedback.submitted'),
-        description: t('common:header.feedback.submitted-description'),
+        title: 'フィードバックを送信しました！',
+        description: 'フィードバックを送信していただきありがとうございます！',
         variant: 'default',
       });
       sendEvent('submit_feedback');
@@ -36,7 +35,7 @@ export const FeedbackForm = ({ header, onSubmitted }: { header?: ReactNode; onSu
       console.error('Failed to send feedback', err);
       captureClientException(err);
       toast({
-        title: t('common:header.feedback.error'),
+        title: 'フィードバックの送信に失敗しました',
         variant: 'destructive',
       });
     }
@@ -46,18 +45,21 @@ export const FeedbackForm = ({ header, onSubmitted }: { header?: ReactNode; onSu
     <form onSubmit={feedbackSubmitHandler}>
       {header ?? (
         <div>
-          <div className="text-lg font-bold">{t('common:header.feedback.title')}</div>
-          <div className="text-sm text-slate-500 mt-1 mb-2">{t('common:header.feedback.description')}</div>
+          <div className="text-lg font-bold">フィードバック</div>
+          <div className="text-sm text-slate-500 mt-1 mb-2">
+            「ここをこういう風に改善して欲しい！」「なんかバグった」「この機能が欲しい！」といったフィードバックをお寄せください
+            (なるべく具体的に書いてもらえると嬉しいです！)
+          </div>
         </div>
       )}
       <div className="grid gap-4 py-4">
         <div className="space-y-6">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="feedback-form-name">{t('common:header.feedback.name')}</Label>
+            <Label htmlFor="feedback-form-name">名前 (任意)</Label>
             <Input id="feedback-form-name" value={name} onChange={(e) => setName(e.currentTarget.value)} />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="feedback-form-feedback">{t('common:header.feedback.feedback')}</Label>
+            <Label htmlFor="feedback-form-feedback">フィードバック</Label>
             <Textarea
               id="feedback-form-feedback"
               value={feedback}
@@ -69,7 +71,7 @@ export const FeedbackForm = ({ header, onSubmitted }: { header?: ReactNode; onSu
         </div>
       </div>
       <div className="flex justify-end">
-        <Button type="submit">{t('common:header.feedback.submit')}</Button>
+        <Button type="submit">送信</Button>
       </div>
     </form>
   );

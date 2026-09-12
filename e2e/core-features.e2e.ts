@@ -28,14 +28,14 @@ const additionalLogHtml = `<!DOCTYPE html>
 </html>`;
 
 test('シンプルダイスを振ると結果を表示する', async ({ page }) => {
-  await page.goto('/ja/dice');
+  await page.goto('/dice');
   await page.getByRole('button', { name: '1D6', exact: true }).click();
 
   await expect(page.getByText(/^1D6 => [1-6]\[[1-6]\] => [1-6]$/)).toBeVisible();
 });
 
 test('複数種類のシンプルダイスをまとめて振り、入力をリセットできる', async ({ page }) => {
-  await page.goto('/ja/dice');
+  await page.goto('/dice');
   await page.getByRole('button', { name: 'D6を増やす' }).click();
   await page.getByRole('button', { name: 'D6を増やす' }).click();
   await page.getByRole('button', { name: 'D20を増やす' }).click();
@@ -49,7 +49,7 @@ test('複数種類のシンプルダイスをまとめて振り、入力をリ�
 });
 
 test('ダイス式の確率と統計を計算する', async ({ page }) => {
-  await page.goto('/ja/expect');
+  await page.goto('/expect');
   await page.getByPlaceholder('計算式を入力してください').fill('1D100<=25');
   await page.getByRole('button', { name: '計算', exact: true }).click();
 
@@ -59,7 +59,7 @@ test('ダイス式の確率と統計を計算する', async ({ page }) => {
 });
 
 test('対応するゲームシステム固有の確率計算を切り替えられる', async ({ page }) => {
-  await page.goto('/ja/expect');
+  await page.goto('/expect');
   await page.getByRole('heading', { name: 'システム別予測' }).scrollIntoViewIfNeeded();
 
   const cthulhu6th = page.locator('section').filter({
@@ -79,7 +79,7 @@ test('対応するゲームシステム固有の確率計算を切り替えら�
 });
 
 test('ログをアップロードするとゲームシステムを判定して集計する', async ({ page }) => {
-  await page.goto('/ja/analyze-logs');
+  await page.goto('/analyze-logs');
   await page.locator('#log-file-uploader').setInputFiles({
     name: 'e2e-session.html',
     mimeType: 'text/html',
@@ -95,7 +95,7 @@ test('ログをアップロードするとゲームシステムを判定して�
 });
 
 test('複数ログをタブとキャラクターで絞り込み、選択を解除できる', async ({ page }) => {
-  await page.goto('/ja/analyze-logs');
+  await page.goto('/analyze-logs');
   await page.locator('#log-file-uploader').setInputFiles([
     {
       name: 'e2e-main-session.html',
@@ -132,7 +132,7 @@ test('複数ログをタブとキャラクターで絞り込み、選択を解�
 
 test('ログ解析を保存し、タイトル変更後に削除できる', async ({ firebaseUser: _firebaseUser, page }) => {
   test.slow();
-  await page.goto('/ja/analyze-logs');
+  await page.goto('/analyze-logs');
   await page.locator('#log-file-uploader').setInputFiles({
     name: 'e2e-persistence-session.html',
     mimeType: 'text/html',

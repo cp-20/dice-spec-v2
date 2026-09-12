@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": [
-    "src/app/[locale]/blogs/[category]/[slug]/_contents/*/*.mdx",
+    "src/app/blogs/[category]/[slug]/_contents/*/*.mdx",
     "firebase/**/*.test.ts",
     "src/**/*.test.ts",
     "src/**/*.bench.ts",
