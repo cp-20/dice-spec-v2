@@ -42,7 +42,7 @@ export const GameSystemRequestForm: FC = () => {
           <div className="space-y-1">
             <Label htmlFor="request-form-system">{t('analyze-logs:game-system-request:system')}</Label>
             <Input
-              id="request-form-name"
+              id="request-form-system"
               value={system}
               onChange={(e) => {
                 setSystem(e.currentTarget.value);
