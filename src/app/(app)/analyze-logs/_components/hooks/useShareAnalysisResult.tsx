@@ -61,7 +61,7 @@ export const useShareAnalysisResult = () => {
   const sharingImageDataUrl = useAtomValue(sharingImageDataUrlAtom);
   const { character } = useCharacterSelect();
   const analysisResult = useCharacterLogAnalysis(character);
-  const canShareImage = analysisResult !== null;
+  const canShareImage = analysisResult !== undefined;
 
   const render = () => {
     return (

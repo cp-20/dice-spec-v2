@@ -1,5 +1,7 @@
 'use client';
 
+/* oxlint-disable jsx_a11y/prefer-tag-over-role -- Chart.js の canvas 全体を一つの画像として読み上げる */
+
 import type { ChartOptions, Plugin } from 'chart.js';
 import merge from 'deepmerge';
 import dynamic from 'next/dynamic';
@@ -26,7 +28,7 @@ const customCanvasBackgroundColorPlugin: Plugin = {
 };
 
 interface LogAnalysisChartsViewProps {
-  system: System;
+  system: System | null;
   records: MessageParserResult[];
 }
 
@@ -40,10 +42,11 @@ export const LogAnalysisChartsView: FC<LogAnalysisChartsViewProps> = ({ system, 
     });
   }, []);
 
-  const systemStats = allSystemStats[system];
-  const { labels: resultLabels, data: resultDataset } = aggregateResults(records, system);
+  const systemStats = system === null ? null : allSystemStats[system];
+  const { labels: resultLabels, data: resultDataset } =
+    system === null ? { labels: [], data: [] } : aggregateResults(records, system);
 
-  const systemEvaluations = systemStats.evaluations.map(({ label }) => label);
+  const systemEvaluations = systemStats?.evaluations.map(({ label }) => label) ?? [];
   const evaluations = records.map(({ evaluation }) => evaluation);
   const aggregatedEvaluations = Object.entries(groupBy(evaluations, (result) => result)).map(
     ([result, results]) => [result, results ? results.length : 0] as const,
@@ -88,6 +91,8 @@ const Chart: FC<ChartProps> = ({ resultLabels, resultDataset, evaluationLabels, 
     <div className="flex flex-col gap-8 @xl:flex-row">
       <div className="min-w-0 flex-1">
         <Bar
+          role="img"
+          aria-label="出目の分布"
           data={{
             labels: resultLabels,
             datasets: [
@@ -104,6 +109,8 @@ const Chart: FC<ChartProps> = ({ resultLabels, resultDataset, evaluationLabels, 
       </div>
       <div className="min-w-0 flex-1">
         <Bar
+          role="img"
+          aria-label="判定結果の内訳"
           data={{
             labels: evaluationLabels,
             datasets: [
