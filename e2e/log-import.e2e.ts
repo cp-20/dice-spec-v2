@@ -29,9 +29,16 @@ for (const [name, buffer] of [
 ] as const) {
   test(`${name}を読み込み、重複せず集計してタブで絞り込める`, async ({ page }) => {
     await page.goto('/analyze-logs');
+    const shareButton = page.getByRole('button', { name: '解析結果をシェア', exact: true });
+    await expect(shareButton).toBeDisabled();
+    await expect(page.getByText('保存するにはログインが必要です', { exact: true })).toBeVisible();
+    await expect(page.getByText('技能サマリー', { exact: true })).toBeVisible();
+    await expect(page.getByRole('img', { name: '出目の分布', exact: true })).toBeVisible();
+    await expect(page.getByRole('img', { name: '判定結果の内訳', exact: true })).toBeVisible();
     await page.locator('#log-file-uploader').setInputFiles({ name, mimeType: 'application/octet-stream', buffer });
     const count = page.getByText('ダイスを振った回数', { exact: true }).first().locator('..');
     await expect(count).toContainText('2回');
+    await expect(shareButton).toBeEnabled();
     await expect(page.getByRole('combobox', { name: 'ゲームシステムを選択' })).toContainText('新クトゥルフ神話TRPG');
     await expect(page.getByText('成功率', { exact: true }).first().locator('..')).toContainText('50%');
     await expect(page.getByText(/\[メイン\].*聞き耳/)).toBeVisible();
@@ -41,6 +48,11 @@ for (const [name, buffer] of [
     await expect(
       page.getByText('クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード', { exact: true }),
     ).toBeVisible();
+    await expect(shareButton).toBeDisabled();
+    await expect(page.getByText('保存するにはログインが必要です', { exact: true })).toBeVisible();
+    await expect(page.getByText('技能サマリー', { exact: true })).toBeVisible();
+    await expect(page.getByRole('img', { name: '出目の分布', exact: true })).toBeVisible();
+    await expect(page.getByRole('img', { name: '判定結果の内訳', exact: true })).toBeVisible();
   });
 }
 
@@ -69,10 +81,16 @@ test('ドラッグ＆ドロップで読み込み、失敗したファイルを�
 test('ZIPの解析結果を保存して再読み込みできる', async ({ firebaseUser: _firebaseUser, page }) => {
   test.slow();
   await page.goto('/analyze-logs');
+  await page.getByPlaceholder('シナリオ名など').fill('ZIP保存テスト');
+  await expect(page.getByRole('button', { name: '保存する', exact: true })).toBeDisabled();
   await page
     .locator('#log-file-uploader')
     .setInputFiles({ name: 'session.zip', mimeType: 'application/zip', buffer: zip });
-  await page.getByPlaceholder('シナリオ名など').fill('ZIP保存テスト');
+  await expect(page.getByPlaceholder('シナリオ名など')).toHaveValue('ZIP保存テスト');
+  await page.getByRole('checkbox', { name: 'すべて', exact: true }).click();
+  await expect(page.getByRole('button', { name: '保存する', exact: true })).toBeDisabled();
+  await expect(page.getByPlaceholder('シナリオ名など')).toHaveValue('ZIP保存テスト');
+  await page.getByRole('checkbox', { name: 'すべて', exact: true }).click();
   await page.getByRole('button', { name: '保存する' }).click();
   await expect(page).toHaveURL(/\/analyze-logs\/[^/]+$/, { timeout: 20_000 });
   await page.reload();
