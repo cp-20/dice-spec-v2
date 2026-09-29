@@ -1,6 +1,6 @@
 'use client';
 
-import TitleLogo from '/public/title-logo.svg';
+import TitleLogo from '/public/title-logo.svg?react';
 import { IconMessageReply } from '@tabler/icons-react';
 import dynamic from 'next/dynamic';
 import { type ComponentProps, type FC, type ReactNode, useState } from 'react';

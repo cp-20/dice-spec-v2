@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures/app';
 
 test('負の修正値を逐次入力でき、未完了入力と上下限を扱える', async ({ page }) => {
   await page.goto('/expect');

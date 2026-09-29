@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures/app';
 
 const invalidPaths = ['/xx/dice', '/no-such', '/xx/blogs', '/api/dice', '/ja/dice'];
 

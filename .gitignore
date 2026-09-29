@@ -61,3 +61,6 @@ yarn-error.log*
 /firestore-debug.log
 
 /.firebaserc
+/dist/
+.vinext/
+.cloudflare/
