@@ -4,6 +4,7 @@ import path from 'node:path';
 import { cloudflare } from '@cloudflare/vite-plugin';
 import mdx from '@mdx-js/rollup';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
+import { staticAssetsAdapter } from '@vinext/cloudflare/cache/static-assets-adapter';
 import { imagesOptimizer } from '@vinext/cloudflare/images/images-optimizer';
 import vinext from 'vinext';
 import { defineConfig } from 'vite';
@@ -21,6 +22,8 @@ export default defineConfig({
     { enforce: 'pre', ...mdx({ providerImportSource: '@/mdx-components' }) },
     svgr(),
     vinext({
+      cache: { cdn: staticAssetsAdapter() },
+      prerender: { routes: '*' },
       images: { optimizer: imagesOptimizer() },
     }),
     cloudflare({

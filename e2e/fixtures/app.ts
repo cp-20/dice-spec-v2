@@ -6,7 +6,8 @@ declare global {
   }
 }
 
-// 水和前の入力は React に届かず失われるため、正常に開けたページは水和の完了を待ってから操作する。
+// 水和前の入力は React に届かず失われるため、正常に開けたページは vinext が水和完了時に立てる
+// __NEXT_HYDRATED を待ってから操作する。
 export const test = base.extend({
   page: async ({ page }, use) => {
     const waitForHydration = async (response: Awaited<ReturnType<typeof page.goto>>) => {

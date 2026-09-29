@@ -45,7 +45,7 @@
     "@sentry/nextjs": "10.74.0",
     "@tabler/icons-react": "3.46.0",
     "@types/mdx": "2.0.14",
-    "@vinext/cloudflare": "1.0.0-beta.11",
+    "@vinext/cloudflare": "1.0.0",
     "bcdice": "4.10.0",
     "browser-image-compression": "2.0.2",
     "chart.js": "4.5.1",
@@ -73,7 +73,7 @@
     "tailwind-merge": "3.6.0",
     "tailwindcss-animate": "1.0.7",
     "valibot": "1.5.0",
-    "vinext": "1.0.0-beta.13"
+    "vinext": "1.0.0"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "2.0.0-beta.sha-805ec1ff3",
