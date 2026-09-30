@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -46,7 +46,7 @@ const api = async (path, body) => {
   const result = await response.json();
   if (!response.ok || !result.success) {
     throw new Error(
-      `Cloudflare API が失敗しました (${response.status}, codes: ${result.errors?.map((error) => error.code).join(',')})`,
+      `Cloudflare API が失敗しました (${response.status}, ${result.errors?.map((error) => `${error.code}: ${String(error.message).replace(/https?:\/\/\S+|[A-Za-z0-9_./+=-]{24,}/g, '[伏せ字]')}`).join(';')})`,
     );
   }
   return result.result;
@@ -70,7 +70,7 @@ process.stdout.write(uploadOutput);
 if (!args.includes('--dry-run')) {
   const stagedId = uploadOutput.match(/Version ID:\s*([a-f0-9-]{36})/)?.[1];
   if (!stagedId) throw new Error('アップロードしたバージョンを確認できません。');
-  const staged = JSON.parse(run([cf, 'workers', 'versions', 'get', stagedId, '--worker-id', config.name], true));
+  const staged = await api(`/workers/workers/${config.name}/versions/${stagedId}?include=modules`);
   const manifest = {};
   for (const name of readdirSync(join(directory, 'assets'), { recursive: true })) {
     const path = join(directory, 'assets', name);
@@ -90,21 +90,8 @@ if (!args.includes('--dry-run')) {
   const assets = await api(`/workers/scripts/${config.name}/assets-upload-session`, { manifest });
   if (assets.buckets.flat().length !== 0) throw new Error('CLI でアップロードしたアセットと一致しません。');
   const uploaded = await api(`/workers/workers/${config.name}/versions?deploy=false`, {
-    main_module: config.manifest.mainModule,
-    modules: [
-      ...[...new Set([config.manifest.mainModule, ...Object.keys(config.manifest.modules ?? {})])].map((name) => ({
-        name,
-        content_type: 'application/javascript+module',
-        content_base64: readFileSync(join(directory, 'bundle', name)).toString('base64'),
-      })),
-      ...['_headers', '_redirects']
-        .filter((name) => existsSync(join(directory, 'assets', name)))
-        .map((name) => ({
-          name,
-          content_type: 'text/plain',
-          content_base64: readFileSync(join(directory, 'assets', name)).toString('base64'),
-        })),
-    ],
+    main_module: staged.main_module,
+    modules: staged.modules,
     assets: { ...staged.assets, jwt: assets.jwt },
     compatibility_date: staged.compatibility_date,
     compatibility_flags: staged.compatibility_flags,
