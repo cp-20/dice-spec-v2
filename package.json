@@ -10,7 +10,7 @@
     "build": "vite build",
     "bench": "node --import tsx src/features/dice-expectation/expecter/index.bench.ts && node --import tsx src/features/dice-expectation/expecter/parser.bench.ts",
     "preview": "vite build && vite preview",
-    "deploy": "vinext-cloudflare deploy",
+    "deploy": "node scripts/deploy.mjs",
     "upload": "vinext-cloudflare deploy --no-promote",
     "cf-typegen": "cf workers types",
     "test": "vitest run --exclude 'firebase/*.rules.test.ts' --exclude '**/*.emulator.test.ts'",
