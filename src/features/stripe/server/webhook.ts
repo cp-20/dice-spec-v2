@@ -38,7 +38,9 @@ const processHandlerResult = async (result: HandlerResult, event: Stripe.Event) 
 
 export const constructStripeEvent = async (body: string, signature: string) => {
   try {
-    return (await getStripeClient()).webhooks.constructEvent(body, signature, runtimeEnv.stripe.webhookSecret);
+    return await (
+      await getStripeClient()
+    ).webhooks.constructEventAsync(body, signature, runtimeEnv.stripe.webhookSecret);
   } catch (error) {
     console.error('Webhook signature verification failed:', error);
     scheduleStripeLog({
