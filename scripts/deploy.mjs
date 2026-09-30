@@ -44,7 +44,11 @@ const api = async (path, body) => {
     body: body ? JSON.stringify(body) : undefined,
   });
   const result = await response.json();
-  if (!response.ok || !result.success) throw new Error(`Cloudflare API が失敗しました (${response.status})`);
+  if (!response.ok || !result.success) {
+    throw new Error(
+      `Cloudflare API が失敗しました (${response.status}, codes: ${result.errors?.map((error) => error.code).join(',')})`,
+    );
+  }
   return result.result;
 };
 
@@ -88,7 +92,7 @@ if (!args.includes('--dry-run')) {
   const uploaded = await api(`/workers/workers/${config.name}/versions?deploy=false`, {
     main_module: config.manifest.mainModule,
     modules: [
-      ...[config.manifest.mainModule, ...Object.keys(config.manifest.modules ?? {})].map((name) => ({
+      ...[...new Set([config.manifest.mainModule, ...Object.keys(config.manifest.modules ?? {})])].map((name) => ({
         name,
         content_type: 'application/javascript+module',
         content_base64: readFileSync(join(directory, 'bundle', name)).toString('base64'),
