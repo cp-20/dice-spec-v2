@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -49,22 +49,33 @@ const api = async (path, body) => {
 };
 
 // アセットのアップロードを CLI に任せ、シークレットを検証するまで本番へ切り替えない。
-run([
-  cf,
-  'workers',
-  'versions',
-  'create',
-  '--mode',
-  'production',
-  '--prebuilt',
-  ...args.filter((arg) => !['--prebuilt', '--no-promote'].includes(arg)),
-]);
+const uploadOutput = run(
+  [
+    cf,
+    'workers',
+    'versions',
+    'create',
+    '--mode',
+    'production',
+    '--prebuilt',
+    ...args.filter((arg) => !['--prebuilt', '--no-promote'].includes(arg)),
+  ],
+  true,
+);
+process.stdout.write(uploadOutput);
 if (!args.includes('--dry-run')) {
-  const staged = JSON.parse(run([cf, 'workers', 'versions', 'get', 'latest', '--worker-id', config.name], true));
+  const stagedId = uploadOutput.match(/Version ID:\s*([a-f0-9-]{36})/)?.[1];
+  if (!stagedId) throw new Error('アップロードしたバージョンを確認できません。');
+  const staged = JSON.parse(run([cf, 'workers', 'versions', 'get', stagedId, '--worker-id', config.name], true));
   const manifest = {};
   for (const name of readdirSync(join(directory, 'assets'), { recursive: true })) {
     const path = join(directory, 'assets', name);
-    if (!statSync(path).isFile() || ['.assetsignore', '_headers', '_redirects'].includes(name)) continue;
+    if (
+      !statSync(path).isFile() ||
+      name.startsWith('.vite/') ||
+      ['.assetsignore', '_headers', '_redirects'].includes(name)
+    )
+      continue;
     manifest[`/${name.replaceAll('\\', '/')}`] = {
       hash: hash(readFileSync(path).toString('base64') + extname(path).slice(1))
         .toString('hex')
@@ -76,11 +87,20 @@ if (!args.includes('--dry-run')) {
   if (assets.buckets.flat().length !== 0) throw new Error('CLI でアップロードしたアセットと一致しません。');
   const uploaded = await api(`/workers/workers/${config.name}/versions?deploy=false`, {
     main_module: config.manifest.mainModule,
-    modules: [config.manifest.mainModule, ...Object.keys(config.manifest.modules ?? {})].map((name) => ({
-      name,
-      content_type: 'application/javascript+module',
-      content_base64: readFileSync(join(directory, 'bundle', name)).toString('base64'),
-    })),
+    modules: [
+      ...[config.manifest.mainModule, ...Object.keys(config.manifest.modules ?? {})].map((name) => ({
+        name,
+        content_type: 'application/javascript+module',
+        content_base64: readFileSync(join(directory, 'bundle', name)).toString('base64'),
+      })),
+      ...['_headers', '_redirects']
+        .filter((name) => existsSync(join(directory, 'assets', name)))
+        .map((name) => ({
+          name,
+          content_type: 'text/plain',
+          content_base64: readFileSync(join(directory, 'assets', name)).toString('base64'),
+        })),
+    ],
     assets: { ...staged.assets, jwt: assets.jwt },
     compatibility_date: staged.compatibility_date,
     compatibility_flags: staged.compatibility_flags,
@@ -100,6 +120,10 @@ if (!args.includes('--dry-run')) {
   }
   console.log(`本番シークレット${secrets.length}個の継承を確認しました。Version ID: ${uploaded.id}`);
   if (!args.includes('--no-promote')) {
+    const current = JSON.parse(run([cf, 'workers', 'deployments', 'list', '--worker', config.name], true));
+    if (current.deployments[0]?.id !== deployments.deployments[0].id) {
+      throw new Error('本番デプロイが変更されたため、公開を中止しました。');
+    }
     run([
       cf,
       'workers',
