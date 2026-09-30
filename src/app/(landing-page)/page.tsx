@@ -1,4 +1,4 @@
-import LogoIcon from '/public/icon.svg';
+import LogoIcon from '/public/icon.svg?react';
 import type { IconProps } from '@tabler/icons-react';
 import { IconDice5, IconSearch, IconTimeline } from '@tabler/icons-react';
 import type { NextPage } from 'next';

@@ -1,5 +1,6 @@
-// Turbopack のチャンク分割に必要な import() を patches/bcdice@4.10.0.patch で維持する。
-import DynamicLoader from 'bcdice/lib/loader/dynamic_loader';
+// バンドラーのチャンク分割に必要な import() を patches/bcdice@4.10.0.patch で維持する。
+// CommonJS の default export は Vite で module.exports として解決されるため、名前付き export を使う。
+import { DynamicLoader } from 'bcdice';
 
 const loader = new DynamicLoader();
 

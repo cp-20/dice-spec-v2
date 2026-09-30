@@ -30,7 +30,7 @@ pnpm dev
 
 ### 依存パッケージの監査
 
-`pnpm audit` で残る警告の大半は、`next-pwa`、Sentry、OpenNext などの開発・ビルド用推移依存です。
+`pnpm audit` で残る警告の大半は、`next-pwa`、Firebase CLI、vinext と Cloudflare のビルドツールなどの開発・ビルド用推移依存です。
 直接依存の互換更新と `protobufjs` の修正版への固定は行っていますが、上流が要求する版を越えた強制 override は互換性を壊すため行いません。
 依存元が修正版を採用した時点で通常の `pnpm update` により解消します。
 

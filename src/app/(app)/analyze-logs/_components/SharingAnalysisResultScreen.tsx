@@ -1,4 +1,4 @@
-import LogoIcon from '/public/icon.svg';
+import LogoIcon from '/public/icon.svg?react';
 import { FC, ReactNode, Ref } from 'react';
 
 import type { DiceResultForCharacter } from '@/features/log-analysis/model';

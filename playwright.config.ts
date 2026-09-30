@@ -28,7 +28,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `firebase emulators:exec --only auth,firestore,storage --project ${firebase.projectId} --config firebase/firebase-e2e.json "pnpm preview --ip 127.0.0.1 --port 3100"`,
+    command: `firebase emulators:exec --only auth,firestore,storage --project ${firebase.projectId} --config firebase/firebase-e2e.json "pnpm preview --host 127.0.0.1 --port 3100 --strictPort"`,
     url: `${appOrigin}/`,
     reuseExistingServer: false,
     timeout: 180_000,

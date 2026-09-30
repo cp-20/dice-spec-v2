@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures/app';
 
 test('未保存の変更がある場合はページ離脱を確認し、キャンセルすると編集を保持する', async ({ context, page }) => {
   await page.goto('/ccfolia');

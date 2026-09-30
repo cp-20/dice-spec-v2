@@ -1,6 +1,6 @@
-import { test as base } from '@playwright/test';
-
 import { testEnv } from '@/shared/lib/env';
+
+import { test as base } from './app';
 
 if (!testEnv) throw new Error('E2E テストは production 環境では実行できません');
 const { firebase } = testEnv;
@@ -206,4 +206,4 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
   },
 });
 
-export { expect } from '@playwright/test';
+export { expect } from './app';

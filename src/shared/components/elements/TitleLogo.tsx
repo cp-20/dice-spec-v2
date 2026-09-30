@@ -1,4 +1,4 @@
-import Logo from '/public/title-logo.svg';
+import Logo from '/public/title-logo.svg?react';
 import type { FC } from 'react';
 
 interface TitleLogoProps {

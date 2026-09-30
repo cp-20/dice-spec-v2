@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures/app';
 
 test.describe('未知URLからの復帰', () => {
   test.use({ javaScriptEnabled: false, viewport: { width: 320, height: 640 } });
