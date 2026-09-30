@@ -57,7 +57,7 @@ export const useGameSystemRequestDialog = () => {
               <div className="space-y-1">
                 <Label htmlFor="request-form-system">ゲームシステム名</Label>
                 <Input
-                  id="request-form-name"
+                  id="request-form-system"
                   value={system}
                   onChange={(e) => {
                     setSystem(e.currentTarget.value);
