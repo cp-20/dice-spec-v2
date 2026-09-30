@@ -1,18 +1,15 @@
 import { IconDice5, IconFileExport, IconList, IconSearch, IconTimeline } from '@tabler/icons-react';
 
-import { i18nConfig } from '../i18n/config';
-
 export const navLinks = [
-  { key: 'expect', href: '/expect', icon: IconSearch, sideNavOnly: false },
-  { key: 'dice', href: '/dice', icon: IconDice5, sideNavOnly: false },
-  { key: 'analyze-logs', href: '/analyze-logs', icon: IconTimeline, sideNavOnly: false },
-  { key: 'analysis-list', href: '/analyze-logs/list', icon: IconList, sideNavOnly: true },
-  { key: 'ccfolia', href: '/ccfolia', icon: IconFileExport, sideNavOnly: false },
+  { label: 'ダイス予測', href: '/expect', icon: IconSearch, sideNavOnly: false },
+  { label: 'ダイスロール', href: '/dice', icon: IconDice5, sideNavOnly: false },
+  { label: 'ログ解析', href: '/analyze-logs', icon: IconTimeline, sideNavOnly: false },
+  { label: '解析一覧', href: '/analyze-logs/list', icon: IconList, sideNavOnly: true },
+  { label: 'ココフォリア出力', href: '/ccfolia', icon: IconFileExport, sideNavOnly: false },
 ] as const;
 
-const normalizePathnameRegex = new RegExp(`^(?:/(?:${i18nConfig.locales.join('|')}))?((?:/[^/]+)*)(?:/)?$`);
 export const normalizePathname = (pathname: string): string => {
-  return pathname.replace(normalizePathnameRegex, '$1');
+  return pathname.replace(/\/$/, '');
 };
 
 export type NavPaths = (typeof navLinks)[number]['href'];

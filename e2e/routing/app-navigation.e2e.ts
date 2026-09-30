@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures/app';
 
 test('他のタブからログ未読込のログ解析画面へ繰り返し移動できる', async ({ page }) => {
   const errors: Error[] = [];

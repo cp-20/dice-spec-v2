@@ -1,0 +1,53 @@
+import type { FirebaseOptions } from 'firebase/app';
+import { FirebaseError, getApp, getApps, initializeApp } from 'firebase/app';
+import { getDownloadURL, getStorage, ref } from 'firebase/storage';
+
+import { mixedEnv, testEnv } from '@/shared/lib/env';
+import { connectFirebaseStorageEmulator } from '@/shared/lib/firebase/emulator';
+import { storagePaths } from '@/shared/lib/firebase/storage/paths';
+import { type MetadataGenerator, metadataHelper, viewportGenerator } from '@/shared/lib/metadataGenerator';
+
+import AnalyzeLogDetailPageClient from './_components/AnalyzeLogDetailPageClient';
+
+const getAnalysisOgpUrl = async (analysisId: string) => {
+  const firebaseConfig: FirebaseOptions = {
+    storageBucket: mixedEnv.firebaseStorageBucket,
+  };
+
+  try {
+    const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+    if (testEnv) connectFirebaseStorageEmulator(storage);
+    const storageRef = ref(storage, storagePaths.getAnalysisOgImagePath(analysisId));
+
+    return await getDownloadURL(storageRef);
+  } catch (err) {
+    if (err instanceof FirebaseError) {
+      if (err.code === 'storage/object-not-found' || err.code === 'storage/unauthorized') {
+        return undefined;
+      }
+    }
+    console.error(err);
+    return undefined;
+  }
+};
+
+export const generateMetadata: MetadataGenerator = async (props) => {
+  const params = await props.params;
+  const analysisId = typeof params.id === 'string' ? params.id : '';
+
+  const title = 'ログ解析';
+  const description = 'ココフォリアのログから、キャラクターごとの出目の平均・成功率・グラフを確認できます。';
+  const ogp = analysisId ? await getAnalysisOgpUrl(analysisId) : undefined;
+
+  return metadataHelper({
+    title,
+    description,
+    path: `/analyze-logs/${analysisId}`,
+    ogp,
+  });
+};
+
+export const viewport = viewportGenerator();
+
+export default AnalyzeLogDetailPageClient;

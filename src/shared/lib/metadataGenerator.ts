@@ -1,13 +1,11 @@
 import type { Metadata, Viewport } from 'next';
 
-import { i18nConfig, type Locale } from '@/shared/i18n/config';
 import { clientEnv } from '@/shared/lib/env';
 
 type Option = {
   title?: string;
   description: string;
   path: string;
-  locale: Locale;
   ogp?: string;
   noIndex?: boolean;
   noFollow?: boolean;
@@ -15,54 +13,27 @@ type Option = {
 
 export const appBaseUrl = 'https://dicespec.app';
 
-export const constructLocaleUrl = (path: string, locale: Locale): string => {
-  const localePathPrefix = locale === i18nConfig.defaultLocale ? '' : `/${locale}`;
-  const rawPath = `${localePathPrefix}${path}`;
-  const beautifiedPath = rawPath.endsWith('/') ? rawPath.slice(0, -1) : rawPath;
-  const url = appBaseUrl + beautifiedPath;
+export const constructUrl = (path: string): string => appBaseUrl + path.replace(/\/$/, '');
 
-  return url;
-};
-
-export const constructAlternateUrls = (path: string, locale: Locale): Record<Locale, string> => {
-  return i18nConfig.locales
-    .filter((l) => l !== locale)
-    .reduce(
-      (acc, locale) => {
-        acc[locale] = constructLocaleUrl(path, locale);
-        return acc;
-      },
-      {} as Record<Locale, string>,
-    );
-};
-
-export const metadataHelper = ({ title: rawTitle, description, path, locale, ogp, noIndex, noFollow }: Option) => {
-  const appName = {
-    en: 'DiceSpec',
-    ja: 'ダイススペック',
-  }[locale];
-  const defaultOgImage = {
-    en: `${appBaseUrl}/ogp-en.png`,
-    ja: `${appBaseUrl}/ogp.png`,
-  }[locale];
+export const metadataHelper = ({ title: rawTitle, description, path, ogp, noIndex, noFollow }: Option) => {
+  const appName = 'ダイススペック';
+  const defaultOgImage = `${appBaseUrl}/ogp.png`;
   const title = rawTitle ? `${rawTitle} - ${appName}` : appName;
 
-  const appUrl = constructLocaleUrl(path, locale);
-  const alternates = constructAlternateUrls(path, locale);
+  const appUrl = constructUrl(path);
 
   return {
     title,
     description,
     metadataBase: appUrl,
     alternates: {
-      languages: alternates,
       canonical: appUrl.toString(),
     },
     openGraph: {
       title,
       description,
       type: 'website',
-      locale,
+      locale: 'ja_JP',
       siteName: title,
       images: ogp ?? defaultOgImage,
       url: appUrl,
@@ -113,10 +84,3 @@ type MetadataProps = {
 };
 
 export type MetadataGenerator = (props: MetadataProps) => Promise<Metadata>;
-
-export const localeHelper = async (props: MetadataProps): Promise<Locale> => {
-  const params = await props.params;
-  if (typeof params.locale !== 'string') return i18nConfig.defaultLocale;
-  if (!i18nConfig.locales.includes(params.locale as Locale)) return i18nConfig.defaultLocale;
-  return params.locale as Locale;
-};

@@ -1,7 +1,7 @@
-const CACHE_NAME = 'dice-spec-v1';
+const CACHE_NAME = 'dice-spec-v2';
 const PRECACHE_URLS = ['/', '/manifest.webmanifest', '/favicon.ico', '/icon-192.png', '/icon-512.png', '/dice.wav'];
 const PUBLIC_PAGE_PATTERN =
-  /^\/(?:ja|en)?\/?(?:$|dice\/?$|expect\/?$|ccfolia\/?$|analyze-logs\/?$|blogs(?:\/|$)|terms\/?$|privacy-policy\/?$|specified-commercial-transactions\/?$)/;
+  /^\/(?:$|dice\/?$|expect\/?$|ccfolia\/?$|analyze-logs\/?$|blogs(?:\/|$)|terms\/?$|privacy-policy\/?$|specified-commercial-transactions\/?$)/;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

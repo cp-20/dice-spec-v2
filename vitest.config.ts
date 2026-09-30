@@ -4,7 +4,11 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
-    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+    alias: [
+      { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
+      // next パッケージは持たないため、vinext がビルド時に割り当てる互換実装をテストでも使う。
+      { find: /^next\/([\w-]+)$/, replacement: 'vinext/shims/$1' },
+    ],
   },
   test: {
     globals: true,

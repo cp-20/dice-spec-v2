@@ -1,9 +1,9 @@
-import D3 from '/public/assets/images/D3.svg';
-import D4 from '/public/assets/images/D4.svg';
-import D6 from '/public/assets/images/D6.svg';
-import D8 from '/public/assets/images/D8.svg';
-import D12 from '/public/assets/images/D12.svg';
-import D20 from '/public/assets/images/D20.svg';
+import D3 from '/public/assets/images/D3.svg?react';
+import D4 from '/public/assets/images/D4.svg?react';
+import D6 from '/public/assets/images/D6.svg?react';
+import D8 from '/public/assets/images/D8.svg?react';
+import D12 from '/public/assets/images/D12.svg?react';
+import D20 from '/public/assets/images/D20.svg?react';
 import clsx from 'clsx';
 import type { ComponentProps, FC, ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';

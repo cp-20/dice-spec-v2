@@ -1,7 +1,9 @@
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+
+import { expect, test } from './fixtures/app';
 
 const openAdvanced = async (page: Page) => {
-  await page.goto('/ja/dice');
+  await page.goto('/dice');
   await page.getByRole('tab', { name: 'アドバンスド' }).click();
   await expect(page.getByRole('button', { name: 'DiceBot', exact: true })).toHaveAttribute('aria-busy', 'false');
 };
@@ -104,7 +106,7 @@ test.describe('チャンク通信の制御', () => {
       }
       const response = await route.fetch();
       // 本番ビルドではファイル名がハッシュになるため、export名で認証チャンクを特定する。
-      if ((await response.text()).includes('"FirebaseAuthWidget",')) {
+      if (/export\s*\{[^}]*\bFirebaseAuthWidget\b[^}]*\}/.test(await response.text())) {
         authChunk.resolve(route.request().url());
         await disconnect.promise;
         await route.abort('internetdisconnected');

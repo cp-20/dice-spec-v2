@@ -1,6 +1,5 @@
 'use client';
 
-import { t } from 'i18next';
 import type { FC } from 'react';
 
 import { GoogleLogo } from '@/shared/components/elements/GoogleIcon';
@@ -33,7 +32,7 @@ export const GoogleSignInButton: FC<GoogleSignInButtonProps> = ({ size = 'md', f
       )}
     >
       <GoogleLogo />
-      <span>{t('profile:google-sign-in')}</span>
+      <span>Google でログイン</span>
     </button>
   );
 };

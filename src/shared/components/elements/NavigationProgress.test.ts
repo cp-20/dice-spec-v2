@@ -16,17 +16,17 @@ const navigationClick = (href: string, overrides: Record<string, unknown> = {}) 
     ...overrides,
   } as MouseEvent<HTMLAnchorElement>;
   return shouldStartNavigation(event, {
-    href: 'https://dicespec.test/ja/dice',
+    href: 'https://dicespec.test/dice',
     origin: 'https://dicespec.test',
-    pathname: '/ja/dice',
+    pathname: '/dice',
     search: '',
   });
 };
 
 test('内部の別URLへの通常クリックだけで進捗を開始する', () => {
-  expect(navigationClick('/ja/expect')).toBe(true);
-  expect(navigationClick('/ja/dice')).toBe(false);
+  expect(navigationClick('/expect')).toBe(true);
+  expect(navigationClick('/dice')).toBe(false);
   expect(navigationClick('https://example.com/')).toBe(false);
-  expect(navigationClick('/ja/expect', { metaKey: true })).toBe(false);
-  expect(navigationClick('/ja/expect', { button: 1 })).toBe(false);
+  expect(navigationClick('/expect', { metaKey: true })).toBe(false);
+  expect(navigationClick('/expect', { button: 1 })).toBe(false);
 });

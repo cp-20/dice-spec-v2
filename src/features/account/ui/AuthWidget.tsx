@@ -1,6 +1,5 @@
 'use client';
 
-import { t } from 'i18next';
 import { RotateCw } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { Component, type FC, type ReactNode, useEffect, useState } from 'react';
@@ -11,7 +10,11 @@ import { captureClientException } from '@/shared/lib/sentryClient';
 
 const FirebaseAuthWidget = dynamic(() => import('./FirebaseAuthWidget').then((mod) => mod.FirebaseAuthWidget), {
   ssr: false,
-  loading: () => <div className="size-8" />,
+  // vinext は読み込み失敗を loading に渡して握りつぶすため、再送出して AuthWidgetBoundary で扱う。
+  loading: ({ error }) => {
+    if (error) throw error;
+    return <div className="size-8" />;
+  },
 });
 
 // 認証UIの遅延チャンク取得が失敗しても、オフラインで使える本文を破棄しない。
@@ -35,7 +38,7 @@ class AuthWidgetBoundary extends Component<{ children: ReactNode }, { failed: bo
         variant="outline"
         size="icon"
         className="size-8"
-        title={t('common:error.reload')}
+        title="再読み込み"
         onClick={() => window.location.reload()}
       >
         <RotateCw className="size-4" aria-hidden="true" />

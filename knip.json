@@ -1,23 +1,14 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": [
-    "src/app/[locale]/blogs/[category]/[slug]/_contents/*/*.mdx",
+    "src/mdx-components.tsx",
+    "src/app/blogs/[category]/[slug]/_contents/*/*.mdx",
     "firebase/**/*.test.ts",
     "src/**/*.test.ts",
     "src/**/*.bench.ts",
     "src/test/**/*.ts"
   ],
   "project": ["src/**/*.{js,jsx,ts,tsx,mdx}"],
-  "ignore": ["src/image-loader.ts"],
-  "ignoreDependencies": [
-    "sharp",
-    "tailwindcss-animate",
-    "vite",
-    "tailwindcss",
-    "cssnano",
-    "postcss-syntax",
-    "happy-dom",
-    "@svgr/webpack"
-  ],
+  "ignoreDependencies": ["tailwindcss-animate", "tailwindcss", "cssnano", "postcss-syntax", "happy-dom", "next"],
   "next": true
 }
