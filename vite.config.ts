@@ -37,7 +37,7 @@ export default defineConfig({
       project: 'javascript-nextjs',
       authToken: sentryAuthToken,
       silent: !buildEnv.ci,
-      sourcemaps: { filesToDeleteAfterUpload: ['dist/**/*.map'] },
+      sourcemaps: { filesToDeleteAfterUpload: ['dist/**/*.map', '.cloudflare/output/**/*.map'] },
       bundleSizeOptimizations: { excludeDebugStatements: true },
     }),
   ],
