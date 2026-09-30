@@ -40,7 +40,11 @@ if (!token || !account) throw new Error('CLOUDFLARE_API_TOKEN と CLOUDFLARE_ACC
 const api = async (path, body) => {
   const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}${path}`, {
     method: body ? 'POST' : 'GET',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'User-Agent': `cf-cli/${JSON.parse(readFileSync(fileURLToPath(import.meta.resolve('cf/package.json')), 'utf8')).version}`,
+    },
     body: body ? JSON.stringify(body) : undefined,
   });
   const result = await response.json();
