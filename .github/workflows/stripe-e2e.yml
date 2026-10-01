@@ -34,7 +34,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release download v1.40.8 --repo stripe/stripe-cli --pattern stripe_1.40.8_linux_x86_64.tar.gz --pattern stripe-linux-checksums.txt --dir "$RUNNER_TEMP"
-          (cd "$RUNNER_TEMP" && rg 'stripe_1.40.8_linux_x86_64.tar.gz$' stripe-linux-checksums.txt | sha256sum --check)
+          (cd "$RUNNER_TEMP" && grep -E 'stripe_1.40.8_linux_x86_64.tar.gz$' stripe-linux-checksums.txt | sha256sum --check)
           tar -xzf "$RUNNER_TEMP/stripe_1.40.8_linux_x86_64.tar.gz" -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
       - run: pnpm exec playwright install --with-deps chromium
