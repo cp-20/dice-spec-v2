@@ -209,7 +209,7 @@ const createTestEnv = () => {
               10,
             ),
             storageHost: emulatorHost,
-            storagePort: storageEmulatorPort,
+            storagePort: Number(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_EMULATOR_PORT ?? storageEmulatorPort),
           };
         },
       },

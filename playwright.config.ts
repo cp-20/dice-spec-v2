@@ -44,6 +44,7 @@ export default defineConfig({
       NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_URL: firebase.emulators.auth.url,
       NEXT_PUBLIC_FIREBASE_FIRESTORE_EMULATOR_HOST: firebase.emulators.firestore.host,
       NEXT_PUBLIC_FIREBASE_FIRESTORE_EMULATOR_PORT: String(firebase.emulators.firestore.e2ePort),
+      NEXT_PUBLIC_FIREBASE_STORAGE_EMULATOR_PORT: String(firebase.emulators.storage.port),
       NEXT_PUBLIC_DISCORD_WEBHOOK_URL: 'e2e-disabled',
       NEXT_PUBLIC_GOOGLE_ANALYTICS_ID: 'e2e-disabled',
     },
