@@ -1,0 +1,53 @@
+name: Stripe E2E
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stripe-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  stripe-e2e:
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.head.repo.fork == false &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: ./.github/actions/setup
+      - name: Install Stripe CLI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v1.40.8 --repo stripe/stripe-cli --pattern stripe_1.40.8_linux_x86_64.tar.gz --pattern stripe-linux-checksums.txt --dir "$RUNNER_TEMP"
+          (cd "$RUNNER_TEMP" && grep -E 'stripe_1.40.8_linux_x86_64.tar.gz$' stripe-linux-checksums.txt | sha256sum --check)
+          tar -xzf "$RUNNER_TEMP/stripe_1.40.8_linux_x86_64.tar.gz" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e:stripe
+        env:
+          STRIPE_E2E_SECRET_KEY: ${{ secrets.STRIPE_E2E_SECRET_KEY }}
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stripe-playwright-artifacts
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 7
