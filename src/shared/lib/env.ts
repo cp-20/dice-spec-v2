@@ -24,6 +24,7 @@ const envReaders = {
     FIREBASE_STORAGE_BUCKET: () => process.env.FIREBASE_STORAGE_BUCKET,
     FIREBASE_CLIENT_EMAIL: () => process.env.FIREBASE_CLIENT_EMAIL,
     FIREBASE_PRIVATE_KEY: () => process.env.FIREBASE_PRIVATE_KEY,
+    FIRESTORE_EMULATOR_HOST: () => process.env.FIRESTORE_EMULATOR_HOST,
   },
   client: {
     NEXT_PUBLIC_FIREBASE_API_KEY: () => process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -86,6 +87,7 @@ const envVariableCatalog = {
     'FIREBASE_STORAGE_BUCKET',
     'FIREBASE_CLIENT_EMAIL',
     'FIREBASE_PRIVATE_KEY',
+    'FIRESTORE_EMULATOR_HOST',
   ],
   client: [
     'NEXT_PUBLIC_FIREBASE_API_KEY',
@@ -147,7 +149,7 @@ export const clientEnv = {
 const createTestEnv = () => {
   const firebaseProjectId = process.env.TEST_FIREBASE_PROJECT_ID ?? 'demo-dice-spec-v2';
   const emulatorHost = '127.0.0.1';
-  const storageEmulatorPort = 9199;
+  const storageEmulatorPort = Number(process.env.TEST_FIREBASE_STORAGE_EMULATOR_PORT ?? 9199);
   const requiredTestEnv = (name: string, value: string | undefined): string => {
     if (!value) throw new Error(`[env:test] Missing required environment variable: ${name}`);
     return value;
@@ -164,7 +166,7 @@ const createTestEnv = () => {
       emulators: {
         auth: {
           host: emulatorHost,
-          port: 19099,
+          port: Number(process.env.TEST_FIREBASE_AUTH_EMULATOR_PORT ?? 19099),
           get url(): string {
             return `http://${this.host}:${this.port}`;
           },
@@ -172,7 +174,7 @@ const createTestEnv = () => {
         firestore: {
           host: emulatorHost,
           rulesPort: 18080,
-          e2ePort: 18081,
+          e2ePort: Number(process.env.TEST_FIREBASE_FIRESTORE_E2E_PORT ?? 18081),
         },
         storage: {
           host: emulatorHost,
@@ -250,6 +252,9 @@ export const runtimeEnv = {
     },
   },
   firebase: {
+    get emulatorHost(): string | undefined {
+      return testEnv?.firebase.emulators.client ? optionalEnv('FIRESTORE_EMULATOR_HOST', 'runtime') : undefined;
+    },
     get projectId(): string {
       return requiredEnv('FIREBASE_PROJECT_ID', 'runtime');
     },
