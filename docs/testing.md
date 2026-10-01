@@ -41,3 +41,11 @@ pnpm test:firebase
 ```
 
 Firebase Emulator の環境変数とデフォルト値は [src/shared/lib/env.ts](../src/shared/lib/env.ts) を参照する。
+
+## Stripe E2E
+
+`STRIPE_E2E_SECRET_KEY` に専用 Stripe Sandbox のテストキーを設定して `pnpm test:e2e:stripe` を実行する。Java 21 以上と Stripe CLI が必要。Firebase Emulator・Stripe CLI の Webhook 転送・Workers の本番ビルドを起動し、実際の Sandbox 契約作成と解約から Firestore 更新、ブラウザ表示、再読み込み後の状態まで検証する。署名の欠落・不正な署名による契約状態の変更も拒否されることを確認する。
+
+通常の E2E と接続ポートを分け、設定は [firebase/firebase-stripe-e2e.json](../firebase/firebase-stripe-e2e.json) を正本とする。実行ごとに顧客・商品・価格を作り、終了時に顧客と契約を削除して商品と価格をアーカイブする。本番キーは拒否し、接続障害や認証切れはテストを失敗させる。試用期間内に解約するため、決済完了画面や有料請求の成功までは検証しない。
+
+Sandbox キーはローカルの環境変数で渡し、リポジトリや Playwright の成果物に保存しない。CLI 認証で発行された期限付きキーを使う場合は期限前に更新する。

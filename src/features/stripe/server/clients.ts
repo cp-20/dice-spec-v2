@@ -2,7 +2,7 @@ import { createFirestoreClient } from 'firebase-rest-firestore';
 import type Stripe from 'stripe';
 
 import type { BillingInterval } from '@/features/stripe/contract';
-import { runtimeEnv } from '@/shared/lib/env';
+import { runtimeEnv, testEnv } from '@/shared/lib/env';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 
 let stripePromise: Promise<Stripe> | null = null;
@@ -22,6 +22,23 @@ let firestoreClient: ReturnType<typeof createFirestoreClient> | null = null;
 
 const getFirestoreClient = () => {
   if (firestoreClient) return firestoreClient;
+
+  const emulatorHost = runtimeEnv.firebase.emulatorHost;
+  if (emulatorHost && testEnv) {
+    if (!testEnv.firebase.projectId.startsWith('demo-')) throw new Error('Emulator requires a demo project');
+    const emulator = new URL(`http://${emulatorHost}`);
+    firestoreClient = createFirestoreClient({
+      projectId: testEnv.firebase.projectId,
+      databaseId: testEnv.firebase.firestoreDatabaseId,
+      clientEmail: '',
+      privateKey: '',
+      useEmulator: true,
+      emulatorHost: emulator.hostname,
+      // サーバーは管理権限を付ける E2E プロキシ、ブラウザは Rules を適用する Emulator に直接接続する。
+      emulatorPort: Number(emulator.port),
+    });
+    return firestoreClient;
+  }
 
   const { projectId, firestoreDatabaseId: databaseId, clientEmail, privateKey } = runtimeEnv.firebase;
   if (!projectId || !clientEmail || !privateKey) {
