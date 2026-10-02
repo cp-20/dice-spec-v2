@@ -28,21 +28,21 @@ const calculateOperationDistribution = (expression: OperationExpression): Record
 
   const applyOperator = applyOperatorMap[expression.operator];
 
-  const leftValues = Object.keys(leftDistribution);
-  const rightValues = Object.keys(rightDistribution);
+  const leftValues = Object.keys(leftDistribution).map(Number);
+  const rightValues = Object.keys(rightDistribution).map(Number);
   if (leftValues.length * rightValues.length > 1_000_000) {
     throw new DistributionError('distribution is too large');
   }
 
+  const rightChances = rightValues.map((value) => rightDistribution[value]);
   for (let i = 0; i < leftValues.length; i++) {
+    const valL = leftValues[i];
+    const chanceL = leftDistribution[valL];
     for (let j = 0; j < rightValues.length; j++) {
-      const valL = leftValues[i];
-      const valR = rightValues[j];
+      const value = applyOperator(valL, rightValues[j]);
+      const chance = chanceL * rightChances[j];
 
-      const value = applyOperator(Number(valL), Number(valR));
-      const chance = Number(leftDistribution[valL]) * Number(rightDistribution[valR]);
-
-      distribution[`${value}`] = (distribution[`${value}`] ?? 0) + chance;
+      distribution[value] = (distribution[value] ?? 0) + chance;
     }
   }
 

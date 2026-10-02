@@ -2,6 +2,11 @@ import { bench, run } from 'mitata';
 
 import { diceExpecter } from '.';
 
+bench('1d100 + 1d100', () => void diceExpecter('1d100 + 1d100'));
+bench('1d1000 + 1d1000', () => void diceExpecter('1d1000 + 1d1000'));
+bench('1d1000 * 1d1000', () => void diceExpecter('1d1000 * 1d1000'));
+bench('(1d100 / 2) - (1d100 / 2)', () => void diceExpecter('(1d100 / 2) - (1d100 / 2)'));
+
 bench('1d6', () => void diceExpecter('1d6'));
 bench('1d6 + 1d6 + 3', () => void diceExpecter('1d6 + 1d6 - 3'));
 bench('1d6 * 1d6 * 2 + 5', () => void diceExpecter('1d6 * 1d6 * 2 + 5'));
