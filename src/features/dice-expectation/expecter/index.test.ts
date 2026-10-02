@@ -383,3 +383,24 @@ describe('diceExpecter', () => {
     });
   });
 });
+
+test.each([
+  ['(1d6 / 2) + (1d6 / 2)', (left: number, right: number) => left / 2 + right / 2],
+  ['(1 - 1d6) - (1d6 / 2)', (left: number, right: number) => 1 - left - right / 2],
+  ['(1 - 1d6) * (1d6 / 2)', (left: number, right: number) => (1 - left) * (right / 2)],
+])('%s の分布が全出目の列挙と一致する', (command, calculate) => {
+  const counts: Record<number, number> = {};
+  for (let left = 1; left <= 6; left++) {
+    for (let right = 1; right <= 6; right++) {
+      const value = calculate(left, right);
+      counts[value] = (counts[value] ?? 0) + 1;
+    }
+  }
+  const result = diceExpecter(command);
+  expect(result.success).toBe(true);
+  if (!result.success) throw new Error(result.message);
+  expect(Object.keys(result.distribution).sort()).toEqual(Object.keys(counts).sort());
+  for (const [value, count] of Object.entries(counts)) {
+    expect(result.distribution[value]).toBeCloseTo(count / 36, 14);
+  }
+});
