@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "bench": "node --import tsx src/features/dice-expectation/expecter/index.bench.ts && node --import tsx src/features/dice-expectation/expecter/parser.bench.ts",
+    "bench": "node --import tsx src/features/dice-expectation/expecter/index.bench.ts && node --import tsx src/features/dice-expectation/expecter/parser.bench.ts && node --import tsx src/features/dice-expectation/system-specific.bench.ts",
     "preview": "vite build && vite preview",
     "deploy": "node scripts/deploy.mjs",
     "upload": "vinext-cloudflare deploy --no-promote",
