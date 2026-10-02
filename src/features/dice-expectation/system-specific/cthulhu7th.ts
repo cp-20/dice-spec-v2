@@ -1,5 +1,5 @@
 import type { DistributionResult } from './types';
-import { addProbability, getMean } from './utils';
+import { getMean } from './utils';
 
 const MAX_EXTRA_DICE = 2;
 const getCthulhu7thD100Distribution = (bonusPenaltyDice: number): Record<number, number> => {
@@ -8,25 +8,18 @@ const getCthulhu7thD100Distribution = (bonusPenaltyDice: number): Record<number,
   }
   const extraDice = Math.abs(bonusPenaltyDice);
   const distribution: Record<number, number> = {};
-  const probability = 1 / (100 * 10 ** extraDice);
+  const diceCount = extraDice + 1;
 
-  for (let ones = 0; ones <= 9; ones++) {
-    for (let baseTens = 0; baseTens <= 9; baseTens++) {
-      const tensCandidates = [baseTens];
-
-      for (let extra = 0; extra < 10 ** extraDice; extra++) {
-        let rest = extra;
-        const tens = tensCandidates.slice();
-
-        for (let i = 0; i < extraDice; i++) {
-          tens.push(rest % 10);
-          rest = Math.floor(rest / 10);
-        }
-
-        const selectedTens = bonusPenaltyDice >= 0 ? Math.min(...tens) : Math.max(...tens);
-        const value = selectedTens === 0 && ones === 0 ? 100 : selectedTens * 10 + ones;
-        addProbability(distribution, value, probability);
-      }
+  for (let tens = 0; tens <= 9; tens++) {
+    // 最小値・最大値の累積確率の差から、選択される十の位の確率を求める。
+    const count =
+      bonusPenaltyDice >= 0
+        ? (10 - tens) ** diceCount - (9 - tens) ** diceCount
+        : (tens + 1) ** diceCount - tens ** diceCount;
+    const probability = count / (100 * 10 ** extraDice);
+    for (let ones = 0; ones <= 9; ones++) {
+      const value = tens === 0 && ones === 0 ? 100 : tens * 10 + ones;
+      distribution[value] = probability;
     }
   }
 
@@ -43,13 +36,20 @@ const getCthulhu7thSuccessLevel = (roll: number, target: number) => {
 
 const cthulhu7thLabels = ['失敗', 'レギュラー成功', 'ハード成功', 'イクストリーム成功', 'クリティカル'];
 
+const getSuccessLevelProbabilities = (distribution: Record<number, number>, target: number): number[] => {
+  const probabilities = Array<number>(cthulhu7thLabels.length).fill(0);
+  for (const [roll, probability] of Object.entries(distribution)) {
+    probabilities[getCthulhu7thSuccessLevel(Number(roll), target)] += probability;
+  }
+  return probabilities;
+};
+
 export const calculateCthulhu7thRoll = (target: number, bonusPenaltyDice: number): DistributionResult => {
   const distribution = getCthulhu7thD100Distribution(bonusPenaltyDice);
+  const probabilities = getSuccessLevelProbabilities(distribution, target);
   const rows = cthulhu7thLabels.map((label, level) => ({
     label,
-    probability: Object.entries(distribution)
-      .filter(([roll]) => getCthulhu7thSuccessLevel(Number(roll), target) === level)
-      .reduce((acc, [, probability]) => acc + probability, 0),
+    probability: probabilities[level],
   }));
 
   return {
@@ -66,18 +66,21 @@ export const calculateCthulhu7thOpposedRoll = (
   activeBonusPenaltyDice: number,
   passiveBonusPenaltyDice: number,
 ): DistributionResult => {
-  const activeDistribution = getCthulhu7thD100Distribution(activeBonusPenaltyDice);
-  const passiveDistribution = getCthulhu7thD100Distribution(passiveBonusPenaltyDice);
+  const activeProbabilities = getSuccessLevelProbabilities(
+    getCthulhu7thD100Distribution(activeBonusPenaltyDice),
+    activeTarget,
+  );
+  const passiveProbabilities = getSuccessLevelProbabilities(
+    getCthulhu7thD100Distribution(passiveBonusPenaltyDice),
+    passiveTarget,
+  );
   let win = 0;
   let draw = 0;
   let lose = 0;
 
-  for (const [activeRoll, activeProbability] of Object.entries(activeDistribution)) {
-    const activeLevel = getCthulhu7thSuccessLevel(Number(activeRoll), activeTarget);
-
-    for (const [passiveRoll, passiveProbability] of Object.entries(passiveDistribution)) {
-      const passiveLevel = getCthulhu7thSuccessLevel(Number(passiveRoll), passiveTarget);
-      const probability = activeProbability * passiveProbability;
+  for (let activeLevel = 0; activeLevel < activeProbabilities.length; activeLevel++) {
+    for (let passiveLevel = 0; passiveLevel < passiveProbabilities.length; passiveLevel++) {
+      const probability = activeProbabilities[activeLevel] * passiveProbabilities[passiveLevel];
 
       if (activeLevel > passiveLevel) {
         win += probability;
