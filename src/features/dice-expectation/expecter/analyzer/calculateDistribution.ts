@@ -1,5 +1,5 @@
 import type { DiceExpression, Expression, OperationExpression } from '../type';
-import { applyOperatorMap, generate2DArray } from './utils';
+import { applyOperatorMap } from './utils';
 
 export class DistributionError extends Error {}
 
@@ -63,26 +63,28 @@ const calculateDiceDistribution = (expression: DiceExpression): Record<string, n
     return result;
   }
 
-  const dp = generate2DArray(num, faces * num, 0.0);
+  let previous = Array<number>(faces * num).fill(0);
+  let current = num === 1 ? [] : Array<number>(faces * num).fill(0);
   for (let i = 0; i < faces; i++) {
-    dp[0][i] = 1.0 / faces;
+    previous[i] = 1.0 / faces;
   }
   for (let i = 1; i < num; i++) {
     let sum = 0.0;
     for (let j = 0; j < num * faces; j++) {
       if (j < faces) {
-        sum += dp[i - 1][j];
+        sum += previous[j];
       } else {
-        sum = sum - dp[i - 1][j - faces] + dp[i - 1][j];
+        sum = sum - previous[j - faces] + previous[j];
       }
-      dp[i][j] += sum / faces;
+      current[j] = sum / faces;
     }
+    [previous, current] = [current, previous];
   }
 
   const result: Record<string, number> = {};
   for (let i = 0; i < num * faces - num + 1; i++) {
     const key = i + num;
-    const value = dp[num - 1][i];
+    const value = previous[i];
     result[key] = value;
   }
   return result;

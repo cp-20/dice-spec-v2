@@ -4,6 +4,37 @@ const singleD6Variance = 35 / 12;
 const singleD6Mean = 3.5;
 
 describe('diceExpecter', () => {
+  test('3d4 の分布が全出目の列挙と一致する', () => {
+    const counts: Record<number, number> = {};
+    for (let first = 1; first <= 4; first++) {
+      for (let second = 1; second <= 4; second++) {
+        for (let third = 1; third <= 4; third++) {
+          const total = first + second + third;
+          counts[total] = (counts[total] ?? 0) + 1;
+        }
+      }
+    }
+    const result = diceExpecter('3d4');
+    expect(result.success).toBe(true);
+    if (!result.success) throw new Error(result.message);
+    expect(Object.keys(result.distribution)).toEqual(Object.keys(counts));
+    for (const [value, count] of Object.entries(counts)) {
+      expect(result.distribution[value]).toBeCloseTo(count / 64, 14);
+    }
+  });
+
+  test.each(['100d100', '400d6', '1000d1'])('%s の確率合計と統計値を維持する', (command) => {
+    const result = diceExpecter(command);
+    expect(result.success).toBe(true);
+    if (!result.success) throw new Error(result.message);
+    const entries = Object.entries(result.distribution);
+    const probability = entries.reduce((sum, [, chance]) => sum + chance, 0);
+    const mean = entries.reduce((sum, [value, chance]) => sum + Number(value) * chance, 0);
+    expect(probability).toBeCloseTo(1, 8);
+    expect(mean).toBeCloseTo(result.mean, 6);
+    expect(entries).toHaveLength(result.range.max - result.range.min + 1);
+  });
+
   test('1d6', () => {
     expect(diceExpecter('1d6')).toEqual({
       success: true,

@@ -10,5 +10,7 @@ bench('6 - 1d6', () => void diceExpecter('6-1d6'));
 bench('3 + 5d >= 15', () => void diceExpecter('3 + 5d >= 15'));
 bench('3 + 5d <= 14', () => void diceExpecter('3 + 5d <= 14'));
 bench('1d6 >= 8', () => void diceExpecter('1d6 >= 8'));
+bench('100d100', () => void diceExpecter('100d100'));
+bench('400d6', () => void diceExpecter('400d6'));
 
 await run();
