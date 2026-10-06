@@ -12,7 +12,18 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    include: ['src/**/*.test.{ts,tsx}', 'firebase/*.rules.test.ts'],
-    setupFiles: ['./src/test/happy-dom.ts'],
+    projects: [
+      {
+        test: {
+          name: 'app',
+          include: ['src/**/*.test.{ts,tsx}'],
+          setupFiles: ['./src/test/happy-dom.ts'],
+        },
+      },
+      {
+        // Rules テストは DOM を必要とせず、Firebase SDK の Node 向け通信を使う。
+        test: { name: 'firebase-rules', include: ['firebase/*.rules.test.ts'] },
+      },
+    ],
   },
 });
