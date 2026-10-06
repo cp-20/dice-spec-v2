@@ -64,7 +64,7 @@ jobs:
         run: |
           if ! git cat-file -e "${CI_BASE_SHA}^{commit}"; then
             echo 'changed=true' >> "$GITHUB_OUTPUT"
-          elif git diff --name-only "$CI_BASE_SHA" "$CI_HEAD_SHA" | rg -q '^firebase/([^/]+\.rules(\.test\.ts)?|firebase\.json|test/.*)$|^src/shared/lib/env\.ts$|^(package\.json|pnpm-lock\.yaml|\.github/actions/setup/.*)$'; then
+          elif git diff --name-only "$CI_BASE_SHA" "$CI_HEAD_SHA" | grep -E '^firebase/([^/]+\.rules(\.test\.ts)?|firebase\.json|test/.*)$|^src/shared/lib/env\.ts$|^(package\.json|pnpm-lock\.yaml|\.github/actions/setup/.*)$' > /dev/null; then
             echo 'changed=true' >> "$GITHUB_OUTPUT"
           else
             echo 'changed=false' >> "$GITHUB_OUTPUT"

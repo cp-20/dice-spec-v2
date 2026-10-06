@@ -2,6 +2,7 @@ import { type ChildProcess, spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import net from 'node:net';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { initializeTestEnvironment, type RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { doc, setLogLevel, writeBatch } from 'firebase/firestore';
@@ -137,8 +138,7 @@ export const setupRulesTestEnvironment = () => {
       emulatorProcess = spawn(
         process.execPath,
         [
-          'x',
-          'firebase',
+          fileURLToPath(import.meta.resolve('firebase-tools/lib/bin/firebase.js')),
           'emulators:start',
           '--only',
           missingEmulators.map(({ name }) => name.toLowerCase()).join(','),
