@@ -50,4 +50,4 @@ Firebase Emulator の環境変数とデフォルト値は [src/shared/lib/env.ts
 
 Sandbox キーはローカルの環境変数で渡し、リポジトリや Playwright の成果物に保存しない。CLI 認証で発行された期限付きキーを使う場合は期限前に更新する。
 
-Stripe E2E は同じリポジトリ内の PR・main への push・手動起動で CI 実行する。fork 由来の PR はジョブ条件で除外し、Sandbox キーを渡さない。キーはリポジトリ Secret `STRIPE_E2E_SECRET_KEY` に登録する。
+Stripe E2E は同じリポジトリ内の PR・main への push・手動起動で CI 実行する。fork 由来の PR と Actions Secret を利用できない Dependabot の PR はジョブ条件で除外し、Sandbox キーを渡さない。Dependabot の更新は対象ブランチを指定した手動起動で検証する。キーはリポジトリ Secret `STRIPE_E2E_SECRET_KEY` に登録する。

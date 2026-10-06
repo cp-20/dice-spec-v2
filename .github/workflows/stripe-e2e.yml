@@ -15,10 +15,12 @@ concurrency:
 
 jobs:
   stripe-e2e:
+    # Dependabot の PR には Actions Secret が渡らないため、対象ブランチを手動起動で検証する。
     if: >-
       github.event_name != 'pull_request' ||
       (github.event.pull_request.head.repo.fork == false &&
-       github.event.pull_request.head.repo.full_name == github.repository)
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.user.login != 'dependabot[bot]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
