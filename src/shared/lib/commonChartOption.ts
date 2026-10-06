@@ -1,35 +1,23 @@
-import type { ChartOptions } from 'chart.js';
+import type { ChartAxisOptions, ChartDefinitionOptions, ChartTheme } from '@tanstack/charts/types';
 
 export const commonChartOption = {
-  maintainAspectRatio: false,
-  responsive: true,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    tooltip: {
-      enabled: false,
-    },
+  theme: {
+    foreground: '#747474',
+    muted: '#747474',
+    grid: '#e5e5e5',
+    background: '#ffffff',
+    palette: ['rgba(100, 116, 139, 0.5)'],
+  } satisfies ChartTheme,
+  svgAnimation: false,
+  tooltip: false,
+  pointer: false,
+} satisfies ChartDefinitionOptions & { theme: ChartTheme };
+
+export const commonChartAxis = {
+  grid: { stroke: '#e5e5e5', strokeOpacity: 1, strokeWidth: 1 },
+  axis: {
+    line: { stroke: '#e5e5e5' },
+    ticks: { count: 10, size: 6, padding: 5 },
+    tickLabels: { fontSize: 12, fontWeight: 400, opacity: 1 },
   },
-  scales: {
-    x: {
-      ticks: {
-        color: '#747474',
-      },
-      grid: {
-        color: '#e5e5e5',
-      },
-    },
-    y: {
-      ticks: {
-        color: '#747474',
-      },
-      grid: {
-        color: '#e5e5e5',
-      },
-    },
-  },
-  font: {
-    family: 'var(--font-main)',
-  },
-} satisfies ChartOptions;
+} satisfies Omit<ChartAxisOptions, 'scale'>;
