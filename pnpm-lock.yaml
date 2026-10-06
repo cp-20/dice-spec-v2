@@ -234,8 +234,8 @@ importers:
         specifier: 19.3.0
         version: 19.3.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(webpack@5.110.3(cssnano@9.0.4(postcss@8.5.28))(csso@5.0.5)(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.28)(sharp@0.35.4(@types/node@26.1.1))(svgo@4.1.0))
       stripe:
-        specifier: 22.6.2
-        version: 22.6.2(@types/node@26.1.1)
+        specifier: 23.0.0
+        version: 23.0.0(@types/node@26.1.1)
       swr:
         specifier: 2.5.1
         version: 2.5.1(react@19.3.0)
@@ -7963,11 +7963,11 @@ packages:
   strip-literal@4.0.0:
     resolution: {integrity: sha512-PaqAvfUZKBwc/SLmNZtHmzK+v19Z4O4eS3cKPeGvbIv/U3pnyEq4Tuw3/4v/FwfM8VQaEawsyCcOQ0P+kpwWWw==}
 
-  stripe@22.6.2:
-    resolution: {integrity: sha512-PwRE2scocvXqDKPiskMa5vRJEAEkq46W69XyUYmAwrNSLr675lQnfqLwnsndAWizwgihOWw/irLmoFRo3ez7ew==}
-    engines: {node: '>=18'}
+  stripe@23.0.0:
+    resolution: {integrity: sha512-MDE2A5ZVVluYURORaZEVghSmnLJc3w6aHAlZSxDQMsOjOb3V0O6ro/CiaeFlJS4N7uIVmsg98ocRsPmUK6YfyA==}
+    engines: {node: '>=20'}
     peerDependencies:
-      '@types/node': '>=18'
+      '@types/node': '>=20'
     peerDependenciesMeta:
       '@types/node':
         optional: true
@@ -16907,7 +16907,7 @@ snapshots:
     dependencies:
       js-tokens: 10.0.0
 
-  stripe@22.6.2(@types/node@26.1.1):
+  stripe@23.0.0(@types/node@26.1.1):
     optionalDependencies:
       '@types/node': 26.1.1
 

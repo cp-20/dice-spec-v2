@@ -67,7 +67,7 @@
     "react-dom": "19.3.0",
     "react-hook-form": "7.87.0",
     "react-server-dom-webpack": "19.3.0",
-    "stripe": "22.6.2",
+    "stripe": "23.0.0",
     "swr": "2.5.1",
     "tailwind-merge": "3.6.0",
     "tailwindcss-animate": "1.0.7",
