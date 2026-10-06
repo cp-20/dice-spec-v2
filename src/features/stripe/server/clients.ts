@@ -12,7 +12,7 @@ export const getStripeClient = () => {
     ({ default: Stripe }) =>
       new Stripe(runtimeEnv.stripe.secretKey, {
         httpClient: Stripe.createFetchHttpClient(),
-        apiVersion: '2026-08-26.dahlia',
+        apiVersion: '2026-09-30.endive',
       }),
   );
   return stripePromise;
