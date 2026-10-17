@@ -1,0 +1,15 @@
+diff --git a/lib/parse.js b/lib/parse.js
+index 3a6988e629f52aee6609dc5ec290a5e9ff47cecb..9f280f14d59608add27d8439f7fcbd950298ae06 100644
+--- a/lib/parse.js
++++ b/lib/parse.js
+@@ -56,5 +56,10 @@ const parse = (input, options = {}) => {
+   const advance = () => input[index++];
+   const push = node => {
++    // CVE-2026-93687: 再帰処理へ渡す前に AST の深さを制限する。
++    if (node.nodes && stack.length >= 128) {
++      throw new SyntaxError('Brace pattern nesting exceeds the maximum depth of 128');
++    }
++
+     if (node.type === 'text' && prev.type === 'dot') {
+       prev.type = 'text';
+     }
