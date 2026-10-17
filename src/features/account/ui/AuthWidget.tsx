@@ -2,10 +2,10 @@
 
 import { RotateCw } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import { Component, type FC, type ReactNode, useEffect, useState } from 'react';
+import { Component, type FC, type ReactNode } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
-import { scheduleIdleTask } from '@/shared/lib/scheduleIdleTask';
+import { Skeleton } from '@/shared/components/ui/skeleton';
 import { captureClientException } from '@/shared/lib/sentryClient';
 
 const FirebaseAuthWidget = dynamic(() => import('./FirebaseAuthWidget').then((mod) => mod.FirebaseAuthWidget), {
@@ -13,7 +13,7 @@ const FirebaseAuthWidget = dynamic(() => import('./FirebaseAuthWidget').then((mo
   // vinext は読み込み失敗を loading に渡して握りつぶすため、再送出して AuthWidgetBoundary で扱う。
   loading: ({ error }) => {
     if (error) throw error;
-    return <div className="size-8" />;
+    return <Skeleton className="size-8 rounded-full" />;
   },
 });
 
@@ -47,31 +47,8 @@ class AuthWidgetBoundary extends Component<{ children: ReactNode }, { failed: bo
   }
 }
 
-export const AuthWidget: FC = () => {
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    let cancel: (() => void) | undefined;
-    const schedule = () => {
-      cancel = scheduleIdleTask(() => setReady(true), 8_000, 8_000);
-    };
-    if (document.readyState === 'complete') {
-      schedule();
-      return () => cancel?.();
-    }
-
-    window.addEventListener('load', schedule, { once: true });
-    return () => {
-      window.removeEventListener('load', schedule);
-      cancel?.();
-    };
-  }, []);
-
-  return ready ? (
-    <AuthWidgetBoundary>
-      <FirebaseAuthWidget />
-    </AuthWidgetBoundary>
-  ) : (
-    <div className="size-8" onPointerEnter={() => setReady(true)} onTouchStart={() => setReady(true)} />
-  );
-};
+export const AuthWidget: FC = () => (
+  <AuthWidgetBoundary>
+    <FirebaseAuthWidget />
+  </AuthWidgetBoundary>
+);
