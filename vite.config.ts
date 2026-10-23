@@ -42,6 +42,8 @@ export default defineConfig({
     }),
   ],
   build: {
+    // Safari 16.4未満でも依存コードのstatic初期化ブロックを解析できるように変換する。
+    target: 'safari15',
     // bcdice のゲームシステムは可変パスの import() で読み込むため、node_modules の中でも bcdice だけは展開対象にする。
     dynamicImportVarsOptions: { exclude: [/node_modules\/(?!(\.pnpm\/bcdice@[^/]+\/node_modules\/)?bcdice\/)/] },
     // ソースマップは Sentry へアップロードする場合だけ生成し、アップロード後に削除する。
