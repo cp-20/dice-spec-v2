@@ -21,6 +21,9 @@ export default defineConfig({
         },
       },
       {
+        test: { name: 'deploy', include: ['scripts/*.test.mjs'] },
+      },
+      {
         // Rules テストは DOM を必要とせず、Firebase SDK の Node 向け通信を使う。
         test: { name: 'firebase-rules', include: ['firebase/*.rules.test.ts'] },
       },

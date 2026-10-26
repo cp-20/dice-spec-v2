@@ -1,11 +1,11 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { createRequire } from 'node:module';
-import { extname, join } from 'node:path';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { describeAsset, fetchPreviousAsset, retainClientAssets, retentionModuleName } from './retain-client-assets.mjs';
+
 const cf = fileURLToPath(new URL('./bin/cf', import.meta.resolve('cf/package.json')));
-const { hash } = createRequire(import.meta.resolve('cf/package.json'))('blake3-wasm');
 const args = process.argv.slice(2);
 const run = (command, capture = false) => {
   const result = spawnSync(process.execPath, command, {
@@ -75,6 +75,7 @@ if (!args.includes('--dry-run')) {
   const stagedId = uploadOutput.match(/Version ID:\s*([a-f0-9-]{36})/)?.[1];
   if (!stagedId) throw new Error('アップロードしたバージョンを確認できません。');
   const staged = await api(`/workers/workers/${config.name}/versions/${stagedId}?include=modules`);
+  const previous = await api(`/workers/workers/${config.name}/versions/${versions[0].version_id}?include=modules`);
   const manifest = {};
   for (const name of readdirSync(join(directory, 'assets'), { recursive: true })) {
     const path = join(directory, 'assets', name);
@@ -84,18 +85,43 @@ if (!args.includes('--dry-run')) {
       ['.assetsignore', '_headers', '_redirects'].includes(name)
     )
       continue;
-    manifest[`/${name.replaceAll('\\', '/')}`] = {
-      hash: hash(readFileSync(path).toString('base64') + extname(path).slice(1))
-        .toString('hex')
-        .slice(0, 32),
-      size: statSync(path).size,
-    };
+    manifest[`/${name.replaceAll('\\', '/')}`] = describeAsset(path, readFileSync(path));
   }
-  const assets = await api(`/workers/scripts/${config.name}/assets-upload-session`, { manifest });
-  if (assets.buckets.flat().length !== 0) throw new Error('CLI でアップロードしたアセットと一致しません。');
+  const retained = await retainClientAssets(previous, manifest);
+  const assets = await api(`/workers/scripts/${config.name}/assets-upload-session`, { manifest: retained.manifest });
+  // Cloudflare が再アップロードを要求した旧ファイルだけ、固定バージョンURLから取得する。
+  for (const bucket of assets.buckets) {
+    const form = new FormData();
+    for (const assetHash of bucket) {
+      const [path, expected] = Object.entries(retained.manifest).find(([, asset]) => asset.hash === assetHash) ?? [];
+      if (!path || path in manifest) throw new Error('CLI でアップロードしたアセットと一致しません。');
+      const { content, contentType } = await fetchPreviousAsset(previous, path);
+      const actual = describeAsset(path, content);
+      if (actual.hash !== expected.hash || actual.size !== expected.size) {
+        throw new Error(`旧アセットの内容が一致しません: ${path}`);
+      }
+      form.append(
+        assetHash,
+        new Blob([content.toString('base64')], { type: contentType ?? 'application/octet-stream' }),
+        assetHash,
+      );
+    }
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${account}/workers/assets/upload?base64=true`,
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${assets.jwt}` },
+        body: form,
+      },
+    );
+    const result = await response.json();
+    if (!response.ok || !result.success)
+      throw new Error(`旧アセットのアップロードに失敗しました (${response.status})。`);
+    if (result.result.jwt) assets.jwt = result.result.jwt;
+  }
   const uploaded = await api(`/workers/workers/${config.name}/versions?deploy=false`, {
     main_module: staged.main_module,
-    modules: staged.modules,
+    modules: [...staged.modules.filter((module) => module.name !== retentionModuleName), retained.module],
     assets: { ...staged.assets, jwt: assets.jwt },
     compatibility_date: staged.compatibility_date,
     compatibility_flags: staged.compatibility_flags,
@@ -114,6 +140,7 @@ if (!args.includes('--dry-run')) {
     throw new Error('本番シークレットの継承を確認できないため、公開を中止しました。');
   }
   console.log(`本番シークレット${secrets.length}個の継承を確認しました。Version ID: ${uploaded.id}`);
+  console.log(`旧クライアントアセット${retained.count}個を30日間保持します。`);
   if (!args.includes('--no-promote')) {
     const current = JSON.parse(run([cf, 'workers', 'deployments', 'list', '--worker', config.name], true));
     if (current.deployments[0]?.id !== deployments.deployments[0].id) {
