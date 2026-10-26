@@ -9,12 +9,16 @@ const cf = fileURLToPath(new URL('./bin/cf', import.meta.resolve('cf/package.jso
 const args = process.argv.slice(2);
 const run = (command, capture = false) => {
   const result = spawnSync(process.execPath, command, {
-    stdio: ['ignore', capture ? 'pipe' : 'inherit', 'inherit'],
+    stdio: ['ignore', capture ? 'pipe' : 'inherit', capture === 'all' ? 'pipe' : 'inherit'],
     encoding: 'utf8',
   });
+  if (capture === 'all') {
+    process.stdout.write(result.stdout ?? '');
+    process.stderr.write(result.stderr ?? '');
+  }
   if (result.error) throw result.error;
   if (result.status !== 0) throw new Error(`コマンドが失敗しました: ${command[0]} (${result.status})`);
-  return result.stdout;
+  return capture === 'all' ? result.stdout + result.stderr : result.stdout;
 };
 
 if (!args.includes('--prebuilt')) {
@@ -57,6 +61,7 @@ const api = async (path, body) => {
 };
 
 // アセットのアップロードを CLI に任せ、シークレットを検証するまで本番へ切り替えない。
+// cf のアップロードログは stderr に出るため、両方の出力からバージョンを確認する。
 const uploadOutput = run(
   [
     cf,
@@ -68,9 +73,8 @@ const uploadOutput = run(
     '--prebuilt',
     ...args.filter((arg) => !['--prebuilt', '--no-promote'].includes(arg)),
   ],
-  true,
+  'all',
 );
-process.stdout.write(uploadOutput);
 if (!args.includes('--dry-run')) {
   const stagedId = uploadOutput.match(/Version ID:\s*([a-f0-9-]{36})/)?.[1];
   if (!stagedId) throw new Error('アップロードしたバージョンを確認できません。');
