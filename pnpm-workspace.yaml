@@ -11,6 +11,7 @@ overrides:
   'uuid@<11.1.1': 11.1.1
 
 patchedDependencies:
+  '@firebase/auth@1.13.8': patches/@firebase__auth@1.13.8.patch
   '@firebase/firestore@4.19.0': patches/@firebase%2Ffirestore@4.19.0.patch
   bcdice@4.10.0: patches/bcdice@4.10.0.patch
   braces@3.0.3: patches/braces@3.0.3.patch
