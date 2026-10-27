@@ -173,6 +173,7 @@ overrides:
   uuid@<11.1.1: 11.1.1
 
 patchedDependencies:
+  '@firebase/auth@1.13.8': 03f35c17b641bea579e1aca2ce1c6b3581cc4b54c7dde8fce7f9c5cdde99e64f
   '@firebase/firestore@4.19.0': a7111ef4c9992b45c34ad9e6f0a9be9762f976c9c882f6bbc82a33bdab2ae9c3
   bcdice@4.10.0: ba95a737e1155539d3475897a3799d10419b68d1a0df50cc8ebd8b60fe6dbf13
   braces@3.0.3: 6c2b19785ba6181cc66adbbefce31eb4cf7a3cf5c1c7f8422e22844fa1cd8f4a
@@ -7808,7 +7809,7 @@ snapshots:
     dependencies:
       '@firebase/app': 0.16.4
       '@firebase/app-compat': 0.5.20
-      '@firebase/auth': 1.13.8(@firebase/app@0.16.4)
+      '@firebase/auth': 1.13.8(patch_hash=03f35c17b641bea579e1aca2ce1c6b3581cc4b54c7dde8fce7f9c5cdde99e64f)(@firebase/app@0.16.4)
       '@firebase/auth-types': 0.13.2(@firebase/app-types@0.9.6)(@firebase/util@1.15.3)
       '@firebase/component': 0.7.5
       '@firebase/util': 1.15.3
@@ -7824,7 +7825,7 @@ snapshots:
       '@firebase/app-types': 0.9.6
       '@firebase/util': 1.15.3
 
-  '@firebase/auth@1.13.8(@firebase/app@0.16.4)':
+  '@firebase/auth@1.13.8(patch_hash=03f35c17b641bea579e1aca2ce1c6b3581cc4b54c7dde8fce7f9c5cdde99e64f)(@firebase/app@0.16.4)':
     dependencies:
       '@firebase/app': 0.16.4
       '@firebase/component': 0.7.5
@@ -11362,7 +11363,7 @@ snapshots:
       '@firebase/app-check-compat': 0.4.7(@firebase/app-compat@0.5.20)(@firebase/app@0.16.4)
       '@firebase/app-compat': 0.5.20
       '@firebase/app-types': 0.9.6
-      '@firebase/auth': 1.13.8(@firebase/app@0.16.4)
+      '@firebase/auth': 1.13.8(patch_hash=03f35c17b641bea579e1aca2ce1c6b3581cc4b54c7dde8fce7f9c5cdde99e64f)(@firebase/app@0.16.4)
       '@firebase/auth-compat': 0.6.13(@firebase/app-compat@0.5.20)(@firebase/app-types@0.9.6)(@firebase/app@0.16.4)
       '@firebase/data-connect': 0.7.4(@firebase/app@0.16.4)
       '@firebase/database': 1.1.5
