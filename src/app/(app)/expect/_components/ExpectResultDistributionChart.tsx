@@ -9,7 +9,13 @@ import { useDiceExpecterResult } from './hooks/useDiceExpecter';
 
 const ExpectResultDistributionChartView = dynamic(
   () => import('./ExpectResultDistributionChartView').then((mod) => mod.ExpectResultDistributionChartView),
-  { ssr: false, loading: () => <div className="h-75" /> },
+  {
+    ssr: false,
+    loading: ({ error }) => {
+      if (error) throw error;
+      return <div className="h-75" />;
+    },
+  },
 );
 
 export const ExpectResultDistributionChart: FC = () => {

@@ -1,6 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useState } from 'react';
+
+import { reloadAfterModuleLoadFailure } from '@/shared/lib/moduleLoadRecovery';
 
 const SentryErrorCatchDynamic = dynamic(
   () => import('@/shared/lib/SentryErrorCatch').then((mod) => mod.SentryErrorCatch),
@@ -8,6 +11,7 @@ const SentryErrorCatchDynamic = dynamic(
 );
 
 export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
+  const [reloading, setReloading] = useState(false);
   return (
     <html lang="ja">
       <body style={{ margin: 0, color: '#334155', background: '#fff', fontFamily: 'system-ui, sans-serif' }}>
@@ -30,7 +34,12 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
           <button
             type="button"
             // 失敗した import() はブラウザに保持されるため、Reactの再描画ではなく文書全体を読み直す。
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              setReloading(true);
+              void reloadAfterModuleLoadFailure();
+            }}
+            disabled={reloading}
+            aria-busy={reloading}
             style={{
               minHeight: 44,
               padding: '8px 16px',
@@ -42,7 +51,7 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
               cursor: 'pointer',
             }}
           >
-            ページを再読み込み
+            {reloading ? '再読み込み中...' : 'ページを再読み込み'}
           </button>
         </main>
       </body>
