@@ -1,6 +1,24 @@
 import { scheduleIdleTask } from './scheduleIdleTask';
 
 let sentryPromise: Promise<typeof import('@sentry/nextjs')> | null = null;
+let failedModuleRequests: { path: string; timestamp: number }[] = [];
+
+// SDKの遅延起動より前に発生する、URLを持たないimport例外の調査に使う。
+export const recordModuleLoadFailure = (event: Event) => {
+  const target = event.target;
+  const source =
+    target instanceof HTMLScriptElement
+      ? target.src
+      : target instanceof HTMLLinkElement && target.rel === 'modulepreload'
+        ? target.href
+        : undefined;
+  if (!source) return;
+  const url = new URL(source);
+  if (url.origin !== location.origin || !url.pathname.startsWith('/_next/static/')) return;
+
+  // クエリやフラグメントを送らず、直近10件に限定する。
+  failedModuleRequests = [...failedModuleRequests, { path: url.pathname, timestamp: Date.now() }].slice(-10);
+};
 
 export const getSentry = () => {
   sentryPromise ??= import('@sentry/nextjs').then((Sentry) => {
@@ -42,7 +60,13 @@ export const getSentry = () => {
 };
 
 export const captureClientException = (error: unknown) => {
+  const moduleLoading = {
+    online: navigator.onLine,
+    serviceWorkerControlled: Boolean(navigator.serviceWorker?.controller),
+    // Sentryの既定の正規化深度でもURLが省略されないよう、要素を文字列にする。
+    failedRequests: failedModuleRequests.map(({ path, timestamp }) => `${new Date(timestamp).toISOString()} ${path}`),
+  };
   getSentry()
-    .then((Sentry) => Sentry.captureException(error))
+    .then((Sentry) => Sentry.captureException(error, { contexts: { module_loading: moduleLoading } }))
     .catch((sentryError) => console.error('Failed to load Sentry', sentryError));
 };

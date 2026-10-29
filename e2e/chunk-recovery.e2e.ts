@@ -7,7 +7,22 @@ for (const failure of ['404', '通信切断'] as const) {
     // Service Worker に通信制御を迂回させず、取得失敗と復旧の順序を固定する。
     test.setTimeout(60_000);
     // 障害再現のイベントを本番の監視サービスへ送信しない。
-    await page.route('https://*.ingest.*.sentry.io/**', (route) => route.fulfill({ status: 200, body: '{}' }));
+    const captured: {
+      contexts?: {
+        module_loading?: { online: boolean; serviceWorkerControlled: boolean; failedRequests: string[] };
+      };
+    }[] = [];
+    await page.route('https://*.ingest.*.sentry.io/**', async (route) => {
+      const lines = (route.request().postData() ?? '').split('\n');
+      for (let i = 1; i < lines.length - 1; i++) {
+        try {
+          if (JSON.parse(lines[i]).type === 'event') captured.push(JSON.parse(lines[i + 1]));
+        } catch {
+          // Replayなどのバイナリデータは、この検証の対象にしない。
+        }
+      }
+      await route.fulfill({ status: 200, body: '{}' });
+    });
     if (failure === '通信切断') await page.setViewportSize({ width: 320, height: 640 });
     let failing = true;
     let failedChunk = '';
@@ -27,6 +42,14 @@ for (const failure of ['404', '通信切断'] as const) {
     await expect.poll(() => failedChunk).not.toBe('');
     const reload = page.getByRole('button', { name: 'ページを再読み込み', exact: true });
     await expect(reload).toBeVisible();
+
+    await expect.poll(() => captured.length).toBeGreaterThan(0);
+    const diagnostics = captured
+      .map((event) => event.contexts?.module_loading)
+      .find((context) =>
+        context?.failedRequests.some((request) => request.endsWith(` ${new URL(failedChunk).pathname}`)),
+      );
+    expect(diagnostics).toMatchObject({ online: true, serviceWorkerControlled: false });
 
     failing = false;
     const [documentResponse, chunkResponse] = await Promise.all([
