@@ -9,13 +9,7 @@ import { useLogAnalysisSystem } from './hooks/useLogAnalysis';
 
 const LogAnalysisChartsView = dynamic(
   () => import('./LogAnalysisChartsView').then((mod) => mod.LogAnalysisChartsView),
-  {
-    ssr: false,
-    loading: ({ error }) => {
-      if (error) throw error;
-      return <div className="h-75" />;
-    },
-  },
+  { ssr: false, loading: () => <div className="h-75" /> },
 );
 
 export const LogAnalysisCharts: FC = () => {

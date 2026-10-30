@@ -8,13 +8,7 @@ import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 
 const AuthenticatedUserMenu = dynamic(
   () => import('./AuthenticatedUserMenu').then((mod) => mod.AuthenticatedUserMenu),
-  {
-    ssr: false,
-    loading: ({ error }) => {
-      if (error) throw error;
-      return <Skeleton className="size-8 rounded-full" />;
-    },
-  },
+  { ssr: false, loading: () => <Skeleton className="size-8 rounded-full" /> },
 );
 
 export const FirebaseAuthWidget: FC = () => {

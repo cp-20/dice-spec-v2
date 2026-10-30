@@ -7,20 +7,6 @@ export const getSentry = () => {
     Sentry.init({
       dsn: 'https://d386299f61f671f59b628106b52774ba@o4510084181131264.ingest.us.sentry.io/4510084182245376',
       tracesSampleRate: 1,
-      beforeSend: (event) => ({
-        ...event,
-        contexts: {
-          ...event.contexts,
-          module_loading: {
-            online: navigator.onLine,
-            serviceWorkerControlled: Boolean(navigator.serviceWorker?.controller),
-            // 既定の正規化深度でもURLを残し、クエリとフラグメントは送らない。
-            failedRequests: (window.__moduleLoadFailures ?? []).map(
-              ({ url, timestamp }) => `${new Date(timestamp).toISOString()} ${new URL(url).pathname}`,
-            ),
-          },
-        },
-      }),
       // SDK 更新で収集範囲が広がらないよう、従来の既定値を明示する。
       dataCollection: {
         userInfo: false,

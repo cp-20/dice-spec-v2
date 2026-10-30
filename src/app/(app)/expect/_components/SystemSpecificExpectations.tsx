@@ -5,13 +5,7 @@ import { type FC, useEffect, useRef, useState } from 'react';
 
 const SystemSpecificExpectationTabs = dynamic(
   () => import('./SystemSpecificExpectationTabs').then((mod) => mod.SystemSpecificExpectationTabs),
-  {
-    ssr: false,
-    loading: ({ error }) => {
-      if (error) throw error;
-      return <div className="h-80" />;
-    },
-  },
+  { ssr: false, loading: () => <div className="h-80" /> },
 );
 
 export const SystemSpecificExpectations: FC = () => {

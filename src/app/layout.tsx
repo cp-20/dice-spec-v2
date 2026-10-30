@@ -7,13 +7,13 @@ import { NavigationProgress } from '@/shared/components/elements/NavigationProgr
 import { ServiceWorkerRegistration } from '@/shared/components/elements/ServiceWorkerRegistration';
 import { WebVitals } from '@/shared/components/elements/WebVitals';
 import { GoogleAnalytics } from '@/shared/components/GoogleAnalytics';
-import { moduleLoadDiagnosticsScript } from '@/shared/lib/moduleLoadRecovery';
+import { moduleLoadRecoveryScript } from '@/shared/lib/moduleLoadRecovery';
 
 const RootLayout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <html lang="ja" className="h-full">
-      <Script id="module-load-diagnostics" strategy="beforeInteractive">
-        {moduleLoadDiagnosticsScript}
+      <Script id="module-load-recovery" strategy="beforeInteractive">
+        {moduleLoadRecoveryScript}
       </Script>
       <body className={clsx('h-full flex flex-col text-slate-700 font-(family-name:--font-main)')}>
         <GoogleAnalytics />

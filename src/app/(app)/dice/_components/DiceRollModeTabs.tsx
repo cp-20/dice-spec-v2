@@ -13,13 +13,7 @@ type DiceRollModeTabsProps = {
 
 const AdvancedDiceRollPanel = dynamic(
   () => import('./AdvancedDiceRollPanel').then((mod) => mod.AdvancedDiceRollPanel),
-  {
-    ssr: false,
-    loading: ({ error }) => {
-      if (error) throw error;
-      return <div className="min-h-40 animate-pulse rounded-md bg-slate-100" />;
-    },
-  },
+  { ssr: false, loading: () => <div className="min-h-40 animate-pulse rounded-md bg-slate-100" /> },
 );
 
 export const DiceRollModeTabs: FC<DiceRollModeTabsProps> = ({ simpleTabContent }) => {
