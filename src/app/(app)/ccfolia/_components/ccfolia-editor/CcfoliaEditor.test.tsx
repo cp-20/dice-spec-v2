@@ -153,6 +153,8 @@ vi.doMock('@/shared/components/ui/use-toast', () => ({
   toast: toastMock,
   useToast: () => ({ toast: toastMock }),
 }));
+const { CcfoliaEditor } = await import('./CcfoliaEditor');
+
 describe('CcfoliaEditor', () => {
   beforeEach(() => {
     setListedCharacterIds([character.id]);
@@ -176,7 +178,6 @@ describe('CcfoliaEditor', () => {
       selectedCharacterId: null,
       selectedRevision: null,
     });
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     await waitFor(() => expect((screen.getByLabelText('名前') as HTMLInputElement).value).toBe('退避した編集内容'));
@@ -192,7 +193,6 @@ describe('CcfoliaEditor', () => {
         }),
     );
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: 'クリップボードから読み込む' }));
@@ -218,7 +218,6 @@ describe('CcfoliaEditor', () => {
         }),
     );
     const confirmSpy = vi.spyOn(window, 'confirm');
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: 'クリップボードから読み込む' }));
@@ -237,7 +236,6 @@ describe('CcfoliaEditor', () => {
   test('切替前のリモート応答を切替後のキャラクターへ適用しない', async () => {
     setListedCharacterIds([character.id, staleCharacter.id]);
     remotelyExists = true;
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     const view = render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
@@ -252,7 +250,6 @@ describe('CcfoliaEditor', () => {
   });
 
   test('ログアウト時に編集中のフォームを初期化する', async () => {
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
     const nameInput = screen.getByLabelText('名前') as HTMLInputElement;
     fireEvent.change(nameInput, { target: { value: '編集中' } });
@@ -264,7 +261,6 @@ describe('CcfoliaEditor', () => {
 
   test('再マウント時に前回の選択状態を引き継がない', async () => {
     setListedCharacterIds([character.id]);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     const firstView = render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
@@ -279,7 +275,6 @@ describe('CcfoliaEditor', () => {
     setListedCharacterIds([character.id]);
     remotelyExists = true;
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     const view = render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
@@ -303,7 +298,6 @@ describe('CcfoliaEditor', () => {
 
   test('選択中のカードを個別購読の最新版へ置き換える', async () => {
     setListedCharacterIds([character.id]);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     const view = render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
@@ -321,7 +315,6 @@ describe('CcfoliaEditor', () => {
     deleteCharacter.mockReset();
     deleteCharacter.mockRejectedValueOnce(new TestCcfoliaCharacterNotFoundError());
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     const view = render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
@@ -351,7 +344,6 @@ describe('CcfoliaEditor', () => {
         }),
     );
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     const deleteButton = screen.getByRole('button', { name: `削除: ${character.name}` });
@@ -378,7 +370,6 @@ describe('CcfoliaEditor', () => {
         }),
     );
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: `削除: ${character.name}` }));
@@ -400,7 +391,6 @@ describe('CcfoliaEditor', () => {
     deleteCharacter.mockReset();
     deleteCharacter.mockResolvedValue(undefined);
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     const view = render(<CcfoliaEditor />);
 
     await act(async () => {
@@ -422,7 +412,6 @@ describe('CcfoliaEditor', () => {
   test('カラーの入力途中もライブ出力を止めず、有効値へ戻せる', async () => {
     setListedCharacterIds();
     remotelyExists = true;
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
     const colorInput = screen.getByRole('textbox', { name: 'チャットカラーの16進カラーコード' });
     const result = screen.getByRole('textbox', { name: '出力結果' }) as HTMLTextAreaElement;
@@ -437,7 +426,6 @@ describe('CcfoliaEditor', () => {
   test('保存済みキャラクターでは新規保存と上書き保存を分けて表示する', async () => {
     setListedCharacterIds([character.id]);
     remotelyExists = true;
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     expect(screen.getByRole('heading', { name: '保存済みキャラクターを選択して入力' })).toBeTruthy();
@@ -457,7 +445,6 @@ describe('CcfoliaEditor', () => {
   test('追加ページの読み込みをキャラクター一覧の取得元へ直接要求する', async () => {
     setListedCharacterIds([character.id]);
     hasMoreCharacters = true;
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: '保存済みキャラクターをさらに読み込む' }));
@@ -476,7 +463,6 @@ describe('CcfoliaEditor', () => {
           resolveUpdate = resolve;
         }),
     );
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
@@ -505,7 +491,6 @@ describe('CcfoliaEditor', () => {
         }),
     );
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
@@ -539,7 +524,6 @@ describe('CcfoliaEditor', () => {
         }),
     );
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
@@ -573,7 +557,6 @@ describe('CcfoliaEditor', () => {
         stringifyCcfoliaClipboardCharacter({ ...createDefaultCcfoliaEditorCharacter(), name: '読み込んだキャラ' }),
       );
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
@@ -614,7 +597,6 @@ describe('CcfoliaEditor', () => {
         }),
     );
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
@@ -641,7 +623,6 @@ describe('CcfoliaEditor', () => {
     remotelyExists = true;
     updateCharacter.mockReset();
     updateCharacter.mockResolvedValueOnce(2);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     fireEvent.click(screen.getByRole('button', { name: /^追加ページの探索者/ }));
@@ -655,7 +636,6 @@ describe('CcfoliaEditor', () => {
     vi.useFakeTimers();
     setListedCharacterIds([character.id]);
     const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue(undefined);
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     await act(async () => {
@@ -674,7 +654,6 @@ describe('CcfoliaEditor', () => {
   test('同名キャラクターにも識別用のキーを表示しない', async () => {
     setListedCharacterIds([character.id, sameNameCharacter.id]);
     remotelyExists = true;
-    const { CcfoliaEditor } = await import('./CcfoliaEditor');
     render(<CcfoliaEditor />);
 
     expect(screen.getAllByText(character.name)).toHaveLength(2);
