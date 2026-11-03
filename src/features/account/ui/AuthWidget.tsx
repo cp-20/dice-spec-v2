@@ -6,6 +6,7 @@ import { Component, type FC, type ReactNode } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { reloadAfterModuleLoadFailure } from '@/shared/lib/moduleLoadRecovery';
 import { captureClientException } from '@/shared/lib/sentryClient';
 
 const FirebaseAuthWidget = dynamic(() => import('./FirebaseAuthWidget').then((mod) => mod.FirebaseAuthWidget), {
@@ -18,8 +19,8 @@ const FirebaseAuthWidget = dynamic(() => import('./FirebaseAuthWidget').then((mo
 });
 
 // 認証UIの遅延チャンク取得が失敗しても、オフラインで使える本文を破棄しない。
-class AuthWidgetBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
-  state = { failed: false };
+class AuthWidgetBoundary extends Component<{ children: ReactNode }, { failed: boolean; reloading: boolean }> {
+  state = { failed: false, reloading: false };
 
   static getDerivedStateFromError() {
     return { failed: true };
@@ -39,9 +40,14 @@ class AuthWidgetBoundary extends Component<{ children: ReactNode }, { failed: bo
         size="icon"
         className="size-8"
         title="再読み込み"
-        onClick={() => window.location.reload()}
+        onClick={() => {
+          this.setState({ reloading: true });
+          void reloadAfterModuleLoadFailure();
+        }}
+        disabled={this.state.reloading}
+        aria-busy={this.state.reloading}
       >
-        <RotateCw className="size-4" aria-hidden="true" />
+        <RotateCw className={`size-4 ${this.state.reloading ? 'motion-safe:animate-spin' : ''}`} aria-hidden="true" />
       </Button>
     );
   }

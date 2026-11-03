@@ -2,8 +2,12 @@ import { expect, test } from '@playwright/test';
 
 test.use({ serviceWorkers: 'block' });
 
-for (const failure of ['404', '通信切断'] as const) {
-  test(`レイアウトの${failure}からページを再読み込みしてダイス操作に戻れる`, async ({ page }) => {
+for (const [target, failure] of [
+  ['レイアウト', '404'],
+  ['レイアウト', '通信切断'],
+  ['認証UI', '通信切断'],
+] as const) {
+  test(`${target}の${failure}からページを再読み込みしてダイス操作に戻れる`, async ({ page }) => {
     // Service Worker に通信制御を迂回させず、取得失敗と復旧の順序を固定する。
     test.setTimeout(60_000);
     // 障害再現のイベントを本番の監視サービスへ送信しない。
@@ -13,8 +17,13 @@ for (const failure of ['404', '通信切断'] as const) {
     let failedChunk = '';
     await page.route('**/_next/static/chunks/*.js', async (route) => {
       const response = await route.fetch();
-      // ハッシュ付きファイル名に依存せず、本文を包むレイアウトを特定する。
-      if (failing && (await response.text()).includes('max-w-6xl')) {
+      // ハッシュ付きファイル名に依存せず、表示内容から障害対象を特定する。
+      const body = await response.text();
+      const matches =
+        target === 'レイアウト'
+          ? body.includes('max-w-6xl')
+          : body.length < 10_000 && body.includes('authUser') && body.includes('signOut') && body.includes('.email');
+      if (failing && matches) {
         failedChunk = route.request().url();
         if (failure === '404') await route.fulfill({ status: 404, body: 'Not Found', contentType: 'text/plain' });
         else await route.abort('internetdisconnected');
@@ -25,7 +34,10 @@ for (const failure of ['404', '通信切断'] as const) {
 
     await page.goto('/dice');
     await expect.poll(() => failedChunk).not.toBe('');
-    const reload = page.getByRole('button', { name: 'ページを再読み込み', exact: true });
+    const reload = page.getByRole('button', {
+      name: target === 'レイアウト' ? 'ページを再読み込み' : '再読み込み',
+      exact: true,
+    });
     await expect(reload).toBeVisible();
 
     failing = false;
