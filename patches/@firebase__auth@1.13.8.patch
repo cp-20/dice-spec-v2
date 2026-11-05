@@ -1,0 +1,30 @@
+diff --git a/dist/browser-cjs/index-CduFNIYN.js b/dist/browser-cjs/index-CduFNIYN.js
+index a2a5ab9205bb1dd19466fe8eb8d390376c3b36f8..4c02d8c873f89726850081f63a47b870648495c1 100644
+--- a/dist/browser-cjs/index-CduFNIYN.js
++++ b/dist/browser-cjs/index-CduFNIYN.js
+@@ -8274,8 +8274,8 @@ function _openDatabase() {
+             if (!db.objectStoreNames.contains(DB_OBJECTSTORE_NAME)) {
+                 // Need to close the database or else you get a `blocked` event
+                 db.close();
+-                await _deleteDatabase();
+-                resolve(await _openDatabase());
++                // 修復失敗を呼び出し元へ返し、認証の永続化先の選択を止めない。
++                Promise.resolve().then(_deleteDatabase).then(_openDatabase).then(resolve, reject);
+             }
+             else {
+                 resolve(db);
+diff --git a/dist/esm/index-DYWDbVEA.js b/dist/esm/index-DYWDbVEA.js
+index d2e31b9b7a90752780c03f81a905cc100d251e58..45444991204883a00c7b15c4cb909522d4423dd2 100644
+--- a/dist/esm/index-DYWDbVEA.js
++++ b/dist/esm/index-DYWDbVEA.js
+@@ -8272,8 +8272,8 @@ function _openDatabase() {
+             if (!db.objectStoreNames.contains(DB_OBJECTSTORE_NAME)) {
+                 // Need to close the database or else you get a `blocked` event
+                 db.close();
+-                await _deleteDatabase();
+-                resolve(await _openDatabase());
++                // 修復失敗を呼び出し元へ返し、認証の永続化先の選択を止めない。
++                Promise.resolve().then(_deleteDatabase).then(_openDatabase).then(resolve, reject);
+             }
+             else {
+                 resolve(db);
