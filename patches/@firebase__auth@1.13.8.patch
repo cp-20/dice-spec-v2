@@ -1,8 +1,23 @@
 diff --git a/dist/browser-cjs/index-CduFNIYN.js b/dist/browser-cjs/index-CduFNIYN.js
-index a2a5ab9205bb1dd19466fe8eb8d390376c3b36f8..4c02d8c873f89726850081f63a47b870648495c1 100644
 --- a/dist/browser-cjs/index-CduFNIYN.js
 +++ b/dist/browser-cjs/index-CduFNIYN.js
-@@ -8274,8 +8274,8 @@ function _openDatabase() {
+@@ -2191,7 +2191,14 @@
+                     break;
+                 }
+             }
+-            catch { }
++            catch {
++                // 可用性確認後に読み取りが失敗した保存先へ再移行しない。
++                const index = availablePersistences.indexOf(persistence);
++                if (index !== -1) availablePersistences.splice(index, 1);
++                if (selectedPersistence === persistence) {
++                    selectedPersistence = availablePersistences[0] || _getInstance(inMemoryPersistence);
++                }
++            }
+         }
+         // If we find the user in a persistence that does support migration, use
+         // that migration path (of only persistences that support migration)
+@@ -8274,8 +8281,8 @@
              if (!db.objectStoreNames.contains(DB_OBJECTSTORE_NAME)) {
                  // Need to close the database or else you get a `blocked` event
                  db.close();
@@ -14,10 +29,25 @@ index a2a5ab9205bb1dd19466fe8eb8d390376c3b36f8..4c02d8c873f89726850081f63a47b870
              else {
                  resolve(db);
 diff --git a/dist/esm/index-DYWDbVEA.js b/dist/esm/index-DYWDbVEA.js
-index d2e31b9b7a90752780c03f81a905cc100d251e58..45444991204883a00c7b15c4cb909522d4423dd2 100644
 --- a/dist/esm/index-DYWDbVEA.js
 +++ b/dist/esm/index-DYWDbVEA.js
-@@ -8272,8 +8272,8 @@ function _openDatabase() {
+@@ -2189,7 +2189,14 @@
+                     break;
+                 }
+             }
+-            catch { }
++            catch {
++                // 可用性確認後に読み取りが失敗した保存先へ再移行しない。
++                const index = availablePersistences.indexOf(persistence);
++                if (index !== -1) availablePersistences.splice(index, 1);
++                if (selectedPersistence === persistence) {
++                    selectedPersistence = availablePersistences[0] || _getInstance(inMemoryPersistence);
++                }
++            }
+         }
+         // If we find the user in a persistence that does support migration, use
+         // that migration path (of only persistences that support migration)
+@@ -8272,8 +8279,8 @@
              if (!db.objectStoreNames.contains(DB_OBJECTSTORE_NAME)) {
                  // Need to close the database or else you get a `blocked` event
                  db.close();
