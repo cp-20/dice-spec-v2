@@ -5,6 +5,8 @@ overrides:
   '@opentelemetry/core@<2.8.0': 2.8.0
   'basic-ftp@<6.2.1': 6.2.1
   'fflate@>=0.7.0 <0.7.5': 0.7.5
+  # 旧メジャーに修正版がないため、glob とその依存の minimatch をまとめて更新する。
+  'glob@>=9.0.0 <14.0.2': 14.0.2
   protobufjs: 7.6.5
   sharp: 0.35.5
   'undici@>=7.0.0 <7.29.1': 7.29.1
