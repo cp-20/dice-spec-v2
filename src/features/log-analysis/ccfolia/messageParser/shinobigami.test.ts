@@ -1,6 +1,15 @@
 import { shinobigamiParser } from './shinobigami';
 
 describe('shinobigamiParser', () => {
+  test('マイナスの修正がついた判定をパースする', () => {
+    expect(shinobigamiParser('SG-1>=5 (SG-1@12#2>=5) ＞ 5[1,4]-1 ＞ 4 ＞ 失敗')).toStrictEqual({
+      evaluation: '失敗',
+      results: [5],
+      target: 5,
+      skillName: null,
+    });
+  });
+
   test('単なるメッセージは null を返す', () => {
     expect(shinobigamiParser('テスト')).toBe(null);
   });

@@ -12,7 +12,7 @@ import { extractSkillNameFromMessage } from './skillName';
 // match[7]: 最終結果
 // match[8]: 評価 (optional)
 const shinobigamiRegex =
-  /\((\d*)SG(?:\+(\d+))?@(\d+)#(\d+)(?:>=(\d+))?\)(?: ＞ \[[\d,]+\])? ＞ (\d+)\[[\d,]+\](?:\+\d+)? ＞ (\d+)(?: ＞ (.+?)(?:\(.+\))?)?$/;
+  /\((\d*)SG(?:[+-](\d+))?@(\d+)#(\d+)(?:>=(\d+))?\)(?: ＞ \[[\d,]+\])? ＞ (\d+)\[[\d,]+\](?:[+-]\d+)? ＞ (\d+)(?: ＞ (.+?)(?:\(.+\))?)?$/;
 
 export const shinobigamiParser: SystemMessageParser = (message) => {
   const normalizedMessage = normalizeParentheses(message);
@@ -37,7 +37,7 @@ export const shinobigamiSystemStats = {
   average: 7,
   variance: 5.833333333333333,
   better: 'high',
-  pivots: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  pivots: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
   evaluations: [
     { label: 'ファンブル', status: 'failure' },
     { label: '失敗', status: 'failure' },
