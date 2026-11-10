@@ -5,6 +5,7 @@ import { atomFamily } from 'jotai-family';
 
 import { getFirebaseFirestore } from '@/shared/lib/firebase/client';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
+import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 
 import { type AnalysisDocument, parseAnalysisDocument } from './schema';
 
@@ -15,8 +16,11 @@ type AnalysisAtom = {
 };
 
 const internalAnalysisAtomFamily = atomFamily((id: string | undefined) =>
-  withAtomEffect(atom<AnalysisAtom>({ analysis: null, loading: true, error: null }), (_, set) => {
+  withAtomEffect(atom<AnalysisAtom>({ analysis: null, loading: true, error: null }), (get, set) => {
     const firestore = getFirebaseFirestore();
+    // 権限エラーで購読が終了するため、ログイン状態が変わったら購読し直す。
+    // 未ログインで開いた非公開の解析を、ログイン後に再読み込みなしで表示できるようにする。
+    get(authUserAtom);
 
     if (!id) {
       set(internalAnalysisAtomFamily(id), { analysis: null, loading: false, error: null });
