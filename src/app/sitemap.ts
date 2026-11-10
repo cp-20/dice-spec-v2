@@ -6,7 +6,8 @@ import { navLinks } from '@/shared/lib/navigation';
 
 const appPaths = [
   '/',
-  ...navLinks.map((link) => link.href),
+  // 解析一覧は noindex のため、サイトマップには載せない。
+  ...navLinks.map((link) => link.href).filter((href) => href !== '/analyze-logs/list'),
   '/terms',
   '/privacy-policy',
   '/specified-commercial-transactions',

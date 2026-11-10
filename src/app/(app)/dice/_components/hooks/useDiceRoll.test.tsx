@@ -51,6 +51,16 @@ describe('ローカルのダイス操作', () => {
     expect(result.current.quick.items.filter((item) => item.command === '1D1')).toHaveLength(1);
   });
 
+  test('書式には合うが評価できないコマンドは、ログにもクイック入力にも残さない', () => {
+    const { result } = setup();
+    const before = result.current.quick.items.length;
+    act(() => {
+      expect(result.current.first.diceRoll('2D6+')).toBeNull();
+    });
+    expect(result.current.logs.diceLogs).toHaveLength(0);
+    expect(result.current.quick.items).toHaveLength(before);
+  });
+
   test.each([
     ['1D1', 'default'],
     ['1D1>=1', 'success'],
