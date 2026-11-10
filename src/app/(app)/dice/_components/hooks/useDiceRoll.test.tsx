@@ -142,6 +142,16 @@ describe('ローカルのダイス操作', () => {
     }
   });
 
+  test('乱数の使用上限を超えるコマンドは失敗として扱い、不具合として報告しない', () => {
+    vi.mocked(captureClientException).mockClear();
+    const { result } = setup();
+    act(() => {
+      expect(result.current.first.diceRoll('x60 200D6')).toBeNull();
+    });
+    expect(captureClientException).not.toHaveBeenCalled();
+    expect(result.current.logs.diceLogs).toEqual([]);
+  });
+
   test('旧 endpoint 設定が残っていても音量・ヘルプ設定を保持する', () => {
     expect(
       v.parse(AdvancedSettingsFormSchema, {

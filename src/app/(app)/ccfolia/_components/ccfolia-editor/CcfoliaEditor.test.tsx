@@ -9,6 +9,7 @@ import {
   type CcfoliaCharacterDocument,
   stringifyCcfoliaClipboardCharacter,
 } from '@/features/ccfolia/model';
+import { captureClientException } from '@/shared/lib/sentryClient';
 
 import { retainNavigationFallbackDraft, takeNavigationFallbackDraft } from './navigation/navigationFallbackDraft';
 
@@ -206,6 +207,25 @@ describe('CcfoliaEditor', () => {
     expect(nameInput.value).toBe('読取待ちの編集');
     readText.mockRestore();
     confirmSpy.mockRestore();
+  });
+
+  test('ブラウザがクリップボードの読み取りを拒否したら失敗を通知し、不具合として報告しない', async () => {
+    vi.mocked(captureClientException).mockClear();
+    // 画面のフォーカスや権限によるブラウザの拒否は happy-dom で再現できないため、読み取り境界だけを置き換える。
+    const readText = vi
+      .spyOn(navigator.clipboard, 'readText')
+      .mockRejectedValueOnce(new DOMException('Document is not focused.', 'NotAllowedError'));
+    render(<CcfoliaEditor />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'クリップボードから読み込む' }));
+
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'クリップボードから読み込みに失敗しました', variant: 'destructive' }),
+      ),
+    );
+    expect(captureClientException).not.toHaveBeenCalled();
+    readText.mockRestore();
   });
 
   test('クリップボード読取中に認証セッションが変わったら遅延応答を適用しない', async () => {

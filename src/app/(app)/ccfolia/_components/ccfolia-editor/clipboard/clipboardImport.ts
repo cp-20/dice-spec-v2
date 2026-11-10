@@ -36,6 +36,9 @@ export const loadClipboardCharacterAtom = atom(null, async (get, set): Promise<b
     console.error('CCFOLIA_CLIPBOARD_LOAD_FAILED');
     if (loadError instanceof SyntaxError || loadError instanceof ValiError) {
       sendGoogleAnalyticsEvent('load_ccfolia_character_error', { reason: 'invalid_clipboard' });
+    } else if (loadError instanceof DOMException && loadError.name === 'NotAllowedError') {
+      // 権限の拒否や画面が非フォーカスの間の読み取りは、ブラウザが利用者の状態に応じて拒否するため報告しない。
+      sendGoogleAnalyticsEvent('load_ccfolia_character_error', { reason: 'clipboard_not_allowed' });
     } else {
       captureClientException(loadError);
     }

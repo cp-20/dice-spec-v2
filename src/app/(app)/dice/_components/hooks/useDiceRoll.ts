@@ -39,7 +39,8 @@ export const useDiceRollCore = () => {
         }
         return result;
       } catch (error) {
-        captureClientException(error);
+        // 乱数の使用上限を超える入力はエンジンが利用者の入力誤りとして拒否するため、不具合として報告しない。
+        if (!(error instanceof Error && error.name === 'TooManyRandsError')) captureClientException(error);
         return null;
       }
     },
