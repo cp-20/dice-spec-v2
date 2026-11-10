@@ -199,8 +199,7 @@ service cloud.firestore {
         && data.primaryDeviationScore is number
         && data.primaryDeviationScore == data.characterResults[0].summary.deviationScore
         && data.owner is map
-        && isValidPublicOwner(data.owner)
-        && isValidPublicOwnerByUserDoc(data.owner, data.ownerUid);
+        && isValidPublicOwner(data.owner);
     }
 
     function isAnalysisOwnerByResource() {
@@ -429,9 +428,12 @@ service cloud.firestore {
 
       allow create: if isAnalysisOwnerByRequest()
         && isValidAnalysisDocument(request.resource.data, analysisId)
+        && isValidPublicOwnerByUserDoc(request.resource.data.owner, request.auth.uid)
         && isFreePlanCreateWithinLimit(request.auth.uid)
         && isAnalysisCountIncrementSynced(request.auth.uid, analysisId);
 
+      // owner と users の照合は owner を書き換える更新だけに課す。
+      // 課金サーバーは users だけを更新するため、保存済みの owner はプラン変更後に users と一致しなくなる。
       allow update: if isAnalysisOwnerByResource()
         && isValidAnalysisDocument(request.resource.data, analysisId)
         && (isAnalysisMetaUpdateOnly() || isAnalysisOwnerSyncUpdateOnly());

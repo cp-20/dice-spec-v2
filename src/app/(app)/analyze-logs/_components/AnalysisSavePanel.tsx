@@ -12,6 +12,7 @@ import { useMeStore } from '@/features/account/firebase/accountStore';
 import { type SaveAnalysisPayload, useSaveAnalysis } from '@/features/log-analysis/firebase/mutations';
 import type { AnalysisVisibilityLevel } from '@/features/log-analysis/firebase/schema';
 import { myAnalysesAtom, useUserAnalyses } from '@/features/log-analysis/firebase/userAnalyses';
+import { toPublicUser } from '@/features/user/firebase/schema';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { GoogleSignInAgreement } from '@/shared/components/elements/GoogleSignInAgreement';
 import { GoogleSignInButton } from '@/shared/components/elements/GoogleSignInButton';
@@ -81,14 +82,7 @@ export const AnalysisSavePanel: FC = () => {
       const payload: SaveAnalysisPayload = {
         title: title.trim(),
         ownerUid: authUser.uid,
-        owner: {
-          id: me.id,
-          name: me.name,
-          ...(me.avatarUrl === undefined ? {} : { avatarUrl: me.avatarUrl }),
-          plan: me.plan,
-          createdAt: me.createdAt,
-          updatedAt: me.updatedAt,
-        },
+        owner: toPublicUser(me),
         systemId: system,
         showRecordDetails,
         characterResults: result.results,
