@@ -1,5 +1,5 @@
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
-import { atom, useAtomValue } from 'jotai';
+import { atom } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
 import { atomFamily } from 'jotai-family';
 
@@ -68,9 +68,3 @@ const internalMyAnalysesLoadingAtom = atom((get) => {
 });
 
 export const myAnalysesLoadingAtom = atom((get) => get(internalMyAnalysesLoadingAtom));
-
-export const useUserAnalyses = (uid: string | null | undefined) => {
-  const { analyses, loading, error } = useAtomValue(internalUserAnalysesAtomFamily(uid));
-
-  return { analyses, loading, error };
-};
