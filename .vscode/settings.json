@@ -1,48 +1,25 @@
 {
-  // デフォルトのフォーマッタ設定
-  "editor.defaultFormatter": "biomejs.biome",
-  "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "biomejs.biome"
+  // フォーマットと Lint は Oxc (oxfmt / oxlint) を使う
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "[mdx]": {
+    "editor.defaultFormatter": "unifiedjs.vscode-mdx"
   },
 
   // セーブ時に自動でフォーマットとLintを実行
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "always",
-    "source.fixAll.stylelint": "always",
-    "source.fixAll.biome": "always"
+    "source.fixAll.oxc": "always",
+    "source.fixAll.stylelint": "always"
   },
 
   // workspaceのTypeScriptを利用するように
   "typescript.tsdk": "node_modules/typescript/lib",
 
-  // Prettierの設定
-  "prettier.configPath": ".prettierrc.json",
-
   // Stylelintの設定
   "stylelint.configFile": ".stylelintrc.js",
   "stylelint.packageManager": "pnpm",
-  "stylelint.validate": ["css", "scss"],
+  "stylelint.validate": ["css"],
 
   // ファイルの末尾に空行を挿入するように
-  "files.insertFinalNewline": true,
-  "stylelint.stylelintPath": "",
-  "[jsonc]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[css]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[mdx]": {
-    "editor.defaultFormatter": "unifiedjs.vscode-mdx"
-  }
+  "files.insertFinalNewline": true
 }

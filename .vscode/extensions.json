@@ -1,8 +1,8 @@
 {
   "recommendations": [
+    "oxc.oxc-vscode",
     "stylelint.vscode-stylelint",
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
+    "unifiedjs.vscode-mdx",
     "bradlc.vscode-tailwindcss",
     "wix.vscode-import-cost",
     "yoavbls.pretty-ts-errors",
