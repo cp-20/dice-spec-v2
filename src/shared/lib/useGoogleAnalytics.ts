@@ -33,11 +33,7 @@ export const sendGoogleAnalyticsEvent = (event: string, input: EventInput = {}) 
   }
 };
 
-export const sendGoogleAnalyticsEventBeforeNavigation = (
-  event: string,
-  parameters: EventParameters,
-  navigate: () => void,
-) => {
+const sendGoogleAnalyticsEventBeforeNavigation = (event: string, parameters: EventParameters, navigate: () => void) => {
   if (!window.googleAnalyticsLoaded) {
     navigate();
     return;

@@ -1,7 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": [
-    "src/mdx-components.tsx",
     "src/app/blogs/[category]/[slug]/_contents/*/*.mdx",
     "firebase/**/*.test.ts",
     "src/**/*.test.ts",
@@ -9,6 +8,6 @@
     "src/test/**/*.ts"
   ],
   "project": ["src/**/*.{js,jsx,ts,tsx,mdx}"],
-  "ignoreDependencies": ["tailwindcss-animate", "tailwindcss", "cssnano", "postcss-syntax", "happy-dom", "next"],
+  "ignoreDependencies": ["tailwindcss-animate", "tailwindcss", "cssnano", "postcss-syntax", "next", "micromatch"],
   "next": true
 }

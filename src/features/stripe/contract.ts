@@ -1,6 +1,6 @@
 import * as v from 'valibot';
 
-export const billingIntervalSchema = v.picklist(['monthly', 'yearly']);
+const billingIntervalSchema = v.picklist(['monthly', 'yearly']);
 export type BillingInterval = v.InferOutput<typeof billingIntervalSchema>;
 
 export const checkoutRequestSchema = v.object({

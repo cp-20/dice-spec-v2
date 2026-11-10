@@ -6,7 +6,7 @@ export const CCFOLIA_CHARACTER_SCHEMA_VERSION = 1 as const;
 export const CCFOLIA_CHARACTER_SAVE_LIMIT_FREE = 3;
 export const CCFOLIA_CHARACTER_PAGE_SIZE = 12;
 // Firestore のドキュメントは1つあたり 1MiB の制限があるため、ドキュメント本体以外のメタデータを考慮した 800KiB 以下に保つ
-export const MAX_CCFOLIA_CHARACTER_DOCUMENT_BYTES = 800_000;
+const MAX_CCFOLIA_CHARACTER_DOCUMENT_BYTES = 800_000;
 export const MAX_CCFOLIA_CHARACTER_NAME_LENGTH = 100;
 export const MAX_CCFOLIA_CHARACTER_MEMO_LENGTH = 50_000;
 export const MAX_CCFOLIA_CHARACTER_EXTERNAL_URL_LENGTH = 2_048;
@@ -53,7 +53,7 @@ const ccfoliaParameterSchema = v.object({
   value: paramValueSchema,
 });
 
-export const ccfoliaCharacterDataSchema = v.object({
+const ccfoliaCharacterDataSchema = v.object({
   name: nameSchema,
   memo: memoSchema,
   initiative: v.nullable(finiteNumberSchema),
@@ -74,10 +74,10 @@ export class CcfoliaCharacterTooLargeError extends Error {
   }
 }
 
-export const getCcfoliaCharacterDataByteLength = (data: CcfoliaCharacterData): number =>
+const getCcfoliaCharacterDataByteLength = (data: CcfoliaCharacterData): number =>
   new TextEncoder().encode(JSON.stringify(data)).byteLength;
 
-export const ccfoliaCharacterDocumentSchema = v.object({
+const ccfoliaCharacterDocumentSchema = v.object({
   id: v.string(),
   schemaVersion: v.literal(CCFOLIA_CHARACTER_SCHEMA_VERSION),
   revision: v.pipe(v.number(), v.integer(), v.minValue(1)),

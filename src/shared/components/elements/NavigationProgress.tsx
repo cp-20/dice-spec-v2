@@ -7,7 +7,7 @@ import { type ComponentProps, type MouseEvent, Suspense, useEffect, useRef, useS
 const START_EVENT = 'dice-spec:navigation-progress-start';
 const COMPLETE_EVENT = 'dice-spec:navigation-progress-complete';
 
-export const startNavigationProgress = () => window.dispatchEvent(new Event(START_EVENT));
+const startNavigationProgress = () => window.dispatchEvent(new Event(START_EVENT));
 
 export const shouldStartNavigation = (
   event: MouseEvent<HTMLAnchorElement>,
