@@ -10,61 +10,41 @@ export const calculateDoubleCross3rdExplodingDice = (
     throw new RangeError('diceCount must be a positive integer');
   }
   const cappedCriticalValue = clamp(criticalValue, 2, 10);
-  const distribution: Record<number, number> = {};
-  const queue: { dice: number; scoreBase: number; probability: number }[] = [
-    { dice: diceCount, scoreBase: modifier, probability: 1 },
-  ];
-  const probabilityThreshold = 0.00001;
-  const maxScoreBase = 300;
+  const criticalChance = (11 - cappedCriticalValue) / 10;
+  const exact: Record<number, number> = {};
+  // 振り足すダイス数ごとに確率をまとめて進める。経路ごとに展開すると状態が指数的に増え、
+  // 個々の経路を微小確率として捨てると合計が1から大きく外れる。
+  let rerolls = new Map([[diceCount, 1]]);
+  let remaining = 1;
 
-  while (queue.length > 0) {
-    const current = queue.shift();
-    if (!current) break;
+  for (let round = 0; remaining > 1e-12; round++) {
+    const scoreBase = modifier + round * 10;
+    const nextRerolls = new Map<number, number>();
+    remaining = 0;
 
-    for (let criticals = 0; criticals <= current.dice; criticals++) {
-      const nonCriticals = current.dice - criticals;
-      const criticalProbability = ((11 - cappedCriticalValue) / 10) ** criticals;
-      const chooseCriticalDice = combination(current.dice, criticals);
-
-      if (nonCriticals === 0) {
-        const probability = current.probability * chooseCriticalDice * criticalProbability;
-
-        if (probability < probabilityThreshold) {
-          continue;
-        }
-
-        if (current.scoreBase >= maxScoreBase) {
-          addProbability(distribution, current.scoreBase + 10, probability);
-        } else {
-          queue.push({ dice: criticals, scoreBase: current.scoreBase + 10, probability });
-        }
-        continue;
+    for (const [dice, probability] of rerolls) {
+      for (let max = 1; max < cappedCriticalValue; max++) {
+        addProbability(exact, scoreBase + max, probability * ((max / 10) ** dice - ((max - 1) / 10) ** dice));
       }
-
-      for (let maxNonCritical = 1; maxNonCritical < cappedCriticalValue; maxNonCritical++) {
-        const maxProbability = (maxNonCritical / 10) ** nonCriticals - ((maxNonCritical - 1) / 10) ** nonCriticals;
-        const probability = current.probability * chooseCriticalDice * criticalProbability * maxProbability;
-
-        if (criticals > 0) {
-          if (probability < probabilityThreshold) {
-            continue;
-          }
-
-          if (current.scoreBase >= maxScoreBase) {
-            addProbability(distribution, current.scoreBase + 10 + maxNonCritical, probability);
-          } else {
-            queue.push({ dice: criticals, scoreBase: current.scoreBase + 10, probability });
-          }
-        } else if (probability >= probabilityThreshold) {
-          addProbability(distribution, current.scoreBase + maxNonCritical, probability);
-        }
+      for (let criticals = 1; criticals <= dice; criticals++) {
+        const next =
+          probability *
+          combination(dice, criticals) *
+          criticalChance ** criticals *
+          (1 - criticalChance) ** (dice - criticals);
+        nextRerolls.set(criticals, (nextRerolls.get(criticals) ?? 0) + next);
+        remaining += next;
       }
     }
+    rerolls = nextRerolls;
   }
+
+  // 表示する分布と範囲からは、ほぼ起こらない達成値を除く。平均は除く前の分布から求める。
+  const distribution = Object.fromEntries(Object.entries(exact).filter(([, probability]) => probability >= 0.00001));
 
   return {
     rows: toRows(distribution),
-    mean: getMean(distribution),
+    mean: getMean(exact),
     range: {
       min: Math.min(...Object.keys(distribution).map(Number)),
       max: Math.max(...Object.keys(distribution).map(Number)),
