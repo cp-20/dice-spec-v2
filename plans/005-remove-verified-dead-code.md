@@ -110,12 +110,14 @@ where the removed members are referenced.
 
 4. Remove `value` from `SaveFeedback` and from the object literal that sets it.
 5. Remove `toggleAutoRecalculation` and its entry in the returned object.
-6. Before removing `resetItems`, open `useQuickInput.test.ts`. If a test uses
-   it only to reset state between cases, replace that with
-   `localStorage.clear()` (the pattern used in
-   `src/app/(app)/dice/_components/hooks/useDiceRoll.test.tsx`), then remove
-   `resetItems`. If a test asserts on `resetItems` behaviour itself, delete
-   that test together with the function.
+6. `useQuickInput.test.ts` calls `resetItems()` at the start of each test
+   because every `renderHook` shares Jotai's default store. Clearing
+   `localStorage` alone does not reset the atom's in-memory value. Give each
+   test its own store instead: render with `{ wrapper: Provider }`
+   (`import { Provider } from 'jotai'`, as
+   `src/app/(app)/analyze-logs/_components/hooks/useShareDestination.test.tsx`
+   does) and add `afterEach(() => localStorage.clear())`. Then delete the
+   `resetItems()` calls and remove `resetItems` from the hook.
 
 **Verify**: `pnpm typecheck && pnpm test` → exit 0, all tests pass.
 

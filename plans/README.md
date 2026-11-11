@@ -49,6 +49,12 @@ Confirmed by reading the code, not yet planned. Each needs a decision first.
 - **Analysis detail page**: a signed-out visitor to a private analysis and a
   visitor to a missing one get the same "not found" screen, because the rules
   deny both identically. Whether to offer sign-in there is a copy decision.
+- **Profile sync while analyses are loading**: `useProfileMutations` reads
+  `myAnalysesAtom`, which is an empty list while the user's analyses are
+  loading or failed to load, so a name or avatar change in that window
+  updates `users` only and leaves the owner copies on saved analyses stale
+  until the next profile change. Needs a decision on what the UI shows when
+  the update is refused.
 - **Service worker**: `public/sw.js` clones responses after returning them
   (runtime caching likely never happens) and uses one constant cache name.
   Needs a browser check before changing; it ships to every installed client.

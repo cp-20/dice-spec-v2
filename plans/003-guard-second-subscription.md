@@ -108,6 +108,9 @@ is needed.** This setting is not visible in the repository.
 - `src/features/stripe/server/handlers/types.ts`
 - `src/features/stripe/server/handlers/subscription.ts`
 - `src/features/stripe/server/handlers/subscription.test.ts`
+- `src/features/stripe/server/handlers/checkout.test.ts`,
+  `src/features/stripe/server/handlers/invoice.test.ts` — only to add the new
+  member to the `HandlerDeps` objects they build
 - `src/features/stripe/server/webhook.ts` (only where `HandlerDeps` is assembled)
 
 **Out of scope**:
@@ -133,30 +136,53 @@ In `clients.ts`, add `listLiveSubscriptionsByCustomerId(customerId)` that
 calls `subscriptions.list({ customer: customerId, status: 'all', limit: 100 })`
 and returns the entries whose `status` is not `canceled` and not
 `incomplete_expired`. Add it to `HandlerDeps` in `handlers/types.ts` and to
-the place in `webhook.ts` where the real dependencies are assembled.
+the place in `webhook.ts` where the real dependencies are assembled
+(`createStripeHandlers({ ... })`). Three test files build `HandlerDeps`
+objects by hand (`handlers/subscription.test.ts`, `handlers/checkout.test.ts`,
+`handlers/invoice.test.ts`); add `listLiveSubscriptionsByCustomerId: async () => []`
+to each of those objects so they keep compiling.
 
 **Verify**: `pnpm typecheck` → exit 0.
 
-### Step 2: Refuse checkout while a live subscription exists
+### Step 2: Refuse checkout while a live subscription exists, and keep one open session
 
 In `app.ts`, after `customerId` is resolved and before
 `checkout.sessions.create`, call the new function; if it returns any
 subscription, respond exactly as the existing `plan === 'pro'` branch does
 (409, same body). Keep the existing `plan === 'pro'` early return.
 
+A subscription only exists after a checkout is completed, so two sessions
+opened before either is paid would both pass that check. Before creating a
+session, list the customer's open sessions
+(`checkout.sessions.list({ customer: customerId, status: 'open' })`) and
+expire each one (`checkout.sessions.expire(id)`), so that at most one
+payable session exists per customer. Add a Japanese comment stating the
+remaining limit: two requests that arrive at the same instant can still both
+create a session, and only Stripe's "limit customers to one subscription"
+setting closes that window.
+
 **Verify**: `pnpm typecheck` → exit 0.
 
 ### Step 3: Do not downgrade when another active subscription remains
 
-In `createSubscriptionDeletedHandler`, before the `updateUserById` call, look
-up the customer's live subscriptions (the customer id is
-`subscription.customer`; check the `SubscriptionPayload` type for its shape).
-If one other than `subscription.id` has a status for which
-`planForSubscriptionStatus` returns `'pro'`, write
+`handlers/subscription.ts` writes the plan in three places: the created
+handler (`plan: planForSubscriptionStatus(currentSubscription.status)`), the
+updated handler (`plan: nextPlan`) and the deleted handler (`plan: 'free'`).
+Add one helper in that file that, given the subscription an event is about
+and the customer's live subscriptions (the customer id is
+`subscription.customer`; check the `SubscriptionPayload` type for its shape),
+returns another subscription whose status makes
+`planForSubscriptionStatus` return `'pro'`, or `null`.
+
+In every one of the three places, when the value about to be written is
+`'free'` and the helper returns a subscription, write
 `{ plan: 'pro', stripeSubscriptionId: <that id>, updatedAt: new Date() }`
-instead of the downgrade, and return a successful result whose log details
-say the user stays on pro because of the remaining subscription. Otherwise
-keep the current behaviour.
+instead, and return a successful result whose log details say the user stays
+on pro because of the remaining subscription. Otherwise keep the current
+behaviour. The updated handler needs this too: after the newer subscription
+is deleted and the user document points at the older one, a delayed
+`updated` event for the deleted subscription is not treated as stale (it was
+created later) and would otherwise write `free` again.
 
 **Verify**: `pnpm typecheck` → exit 0.
 
@@ -166,7 +192,10 @@ In `handlers/subscription.test.ts` add: (1) deletion with no other live
 subscription downgrades to `free` (may already exist — keep it);
 (2) deletion while another `active` subscription exists leaves `plan: 'pro'`
 and stores the remaining subscription's id; (3) deletion while the only other
-subscription is `incomplete` still downgrades.
+subscription is `incomplete` still downgrades; (4) the user document points
+at an older `active` subscription and an `updated` event arrives for a newer
+subscription whose live status is `canceled` — the user stays `pro` with the
+older subscription's id.
 
 **Verify**: `pnpm exec vitest run src/features/stripe/server` → all pass.
 
@@ -177,7 +206,7 @@ subscription is `incomplete` still downgrades.
 ## Done criteria
 
 - [ ] `grep -n "listLiveSubscriptionsByCustomerId" src/features/stripe/server/app.ts src/features/stripe/server/handlers/subscription.ts` matches in both files
-- [ ] New tests (2) and (3) exist and pass
+- [ ] New tests (2), (3) and (4) exist and pass
 - [ ] `pnpm typecheck`, `pnpm lint`, `pnpm format:check`, `pnpm test` all exit 0
 - [ ] `git status --short` lists only in-scope files (plus `plans/README.md`)
 - [ ] `plans/README.md` status row updated

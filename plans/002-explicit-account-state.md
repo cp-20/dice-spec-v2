@@ -131,7 +131,9 @@ usable in it.
 
 In `accountStore.ts` add `const internalMeErrorAtom = atom(false)` next to
 `internalMeLoadingAtom`. Reset it to `false` wherever the effect currently
-sets `internalMeLoadingAtom` to `true`. Pass an error callback as the last
+sets `internalMeLoadingAtom` to `true`, and also on the success path where a
+parsed document is stored (`set(internalMeAtom, data)`), so that a valid
+snapshot arriving after a failed one clears the error. Pass an error callback as the last
 argument of `onSnapshot`; in it call `captureClientException(error)`, then set
 `internalMeAtom` to `null`, `internalMeLoadingAtom` to `false` and
 `internalMeErrorAtom` to `true`. Wrap the `v.parse(...)` call (line 103) in
@@ -143,23 +145,28 @@ Export `meErrorAtom` (read-only, same pattern as `meLoadingAtom`) and add
 
 ### Step 2: Keep the account menu usable when the document failed to load
 
-In `AuthenticatedUserMenu.tsx`, when the user is signed in and `meError` is
-true, render the menu trigger with the default avatar and keep the
-ログアウト item available instead of returning `null`. Do not add new copy
-beyond one short Japanese line stating that account information could not be
-loaded.
+In `AuthenticatedUserMenu.tsx`, when the user is signed in, loading has
+finished and there is no `me`, render the menu trigger with the default
+avatar and keep the ログアウト item available instead of returning `null`.
+This covers both `meError === true` and the existing case where sign-out
+throws after a failed first-time document creation (`me === null`,
+`meLoading === false`, `meError === false`). Show one short Japanese line
+stating that account information could not be loaded only when `meError` is
+true; add no other copy.
 
 **Verify**: `pnpm typecheck` → exit 0.
 
 ### Step 3: Tests
 
-Add two cases to `accountStore.test.tsx`, following the file's existing setup:
-the listener's error callback firing, and a snapshot whose data fails
-`userDocumentSchema`. Assert `me === null`, `meLoading === false`,
-`meError === true`, and that `captureClientException` was called. The existing
+Add three cases to `accountStore.test.tsx`, following the file's existing
+setup: the listener's error callback firing, a snapshot whose data fails
+`userDocumentSchema`, and an invalid snapshot followed by a valid one. For
+the first two assert `me === null`, `meLoading === false`,
+`meError === true`, and that `captureClientException` was called. For the
+third assert that `me` holds the document and `meError === false`. The existing
 cancelled-sign-out test must still pass unchanged.
 
-**Verify**: `pnpm exec vitest run src/features/account` → all pass, including 2 new tests.
+**Verify**: `pnpm exec vitest run src/features/account` → all pass, including 3 new tests.
 
 ### Step 4: Full checks
 
