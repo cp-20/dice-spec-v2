@@ -8,6 +8,14 @@ describe('shinobigamiParser', () => {
       target: 5,
       skillName: null,
     });
+
+    // 修正後の達成値が負になる場合も集計から外さない。
+    expect(shinobigamiParser('SG-3>=5 (SG-3@12#2>=5) ＞ 2[1,1]-3 ＞ -1 ＞ ファンブル')).toStrictEqual({
+      evaluation: 'ファンブル',
+      results: [2],
+      target: 5,
+      skillName: null,
+    });
   });
 
   test('単なるメッセージは null を返す', () => {

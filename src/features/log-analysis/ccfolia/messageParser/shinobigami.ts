@@ -12,7 +12,7 @@ import { extractSkillNameFromMessage } from './skillName';
 // match[7]: 最終結果
 // match[8]: 評価 (optional)
 const shinobigamiRegex =
-  /\((\d*)SG(?:[+-](\d+))?@(\d+)#(\d+)(?:>=(\d+))?\)(?: ＞ \[[\d,]+\])? ＞ (\d+)\[[\d,]+\](?:[+-]\d+)? ＞ (\d+)(?: ＞ (.+?)(?:\(.+\))?)?$/;
+  /\((\d*)SG(?:[+-](\d+))?@(\d+)#(\d+)(?:>=(\d+))?\)(?: ＞ \[[\d,]+\])? ＞ (\d+)\[[\d,]+\](?:[+-]\d+)? ＞ (-?\d+)(?: ＞ (.+?)(?:\(.+\))?)?$/;
 
 export const shinobigamiParser: SystemMessageParser = (message) => {
   const normalizedMessage = normalizeParentheses(message);

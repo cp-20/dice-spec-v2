@@ -27,6 +27,9 @@ const internalAnalysisAtomFamily = atomFamily((id: string | undefined) =>
       return;
     }
 
+    // 購読し直す間、ログアウト前に読めていた非公開の解析を表示し続けない。
+    set(internalAnalysisAtomFamily(id), { analysis: null, loading: true, error: null });
+
     const analysisRef = doc(firestore, FIREBASE_COLLECTIONS.analyses, id);
     return onSnapshot(
       analysisRef,
