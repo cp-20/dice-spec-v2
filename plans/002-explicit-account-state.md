@@ -163,10 +163,19 @@ setup: the listener's error callback firing, a snapshot whose data fails
 `userDocumentSchema`, and an invalid snapshot followed by a valid one. For
 the first two assert `me === null`, `meLoading === false`,
 `meError === true`, and that `captureClientException` was called. For the
-third assert that `me` holds the document and `meError === false`. The existing
+third assert that `me` holds the document and `meError === false`.
+
+Add one more case for Step 2 in the same file, which already drives the
+snapshot listener by hand and replaces `signOutWithGuard` with
+`signOutWithGuardMock`: make document creation fail and
+`signOutWithGuardMock` reject, wait until `me === null` and
+`meLoading === false`, then render `AuthenticatedUserMenu` (import it after
+the mocks are registered, as the file does for `./accountStore`) with a
+`signOut` spy. Assert that the button labelled `ユーザーメニュー` is shown,
+that opening it shows ログアウト, and that choosing it calls the spy. The existing
 cancelled-sign-out test must still pass unchanged.
 
-**Verify**: `pnpm exec vitest run src/features/account` → all pass, including 3 new tests.
+**Verify**: `pnpm exec vitest run src/features/account` → all pass, including 4 new tests.
 
 ### Step 4: Full checks
 

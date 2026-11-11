@@ -34,10 +34,12 @@ refuses to start a checkout while the customer has a non-terminal
 subscription, and a deletion only downgrades when no other active
 subscription remains.
 
-**Before starting, the operator should confirm in the Stripe Dashboard
+**Before starting, the operator should check in the Stripe Dashboard
 (Settings → Checkout and Payment Links → "Limit customers to one
-subscription") whether Stripe already enforces this. If it does, only Step 3
-is needed.** This setting is not visible in the repository.
+subscription") whether that setting is enabled. It is not visible in the
+repository. Carry out every step either way: what the setting does when two
+sessions were both opened before either was paid has not been verified, so
+this plan does not rely on it.**
 
 ## Current state
 
@@ -158,8 +160,8 @@ session, list the customer's open sessions
 expire each one (`checkout.sessions.expire(id)`), so that at most one
 payable session exists per customer. Add a Japanese comment stating the
 remaining limit: two requests that arrive at the same instant can still both
-create a session, and only Stripe's "limit customers to one subscription"
-setting closes that window.
+create a session. Do not claim in that comment that a Stripe setting closes
+this window; that has not been verified.
 
 **Verify**: `pnpm typecheck` → exit 0.
 
@@ -223,6 +225,11 @@ older subscription's id.
 
 - The Stripe sandbox E2E (`pnpm test:e2e:stripe`) must be run by a maintainer
   with the sandbox key before merge; it covers create and cancel end to end.
+- Unverified: whether Stripe's "limit customers to one subscription" setting
+  stops two already-open Checkout sessions from both completing. A maintainer
+  should try it in the Sandbox (open two sessions for one customer, then
+  complete both, one after the other and at the same time) and record the
+  result here before treating the setting as the guard for that case.
 - The four webhook handlers repeat "parse metadata → load user → stale check →
   write → log". If more rules like this one are added, fold them into a single
   reconcile function first.
