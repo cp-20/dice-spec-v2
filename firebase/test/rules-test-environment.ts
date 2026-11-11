@@ -25,6 +25,18 @@ export type SeedDocument = { path: string; data: Record<string, unknown> };
 
 vi.setConfig({ hookTimeout: 60_000, testTimeout: 60_000 });
 
+// エミュレータが閉じた keep-alive 接続を Node の fetch が再利用すると、データの初期化が
+// 「fetch failed (other side closed)」で失敗し、無関係なテストが落ちる。
+// 初期化は冪等なので、接続エラーに限って1回だけやり直す。エミュレータが停止していれば再試行も失敗する。
+const retryOnConnectionError = async (operation: () => Promise<void>) => {
+  try {
+    await operation();
+  } catch (error) {
+    if (!(error instanceof TypeError)) throw error;
+    await operation();
+  }
+};
+
 const isPortOpen = (host: string, port: number): Promise<boolean> =>
   new Promise((resolvePromise) => {
     const socket = net.createConnection({ host, port });
@@ -178,7 +190,10 @@ export const setupRulesTestEnvironment = () => {
 
   afterEach(async () => {
     if (!testEnv) return;
-    await Promise.all([testEnv.clearFirestore(), testEnv.clearStorage()]);
+    await Promise.all([
+      retryOnConnectionError(() => testEnv!.clearFirestore()),
+      retryOnConnectionError(() => testEnv!.clearStorage()),
+    ]);
   });
 
   afterAll(async () => {
