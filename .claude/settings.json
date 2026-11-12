@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "ask": [
+      "Bash(pnpm deploy *)",
+      "Bash(pnpm run deploy *)",
+      "Bash(pnpm upload *)",
+      "Bash(pnpm run upload *)",
+      "Bash(pnpm firebase:deploy*)",
+      "Bash(pnpm run firebase:deploy*)",
+      "Bash(node scripts/deploy.mjs *)",
+      "Bash(firebase deploy *)",
+      "Bash(pnpm exec firebase deploy *)",
+      "Bash(vinext-cloudflare deploy *)",
+      "Bash(pnpm exec vinext-cloudflare deploy *)"
+    ],
+    "deny": ["Read(./.env)", "Read(./.env.*)"]
+  }
+}

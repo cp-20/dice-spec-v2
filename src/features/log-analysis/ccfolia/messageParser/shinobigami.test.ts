@@ -1,6 +1,23 @@
 import { shinobigamiParser } from './shinobigami';
 
 describe('shinobigamiParser', () => {
+  test('マイナスの修正がついた判定をパースする', () => {
+    expect(shinobigamiParser('SG-1>=5 (SG-1@12#2>=5) ＞ 5[1,4]-1 ＞ 4 ＞ 失敗')).toStrictEqual({
+      evaluation: '失敗',
+      results: [5],
+      target: 5,
+      skillName: null,
+    });
+
+    // 修正後の達成値が負になる場合も集計から外さない。
+    expect(shinobigamiParser('SG-3>=5 (SG-3@12#2>=5) ＞ 2[1,1]-3 ＞ -1 ＞ ファンブル')).toStrictEqual({
+      evaluation: 'ファンブル',
+      results: [2],
+      target: 5,
+      skillName: null,
+    });
+  });
+
   test('単なるメッセージは null を返す', () => {
     expect(shinobigamiParser('テスト')).toBe(null);
   });

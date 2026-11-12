@@ -15,7 +15,7 @@ type RecentSystem = v.InferOutput<typeof recentSystemsSchema>[number];
 const systemId = (system: RecentSystem) => (typeof system === 'string' ? system : system.id);
 
 // 既知のシステムは ID だけを保存し、旧データにある未収録システムの名称は保持する。
-export const recentSystemsAtom = atomWithStorage<RecentSystem[]>(
+const recentSystemsAtom = atomWithStorage<RecentSystem[]>(
   'game-system-list',
   [],
   createJSONStorage(() => localStorage, {

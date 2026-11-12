@@ -24,9 +24,10 @@ export const useDiceRollCore = () => {
       const selected = store.get(gameSystemAtom);
       if (!selected.engine?.COMMAND_PATTERN.test(command)) return null;
       try {
-        addItem(command);
         const result = selected.engine.eval(command);
         if (result) {
+          // 評価できなかったコマンドは、消せないクイック入力として残さない。
+          addItem(command);
           const variant =
             result.critical || result.success ? 'success' : result.failure || result.fumble ? 'failed' : 'default';
           const log: DiceLog = {

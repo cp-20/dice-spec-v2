@@ -56,4 +56,23 @@ describe('systemSpecificExpecter', () => {
     expect(result.rows.find((row) => row.label === '41')?.probability).toBeCloseTo(0.00001);
     expect(result.rows.find((row) => row.label === '51')).toBeUndefined();
   });
+
+  test.each([
+    [5, 10],
+    [10, 5],
+    [40, 7],
+    [8, 2],
+  ])('ダブルクロス3rdの %idx@%i は確率の合計がほぼ1になる', (diceCount, criticalValue) => {
+    const result = calculateDoubleCross3rdExplodingDice(diceCount, criticalValue, 0);
+
+    expect(sum(result.rows.map((row) => row.probability))).toBeCloseTo(1, 3);
+  });
+
+  test('ダブルクロス3rdの平均達成値は振り足しをすべて含む', () => {
+    // ダイス1個では、クリティカル回数が幾何分布、最後の出目が一様分布になる。
+    expect(calculateDoubleCross3rdExplodingDice(1, 8, 2).mean).toBeCloseTo(2 + (10 * 0.3) / 0.7 + 4, 9);
+    // シミュレーションで確認した値。
+    expect(calculateDoubleCross3rdExplodingDice(5, 10, 0).mean).toBeCloseTo(11.487, 3);
+    expect(calculateDoubleCross3rdExplodingDice(10, 5, 0).mean).toBeCloseTo(54.997, 3);
+  });
 });

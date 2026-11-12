@@ -1,6 +1,6 @@
-import { atom, useAtom, useAtomValue } from 'jotai';
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { withAtomEffect } from 'jotai-effect';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 import { analyzeCcfoliaLog } from '@/features/log-analysis/ccfolia';
 import { detectSystem } from '@/features/log-analysis/ccfolia/detector';
@@ -10,12 +10,11 @@ import {
   type ImportedLogFile,
   type LogImportErrorCode,
 } from '@/features/log-analysis/ccfolia/importLogFile';
-import { systemStats } from '@/features/log-analysis/ccfolia/messageParser';
 import { mergeStructuredLogs } from '@/features/log-analysis/ccfolia/structuredLog';
 import type { DiceResultForCharacter, System } from '@/features/log-analysis/model';
 import { round } from '@/shared/lib/round';
 import { captureClientException } from '@/shared/lib/sentryClient';
-import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
+import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
 
 import { ALL_CHARACTER_ID } from '../constants';
 
@@ -60,22 +59,24 @@ const logTabOptionsAtom = atom((get) => {
   }
 });
 
-const logAnalysisSystemAtom = withAtomEffect(atom<System | null>(null), (get, set) => {
+const detectedSystemAtom = atom((get) => {
   const { logs } = get(mergedLogsAtom);
-
-  if (logs.length === 0) {
-    set(logAnalysisSystemAtom, null);
-    return;
-  }
+  if (logs.length === 0) return null;
 
   try {
-    const detectedSystem = detectSystem(logs);
-    set(logAnalysisSystemAtom, detectedSystem);
+    return detectSystem(logs);
   } catch (err) {
-    set(logAnalysisSystemAtom, null);
     console.error('Failed to detect system:', err);
+    return null;
   }
 });
+
+// ユーザーが選んだシステムは、ログを追加しても自動判定で上書きしない。ログを消すまで保持する。
+const selectedSystemAtom = atom<System | null>(null);
+const logAnalysisSystemAtom = atom(
+  (get) => get(selectedSystemAtom) ?? get(detectedSystemAtom),
+  (_get, set, system: System | null) => set(selectedSystemAtom, system),
+);
 
 type LogAnalysisResult = LogAnalysisSuccess | LogAnalysisError | null;
 
@@ -90,7 +91,7 @@ type LogAnalysisError = {
 
 const expectedAnalysisErrorMessages = new Set(['Invalid log format', 'No logs detected', 'No valid dice rolls found']);
 
-const logAnalysisResultAtom = atom<LogAnalysisResult>((get) => {
+const analyzedResultAtom = atom<LogAnalysisResult>((get) => {
   const { logs } = get(mergedLogsAtom);
   const system = get(logAnalysisSystemAtom);
   const selectedTabs = get(selectedLogTabsAtom);
@@ -108,21 +109,58 @@ const logAnalysisResultAtom = atom<LogAnalysisResult>((get) => {
   }
 });
 
-const systemStatsAtom = atom((get) => {
+// 解析結果を読む箇所の数に関わらず、結果が変わるたびに1回だけ計測する。
+const logAnalysisResultAtom = withAtomEffect(analyzedResultAtom, (get) => {
+  const result = get(analyzedResultAtom);
+  if (result === null) return;
+
+  if (result.type === 'error') {
+    sendGoogleAnalyticsEvent('analyzeLogsError');
+    return;
+  }
+
   const system = get(logAnalysisSystemAtom);
-  if (system === null) return null;
-  return systemStats[system];
+  const allResult = result.results.find((p) => p.id === ALL_CHARACTER_ID);
+  if (allResult === undefined || system === null) return;
+
+  const { average, deviationScore, successRate, diceRollCount } = allResult.summary;
+  sendGoogleAnalyticsEvent('analyzeLogs', [
+    system,
+    `${round(average, 3)}`,
+    `${round(deviationScore, 3)}`,
+    `${round(successRate, 3)}`,
+    `${diceRollCount}`,
+  ]);
+});
+
+// 選択中のキャラクターが解析結果に含まれなくなったら、全体の集計へ戻す。
+const selectedCharacterAtom = atom<string>(ALL_CHARACTER_ID);
+export const logAnalysisCharacterAtom = atom(
+  (get) => {
+    const result = get(logAnalysisResultAtom);
+    const selected = get(selectedCharacterAtom);
+    return result?.type === 'success' && result.results.some(({ id }) => id === selected) ? selected : ALL_CHARACTER_ID;
+  },
+  (_get, set, character: string) => set(selectedCharacterAtom, character),
+);
+
+const clearLogsAtom = atom(null, (_get, set) => {
+  set(logFilesAtom, []);
+  set(selectedLogTabsAtom, null);
+  set(selectedSystemAtom, null);
+  set(selectedCharacterAtom, ALL_CHARACTER_ID);
 });
 
 export const useLogFiles = () => {
-  const [logFiles, setLogFiles] = useAtom(logFilesAtom);
-  const [isImporting] = useAtom(importingLogsAtom);
-  const [, importFiles] = useAtom(importLogsAtom);
+  const logFiles = useAtomValue(logFilesAtom);
+  const isImporting = useAtomValue(importingLogsAtom);
+  const importFiles = useSetAtom(importLogsAtom);
+  const clearLogs = useSetAtom(clearLogsAtom);
   return {
     logFiles,
-    setLogFiles,
     isImporting,
     importFiles,
+    clearLogs,
   };
 };
 
@@ -150,50 +188,21 @@ export const useLogTabSelect = () => {
     [setSelectedTabs],
   );
 
-  const resetSelectedTabs = useCallback(() => {
-    setSelectedTabs(null);
-  }, [setSelectedTabs]);
-
   return {
     tabs,
     enabledTabs,
     toggleTab,
     setAllTabsSelected,
-    resetSelectedTabs,
   };
 };
 
 export const useLogAnalysis = () => {
   const result = useAtomValue(logAnalysisResultAtom);
   const system = useAtomValue(logAnalysisSystemAtom);
-  const systemStats = useAtomValue(systemStatsAtom);
-  const { sendEvent } = useGoogleAnalytics();
-
-  useEffect(() => {
-    if (result === null) return;
-
-    if (result.type === 'error') {
-      sendEvent('analyzeLogsError');
-      return;
-    }
-
-    const allResult = result.results.find((p) => p.id === ALL_CHARACTER_ID);
-    if (allResult === undefined || system === null) return;
-
-    const { average, deviationScore, successRate, diceRollCount } = allResult.summary;
-    sendEvent('analyzeLogs', [
-      system,
-      `${round(average, 3)}`,
-      `${round(deviationScore, 3)}`,
-      `${round(successRate, 3)}`,
-      `${diceRollCount}`,
-    ]);
-  }, [result, system, sendEvent]);
 
   return {
     result,
     system,
-    systemStats,
   };
 };
 

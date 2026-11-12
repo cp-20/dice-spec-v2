@@ -2,7 +2,6 @@
 
 import { IconChevronRight, IconList, IconLoader2, IconLock, IconLockOpen, IconSparkles } from '@tabler/icons-react';
 import { Timestamp } from 'firebase/firestore';
-import { useAtomValue } from 'jotai';
 import { useRouter } from 'next/navigation';
 import type { FC } from 'react';
 import { useState } from 'react';
@@ -11,7 +10,7 @@ import { ContainerSection } from '@/app/(app)/_components/ContainerSection';
 import { useMeStore } from '@/features/account/firebase/accountStore';
 import { type SaveAnalysisPayload, useSaveAnalysis } from '@/features/log-analysis/firebase/mutations';
 import type { AnalysisVisibilityLevel } from '@/features/log-analysis/firebase/schema';
-import { myAnalysesAtom, useUserAnalyses } from '@/features/log-analysis/firebase/userAnalyses';
+import { toPublicUser } from '@/features/user/firebase/schema';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { GoogleSignInAgreement } from '@/shared/components/elements/GoogleSignInAgreement';
 import { GoogleSignInButton } from '@/shared/components/elements/GoogleSignInButton';
@@ -50,8 +49,6 @@ export const AnalysisSavePanel: FC = () => {
   const { system, result } = useLogAnalysis();
   const { generateOgImage } = useAnalysisOgImage();
   const { saveAnalysis } = useSaveAnalysis(generateOgImage);
-  useUserAnalyses(authUser?.uid);
-  const analyses = useAtomValue(myAnalysesAtom);
   const { me } = useMeStore();
   const { sendEvent } = useGoogleAnalytics();
 
@@ -61,7 +58,10 @@ export const AnalysisSavePanel: FC = () => {
   const [sessionDate, setSessionDate] = useState(formatDate(new Date()));
 
   const isPro = me?.plan === 'pro';
-  const limitReached = !isPro && analyses.length >= SAVE_ANALYSIS_LIMIT_FREE;
+  // 上限は Rules と同じく users の保存件数で判定する。解析の一覧は読み込み中や取得失敗のとき 0 件に見える。
+  const savedCount = me?.analysisCount ?? 0;
+  const limitReached = !isPro && savedCount >= SAVE_ANALYSIS_LIMIT_FREE;
+  const sessionDateValue = new Date(sessionDate);
 
   const canSave =
     authUser !== null &&
@@ -70,6 +70,7 @@ export const AnalysisSavePanel: FC = () => {
     system !== null &&
     !limitReached &&
     !saving &&
+    !Number.isNaN(sessionDateValue.getTime()) &&
     title.trim() !== '';
 
   const handleSave = async () => {
@@ -81,19 +82,12 @@ export const AnalysisSavePanel: FC = () => {
       const payload: SaveAnalysisPayload = {
         title: title.trim(),
         ownerUid: authUser.uid,
-        owner: {
-          id: me.id,
-          name: me.name,
-          ...(me.avatarUrl === undefined ? {} : { avatarUrl: me.avatarUrl }),
-          plan: me.plan,
-          createdAt: me.createdAt,
-          updatedAt: me.updatedAt,
-        },
+        owner: toPublicUser(me),
         systemId: system,
         showRecordDetails,
         characterResults: result.results,
         visibilityLevel: visibility,
-        sessionDate: Timestamp.fromDate(new Date(sessionDate)),
+        sessionDate: Timestamp.fromDate(sessionDateValue),
       };
 
       const analysisId = await saveAnalysis(payload);
@@ -105,17 +99,13 @@ export const AnalysisSavePanel: FC = () => {
       router.push(`/analyze-logs/${analysisId}`);
     } catch (err) {
       console.error(err);
-      if (Number.isNaN(new Date(sessionDate).getTime())) {
-        sendEvent('save_analysis_error', { reason: 'invalid_date' });
-      } else {
-        captureClientException(err);
-      }
+      captureClientException(err);
       toast({
         title: '保存に失敗しました',
         description: '保存中にエラーが発生しました。時間をおいて再度お試しください。',
         variant: 'destructive',
       });
-    } finally {
+      // 成功時は詳細画面へ移るまで保存中のままにし、遷移待ちの間の二重保存を防ぐ。
       setSaving(false);
     }
   };
@@ -180,7 +170,7 @@ export const AnalysisSavePanel: FC = () => {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="text-xs text-slate-500">
               {!isPro &&
-                `フリープランでは最大${SAVE_ANALYSIS_LIMIT_FREE}件まで保存できます (現在${analyses.length}件保存中)`}
+                `フリープランでは最大${SAVE_ANALYSIS_LIMIT_FREE}件まで保存できます (現在${savedCount}件保存中)`}
             </div>
             <Button onClick={handleSave} disabled={!canSave}>
               {saving ? (

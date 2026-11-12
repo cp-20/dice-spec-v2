@@ -2,6 +2,10 @@ import { formatMessage } from '../messageFormatter';
 import { CoC6thParser } from './cthulhu6th';
 
 describe('CoC6thParser', () => {
+  test('CCBの決定的成功は成功として扱う', () => {
+    expect(CoC6thParser('CCB<=15 (1D100<=15) ＞ 4 ＞ 決定的成功')).toMatchObject({ evaluation: '成功', results: [4] });
+  });
+
   test('単なるメッセージは null を返す', () => {
     expect(CoC6thParser('テスト')).toBe(null);
   });

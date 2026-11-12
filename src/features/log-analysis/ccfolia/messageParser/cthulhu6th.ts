@@ -11,6 +11,8 @@ const CoC6thBDiceRollRegex = /\(1D100<=(\d+)\) ＞ (\d+) ＞ (.+)$/;
 const normalizeEvaluation = (evaluation: string): string => {
   // CCBの「決定的成功/スペシャル」をCCの「スペシャル」に変換
   if (evaluation === '決定的成功/スペシャル') return 'スペシャル';
+  // CCBの「決定的成功」(スペシャルではない5以下の成功) はCCでは「成功」になる
+  if (evaluation === '決定的成功') return '成功';
   return evaluation;
 };
 

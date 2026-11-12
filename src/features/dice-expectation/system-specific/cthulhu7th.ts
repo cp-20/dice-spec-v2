@@ -10,16 +10,16 @@ const getCthulhu7thD100Distribution = (bonusPenaltyDice: number): Record<number,
   const distribution: Record<number, number> = {};
   const diceCount = extraDice + 1;
 
-  for (let tens = 0; tens <= 9; tens++) {
-    // 最小値・最大値の累積確率の差から、選択される十の位の確率を求める。
-    const count =
-      bonusPenaltyDice >= 0
-        ? (10 - tens) ** diceCount - (9 - tens) ** diceCount
-        : (tens + 1) ** diceCount - tens ** diceCount;
-    const probability = count / (100 * 10 ** extraDice);
-    for (let ones = 0; ones <= 9; ones++) {
-      const value = tens === 0 && ones === 0 ? 100 : tens * 10 + ones;
-      distribution[value] = probability;
+  for (let ones = 0; ones <= 9; ones++) {
+    // ボーナス・ペナルティは十の位ではなく出目全体を比べて選ぶ。00 と 0 の組は 100 になるため、一の位ごとに並べ直す。
+    const candidates = Array.from({ length: 10 }, (_, tens) => tens * 10 + ones || 100).sort((a, b) => a - b);
+    for (const [rank, value] of candidates.entries()) {
+      // 最小値・最大値の累積確率の差から、その出目が選択される確率を求める。
+      const count =
+        bonusPenaltyDice >= 0
+          ? (10 - rank) ** diceCount - (9 - rank) ** diceCount
+          : (rank + 1) ** diceCount - rank ** diceCount;
+      distribution[value] = count / (100 * 10 ** extraDice);
     }
   }
 

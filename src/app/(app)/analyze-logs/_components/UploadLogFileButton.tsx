@@ -8,7 +8,7 @@ import { useToast } from '@/shared/components/ui/use-toast';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useDropzone } from './hooks/useDropzone';
-import { useLogFiles, useLogTabSelect } from './hooks/useLogAnalysis';
+import { useLogFiles } from './hooks/useLogAnalysis';
 
 const uploadErrors = {
   unsupported: 'HTML・JSON・ZIPのログファイルを選択してください。',
@@ -21,8 +21,7 @@ const uploadErrors = {
 export const UploadLogFileButton: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const { logFiles, setLogFiles, isImporting, importFiles } = useLogFiles();
-  const { resetSelectedTabs } = useLogTabSelect();
+  const { logFiles, isImporting, importFiles, clearLogs } = useLogFiles();
   const { sendEvent } = useGoogleAnalytics();
 
   const dropHandler = useCallback(
@@ -46,10 +45,9 @@ export const UploadLogFileButton: FC = () => {
   const { containerProps, inputProps, isDraggedOver } = useDropzone(dropHandler);
 
   const handleRemove = useCallback(() => {
-    setLogFiles([]);
-    resetSelectedTabs();
+    clearLogs();
     if (inputRef.current) inputRef.current.value = '';
-  }, [resetSelectedTabs, setLogFiles]);
+  }, [clearLogs]);
 
   if (logFiles.length === 0) {
     return (

@@ -6,10 +6,10 @@ const enumerateRolls = (bonusPenaltyDice: number): number[] => {
   const combinations = 10 ** diceCount;
   for (let combination = 0; combination < combinations; combination++) {
     const tens = Array.from({ length: diceCount }, (_, i) => Math.floor(combination / 10 ** i) % 10);
-    const selected = bonusPenaltyDice >= 0 ? Math.min(...tens) : Math.max(...tens);
     for (let ones = 0; ones < 10; ones++) {
-      const roll = selected * 10 + ones || 100;
-      counts[roll]++;
+      // 十の位ではなく出目全体を比べる。00 と 0 の組は 100 として扱う。
+      const candidates = tens.map((digit) => digit * 10 + ones || 100);
+      counts[bonusPenaltyDice >= 0 ? Math.min(...candidates) : Math.max(...candidates)]++;
     }
   }
   return counts.map((count) => count / (combinations * 10));

@@ -1,19 +1,9 @@
-import { atom, useAtom } from 'jotai';
-import { useCallback } from 'react';
+import { useAtom } from 'jotai';
 
-import { ALL_CHARACTER_ID } from '../constants';
-
-const logAnalysisCharacterAtom = atom<string>(ALL_CHARACTER_ID);
+import { logAnalysisCharacterAtom } from './useLogAnalysis';
 
 export const useCharacterSelect = () => {
-  const [character, setCharacter] = useAtom(logAnalysisCharacterAtom);
-
-  const selectCharacter = useCallback(
-    (character: string) => {
-      setCharacter(character);
-    },
-    [setCharacter],
-  );
+  const [character, selectCharacter] = useAtom(logAnalysisCharacterAtom);
 
   return {
     character,

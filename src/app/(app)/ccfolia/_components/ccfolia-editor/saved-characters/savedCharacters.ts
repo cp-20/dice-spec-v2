@@ -92,7 +92,7 @@ export const hasUnsavedChangesAtom = atom(
   (get) => get(formSnapshotAtom).isDirty || get(remoteConflictAtom) === 'deleted',
 );
 
-export const visibleCharactersAtom = atom((get) => {
+const visibleCharactersAtom = atom((get) => {
   const hiddenCharacterIds = get(hiddenCharacterIdsAtom);
   return get(savedCharactersAtom).characters.filter(({ id }) => !hiddenCharacterIds.has(id));
 });

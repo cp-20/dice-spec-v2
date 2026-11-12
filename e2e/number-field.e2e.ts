@@ -18,14 +18,14 @@ test('負の修正値を逐次入力でき、未完了入力と上下限を扱�
   await expect(mean).toHaveText(initialMean!);
   await modifier.press('3');
   await expect(modifier).toHaveValue('-3');
-  await expect(mean).toContainText('8.339');
+  await expect(mean).toContainText('8.487');
 
   for (const unfinished of ['', '-']) {
     await modifier.press('ControlOrMeta+a');
     await modifier.press('Backspace');
     if (unfinished) await modifier.press(unfinished);
     await expect(modifier).toHaveValue('');
-    await expect(mean).toContainText('8.339');
+    await expect(mean).toContainText('8.487');
     await modifier.press('Tab');
     await expect(modifier).toHaveValue('-3');
     await modifier.focus();

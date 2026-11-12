@@ -24,6 +24,16 @@ export const userDocumentSchema = v.object({
 
 export type UserDocument = v.InferOutput<typeof userDocumentSchema>;
 
+/** 他のユーザーにも見える文書へ複製する、ユーザーの公開情報。 */
+export const toPublicUser = (user: UserDocument): v.InferOutput<typeof publicUserSchema> => ({
+  id: user.id,
+  name: user.name,
+  ...(user.avatarUrl === undefined ? {} : { avatarUrl: user.avatarUrl }),
+  plan: user.plan,
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+});
+
 export type NewUserDocument = Omit<UserDocument, 'createdAt' | 'updatedAt'> & {
   createdAt: FieldValue;
   updatedAt: FieldValue;

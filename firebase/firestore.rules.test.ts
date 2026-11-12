@@ -586,6 +586,49 @@ describe('Firebase セキュリティルール', () => {
 
       await assertSucceeds(batch.commit());
     });
+
+    describe('プラン変更後', () => {
+      // 課金サーバーは users.plan だけを書き換えるため、変更前に保存した解析の owner.plan は古いまま残る。
+      beforeEach(async () => {
+        await testEnv.seedFirestore(seedUser('user_1', { plan: 'pro' }));
+      });
+
+      test('変更前に保存した解析のメタ項目を更新できる', async () => {
+        await assertSucceeds(
+          updateDoc(doc(ownerDb, 'analyses/a1'), {
+            title: 'Updated title',
+            visibilityLevel: 'private',
+            updatedAt: Timestamp.fromDate(new Date('2026-03-18T05:00:00.000Z')),
+          }),
+        );
+      });
+
+      test('プロフィール更新では owner を現在のプランへ揃えて同期できる', async () => {
+        const updatedAt = Timestamp.fromDate(new Date('2026-03-18T05:10:00.000Z'));
+
+        const batch = writeBatch(ownerDb);
+        batch.set(doc(ownerDb, 'users/user_1'), { name: 'Alice Updated', updatedAt }, { merge: true });
+        batch.set(
+          doc(ownerDb, 'analyses/a1'),
+          { owner: ownerSnapshot({ name: 'Alice Updated', plan: 'pro', updatedAt }), updatedAt },
+          { merge: true },
+        );
+        await assertSucceeds(batch.commit());
+      });
+
+      test('古いプランのまま owner を同期する更新は拒否される', async () => {
+        const updatedAt = Timestamp.fromDate(new Date('2026-03-18T05:20:00.000Z'));
+
+        const batch = writeBatch(ownerDb);
+        batch.set(doc(ownerDb, 'users/user_1'), { name: 'Alice Updated', updatedAt }, { merge: true });
+        batch.set(
+          doc(ownerDb, 'analyses/a1'),
+          { owner: ownerSnapshot({ name: 'Alice Updated', updatedAt }), updatedAt },
+          { merge: true },
+        );
+        await assertFails(batch.commit());
+      });
+    });
   });
 
   describe('Storage セキュリティルール', () => {
