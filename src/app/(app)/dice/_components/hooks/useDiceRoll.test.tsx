@@ -152,6 +152,23 @@ describe('ローカルのダイス操作', () => {
     }
   });
 
+  test('一度に振るダイスが多すぎるときは失敗を伝え、監視には送らない', () => {
+    vi.mocked(captureClientException).mockClear();
+    const store = createStore();
+    store.set(gameSystemAtom, { system: 'DiceBot', status: 'ready', engine: diceBot });
+    const { result } = renderHook(() => ({ ...useDiceRoll(), notifications: useToast() }), {
+      wrapper: ({ children }: { children: ReactNode }) => <Provider store={store}>{children}</Provider>,
+    });
+    act(() => {
+      expect(result.current.diceRoll('10001D6')).toBeNull();
+    });
+    expect(captureClientException).not.toHaveBeenCalled();
+    expect(result.current.notifications.toasts[0]).toMatchObject({
+      title: '一度に振るダイスの数が多すぎます',
+      variant: 'destructive',
+    });
+  });
+
   test('旧 endpoint 設定が残っていても音量・ヘルプ設定を保持する', () => {
     expect(
       v.parse(AdvancedSettingsFormSchema, {

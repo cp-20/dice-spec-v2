@@ -1,6 +1,17 @@
+import { clientExceptionFingerprint, hasExceptionStack, shouldReportClientException } from './clientException';
 import { scheduleIdleTask } from './scheduleIdleTask';
 
 let sentryPromise: Promise<typeof import('@sentry/nextjs')> | null = null;
+
+const dropNonActionable = (
+  event: { message?: string; exception?: { values?: { type?: string; value?: string }[] } },
+  original: unknown,
+) => {
+  if (original !== undefined && !shouldReportClientException(original)) return true;
+  const exception = event.exception?.values?.[0];
+  if (!exception) return event.message ? !shouldReportClientException(event.message) : false;
+  return !shouldReportClientException({ name: exception.type ?? 'Error', message: exception.value ?? '' });
+};
 
 export const getSentry = () => {
   sentryPromise ??= import('@sentry/nextjs').then((Sentry) => {
@@ -25,6 +36,10 @@ export const getSentry = () => {
       replaysSessionSampleRate: 0.1,
       replaysOnErrorSampleRate: 1,
       debug: false,
+      beforeSend(event, hint) {
+        if (dropNonActionable(event, hint.originalException)) return null;
+        return event;
+      },
     });
 
     const loadReplay = () => {
@@ -42,7 +57,24 @@ export const getSentry = () => {
 };
 
 export const captureClientException = (error: unknown) => {
+  if (!shouldReportClientException(error)) return;
+  // SDK の読み込みは非同期なので、stack のない例外は捕捉用 Promise の中でまとめて分類される。
+  const syntheticException = new Error();
+  const stackless = !hasExceptionStack(error);
+  if (stackless && error instanceof Error) {
+    try {
+      error.stack = syntheticException.stack;
+    } catch {
+      // stack を書けない例外は syntheticException 側の呼び出し元を使う。
+    }
+  }
+
   getSentry()
-    .then((Sentry) => Sentry.captureException(error))
+    .then((Sentry) =>
+      Sentry.captureException(error, {
+        syntheticException,
+        captureContext: stackless ? { fingerprint: clientExceptionFingerprint(error) } : undefined,
+      }),
+    )
     .catch((sentryError) => console.error('Failed to load Sentry', sentryError));
 };

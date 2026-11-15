@@ -7,6 +7,7 @@ import { ActionButtonFeedback } from '@/shared/components/ui/action-button-feedb
 import { Button } from '@/shared/components/ui/button';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { isExpectedClipboardFailure } from '@/shared/lib/clientException';
 import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
@@ -25,7 +26,7 @@ export const ResultView: FC<ResultViewProps> = ({ formResult }) => {
       await navigator.clipboard.writeText(formResult);
     } catch (copyError) {
       console.error('Failed to copy CCFOLIA result', copyError);
-      captureClientException(copyError);
+      if (!isExpectedClipboardFailure(copyError)) captureClientException(copyError);
       toast({ title: 'クリップボードへのコピーに失敗しました', variant: 'destructive' });
       return;
     }

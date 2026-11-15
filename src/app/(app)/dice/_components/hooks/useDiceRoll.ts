@@ -13,6 +13,12 @@ import { useDiceSound } from './useDiceSound';
 import { gameSystemAtom } from './useGameSystem';
 import { useQuickInput } from './useQuickInput';
 
+const isTooManyRandsError = (error: unknown) => {
+  if (error === null || typeof error !== 'object') return false;
+  const name = 'name' in error && typeof error.name === 'string' ? error.name : error.constructor?.name;
+  return name === 'TooManyRandsError';
+};
+
 export const useDiceRollCore = () => {
   const store = useStore();
   const selection = useAtomValue(gameSystemAtom);
@@ -40,6 +46,7 @@ export const useDiceRollCore = () => {
         }
         return result;
       } catch (error) {
+        if (isTooManyRandsError(error)) throw error;
         captureClientException(error);
         return null;
       }
@@ -60,13 +67,20 @@ export const useDiceRoll = () => {
     (command: string) => {
       const { system } = store.get(gameSystemAtom);
       sendEvent('diceRoll', [system, formatDiceCommand(command)]);
-      const result = diceRollCore(command);
+      let result: Result | null = null;
+      let tooManyDice = false;
+      try {
+        result = diceRollCore(command);
+      } catch (error) {
+        if (!isTooManyRandsError(error)) throw error;
+        tooManyDice = true;
+      }
       play();
 
       if (!result) {
         sendEvent('diceRollFailed', [system, command]);
         toast({
-          title: 'ダイスロールに失敗しました',
+          title: tooManyDice ? '一度に振るダイスの数が多すぎます' : 'ダイスロールに失敗しました',
           variant: 'destructive',
         });
       }

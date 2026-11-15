@@ -1,17 +1,20 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import { reloadOnceOnChunkLoadError } from '@/shared/lib/chunkLoadRecovery';
+import { captureClientException } from '@/shared/lib/sentryClient';
 
-const SentryErrorCatchDynamic = dynamic(
-  () => import('@/shared/lib/SentryErrorCatch').then((mod) => mod.SentryErrorCatch),
-  { ssr: false },
-);
+const reported = new WeakSet<object>();
 
 export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
+  // モジュール束縛が壊れるとフック自体が失敗するため、復旧画面ではフックを使わない。
+  if (typeof window !== 'undefined' && !reported.has(error)) {
+    reported.add(error);
+    if (!reloadOnceOnChunkLoadError(error)) captureClientException(error);
+  }
+
   return (
     <html lang="ja">
       <body style={{ margin: 0, color: '#334155', background: '#fff', fontFamily: 'system-ui, sans-serif' }}>
-        <SentryErrorCatchDynamic error={error} />
         {/* レイアウトやCSSの取得失敗でも復旧操作を表示できるよう、共有UIやスタイルシートに依存しない。 */}
         <main
           style={{

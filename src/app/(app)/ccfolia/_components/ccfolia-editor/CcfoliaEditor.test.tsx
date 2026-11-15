@@ -9,6 +9,7 @@ import {
   type CcfoliaCharacterDocument,
   stringifyCcfoliaClipboardCharacter,
 } from '@/features/ccfolia/model';
+import { captureClientException } from '@/shared/lib/sentryClient';
 
 import { retainNavigationFallbackDraft, takeNavigationFallbackDraft } from './navigation/navigationFallbackDraft';
 
@@ -169,6 +170,28 @@ describe('CcfoliaEditor', () => {
     remoteCharacter = undefined;
     toastMock.mockClear();
     takeNavigationFallbackDraft('user-1');
+  });
+
+  test('クリップボードの読み取りが拒否されても失敗を伝え、監視には送らない', async () => {
+    setListedCharacterIds();
+    vi.mocked(captureClientException).mockClear();
+    vi.spyOn(navigator.clipboard, 'readText').mockRejectedValueOnce(
+      new DOMException("Failed to execute 'readText' on 'Clipboard': Read permission denied.", 'NotAllowedError'),
+    );
+    render(<CcfoliaEditor />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'クリップボードから読み込む' }));
+
+    await waitFor(() =>
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'クリップボードから読み込みに失敗しました',
+          variant: 'destructive',
+        }),
+      ),
+    );
+    expect(captureClientException).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'クリップボードから読み込む' })).toBeTruthy();
   });
 
   test('フォーム接続前に認証が確定しても退避した編集内容を復元する', async () => {

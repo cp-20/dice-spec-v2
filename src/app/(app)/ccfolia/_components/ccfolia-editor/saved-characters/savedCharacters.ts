@@ -20,6 +20,7 @@ import {
   toCcfoliaEditorCharacter,
 } from '@/features/ccfolia/model';
 import { toast } from '@/shared/components/ui/use-toast';
+import { isExpectedClipboardFailure } from '@/shared/lib/clientException';
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 import { captureClientException } from '@/shared/lib/sentryClient';
 import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
@@ -167,7 +168,7 @@ export const exportCharacterAtom = atom(null, async (_get, _set, character: Ccfo
     await navigator.clipboard.writeText(stringifyCcfoliaClipboardCharacter(toCcfoliaEditorCharacter(character)));
   } catch (exportError) {
     console.error('CCFOLIA_SAVED_CHARACTER_EXPORT_FAILED');
-    captureClientException(exportError);
+    if (!isExpectedClipboardFailure(exportError)) captureClientException(exportError);
     toast({ title: 'クリップボードへのコピーに失敗しました', variant: 'destructive' });
     return false;
   }
