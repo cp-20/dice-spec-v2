@@ -14,7 +14,9 @@ const internalAuthUserLoadingAtom = atom(true);
 
 export const isExpectedSignInCancellation = (error: unknown) =>
   error instanceof FirebaseError &&
-  (error.code === AuthErrorCodes.POPUP_CLOSED_BY_USER || error.code === AuthErrorCodes.EXPIRED_POPUP_REQUEST);
+  (error.code === AuthErrorCodes.POPUP_CLOSED_BY_USER ||
+    error.code === AuthErrorCodes.EXPIRED_POPUP_REQUEST ||
+    error.code === AuthErrorCodes.USER_CANCELLED);
 
 const internalAuthUserAtom = withAtomEffect(atom<User | null>(null), (_, set) => {
   const auth = getFirebaseAuth();

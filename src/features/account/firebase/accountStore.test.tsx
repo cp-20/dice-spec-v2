@@ -50,7 +50,10 @@ vi.doMock('@/shared/lib/firebase/client', () => ({
   getFirebaseFirestore: () => ({}),
   getFirebaseStorage: () => ({}),
 }));
-vi.doMock('@/shared/lib/firebase/storage/avatars', () => ({ uploadAvatarFromUrlToStorage: uploadAvatarMock }));
+vi.doMock('@/shared/lib/firebase/storage/avatars', () => ({
+  uploadAvatarFromUrlToStorage: uploadAvatarMock,
+  AvatarPreparationError: class AvatarPreparationError extends Error {},
+}));
 vi.doMock('@/shared/lib/firebase/signOut', () => ({ signOutWithGuard: signOutWithGuardMock }));
 vi.doMock('@/shared/lib/firebase/useFirebaseAuth', () => ({
   ...firebaseAuthHook,

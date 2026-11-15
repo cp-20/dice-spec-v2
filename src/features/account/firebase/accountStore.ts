@@ -9,7 +9,7 @@ import { toast } from '@/shared/components/ui/use-toast';
 import { getFirebaseAuth, getFirebaseFirestore, getFirebaseStorage } from '@/shared/lib/firebase/client';
 import { FIREBASE_COLLECTIONS } from '@/shared/lib/firebase/collections';
 import { signOutWithGuard } from '@/shared/lib/firebase/signOut';
-import { uploadAvatarFromUrlToStorage } from '@/shared/lib/firebase/storage/avatars';
+import { AvatarPreparationError, uploadAvatarFromUrlToStorage } from '@/shared/lib/firebase/storage/avatars';
 import { authUserAtom, authUserLoadingAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 import { captureClientException } from '@/shared/lib/sentryClient';
 import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
@@ -50,7 +50,8 @@ const internalMeAtom = withAtomEffect(atom<UserDocument | null>(null), (get, set
             avatarUrl = await uploadAvatarFromUrlToStorage(storage, authUser.uid, authUser.photoURL);
           } catch (err) {
             console.error('Failed to upload Google avatar to Storage:', err);
-            captureClientException(err);
+            // 取得できない外部アイコンは初期アイコンへ戻し、アカウント作成は続ける。
+            if (!(err instanceof AvatarPreparationError && err.code === 'INVALID_IMAGE')) captureClientException(err);
           }
         }
 

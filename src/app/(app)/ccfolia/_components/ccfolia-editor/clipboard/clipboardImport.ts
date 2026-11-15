@@ -3,6 +3,7 @@ import { ValiError } from 'valibot';
 
 import { parseCcfoliaClipboardCharacter } from '@/features/ccfolia/model';
 import { toast } from '@/shared/components/ui/use-toast';
+import { isExpectedClipboardFailure } from '@/shared/lib/clientException';
 import { authUserAtom } from '@/shared/lib/firebase/useFirebaseAuth';
 import { captureClientException } from '@/shared/lib/sentryClient';
 import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
@@ -36,7 +37,7 @@ export const loadClipboardCharacterAtom = atom(null, async (get, set): Promise<b
     console.error('CCFOLIA_CLIPBOARD_LOAD_FAILED');
     if (loadError instanceof SyntaxError || loadError instanceof ValiError) {
       sendGoogleAnalyticsEvent('load_ccfolia_character_error', { reason: 'invalid_clipboard' });
-    } else {
+    } else if (!isExpectedClipboardFailure(loadError)) {
       captureClientException(loadError);
     }
     toast({

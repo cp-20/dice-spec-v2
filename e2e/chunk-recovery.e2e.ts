@@ -11,11 +11,17 @@ for (const failure of ['404', '通信切断'] as const) {
     if (failure === '通信切断') await page.setViewportSize({ width: 320, height: 640 });
     let failing = true;
     let failedChunk = '';
+    let layoutFailures = 0;
+    let navigations = 0;
+    page.on('framenavigated', (frame) => {
+      if (frame === page.mainFrame()) navigations += 1;
+    });
     await page.route('**/_next/static/chunks/*.js', async (route) => {
       const response = await route.fetch();
       // ハッシュ付きファイル名に依存せず、本文を包むレイアウトを特定する。
       if (failing && (await response.text()).includes('max-w-6xl')) {
         failedChunk = route.request().url();
+        layoutFailures += 1;
         if (failure === '404') await route.fulfill({ status: 404, body: 'Not Found', contentType: 'text/plain' });
         else await route.abort('internetdisconnected');
       } else {
@@ -24,7 +30,9 @@ for (const failure of ['404', '通信切断'] as const) {
     });
 
     await page.goto('/dice');
-    await expect.poll(() => failedChunk).not.toBe('');
+    // 最初の失敗で一度だけ自動再読み込みし、続いても失敗するときは操作を出す。
+    await expect.poll(() => navigations).toBeGreaterThanOrEqual(2);
+    await expect.poll(() => layoutFailures).toBeGreaterThanOrEqual(2);
     const reload = page.getByRole('button', { name: 'ページを再読み込み', exact: true });
     await expect(reload).toBeVisible();
 
