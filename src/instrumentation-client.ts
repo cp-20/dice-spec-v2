@@ -1,4 +1,4 @@
-import { clearChunkReloadGuard, reloadOnceOnChunkLoadError } from '@/shared/lib/chunkLoadRecovery';
+import { clearChunkReloadGuardWhenDisplayed, reloadOnceOnChunkLoadError } from '@/shared/lib/chunkLoadRecovery';
 import { shouldReportClientException } from '@/shared/lib/clientException';
 import { scheduleIdleTask } from '@/shared/lib/scheduleIdleTask';
 import { captureClientException, getSentry } from '@/shared/lib/sentryClient';
@@ -12,7 +12,7 @@ if (document.readyState === 'complete') {
   window.addEventListener('load', scheduleSentry, { once: true });
 }
 
-clearChunkReloadGuard();
+clearChunkReloadGuardWhenDisplayed();
 
 const reportOnce = () => {
   let reported = false;
