@@ -1,10 +1,9 @@
 import { atom, useAtom } from 'jotai';
 
-import type { AvailableDice } from './simpleDiceTypes';
-
 type simpleDiceOutputAtom = {
   key: string;
-  result: { dice: AvailableDice; result: number[] }[];
+  // dice はダイスの面数
+  result: { dice: string; result: number[] }[];
   sum: number;
   resultStr: string;
 };

@@ -1,66 +1,30 @@
 import { atom, useAtom } from 'jotai';
-import { useCallback } from 'react';
 
-import { type AvailableDice, type SimpleDices } from './simpleDiceTypes';
+import { SIMPLE_DICE_COUNT_RANGE, SIMPLE_DICE_FACES_RANGE } from './simpleDiceTypes';
 import { useSimpleDiceRoll } from './useSimpleDiceRoll';
 
-export type { AvailableDice, SimpleDices } from './simpleDiceTypes';
+export type SimpleDice = { count: number; faces: number };
 
-const simpleDicesAtom = atom<SimpleDices>({
-  3: 0,
-  4: 0,
-  6: 0,
-  8: 0,
-  10: 0,
-  12: 0,
-  20: 0,
-  100: 0,
-});
+const simpleDiceInputAtom = atom<SimpleDice>({ count: 1, faces: 6 });
+
+const clamp = (value: number, { min, max }: { min: number; max: number }) => Math.min(Math.max(value, min), max);
 
 export const useSimpleDiceInput = () => {
   const { simpleDiceRoll } = useSimpleDiceRoll();
-  const [simpleDices, setSimpleDices] = useAtom(simpleDicesAtom);
+  const [input, setInput] = useAtom(simpleDiceInputAtom);
 
-  const incrementDice = useCallback(
-    (dice: AvailableDice) => {
-      setSimpleDices((prev) => ({
-        ...prev,
-        [dice]: Math.min(prev[dice] + 1, 999),
-      }));
-    },
-    [setSimpleDices],
-  );
-
-  const decrementDice = useCallback(
-    (dice: AvailableDice) => {
-      setSimpleDices((prev) => ({
-        ...prev,
-        [dice]: Math.max(prev[dice] - 1, 0),
-      }));
-    },
-    [setSimpleDices],
-  );
-
-  const resetDice = useCallback(() => {
-    setSimpleDices({
-      3: 0,
-      4: 0,
-      6: 0,
-      8: 0,
-      10: 0,
-      12: 0,
-      20: 0,
-      100: 0,
-    });
-  }, [setSimpleDices]);
-
-  const rollDice = useCallback(() => simpleDiceRoll(simpleDices), [simpleDiceRoll, simpleDices]);
+  const roll = (dice: SimpleDice) => {
+    setInput(dice);
+    simpleDiceRoll({ [dice.faces]: dice.count });
+  };
 
   return {
-    simpleDices,
-    incrementDice,
-    decrementDice,
-    resetDice,
-    rollDice,
+    input,
+    changeCount: (diff: number) =>
+      setInput((prev) => ({ ...prev, count: clamp(prev.count + diff, SIMPLE_DICE_COUNT_RANGE) })),
+    changeFaces: (faces: number) => setInput((prev) => ({ ...prev, faces: clamp(faces, SIMPLE_DICE_FACES_RANGE) })),
+    rollInput: () => roll(input),
+    // プリセットを振ると入力にも反映し、個数や面数を変えれば別のダイスを振れることを示す。
+    roll,
   };
 };

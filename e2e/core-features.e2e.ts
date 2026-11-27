@@ -34,18 +34,25 @@ test('シンプルダイスを振ると結果を表示する', async ({ page }) 
   await expect(page.getByText(/^1D6 => [1-6]\[[1-6]\] => [1-6]$/)).toBeVisible();
 });
 
-test('複数種類のシンプルダイスをまとめて振り、入力をリセットできる', async ({ page }) => {
+test('個数と面数を選んで好きなダイスを振れる', async ({ page }) => {
   await page.goto('/dice');
-  await page.getByRole('button', { name: 'D6を増やす' }).click();
-  await page.getByRole('button', { name: 'D6を増やす' }).click();
-  await page.getByRole('button', { name: 'D20を増やす' }).click();
-  await page.getByRole('button', { name: 'ダイスロール', exact: true }).click();
+  // プリセットを振ると個数と面数にも反映する。
+  await page.getByRole('button', { name: '2D6', exact: true }).click();
+  await expect(page.getByLabel('ダイスの個数')).toHaveText('2');
+  await expect(page.getByRole('button', { name: 'ダイスの面数: 6' })).toBeVisible();
 
-  await expect(page.getByText(/^2D6 \+ 1D20 => \d+\[\d+, \d+\] \+ \d+\[\d+\] => \d+$/)).toBeVisible();
+  await page.getByRole('button', { name: 'ダイスを1個減らす' }).click();
+  await page.getByRole('button', { name: 'ダイスの面数: 6' }).click();
+  await page.getByRole('button', { name: 'D2', exact: true }).click();
+  await page.getByRole('button', { name: '振る', exact: true }).click();
+  await expect(page.getByText(/^1D2 => [12]\[[12]\] => [12]$/)).toBeVisible();
 
-  await page.getByRole('button', { name: 'リセット' }).click();
-  await expect(page.getByText('0D6', { exact: true })).toBeVisible();
-  await expect(page.getByText('0D20', { exact: true })).toBeVisible();
+  // 候補にない面数は入力して選べる。
+  await page.getByRole('button', { name: 'ダイスの面数: 2' }).click();
+  await page.getByRole('spinbutton', { name: 'その他の面数' }).fill('7');
+  await page.getByRole('button', { name: '決定' }).click();
+  await page.getByRole('button', { name: '振る', exact: true }).click();
+  await expect(page.getByText(/^1D7 => [1-7]\[[1-7]\] => [1-7]$/)).toBeVisible();
 });
 
 test('ダイス式の確率と統計を計算する', async ({ page }) => {

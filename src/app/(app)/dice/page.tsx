@@ -38,8 +38,10 @@ const DicePage: NextPage = async () => {
         simpleTabContent={
           <div className="space-y-12">
             <SimpleDiceOutput />
-            <SimpleDiceQuickInput />
-            <SimpleDiceInput />
+            <div className="max-w-xl space-y-3">
+              <SimpleDiceInput />
+              <SimpleDiceQuickInput />
+            </div>
           </div>
         }
       />
