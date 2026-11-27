@@ -6,7 +6,7 @@ import { PageDescriptionContainer, PageDescriptionText } from '@/app/(app)/_comp
 import { PageTitle } from '@/app/(app)/_components/PageTitle';
 import { PricingCards } from '@/app/(app)/profile/_components/PricingCards';
 import { CCFOLIA_CHARACTER_SAVE_LIMIT_FREE } from '@/features/ccfolia/model';
-import { SAVE_ANALYSIS_LIMIT_FREE, SKILL_SUMMARY_PREVIEW_COUNT_FREE } from '@/features/log-analysis/model';
+import { SAVE_ANALYSIS_LIMIT_FREE } from '@/features/log-analysis/model';
 import { PRO_PRICE_JPY } from '@/features/stripe/contract';
 import { type MetadataGenerator, metadataHelper, viewportGenerator } from '@/shared/lib/metadataGenerator';
 
@@ -21,7 +21,7 @@ export const viewport = viewportGenerator();
 
 const comparison = [
   { feature: 'ダイスロール・ダイス予測・ログ解析', free: '使える', pro: '使える' },
-  { feature: '技能ごとの成功率', free: `${SKILL_SUMMARY_PREVIEW_COUNT_FREE}件まで`, pro: 'すべて' },
+  { feature: '技能ごとの成功率', free: '一部', pro: 'すべて' },
   { feature: 'ログ解析の結果の保存', free: `${SAVE_ANALYSIS_LIMIT_FREE}件まで`, pro: '無制限' },
   { feature: 'ココフォリアのキャラクターの保存', free: `${CCFOLIA_CHARACTER_SAVE_LIMIT_FREE}件まで`, pro: '無制限' },
 ];
