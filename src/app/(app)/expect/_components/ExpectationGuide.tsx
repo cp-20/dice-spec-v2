@@ -50,7 +50,7 @@ export const ExpectationGuide = () => (
       <p>
         期待値と確率分布の違いは
         <CustomLink href="/blogs/stats-for-trpg/2-basic-probability" className="underline underline-offset-2">
-          「2d6と1d12は何が違う？」
+          「2d6と1d12は何が違う?」
         </CustomLink>
         で解説しています。
       </p>

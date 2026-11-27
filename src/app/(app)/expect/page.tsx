@@ -36,9 +36,9 @@ const insertInlineCommand = (value: string) => {
 
 export const generateMetadata: MetadataGenerator = async () => {
   return metadataHelper({
-    title: 'ダイス期待値・確率計算 | 3D6・1D100の期待値と成功率',
+    title: 'ダイスの期待値・確率計算 | 3D6・2D6・1D100の成功率',
     description:
-      '3D6・2D6・1D100などダイスの期待値と確率分布を計算する無料ツールです。1D100<=50や2D6>=10の成功率、クトゥルフ神話TRPGの対抗ロールの勝率も確認できます。',
+      '3D6・2D6・1D100などダイスの期待値と確率分布を計算できる無料ツールです。1D100<=50や2D6>=10の成功率、クトゥルフ神話TRPGの対抗ロールの勝率も確認できます。',
     path: '/expect',
   });
 };
