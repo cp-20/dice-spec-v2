@@ -145,6 +145,8 @@ test('ログ解析を保存し、タイトル変更後に削除できる', async
     mimeType: 'text/html',
     buffer: Buffer.from(logHtml),
   });
+  // タイトルの初期値はログのファイル名から入る。
+  await expect(page.getByPlaceholder('シナリオ名など')).toHaveValue('e2e-persistence-session');
   await page.getByPlaceholder('シナリオ名など').fill('E2E保存テスト');
   await page.getByRole('button', { name: '保存する' }).click();
 

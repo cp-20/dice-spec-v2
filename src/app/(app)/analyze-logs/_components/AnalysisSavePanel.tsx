@@ -1,6 +1,14 @@
 'use client';
 
-import { IconChevronRight, IconList, IconLoader2, IconLock, IconLockOpen, IconSparkles } from '@tabler/icons-react';
+import {
+  IconCheck,
+  IconChevronRight,
+  IconList,
+  IconLoader2,
+  IconLock,
+  IconLockOpen,
+  IconSparkles,
+} from '@tabler/icons-react';
 import { Timestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import type { FC } from 'react';
@@ -25,7 +33,20 @@ import { captureClientException } from '@/shared/lib/sentryClient';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useAnalysisOgImage } from './hooks/useAnalysisOgImage';
-import { useLogAnalysis } from './hooks/useLogAnalysis';
+import { useLogAnalysis, useLogFiles } from './hooks/useLogAnalysis';
+
+// ココフォリアのログは「ルーム名[タブ名].html」の形で出力されるため、ルーム名を保存タイトルの初期値にする。
+export const titleFromLogFileName = (name: string) =>
+  name
+    .replace(/\.[^.]+$/, '')
+    .replace(/\[[^\]]*\]$/, '')
+    .trim();
+
+const saveBenefits = [
+  'あとからいつでも見返せる',
+  'URLで仲間に共有できる',
+  `無料で${SAVE_ANALYSIS_LIMIT_FREE}件まで保存できる`,
+];
 
 const formatDate = (date: Date): string => {
   const year = date.getFullYear();
@@ -52,7 +73,10 @@ export const AnalysisSavePanel: FC = () => {
   const { sendEvent } = useGoogleAnalytics();
 
   const [visibility, setVisibility] = useState<AnalysisVisibilityLevel>('private');
-  const [title, setTitle] = useState('');
+  const { logFiles } = useLogFiles();
+  // 未編集の間はログのファイル名から決めたタイトルを使う。
+  const [editedTitle, setTitle] = useState<string | null>(null);
+  const title = editedTitle ?? titleFromLogFileName(logFiles[0]?.name ?? '');
   const [showRecordDetails, setShowRecordDetails] = useState(true);
   const [sessionDate, setSessionDate] = useState(formatDate(new Date()));
 
@@ -112,8 +136,18 @@ export const AnalysisSavePanel: FC = () => {
   return (
     <ContainerSection label="保存と公開" className="space-y-4">
       {!authUser ? (
-        <div className="flex flex-col items-center justify-center py-12 space-y-4">
-          <p className="text-sm text-slate-600 text-center">保存するにはログインが必要です</p>
+        <div className="flex flex-col items-center justify-center py-8 space-y-4">
+          <div className="space-y-3">
+            <p className="text-center font-semibold">ログインすると解析結果を保存できます</p>
+            <ul className="space-y-1 text-sm text-slate-600">
+              {saveBenefits.map((benefit) => (
+                <li key={benefit} className="flex items-center gap-2">
+                  <IconCheck className="size-4 text-slate-500" aria-hidden />
+                  {benefit}
+                </li>
+              ))}
+            </ul>
+          </div>
           <div className="flex flex-col gap-2 items-center">
             <GoogleSignInButton size="md" />
             <GoogleSignInAgreement />
