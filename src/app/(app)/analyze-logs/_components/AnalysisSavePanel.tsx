@@ -44,7 +44,7 @@ export const titleFromLogFileName = (name: string) =>
 
 const saveBenefits = [
   'あとからいつでも見返せる',
-  'URLで仲間に共有・公開できる',
+  'URLで仲間に共有できる',
   `無料で${SAVE_ANALYSIS_LIMIT_FREE}件まで保存できる`,
 ];
 
@@ -138,7 +138,7 @@ export const AnalysisSavePanel: FC = () => {
       {!authUser ? (
         <div className="flex flex-col items-center justify-center py-8 space-y-4">
           <div className="space-y-3">
-            <p className="text-center font-semibold">ログインして解析結果を保存しましょう</p>
+            <p className="text-center font-semibold">ログインすると解析結果を保存できます</p>
             <ul className="space-y-1 text-sm text-slate-600">
               {saveBenefits.map((benefit) => (
                 <li key={benefit} className="flex items-center gap-2">
