@@ -230,7 +230,7 @@ export const AnalysisSavePanel: FC = () => {
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-blue-800">保存件数の上限に達しました</p>
                 <p className="text-xs text-blue-800">
-                  プロプランにアップグレードすると無制限に保存できるようになります
+                  PROプランにアップグレードすると無制限に保存できるようになります
                 </p>
               </div>
               <CustomLink
@@ -244,7 +244,7 @@ export const AnalysisSavePanel: FC = () => {
                   className="w-full border border-blue-400 bg-blue-100 text-blue-700 hover:border-blue-500 hover:bg-blue-200 hover:text-blue-800"
                 >
                   <IconSparkles className="size-4" />
-                  <span>プロプランにアップグレード</span>
+                  <span>PROプランにアップグレード</span>
                   <IconChevronRight className="size-4" />
                 </Button>
               </CustomLink>

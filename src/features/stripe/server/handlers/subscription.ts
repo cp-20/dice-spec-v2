@@ -112,12 +112,12 @@ const resolveSubscriptionUpdateMessage = (
 const resolveCreatedMessage = (billingInterval: BillingInterval): string => {
   switch (billingInterval) {
     case 'monthly':
-      return 'プロプラン (月額) のサブスクリプションが作成されました';
+      return 'PROプラン (月額) のサブスクリプションが作成されました';
     case 'yearly':
-      return 'プロプラン (年額) のサブスクリプションが作成されました';
+      return 'PROプラン (年額) のサブスクリプションが作成されました';
     default:
       const _: never = billingInterval;
-      return 'プロプランのサブスクリプションが作成されました';
+      return 'PROプランのサブスクリプションが作成されました';
   }
 };
 

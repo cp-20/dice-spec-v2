@@ -71,7 +71,7 @@ export const PlanManagementSection = () => {
                 ) : me.plan === 'pro' ? (
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 bg-indigo-100 px-2 py-1 rounded-full">
                     <IconSparkles className="size-3" />
-                    プロ
+                    PRO
                   </span>
                 ) : (
                   <span className="text-xs font-medium text-slate-600 bg-slate-200 px-2 py-1 rounded-full">フリー</span>

@@ -34,7 +34,8 @@ test('Sandbox の契約・解約が Webhook と Firestore を通って画面に�
       product_data: { name: `E2E ${firebaseUser.uid}` },
     });
     await page.goto('/profile');
-    await expect(page.getByText('フリー', { exact: true })).toBeVisible();
+    const currentPlan = page.getByText('現在のプラン').locator('..');
+    await expect(currentPlan.getByText('フリー', { exact: true })).toBeVisible();
     // 実際の Stripe イベントを CLI が転送する。署名や API 応答をテストで作らない。
     subscription = await stripe.subscriptions.create({
       customer: customer.id,
@@ -43,7 +44,7 @@ test('Sandbox の契約・解約が Webhook と Firestore を通って画面に�
       trial_settings: { end_behavior: { missing_payment_method: 'cancel' } },
       metadata: { type: 'subscription.pro', interval: 'monthly', userId: firebaseUser.uid },
     });
-    await expect(page.getByText('プロ', { exact: true })).toBeVisible({ timeout: 60_000 });
+    await expect(currentPlan.getByText('PRO', { exact: true })).toBeVisible({ timeout: 60_000 });
     expect(await readUser()).toMatchObject({
       plan: { stringValue: 'pro' },
       stripeSubscriptionId: { stringValue: subscription.id },
@@ -63,17 +64,17 @@ test('Sandbox の契約・解約が Webhook と Firestore を通って画面に�
     expect(invalidSignature.status()).toBe(400);
     expect(await readUser()).toMatchObject({ plan: { stringValue: 'pro' } });
     await page.reload();
-    await expect(page.getByText('プロ', { exact: true })).toBeVisible();
+    await expect(currentPlan.getByText('PRO', { exact: true })).toBeVisible();
 
     await stripe.subscriptions.cancel(subscription.id);
-    await expect(page.getByText('フリー', { exact: true })).toBeVisible({ timeout: 60_000 });
+    await expect(currentPlan.getByText('フリー', { exact: true })).toBeVisible({ timeout: 60_000 });
     expect(await readUser()).toMatchObject({
       plan: { stringValue: 'free' },
       stripeSubscriptionId: { stringValue: subscription.id },
     });
     await expect(page.getByRole('button', { name: 'Stripeでサブスクリプションを管理する' })).toHaveCount(0);
     await page.reload();
-    await expect(page.getByText('フリー', { exact: true })).toBeVisible();
+    await expect(currentPlan.getByText('フリー', { exact: true })).toBeVisible();
   } finally {
     // 顧客削除で途中失敗時も契約を終了する。価格・商品はアーカイブする。
     await stripe.customers.del(customer.id);

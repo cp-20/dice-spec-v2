@@ -177,7 +177,7 @@ export const saveCharacterAtom = atom(
         sendGoogleAnalyticsEvent('save_ccfolia_character_error', { action: intent, reason: 'limit' });
         toast({
           title: '保存件数の上限に達しました',
-          description: '別のタブで保存上限に達しました。既存データを削除するか、プロプランをご利用ください。',
+          description: '別のタブで保存上限に達しました。既存データを削除するか、PROプランをご利用ください。',
           variant: 'destructive',
         });
       } else if (saveError instanceof CcfoliaCharacterTooLargeError) {

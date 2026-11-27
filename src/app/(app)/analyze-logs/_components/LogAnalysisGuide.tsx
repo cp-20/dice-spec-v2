@@ -23,7 +23,7 @@ export const LogAnalysisGuide = () => (
         <p>
           出目の偏りの見方は
           <Link href="/blogs/stats-for-trpg/5-analysis-over-session" className="underline underline-offset-4">
-            「10%を10回振ったら出る?」
+            「10%を10回振ったら出る？」
           </Link>
           で解説しています。
         </p>

@@ -28,7 +28,7 @@ test('無料プランの保存上限では新しいキャラクターを保存�
 
   await expect(page.getByText('3 / 3件保存中')).toBeVisible();
   await expect(page.getByText('空のフォームから作成(アカウント保存は上限)')).toBeVisible();
-  await expect(page.getByText('プロなら保存件数は無制限です。')).toBeVisible();
+  await expect(page.getByText('PROプランなら保存件数は無制限です。')).toBeVisible();
 
   await page.getByLabel('名前').fill('上限を超えるキャラクター');
   await expect(page.getByRole('button', { name: 'アカウントに新規保存' })).toBeDisabled();

@@ -19,12 +19,12 @@ const getSubscriptionIdFromCheckoutSession = (session: Stripe.Checkout.Session):
 const getCheckoutMessage = (billingInterval: BillingInterval): string => {
   switch (billingInterval) {
     case 'monthly':
-      return 'ユーザーがプロプラン (月額) を契約しました';
+      return 'ユーザーがPROプラン (月額) を契約しました';
     case 'yearly':
-      return 'ユーザーがプロプラン (年額) を契約しました';
+      return 'ユーザーがPROプラン (年額) を契約しました';
     default:
       const _: never = billingInterval;
-      return 'ユーザーがプロプランを契約しました';
+      return 'ユーザーがPROプランを契約しました';
   }
 };
 
