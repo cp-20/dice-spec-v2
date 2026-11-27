@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 
 import { BlogBreadCrumb } from '@/app/blogs/_components/BlogBreadCrumb';
-import { appBaseUrl, metadataHelper } from '@/shared/lib/metadataGenerator';
+import { JsonLd } from '@/shared/components/elements/JsonLd';
+import { appBaseUrl, constructUrl, metadataHelper } from '@/shared/lib/metadataGenerator';
 
 import { contents } from './_contents/contents';
 
@@ -21,7 +22,7 @@ export const generateMetadata = async ({ params }: { params: Promise<Params> }):
   const og = `${appBaseUrl}/assets/blog-images/og/${category}/${slug}.png`;
 
   const base = metadataHelper({
-    title: `${title} - ダイススペックブログ`,
+    title,
     description,
     path: `/blogs/${category}/${slug}`,
     ogp: og,
@@ -50,6 +51,21 @@ export default async function Page({ params }: { params: Promise<Params> }) {
 
   return (
     <div className="max-w-2xl mx-auto pt-8 sm:px-8 px-4 pb-32 w-screen">
+      {article.isPublished && (
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: article.title,
+            description: article.description,
+            image: `${appBaseUrl}/assets/blog-images/og/${category}/${slug}.png`,
+            datePublished: article.publishedAt.toISOString(),
+            dateModified: article.updatedAt.toISOString(),
+            author: { '@type': 'Person', name: 'cp20', url: 'https://github.com/cp-20' },
+            mainEntityOfPage: constructUrl(`/blogs/${category}/${slug}`),
+          }}
+        />
+      )}
       <div className="mb-8">
         <BlogBreadCrumb category={category} slug={slug} />
       </div>

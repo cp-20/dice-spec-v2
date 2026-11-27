@@ -9,7 +9,7 @@ import { CcfoliaEditor } from './_components/ccfolia-editor/CcfoliaEditor';
 
 export const generateMetadata: MetadataGenerator = async () => {
   return metadataHelper({
-    title: 'ココフォリア出力',
+    title: 'ココフォリアのキャラクター駒作成・出力ツール',
     description:
       'キャラの各項目を記入すると、ココフォリアに出力できる形式にフォーマットしてくれるツールです。逆にココフォリア出力形式から読み込むこともできるので、「ここの値を少しだけ変えたい！」といった場合に便利です。',
     path: '/ccfolia',

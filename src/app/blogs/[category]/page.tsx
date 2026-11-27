@@ -16,7 +16,7 @@ export const generateMetadata = async ({ params }: { params: Promise<Params> }):
   if (!cat) throw new Error(`Category not found: ${category}`);
 
   return metadataHelper({
-    title: `${cat.name} - ダイススペックブログ`,
+    title: cat.name,
     description: cat.description,
     path: `/blogs/${category}`,
   });

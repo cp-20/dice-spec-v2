@@ -5,20 +5,22 @@ import type { NextPage } from 'next';
 import type { FC } from 'react';
 
 import { CustomLink } from '@/shared/components/elements/CustomLink';
+import { JsonLd } from '@/shared/components/elements/JsonLd';
 import { TitleLogo } from '@/shared/components/elements/TitleLogo';
 import { Footer } from '@/shared/components/Layout/Footer';
 import { H2 } from '@/shared/components/Typography/H2';
 import { Text } from '@/shared/components/Typography/Text';
 import { Button } from '@/shared/components/ui/button';
-import { type MetadataGenerator, metadataHelper, viewportGenerator } from '@/shared/lib/metadataGenerator';
+import { appBaseUrl, type MetadataGenerator, metadataHelper, viewportGenerator } from '@/shared/lib/metadataGenerator';
 
 import { LinkableIconPanel } from './_components/LinkableIconPanel';
 import { Panel } from './_components/Panel';
 
 export const generateMetadata: MetadataGenerator = async () => {
   return metadataHelper({
+    title: 'TRPGのダイスロール・期待値計算・ココフォリアログ解析',
     description:
-      'ダイススペックはTRPGのちょっとしたツールを集めたサービスです。ダイス予測、ダイスロール、ログ解析といった豊富なツールが用意されており、それらの機能を基本無料でお使いいただけます。',
+      'ダイススペックはTRPGのちょっとしたツールを集めたサービスです。1D100や2D6のダイスロール、ダイスの期待値・成功率の計算、ココフォリアのログ解析・出目集計を基本無料で使えます。',
     path: '/',
   });
 };
@@ -33,6 +35,16 @@ const featureIcons: Record<string, FC<IconProps>> = {
 const LandingPage: NextPage = () => {
   return (
     <div className="flex min-h-screen w-full flex-col">
+      {/* 検索結果のサイト名を「ダイススペック」として認識させる */}
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'ダイススペック',
+          alternateName: 'DiceSpec',
+          url: appBaseUrl,
+        }}
+      />
       <main className="mx-auto flex w-full max-w-(--breakpoint-lg) flex-1 flex-col items-center gap-16 px-8 py-8 max-sm:px-4">
         <div className="mt-16 flex max-w-full items-center justify-center gap-8 max-md:mt-8 max-md:flex-col max-md:gap-2 max-sm:mt-4">
           <div>
@@ -69,7 +81,7 @@ const LandingPage: NextPage = () => {
                 key: 'dice',
                 title: 'ダイスロール',
                 description:
-                  '1D6、2D6、3D6、1D100、2D10、2D3 といったダイスはもちろん、どんな複雑なダイスでも振ることができます！クトルゥフ神話TRPGやシノビガミといったゲームシステム特有のダイスにも対応しています！',
+                  '1D6、2D6、3D6、1D100、2D10、2D3 といったダイスはもちろん、どんな複雑なダイスでも振ることができます！クトゥルフ神話TRPGやシノビガミといったゲームシステム特有のダイスにも対応しています！',
               },
               {
                 key: 'analyze-logs',
@@ -127,6 +139,10 @@ const LandingPage: NextPage = () => {
 
         <div>
           <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm">
+            <CustomLink href="/blogs" className="underline underline-offset-2 hover:text-slate-600">
+              ブログ
+            </CustomLink>
+
             <CustomLink href="/terms" className="underline underline-offset-2 hover:text-slate-600">
               利用規約
             </CustomLink>

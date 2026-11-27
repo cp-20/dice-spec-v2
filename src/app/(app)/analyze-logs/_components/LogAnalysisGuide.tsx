@@ -20,6 +20,13 @@ export const LogAnalysisGuide = () => (
         <Link href="/expect" className="underline underline-offset-4">
           これから振るダイスの確率・期待値を計算する
         </Link>
+        <p>
+          集計結果から出目の偏りを判断する方法は
+          <Link href="/blogs/stats-for-trpg/5-analysis-over-session" className="underline underline-offset-4">
+            「10%を10回振ったら出る？」
+          </Link>
+          で解説しています。
+        </p>
       </div>
     </div>
   </details>

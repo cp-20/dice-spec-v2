@@ -25,7 +25,7 @@ export const metadataHelper = ({ title: rawTitle, description, path, ogp, noInde
   return {
     title,
     description,
-    metadataBase: appUrl,
+    metadataBase: new URL(appBaseUrl),
     alternates: {
       canonical: appUrl.toString(),
     },
@@ -34,7 +34,7 @@ export const metadataHelper = ({ title: rawTitle, description, path, ogp, noInde
       description,
       type: 'website',
       locale: 'ja_JP',
-      siteName: title,
+      siteName: appName,
       images: ogp ?? defaultOgImage,
       url: appUrl,
     },
