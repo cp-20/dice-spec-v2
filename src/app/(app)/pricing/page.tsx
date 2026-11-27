@@ -13,7 +13,7 @@ import { type MetadataGenerator, metadataHelper, viewportGenerator } from '@/sha
 export const generateMetadata: MetadataGenerator = async () =>
   metadataHelper({
     title: 'PROプラン・料金',
-    description: `ダイススペックのPROプランは月額${PRO_PRICE_JPY.monthly}円・年額${PRO_PRICE_JPY.yearly}円。ログ解析の技能ごとの成功率をすべて表示し、解析結果やココフォリアのキャラクターを無制限に保存できます。`,
+    description: `ダイススペックのPROプランは月額${PRO_PRICE_JPY.monthly}円・年額${PRO_PRICE_JPY.yearly}円。ログ解析で技能ごとの成功率をすべて確認でき、解析結果やココフォリアのキャラクターを無制限に保存できます。`,
     path: '/pricing',
   });
 
@@ -22,8 +22,8 @@ export const viewport = viewportGenerator();
 const comparison = [
   { feature: 'ダイスロール・ダイス予測・ログ解析', free: '使える', pro: '使える' },
   { feature: '技能ごとの成功率', free: '一部', pro: 'すべて' },
-  { feature: 'ログ解析の結果の保存', free: `${SAVE_ANALYSIS_LIMIT_FREE}件まで`, pro: '無制限' },
-  { feature: 'ココフォリアのキャラクターの保存', free: `${CCFOLIA_CHARACTER_SAVE_LIMIT_FREE}件まで`, pro: '無制限' },
+  { feature: 'ログ解析結果の保存', free: `${SAVE_ANALYSIS_LIMIT_FREE}件まで`, pro: '無制限' },
+  { feature: 'ココフォリアのキャラクター保存', free: `${CCFOLIA_CHARACTER_SAVE_LIMIT_FREE}件まで`, pro: '無制限' },
 ];
 
 const PricingPage: NextPage = () => (
@@ -32,7 +32,7 @@ const PricingPage: NextPage = () => (
       <PageTitle icon={IconSparkles}>PROプラン</PageTitle>
       <PageDescriptionContainer>
         <PageDescriptionText>
-          ダイススペックの機能は基本無料で使えます。PROプランでは、ログ解析をより詳しく見られるようになり、保存件数の上限がなくなります。
+          基本機能は無料で使えます。PROプランでは技能ごとの成功率をすべて確認でき、保存件数の上限がなくなります。
         </PageDescriptionText>
       </PageDescriptionContainer>
     </div>
@@ -71,12 +71,12 @@ const PricingPage: NextPage = () => (
     <ContainerSection label="よくある質問">
       <dl className="space-y-4 text-sm">
         <div className="space-y-1">
-          <dt className="font-semibold">解約はどこからできますか？</dt>
-          <dd>アカウント情報の「Stripeでサブスクリプションを管理する」から、いつでも手続きできます。</dd>
+          <dt className="font-semibold">解約はどこからできますか?</dt>
+          <dd>アカウント情報の「Stripeでサブスクリプションを管理する」から、いつでも解約できます。</dd>
         </div>
         <div className="space-y-1">
-          <dt className="font-semibold">支払いはどのように行われますか？</dt>
-          <dd>決済サービスのStripeで処理します。カード情報はダイススペックには保存されません。</dd>
+          <dt className="font-semibold">支払いはどのように行われますか?</dt>
+          <dd>決済サービスのStripeを利用しています。カード情報はダイススペックに保存されません。</dd>
         </div>
       </dl>
     </ContainerSection>
