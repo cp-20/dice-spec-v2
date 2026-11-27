@@ -437,6 +437,7 @@
 
   body {
     @apply bg-background text-foreground;
+
     /* 日本語を文節の区切りで改行し、収まらない長い文節だけ途中で折り返す */
     word-break: auto-phrase;
     overflow-wrap: break-word;
