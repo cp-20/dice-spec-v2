@@ -1,4 +1,7 @@
 export const ALL_CHARACTER_ID = 'all';
+// firestore.rules の保存上限と一致させる
+export const SAVE_ANALYSIS_LIMIT_FREE = 3;
+export const SKILL_SUMMARY_PREVIEW_COUNT_FREE = 4;
 export const ALL_CHARACTER_NAME = '[ALL]';
 
 export type System = 'emoklore' | 'CoC7th' | 'CoC6th' | 'shinobigami' | 'nechronica' | 'SwordWorld2.5';

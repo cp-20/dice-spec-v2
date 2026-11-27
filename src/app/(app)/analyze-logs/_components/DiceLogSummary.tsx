@@ -5,14 +5,14 @@ import type { FC } from 'react';
 
 import { ContainerSection } from '@/app/(app)/_components/ContainerSection';
 import { useMeStore } from '@/features/account/firebase/accountStore';
+import { SKILL_SUMMARY_PREVIEW_COUNT_FREE } from '@/features/log-analysis/model';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
 import { round } from '@/shared/lib/round';
+import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
 
 import { useCharacterLogAnalysis } from './hooks/useCharacterLogAnalysis';
 import { useCharacterSelect } from './hooks/useCharacterSelect';
-
-const PREVIEW_ROW_COUNT = 4;
 
 type LogResult = {
   evaluationStatus: 'success' | 'failure' | 'other';
@@ -89,7 +89,8 @@ export const DiceLogSummaryView: FC<DiceLogSummaryViewProps> = ({ results }) => 
   const isPro = me?.plan === 'pro';
 
   const summaries = results ? summarizeBySkill(results) : [];
-  const visibleSummaries = isPro ? summaries : summaries.slice(0, PREVIEW_ROW_COUNT);
+  const visibleSummaries = isPro ? summaries : summaries.slice(0, SKILL_SUMMARY_PREVIEW_COUNT_FREE);
+  const hiddenCount = summaries.length - visibleSummaries.length;
   const paywallEnabled = !isPro && summaries.length > 0;
 
   return (
@@ -146,10 +147,22 @@ export const DiceLogSummaryView: FC<DiceLogSummaryViewProps> = ({ results }) => 
                   <div className="space-y-1">
                     <p className="text-sm font-semibold text-blue-800 flex items-center gap-1.5">
                       <Lock className="size-4" />
-                      <span>技能サマリーの詳細はプロプラン限定です</span>
+                      <span>
+                        {hiddenCount > 0
+                          ? `ほか${hiddenCount}件の技能の成功率はPROプランで表示できます`
+                          : '技能サマリーの詳細はプロプラン限定です'}
+                      </span>
                     </p>
                   </div>
-                  <CustomLink href="/profile">
+                  <CustomLink
+                    href="/profile"
+                    onClick={() =>
+                      sendGoogleAnalyticsEvent('select_promotion', {
+                        promotion_id: 'pro',
+                        creative_slot: 'skill_summary',
+                      })
+                    }
+                  >
                     <Button
                       variant="default"
                       className="w-full border border-blue-400 bg-blue-100 text-blue-700 hover:border-blue-500 hover:bg-blue-200 hover:text-blue-800"
