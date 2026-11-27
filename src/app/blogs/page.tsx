@@ -8,7 +8,7 @@ import { BlogCard } from './_components/BlogCard';
 
 export const generateMetadata: MetadataGenerator = async () => {
   return metadataHelper({
-    title: 'ブログトップ',
+    title: 'ブログ',
     description: 'ダイススペックブログ記事のトップです。TRPGと数学に関する様々な記事を掲載しています。',
     path: '/blogs',
   });

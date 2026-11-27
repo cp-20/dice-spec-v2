@@ -1,3 +1,5 @@
+import { CustomLink } from '@/shared/components/elements/CustomLink';
+
 import { ExampleCommandButton } from './ExampleCommandButton';
 
 const examples = [
@@ -45,6 +47,13 @@ export const ExpectationGuide = () => (
         </tbody>
       </table>
       <p>公平なn個のm面ダイス(ndm)の期待値は n × (m + 1) ÷ 2。固定値はそのまま加算します。</p>
+      <p>
+        期待値と確率分布の違いは
+        <CustomLink href="/blogs/stats-for-trpg/2-basic-probability" className="underline underline-offset-2">
+          「2d6と1d12は何が違う？」
+        </CustomLink>
+        で解説しています。
+      </p>
     </div>
   </details>
 );

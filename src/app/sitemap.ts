@@ -11,12 +11,18 @@ const appPaths = [
   '/terms',
   '/privacy-policy',
   '/specified-commercial-transactions',
+  '/blogs',
+  ...contents.map((category) => `/blogs/${category.category}`),
 ];
 
-const blogPaths = contents.flatMap((category) =>
-  category.articles.map((article) => `/blogs/${category.category}/${article.slug}`),
+const blogEntries = contents.flatMap((category) =>
+  category.articles.flatMap((article) =>
+    article.isPublished
+      ? [{ url: constructUrl(`/blogs/${category.category}/${article.slug}`), lastModified: article.updatedAt }]
+      : [],
+  ),
 );
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [...appPaths, ...blogPaths].map((path) => ({ url: constructUrl(path) }));
+  return [...appPaths.map((path) => ({ url: constructUrl(path) })), ...blogEntries];
 }
