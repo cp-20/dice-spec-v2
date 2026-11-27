@@ -3,24 +3,36 @@
 import { IconCheck, IconLoader2 } from '@tabler/icons-react';
 import { useState } from 'react';
 
+import { CCFOLIA_CHARACTER_SAVE_LIMIT_FREE } from '@/features/ccfolia/model';
+import { SAVE_ANALYSIS_LIMIT_FREE } from '@/features/log-analysis/model';
 import { createCheckoutSession } from '@/features/stripe/api';
-import type { BillingInterval } from '@/features/stripe/contract';
+import { type BillingInterval, PRO_PRICE_JPY } from '@/features/stripe/contract';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
+import { GoogleSignInAgreement } from '@/shared/components/elements/GoogleSignInAgreement';
+import { GoogleSignInButton } from '@/shared/components/elements/GoogleSignInButton';
 import { Button } from '@/shared/components/ui/button';
 import { useToast } from '@/shared/components/ui/use-toast';
+import { useFirebaseAuth } from '@/shared/lib/firebase/useFirebaseAuth';
 import { captureClientException } from '@/shared/lib/sentryClient';
 import { cn } from '@/shared/lib/shadcn-utils';
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
-const MONTHLY_PRICE = 300;
-const YEARLY_PRICE = 3000;
+const MONTHLY_PRICE = PRO_PRICE_JPY.monthly;
+const YEARLY_PRICE = PRO_PRICE_JPY.yearly;
 const yearlyMonthlyEquivalent = Math.floor(YEARLY_PRICE / 12);
 const yearlyDiscountPercentage = Math.floor(((MONTHLY_PRICE - yearlyMonthlyEquivalent) / MONTHLY_PRICE) * 100);
 const yearlyOriginalPrice = MONTHLY_PRICE * 12;
 const yearlySaving = yearlyOriginalPrice - YEARLY_PRICE;
 
+const proFeatures = [
+  { label: '技能ごとの成功率をすべて表示' },
+  { label: 'ログ解析の結果を無制限に保存', note: `無料は${SAVE_ANALYSIS_LIMIT_FREE}件まで` },
+  { label: 'ココフォリアのキャラクターを無制限に保存', note: `無料は${CCFOLIA_CHARACTER_SAVE_LIMIT_FREE}件まで` },
+];
+
 export const PricingCards = () => {
   const { toast } = useToast();
+  const { authUser } = useFirebaseAuth();
   const [interval, setInterval] = useState<BillingInterval>('yearly');
   const [loading, setLoading] = useState(false);
   const { sendEventBeforeNavigation } = useGoogleAnalytics();
@@ -110,42 +122,51 @@ export const PricingCards = () => {
             </div>
           </div>
 
-          <div className="space-y-2.5">
-            <div className="flex items-start gap-3 rounded-lg bg-slate-50 p-3">
-              <div className="rounded-full bg-blue-100 p-1 mt-0.5">
-                <IconCheck className="size-4 text-blue-700" />
-              </div>
-              <div>
-                <div className="font-medium text-slate-900">解析結果を無制限に保存</div>
-              </div>
-            </div>
+          <ul className="space-y-2.5">
+            {proFeatures.map((feature) => (
+              <li key={feature.label} className="flex items-start gap-3 rounded-lg bg-slate-50 p-3">
+                <div className="rounded-full bg-blue-100 p-1 mt-0.5">
+                  <IconCheck className="size-4 text-blue-700" />
+                </div>
+                <div className="font-medium text-slate-900">
+                  {feature.label}
+                  {feature.note && (
+                    <>
+                      {' '}
+                      <span className="whitespace-nowrap">({feature.note})</span>
+                    </>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
 
-            <div className="flex items-start gap-3 rounded-lg bg-slate-50 p-3">
-              <div className="rounded-full bg-blue-100 p-1 mt-0.5">
-                <IconCheck className="size-4 text-blue-700" />
-              </div>
-              <div className="font-medium text-slate-900">高度な統計分析</div>
+          {authUser ? (
+            <Button
+              onClick={handleUpgrade}
+              disabled={loading}
+              className="w-full h-12 text-base font-semibold rounded-full bg-blue-600 hover:bg-blue-700 transition-colors"
+              size="lg"
+            >
+              {loading ? (
+                <>
+                  <IconLoader2 className="size-5 animate-spin" />
+                  <span>処理中</span>
+                </>
+              ) : (
+                <>
+                  <span>PROプランをはじめる</span>
+                  <span className="ml-1">→</span>
+                </>
+              )}
+            </Button>
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-sm text-slate-600">ログインするとPROプランを始められます</p>
+              <GoogleSignInButton size="lg" fullWidth />
+              <GoogleSignInAgreement />
             </div>
-          </div>
-
-          <Button
-            onClick={handleUpgrade}
-            disabled={loading}
-            className="w-full h-12 text-base font-semibold rounded-full bg-blue-600 hover:bg-blue-700 transition-colors"
-            size="lg"
-          >
-            {loading ? (
-              <>
-                <IconLoader2 className="size-5 animate-spin" />
-                <span>処理中</span>
-              </>
-            ) : (
-              <>
-                <span>PROプランをはじめる</span>
-                <span className="ml-1">→</span>
-              </>
-            )}
-          </Button>
+          )}
 
           <p className="text-center text-xs leading-relaxed text-slate-500">
             課金前に

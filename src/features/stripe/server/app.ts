@@ -68,7 +68,8 @@ export const stripeApp = new Hono()
         mode: 'subscription',
         customer: customerId,
         line_items: [{ price: getPriceId(payload.interval), quantity: 1 }],
-        success_url: `${runtimeEnv.appOrigin}/profile?session_id={CHECKOUT_SESSION_ID}`,
+        // 決済完了の計測で金額を復元できるよう、契約期間を戻り先に含める。
+        success_url: `${runtimeEnv.appOrigin}/profile?session_id={CHECKOUT_SESSION_ID}&interval=${payload.interval}`,
         cancel_url: `${runtimeEnv.appOrigin}/profile`,
         client_reference_id: userId,
         allow_promotion_codes: true,

@@ -8,6 +8,7 @@ import { meAtom } from '@/features/account/firebase/accountStore';
 import { CCFOLIA_CHARACTER_SAVE_LIMIT_FREE } from '@/features/ccfolia/model';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { Button } from '@/shared/components/ui/button';
+import { sendGoogleAnalyticsEvent } from '@/shared/lib/useGoogleAnalytics';
 
 import { CcfoliaSavedCharacterGrid } from './CcfoliaSavedCharacterGrid';
 import { CcfoliaSavedCharactersAlert } from './CcfoliaSavedCharactersAlert';
@@ -57,7 +58,16 @@ export const CcfoliaSavedCharactersContent: FC = () => {
               <>
                 {' · '}
                 プロなら保存件数は無制限です。{' '}
-                <CustomLink className="font-medium text-foreground underline underline-offset-4" href="/profile">
+                <CustomLink
+                  className="font-medium text-foreground underline underline-offset-4"
+                  href="/profile"
+                  onClick={() =>
+                    sendGoogleAnalyticsEvent('select_promotion', {
+                      promotion_id: 'pro',
+                      creative_slot: 'ccfolia_save_limit',
+                    })
+                  }
+                >
                   プロプランを見る
                 </CustomLink>
               </>

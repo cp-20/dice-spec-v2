@@ -10,6 +10,7 @@ import { ContainerSection } from '@/app/(app)/_components/ContainerSection';
 import { useMeStore } from '@/features/account/firebase/accountStore';
 import { type SaveAnalysisPayload, useSaveAnalysis } from '@/features/log-analysis/firebase/mutations';
 import type { AnalysisVisibilityLevel } from '@/features/log-analysis/firebase/schema';
+import { SAVE_ANALYSIS_LIMIT_FREE } from '@/features/log-analysis/model';
 import { toPublicUser } from '@/features/user/firebase/schema';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
 import { GoogleSignInAgreement } from '@/shared/components/elements/GoogleSignInAgreement';
@@ -25,8 +26,6 @@ import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
 import { useAnalysisOgImage } from './hooks/useAnalysisOgImage';
 import { useLogAnalysis } from './hooks/useLogAnalysis';
-
-const SAVE_ANALYSIS_LIMIT_FREE = 3;
 
 const formatDate = (date: Date): string => {
   const year = date.getFullYear();
@@ -200,7 +199,12 @@ export const AnalysisSavePanel: FC = () => {
                   プロプランにアップグレードすると無制限に保存できるようになります
                 </p>
               </div>
-              <CustomLink href="/profile">
+              <CustomLink
+                href="/profile"
+                onClick={() =>
+                  sendEvent('select_promotion', { promotion_id: 'pro', creative_slot: 'analysis_save_limit' })
+                }
+              >
                 <Button
                   variant="default"
                   className="w-full border border-blue-400 bg-blue-100 text-blue-700 hover:border-blue-500 hover:bg-blue-200 hover:text-blue-800"
