@@ -76,3 +76,17 @@ export const DiceD100: FC<DiceProps> = ({ count, className, ...props }) => (
     <DiceD10Base count={count % 10} className="-ml-3" />
   </div>
 );
+
+// 専用の画像がない面数のダイス
+export const DiceGeneric: FC<DiceProps> = ({ count, className, ...props }) => (
+  <div className={twMerge('relative inline-grid size-12 select-none place-content-center', className)} {...props}>
+    <div
+      className={clsx(
+        'inline-grid size-9 place-content-center rounded-md border-2 border-current font-semibold tabular-nums',
+        count >= 100 ? 'text-xs' : 'text-lg',
+      )}
+    >
+      {count}
+    </div>
+  </div>
+);

@@ -13,10 +13,10 @@ import {
   DiceD12,
   DiceD20,
   DiceD100,
+  DiceGeneric,
   type DiceProps,
 } from '@/shared/components/elements/Dice';
 
-import type { AvailableDice } from './hooks/useSimpleDiceInput';
 import { useSimpleDiceOutput } from './hooks/useSimpleDiceOutput';
 
 import scrollbarStyles from '@/shared/styles/pretty-scrollbar.module.css';
@@ -37,7 +37,7 @@ export const SimpleDiceOutput: FC = () => {
     <div>
       <div className="flex flex-wrap items-center min-h-12">
         {latestOutput.result.map(({ dice, result }, i) => {
-          const DiceComponent = diceComponents[dice];
+          const DiceComponent = diceComponents[dice] ?? DiceGeneric;
 
           const index = latestOutput.result.slice(0, i).reduce((acc, { result }) => {
             return acc + result.length;
@@ -78,7 +78,7 @@ export const SimpleDiceOutput: FC = () => {
   );
 };
 
-const diceComponents: Record<AvailableDice, FC<DiceProps>> = {
+const diceComponents: Partial<Record<string, FC<DiceProps>>> = {
   3: DiceD3,
   4: DiceD4,
   6: DiceD6,

@@ -2,18 +2,18 @@ import { useCallback } from 'react';
 
 import { useGoogleAnalytics } from '@/shared/lib/useGoogleAnalytics';
 
-import type { AvailableDice, SimpleDices } from './simpleDiceTypes';
+import type { SimpleDices } from './simpleDiceTypes';
 import { useSimpleDiceOutput } from './useSimpleDiceOutput';
 
 const useSimpleDiceRollCore = () => {
-  const simpleDiceRoll = useCallback((dices: Partial<SimpleDices>) => {
+  const simpleDiceRoll = useCallback((dices: SimpleDices) => {
     const validDices = Object.entries(dices).filter(([, count]) => count > 0);
     if (validDices.length === 0) return null;
 
     const inputStr = validDices.map(([dice, count]) => `${count}D${dice}`).join(' + ');
 
     const result = validDices.map(([dice, count]) => ({
-      dice: dice as AvailableDice,
+      dice,
       result: [...Array(count)].map(() => Math.floor(Math.random() * Number(dice)) + 1),
     }));
 
@@ -39,7 +39,7 @@ export const useSimpleDiceRoll = () => {
   const { sendEvent } = useGoogleAnalytics();
 
   const simpleDiceRoll = useCallback(
-    (dices: Partial<SimpleDices>) => {
+    (dices: SimpleDices) => {
       const result = simpleDiceRollCore(dices);
       if (result === null) return;
 
@@ -61,9 +61,3 @@ export const useSimpleDiceRoll = () => {
 
   return { simpleDiceRoll };
 };
-
-export const formatSimpleDices = (dices: Partial<SimpleDices>) =>
-  Object.entries(dices)
-    .filter(([, count]) => count > 0)
-    .map(([dice, count]) => `${count}D${dice}`)
-    .join(' + ');

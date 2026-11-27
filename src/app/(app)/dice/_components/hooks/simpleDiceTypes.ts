@@ -1,4 +1,5 @@
-const availableDice = ['3', '4', '6', '8', '10', '12', '20', '100'] as const;
+// キーはダイスの面数、値は振る個数
+export type SimpleDices = Record<string, number>;
 
-export type AvailableDice = (typeof availableDice)[number];
-export type SimpleDices = Record<AvailableDice, number>;
+export const SIMPLE_DICE_COUNT_RANGE = { min: 1, max: 999 };
+export const SIMPLE_DICE_FACES_RANGE = { min: 2, max: 1000 };

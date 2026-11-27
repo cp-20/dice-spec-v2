@@ -1,41 +1,37 @@
 'use client';
 
-import { type FC, useCallback } from 'react';
+import type { FC } from 'react';
 
 import { Button } from '@/shared/components/ui/button';
 
-import type { SimpleDices } from './hooks/useSimpleDiceInput';
-import { formatSimpleDices, useSimpleDiceRoll } from './hooks/useSimpleDiceRoll';
+import { type SimpleDice, useSimpleDiceInput } from './hooks/useSimpleDiceInput';
+
+const presets: SimpleDice[] = [
+  { count: 1, faces: 6 },
+  { count: 2, faces: 6 },
+  { count: 3, faces: 6 },
+  { count: 1, faces: 100 },
+  { count: 2, faces: 10 },
+  { count: 2, faces: 3 },
+];
 
 export const SimpleDiceQuickInput: FC = () => {
+  const { roll } = useSimpleDiceInput();
+
   return (
     <div className="@container">
-      <div className="grid grid-cols-3 gap-4 @md:grid-cols-6">
-        <SimpleDiceQuickInputPanel dices={{ 6: 1 }} />
-        <SimpleDiceQuickInputPanel dices={{ 6: 2 }} />
-        <SimpleDiceQuickInputPanel dices={{ 6: 3 }} />
-        <SimpleDiceQuickInputPanel dices={{ 100: 1 }} />
-        <SimpleDiceQuickInputPanel dices={{ 10: 2 }} />
-        <SimpleDiceQuickInputPanel dices={{ 3: 2 }} />
+      <div className="grid grid-cols-3 gap-3 @md:grid-cols-6">
+        {presets.map((dice) => (
+          <Button
+            key={`${dice.count}D${dice.faces}`}
+            variant="outline"
+            onClick={() => roll(dice)}
+            className="font-semibold"
+          >
+            {dice.count}D{dice.faces}
+          </Button>
+        ))}
       </div>
     </div>
-  );
-};
-
-type SimpleDiceQuickInputPanelProps = {
-  dices: Partial<SimpleDices>;
-};
-
-const SimpleDiceQuickInputPanel: FC<SimpleDiceQuickInputPanelProps> = ({ dices }) => {
-  const { simpleDiceRoll } = useSimpleDiceRoll();
-
-  const handleClick = useCallback(() => {
-    simpleDiceRoll(dices);
-  }, [dices, simpleDiceRoll]);
-
-  return (
-    <Button variant="outline" onClick={handleClick} className="font-semibold">
-      {formatSimpleDices(dices)}
-    </Button>
   );
 };
