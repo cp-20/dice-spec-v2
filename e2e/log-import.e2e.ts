@@ -31,7 +31,7 @@ for (const [name, buffer] of [
     await page.goto('/analyze-logs');
     const shareButton = page.getByRole('button', { name: '解析結果をシェア', exact: true });
     await expect(shareButton).toBeDisabled();
-    await expect(page.getByText('保存するにはログインが必要です', { exact: true })).toBeVisible();
+    await expect(page.getByText('ログインして解析結果を保存しましょう', { exact: true })).toBeVisible();
     await expect(page.getByText('技能サマリー', { exact: true })).toBeVisible();
     await expect(page.getByRole('img', { name: '出目の分布', exact: true })).toBeVisible();
     await expect(page.getByRole('img', { name: '判定結果の内訳', exact: true })).toBeVisible();
@@ -49,7 +49,7 @@ for (const [name, buffer] of [
       page.getByText('クリックしてアップロード、あるいはドラッグアンドドロップしてアップロード', { exact: true }),
     ).toBeVisible();
     await expect(shareButton).toBeDisabled();
-    await expect(page.getByText('保存するにはログインが必要です', { exact: true })).toBeVisible();
+    await expect(page.getByText('ログインして解析結果を保存しましょう', { exact: true })).toBeVisible();
     await expect(page.getByText('技能サマリー', { exact: true })).toBeVisible();
     await expect(page.getByRole('img', { name: '出目の分布', exact: true })).toBeVisible();
     await expect(page.getByRole('img', { name: '判定結果の内訳', exact: true })).toBeVisible();
