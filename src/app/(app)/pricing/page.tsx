@@ -58,8 +58,8 @@ const PricingPage: NextPage = () => (
               <th scope="row" className="py-2 pr-4 font-normal">
                 {feature}
               </th>
-              <td className="py-2 pr-4">{free}</td>
-              <td className="py-2 font-semibold">{pro}</td>
+              <td className="whitespace-nowrap py-2 pr-4">{free}</td>
+              <td className="whitespace-nowrap py-2 font-semibold">{pro}</td>
             </tr>
           ))}
         </tbody>
