@@ -60,7 +60,7 @@ export const CcfoliaSavedCharactersContent: FC = () => {
                 プロなら保存件数は無制限です。{' '}
                 <CustomLink
                   className="font-medium text-foreground underline underline-offset-4"
-                  href="/profile"
+                  href="/pricing"
                   onClick={() =>
                     sendGoogleAnalyticsEvent('select_promotion', {
                       promotion_id: 'pro',

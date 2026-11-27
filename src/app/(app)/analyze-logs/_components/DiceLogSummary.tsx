@@ -155,7 +155,7 @@ export const DiceLogSummaryView: FC<DiceLogSummaryViewProps> = ({ results }) => 
                     </p>
                   </div>
                   <CustomLink
-                    href="/profile"
+                    href="/pricing"
                     onClick={() =>
                       sendGoogleAnalyticsEvent('select_promotion', {
                         promotion_id: 'pro',
