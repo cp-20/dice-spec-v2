@@ -26,7 +26,7 @@ const yearlyOriginalPrice = MONTHLY_PRICE * 12;
 const yearlySaving = yearlyOriginalPrice - YEARLY_PRICE;
 
 const proFeatures = [
-  { label: '技能ごとの成功率をすべて表示' },
+  { label: 'ログ解析で技能ごとの成功率をすべて表示' },
   { label: 'ログ解析の結果を無制限に保存', note: `無料は${SAVE_ANALYSIS_LIMIT_FREE}件まで` },
   { label: 'ココフォリアのキャラクターを無制限に保存', note: `無料は${CCFOLIA_CHARACTER_SAVE_LIMIT_FREE}件まで` },
 ];
@@ -171,7 +171,7 @@ export const PricingCards = () => {
             </Button>
           ) : (
             <div className="flex flex-col items-center gap-2">
-              <p className="text-sm text-slate-600">ログインするとPROプランを始められます</p>
+              <p className="text-sm text-slate-600">ログインするとPROプランに登録できます</p>
               <GoogleSignInButton size="lg" fullWidth />
               <GoogleSignInAgreement />
             </div>

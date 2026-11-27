@@ -13,9 +13,7 @@ export const DiceRollGuide = () => (
   <details className="border-t pt-4">
     <summary className="cursor-pointer font-medium">ダイスの書き方と使い方</summary>
     <div className="mt-4 space-y-4 text-sm">
-      <p>
-        「xDy」はy面ダイスをx個振って出目を合計する表記です。シンプルモードでは1D100や2D6などをボタン一つで振れます。
-      </p>
+      <p>「xDy」はy面ダイスをx個振って合計する書き方です。</p>
       <table className="w-full text-left text-sm">
         <thead>
           <tr className="border-b">
@@ -47,10 +45,10 @@ export const DiceRollGuide = () => (
         </tbody>
       </table>
       <p>
-        ゲームシステム固有の判定は、アドバンスドモードでゲームシステムを選んで入力します。たとえばクトゥルフ神話TRPGの技能判定は
-        <code className="font-mono">CCB&lt;=50</code>、新クトゥルフ神話TRPGは
+        アドバンスドモードでは、ゲームシステムを選んで固有の判定を振れます。たとえばクトゥルフ神話TRPG(6版)は
+        <code className="font-mono">CCB&lt;=50</code>、新クトゥルフ神話TRPG(7版)は
         <code className="font-mono">CC&lt;=50</code>
-        のように振れます。
+        と入力します。
       </p>
       <p>
         振る前に成功率や期待値を知りたいときは

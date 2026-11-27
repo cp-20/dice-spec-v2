@@ -75,7 +75,7 @@ describe('sendStripeLog', () => {
     await sendStripeLog({
       level: 'success',
       eventType: 'checkout.session.completed',
-      message: 'ユーザーがプロプランを契約しました',
+      message: 'ユーザーがPROプランを契約しました',
       notify: true,
       details: { amountTotal: 500, currency: 'JPY' },
     });

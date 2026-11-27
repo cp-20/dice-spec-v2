@@ -57,7 +57,7 @@ export const CcfoliaSavedCharactersContent: FC = () => {
             {!canCreate && (
               <>
                 {' · '}
-                プロなら保存件数は無制限です。{' '}
+                PROプランなら保存件数は無制限です。{' '}
                 <CustomLink
                   className="font-medium text-foreground underline underline-offset-4"
                   href="/pricing"
@@ -68,7 +68,7 @@ export const CcfoliaSavedCharactersContent: FC = () => {
                     })
                   }
                 >
-                  プロプランを見る
+                  PROプランを見る
                 </CustomLink>
               </>
             )}

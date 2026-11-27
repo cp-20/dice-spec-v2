@@ -15,7 +15,7 @@ export const generateMetadata: MetadataGenerator = async () => {
   return metadataHelper({
     title: 'ダイスロール | 1D100・1D6・2D6をすぐ振れるTRPGダイス',
     description:
-      '1D100・1D6・2D6・3D6などのダイスをブラウザですぐ振れる無料のダイスロールツールです。BCDiceに対応し、クトゥルフ神話TRPGやシノビガミなどゲームシステム特有の判定も振れます。',
+      '1D100・1D6・2D6・3D6などをブラウザですぐ振れる無料のダイスロールツールです。BCDiceに対応し、クトゥルフ神話TRPGやシノビガミなどの判定も行えます。',
     path: '/dice',
   });
 };

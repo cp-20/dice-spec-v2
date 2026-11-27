@@ -25,7 +25,7 @@ export const useCheckoutCompletion = () => {
     if (sent) window.history.replaceState(window.history.state, '', window.location.pathname);
     toast({
       title: 'PROプランへの登録が完了しました',
-      description: 'プランの反映まで数秒かかることがあります',
+      description: '反映まで数秒かかることがあります',
     });
   }, [toast]);
 };

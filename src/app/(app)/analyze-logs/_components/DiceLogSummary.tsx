@@ -149,8 +149,8 @@ export const DiceLogSummaryView: FC<DiceLogSummaryViewProps> = ({ results }) => 
                       <Lock className="size-4" />
                       <span>
                         {hiddenCount > 0
-                          ? `ほか${hiddenCount}件の技能の成功率はPROプランで表示できます`
-                          : '技能サマリーの詳細はプロプラン限定です'}
+                          ? `ほか${hiddenCount}件の技能はPROプランで見られます`
+                          : '技能サマリーはPROプランですべて見られます'}
                       </span>
                     </p>
                   </div>

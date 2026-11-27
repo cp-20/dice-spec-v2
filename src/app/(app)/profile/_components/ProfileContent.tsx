@@ -27,7 +27,9 @@ export const ProfileContent = () => {
       <ContainerSection>
         {/* 有料機能の案内から来た未ログインのユーザーにも、プランの内容とログイン導線を同時に示す */}
         <div className="flex flex-col items-center py-8 gap-8">
-          <div className="text-center text-slate-600">ログインするとプロフィールの確認やPROプランの登録ができます</div>
+          <div className="text-center text-slate-600">
+            ログインするとアカウント情報の確認やPROプランの登録ができます
+          </div>
           <PricingCards />
         </div>
       </ContainerSection>
