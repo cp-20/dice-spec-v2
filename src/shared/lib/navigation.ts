@@ -1,4 +1,4 @@
-import { IconDice5, IconFileExport, IconList, IconSearch, IconTimeline } from '@tabler/icons-react';
+import { IconDice5, IconFileExport, IconList, IconSearch, IconSparkles, IconTimeline } from '@tabler/icons-react';
 
 export const navLinks = [
   { label: 'ダイス予測', href: '/expect', icon: IconSearch, sideNavOnly: false },
@@ -6,6 +6,7 @@ export const navLinks = [
   { label: 'ログ解析', href: '/analyze-logs', icon: IconTimeline, sideNavOnly: false },
   { label: '解析一覧', href: '/analyze-logs/list', icon: IconList, sideNavOnly: true },
   { label: 'ココフォリア出力', href: '/ccfolia', icon: IconFileExport, sideNavOnly: false },
+  { label: 'PROプラン', href: '/pricing', icon: IconSparkles, sideNavOnly: true },
 ] as const;
 
 export const normalizePathname = (pathname: string): string => {

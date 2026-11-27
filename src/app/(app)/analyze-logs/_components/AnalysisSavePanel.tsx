@@ -200,7 +200,7 @@ export const AnalysisSavePanel: FC = () => {
                 </p>
               </div>
               <CustomLink
-                href="/profile"
+                href="/pricing"
                 onClick={() =>
                   sendEvent('select_promotion', { promotion_id: 'pro', creative_slot: 'analysis_save_limit' })
                 }

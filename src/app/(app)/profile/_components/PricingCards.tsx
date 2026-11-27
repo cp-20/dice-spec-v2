@@ -3,6 +3,7 @@
 import { IconCheck, IconLoader2 } from '@tabler/icons-react';
 import { useState } from 'react';
 
+import { useMeStore } from '@/features/account/firebase/accountStore';
 import { CCFOLIA_CHARACTER_SAVE_LIMIT_FREE } from '@/features/ccfolia/model';
 import { SAVE_ANALYSIS_LIMIT_FREE } from '@/features/log-analysis/model';
 import { createCheckoutSession } from '@/features/stripe/api';
@@ -33,6 +34,7 @@ const proFeatures = [
 export const PricingCards = () => {
   const { toast } = useToast();
   const { authUser } = useFirebaseAuth();
+  const { me } = useMeStore();
   const [interval, setInterval] = useState<BillingInterval>('yearly');
   const [loading, setLoading] = useState(false);
   const { sendEventBeforeNavigation } = useGoogleAnalytics();
@@ -141,7 +143,14 @@ export const PricingCards = () => {
             ))}
           </ul>
 
-          {authUser ? (
+          {me?.plan === 'pro' ? (
+            <p className="text-center text-sm text-slate-600">
+              PROプランをご利用中です。
+              <CustomLink href="/profile" className="underline underline-offset-2 hover:text-slate-700">
+                プランを管理する
+              </CustomLink>
+            </p>
+          ) : authUser ? (
             <Button
               onClick={handleUpgrade}
               disabled={loading}
