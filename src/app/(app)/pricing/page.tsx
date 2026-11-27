@@ -71,11 +71,11 @@ const PricingPage: NextPage = () => (
     <ContainerSection label="よくある質問">
       <dl className="space-y-4 text-sm">
         <div className="space-y-1">
-          <dt className="font-semibold">解約はどこからできますか?</dt>
+          <dt className="font-semibold">解約はどこからできますか？</dt>
           <dd>アカウント情報の「Stripeでサブスクリプションを管理する」から、いつでも解約できます。</dd>
         </div>
         <div className="space-y-1">
-          <dt className="font-semibold">支払いはどのように行われますか?</dt>
+          <dt className="font-semibold">支払いはどのように行われますか？</dt>
           <dd>決済サービスのStripeを利用しています。カード情報はダイススペックに保存されません。</dd>
         </div>
       </dl>
