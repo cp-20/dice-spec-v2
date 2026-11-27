@@ -4,7 +4,7 @@ import { IconCheck, IconLoader2 } from '@tabler/icons-react';
 import { useState } from 'react';
 
 import { CCFOLIA_CHARACTER_SAVE_LIMIT_FREE } from '@/features/ccfolia/model';
-import { SAVE_ANALYSIS_LIMIT_FREE, SKILL_SUMMARY_PREVIEW_COUNT_FREE } from '@/features/log-analysis/model';
+import { SAVE_ANALYSIS_LIMIT_FREE } from '@/features/log-analysis/model';
 import { createCheckoutSession } from '@/features/stripe/api';
 import { type BillingInterval, PRO_PRICE_JPY } from '@/features/stripe/contract';
 import { CustomLink } from '@/shared/components/elements/CustomLink';
@@ -25,9 +25,9 @@ const yearlyOriginalPrice = MONTHLY_PRICE * 12;
 const yearlySaving = yearlyOriginalPrice - YEARLY_PRICE;
 
 const proFeatures = [
-  `技能ごとの成功率をすべて表示 (無料は${SKILL_SUMMARY_PREVIEW_COUNT_FREE}件まで)`,
-  `ログ解析の結果を無制限に保存 (無料は${SAVE_ANALYSIS_LIMIT_FREE}件まで)`,
-  `ココフォリアのキャラクターを無制限に保存 (無料は${CCFOLIA_CHARACTER_SAVE_LIMIT_FREE}件まで)`,
+  { label: '技能ごとの成功率をすべて表示' },
+  { label: 'ログ解析の結果を無制限に保存', note: `無料は${SAVE_ANALYSIS_LIMIT_FREE}件まで` },
+  { label: 'ココフォリアのキャラクターを無制限に保存', note: `無料は${CCFOLIA_CHARACTER_SAVE_LIMIT_FREE}件まで` },
 ];
 
 export const PricingCards = () => {
@@ -124,11 +124,19 @@ export const PricingCards = () => {
 
           <ul className="space-y-2.5">
             {proFeatures.map((feature) => (
-              <li key={feature} className="flex items-start gap-3 rounded-lg bg-slate-50 p-3">
+              <li key={feature.label} className="flex items-start gap-3 rounded-lg bg-slate-50 p-3">
                 <div className="rounded-full bg-blue-100 p-1 mt-0.5">
                   <IconCheck className="size-4 text-blue-700" />
                 </div>
-                <div className="font-medium text-slate-900">{feature}</div>
+                <div className="font-medium text-slate-900">
+                  {feature.label}
+                  {feature.note && (
+                    <>
+                      {' '}
+                      <span className="whitespace-nowrap">({feature.note})</span>
+                    </>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
