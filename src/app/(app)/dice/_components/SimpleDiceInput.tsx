@@ -95,7 +95,7 @@ const FacesSelect: FC = () => {
           className="flex gap-2"
           onSubmit={(event) => {
             event.preventDefault();
-            const faces = Number.parseInt(customFaces, 10);
+            const faces = Math.trunc(Number(customFaces));
             if (!Number.isNaN(faces)) select(faces);
           }}
         >
